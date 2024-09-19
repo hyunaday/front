@@ -5,6 +5,7 @@ import MyAssets from '../views/MyAssets.vue';
 import AccountBook from '../views/AccountBook.vue';
 import BusinessCard from '../views/BusinessCard.vue';
 import GroupPay from '../views/GroupPay.vue';
+import SignUp from '../views/SignUp.vue';
 
 const routes = [
   {
@@ -36,6 +37,11 @@ const routes = [
     path: '/grouppay',
     name: 'GroupPay',
     component: GroupPay
+  },
+  {
+    path: '/signup',
+    name: 'SignUp',
+    component: SignUp
   }
 ];
 
