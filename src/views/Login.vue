@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="main-container">
     <div class="content-wrapper">
       <header class="header">
         <!-- 상대 경로로 이미지 추가 -->
@@ -33,21 +33,21 @@
             <div class="logo-links">
               <a href="#" class="logo-link">
                 <img
-                  src="../assets/images/logo1.png"
+                  src="../assets/images/kakao.png"
                   alt="Logo 1"
                   class="logo-image"
                 />
               </a>
               <a href="#" class="logo-link">
                 <img
-                  src="../assets/images/logo2.png"
+                  src="../assets/images/naver.png"
                   alt="Logo 2"
                   class="logo-image"
                 />
               </a>
               <a href="#" class="logo-link">
                 <img
-                  src="../assets/images/logo3.png"
+                  src="../assets/images/google.png"
                   alt="Logo 3"
                   class="logo-image"
                 />
@@ -62,35 +62,27 @@
           </div>
         </form>
       </main>
-      <footer class="footer">
-        <p>© 2024 Team2rum</p>
-      </footer>
     </div>
   </div>
 </template>
+
 <script>
 export default {
   name: "Login",
 };
 </script>
+
 <style scoped>
-/* 전체 페이지를 감싸는 컨테이너 */
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: #e0e0e0; /* 양쪽 회색 배경 */
-}
-/* 가운데 내용 레이아웃 */
 .content-wrapper {
   width: 100%;
-  max-width: 1200px; /* 페이지 최대 너비 */
-  background-color: #fff; /* 가운데 흰색 배경 */
+  max-width: 1200px;
+  background-color: #fff;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
+
+/* header */
 .header {
   color: white;
   text-align: center;
@@ -98,12 +90,14 @@ export default {
   position: relative;
 }
 .header-logo {
-  width: 300px; /* 이미지 크기 조정 */
+  width: 300px;
   height: auto;
   position: absolute;
   top: 5px;
-  left: 20px;
+  left: 30px;
 }
+
+/* main-content */
 .main-content {
   flex: 1;
   display: flex;
@@ -129,12 +123,12 @@ form {
 }
 .password-container {
   position: relative;
-  width: 100%; /* 비밀번호 입력 필드를 이메일 입력 필드처럼 펼치기 */
+  width: 100%;
 }
 .forgot-password {
   position: absolute;
   right: 0;
-  bottom: -25px; /* 위치 조정: 비밀번호 입력 상자 아래 */
+  bottom: -25px;
   font-size: 0.9em;
   color: #6981d9;
   text-decoration: none;
@@ -143,27 +137,27 @@ form {
   text-decoration: underline;
 }
 .simple-login {
-  display: flex; /* flexbox를 사용하여 가운데 정렬 */
-  flex-direction: column; /* 수직 방향으로 정렬 */
-  align-items: center; /* 수평 방향으로 가운데 정렬 */
-  margin-top: 20px; /* 비밀번호 찾기 링크와 간편로그인 텍스트 사이의 간격 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
 }
 .simple-login p {
   font-size: 0.9em;
-  color: #777; /* 회색 폰트 */
-  margin: 0; /* 기본 여백 제거 */
+  color: #777;
+  margin: 0;
 }
 .logo-links {
-  display: flex; /* flexbox를 사용하여 로고를 가로로 정렬 */
-  justify-content: center; /* 가로 방향 중앙 정렬 */
-  gap: 15px; /* 로고 사이의 간격 */
-  margin-top: 10px; /* 간편로그인 텍스트와 로고 사이의 간격 */
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 10px;
 }
 .logo-link {
   display: flex;
 }
 .logo-image {
-  width: 40px; /* 로고 이미지 크기 조정 */
+  width: 40px;
   height: auto;
 }
 .login-btn {
@@ -174,24 +168,24 @@ form {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  margin-top: 20px; /* 버튼을 아래로 내림 */
+  margin-top: 20px;
 }
 .signup-link {
   display: flex;
-  flex-direction: column; /* 수직 방향으로 정렬 */
-  align-items: center; /* 수평 방향으로 가운데 정렬 */
-  margin-top: 20px; /* 로그인 버튼과 회원가입 텍스트 사이의 간격 */
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
 }
 .signup-link p {
   font-size: 0.9em;
-  color: #777; /* 회색 폰트 */
-  margin: 0; /* 기본 여백 제거 */
+  color: #777;
+  margin: 0;
 }
 .signup-btn {
   font-size: 0.9em;
-  color: #6981d9; /* 링크 색상 */
+  color: #6981d9;
   text-decoration: none;
-  margin-top: 5px; /* 텍스트와 링크 사이의 간격 */
+  margin-top: 5px;
 }
 .signup-btn:hover {
   text-decoration: underline;
