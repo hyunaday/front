@@ -6,7 +6,9 @@
         <li><router-link to="/login">Login Page</router-link></li>
         <li><router-link to="/myassets">My Assets Page</router-link></li>
         <li><router-link to="/accountbook">Account Book Page</router-link></li>
-        <li><router-link to="/businesscard">Business Card Page</router-link></li>
+        <li>
+          <router-link to="/businesscard">Business Card Page</router-link>
+        </li>
         <li><router-link to="/grouppay">Group Pay Page</router-link></li>
       </ul>
     </nav>
@@ -15,7 +17,7 @@
 
 <script>
 export default {
-  name: 'MainPage',
+  name: "MainPage",
 };
 </script>
 

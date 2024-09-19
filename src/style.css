@@ -77,3 +77,25 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #c0c0c0; /* 나머지 화면은 회색 */
+}
+.main-container {
+  width: 360px; /* 고정된 너비 */
+  height: 800px; /* 고정된 높이 */
+  background-color: white; /* 흰색 배경 */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 살짝 그림자 추가 */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* 상단부터 배치 */
+  align-items: center; /* 중앙에 배치 */
+  position: relative;
+}
