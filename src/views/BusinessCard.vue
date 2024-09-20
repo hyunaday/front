@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="main-container">
       <h1>Business Card Page</h1>
     </div>
   </template>
