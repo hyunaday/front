@@ -21,11 +21,7 @@
       </router-link>
 
       <!--  수기 작성 페이지로 이동 -->
-      <router-link
-        to="/manual-entry"
-        class="pay-btn"
-        exact-active-class="active"
-      >
+      <router-link to="/addlist" class="pay-btn" exact-active-class="active">
         <i class="fa-solid fa-plus"></i>
         <span></span>
       </router-link>

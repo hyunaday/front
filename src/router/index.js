@@ -6,6 +6,7 @@ import AccountBook from '../views/AccountBook.vue';
 import BusinessCard from '../views/BusinessCard.vue';
 import GroupPay from '../views/GroupPay.vue';
 import SignUp from '../views/SignUp.vue';
+import AddList from '../views/AddList.vue';
 
 const routes = [
   {
@@ -43,11 +44,11 @@ const routes = [
     name: 'SignUp',
     component: SignUp,
   },
-  // {
-  //   path: '/manual-entry',
-  //   name: 'ManualEntry',
-  //   component: ManualEntryComponent, // 수기 작성 페이지에 해당하는 컴포넌트를 넣어주세요
-  // },
+  {
+    path: '/addlist',
+    name: 'AddList',
+    component: AddList,
+  },
 ];
 
 const router = createRouter({
