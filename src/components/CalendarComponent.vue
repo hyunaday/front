@@ -227,7 +227,9 @@ table {
 th,
 td {
   width: 14.28%;
-  height: 50px;
+  height: 30px;
+  padding: 5px; /* 패딩 조정 */
+  line-height: 1.2; /* 줄 높이 조정 */
   border: none;
   vertical-align: top;
 }
@@ -238,7 +240,8 @@ th {
 }
 
 thead tr {
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid #cfcbcb;
+  height: 40px; /* 높이를 자동으로 설정하여 padding에 맞게 조정 */
 }
 
 .day-cell {
@@ -246,6 +249,7 @@ thead tr {
   text-align: center;
   vertical-align: top;
   padding: 10px;
+  height: 60px;
 }
 
 .day-number {

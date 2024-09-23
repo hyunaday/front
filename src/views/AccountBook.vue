@@ -20,7 +20,12 @@
         <span>내 자산</span>
       </router-link>
 
-      <router-link to="/grouppay" class="pay-btn" exact-active-class="active">
+      <!--  수기 작성 페이지로 이동 -->
+      <router-link
+        to="/manual-entry"
+        class="pay-btn"
+        exact-active-class="active"
+      >
         <i class="fa-solid fa-plus"></i>
         <span></span>
       </router-link>
@@ -111,7 +116,7 @@ a {
 .calendar {
   width: 100%;
   max-width: 800px; /* 캘린더 최대 너비 조정 */
-
+  margin: 0 px; /* 좌우 여백 추가 */
   margin-bottom: 15px; /* 네비게이션 바와의 간격 */
 }
 
