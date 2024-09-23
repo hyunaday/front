@@ -2,7 +2,6 @@
   <div class="main-container">
     <div class="content-wrapper">
       <header class="header">
-        <!-- 상대 경로로 이미지 추가 -->
         <img src="../assets/images/logo.png" alt="Logo" class="header-logo" />
       </header>
       <br />
@@ -19,7 +18,11 @@
           <div class="input-group">
             <label for="password">비밀번호</label>
             <div class="password-container">
-              <input type="password" id="password" placeholder="비밀번호 입력" />
+              <input
+                type="password"
+                id="password"
+                placeholder="비밀번호 입력"
+              />
               <a href="#" class="forgot-password">비밀번호를 잊으셨나요?</a>
             </div>
           </div>
@@ -28,13 +31,25 @@
             <p>간편로그인</p>
             <div class="logo-links">
               <a href="#" class="logo-link">
-                <img src="../assets/images/kakao.png" alt="Logo 1" class="logo-image" />
+                <img
+                  src="../assets/images/kakao.png"
+                  alt="Logo 1"
+                  class="logo-image"
+                />
               </a>
               <a href="#" class="logo-link">
-                <img src="../assets/images/naver.png" alt="Logo 2" class="logo-image" />
+                <img
+                  src="../assets/images/naver.png"
+                  alt="Logo 2"
+                  class="logo-image"
+                />
               </a>
               <a href="#" class="logo-link">
-                <img src="../assets/images/google.png" alt="Logo 3" class="logo-image" />
+                <img
+                  src="../assets/images/google.png"
+                  alt="Logo 3"
+                  class="logo-image"
+                />
               </a>
             </div>
           </div>
@@ -42,7 +57,10 @@
           <button type="submit" class="login-btn">로그인</button>
           <div class="signup-link">
             <p>처음 오셨나요?</p>
-            <a href="#" class="signup-btn">회원가입</a>
+            <a @click.prevent="$router.push('/signup')" class="signup-btn"
+              >회원가입</a
+            >
+            <!-- 클릭 이벤트 추가 -->
           </div>
         </form>
       </main>
@@ -114,7 +132,7 @@ form {
   right: 0;
   bottom: -25px;
   font-size: 0.9em;
-  color: #6981D9;
+  color: #6981d9;
   text-decoration: none;
 }
 .forgot-password:hover {
@@ -147,7 +165,7 @@ form {
 .login-btn {
   width: 100%;
   padding: 10px;
-  background-color: #6981D9;
+  background-color: #6981d9;
   color: white;
   border: none;
   border-radius: 4px;
@@ -167,7 +185,7 @@ form {
 }
 .signup-btn {
   font-size: 0.9em;
-  color: #6981D9;
+  color: #6981d9;
   text-decoration: none;
   margin-top: 5px;
 }
