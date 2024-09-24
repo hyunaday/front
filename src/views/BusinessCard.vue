@@ -21,6 +21,10 @@
       </div>
     </div>
 
+    <!-- 네임택 -->
+    <div class="name-tag-sec">
+      <span>명함목록</span>
+    </div>
     <!-- 명함 목록 -->
     <div class="card-list">
       <div
@@ -50,7 +54,11 @@
       </router-link>
 
       <!-- 수기 작성 페이지로 이동 -->
-      <router-link to="/addlist" class="pay-btn" exact-active-class="active">
+      <router-link
+        to="/businesscardlist"
+        class="pay-btn"
+        exact-active-class="active"
+      >
         <i class="fa-solid fa-plus"></i>
         <span></span>
       </router-link>
@@ -88,7 +96,32 @@ export default {
         address: '서울 광진구 능동로 195-16 6층',
         memo: '',
       },
-      cardList: [],
+      cardList: [
+        {
+          id: 1,
+          name: 'Alice Johnson',
+          position: 'Developer',
+          company: 'Tech Corp',
+        },
+        {
+          id: 2,
+          name: 'Bob Lee',
+          position: 'Designer',
+          company: 'Creative Agency',
+        },
+        {
+          id: 3,
+          name: 'Charlie Kim',
+          position: 'Project Manager',
+          company: 'Business Solutions',
+        },
+        {
+          id: 4,
+          name: 'David Park',
+          position: 'Marketing Specialist',
+          company: 'Marketing Group',
+        },
+      ],
     };
   },
   methods: {
@@ -114,6 +147,7 @@ a {
   justify-content: flex-start;
   align-items: center;
   min-height: 100vh;
+  margin-bottom: 60px;
   background-color: white;
   overflow-y: auto;
 }
@@ -122,7 +156,7 @@ a {
 .selected-card {
   background-color: #efeded;
   padding: 20px;
-  margin-top: 40px;
+  margin-top: 38px;
   margin-bottom: 20px;
   border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 서류 모양의 그림자 */
@@ -142,6 +176,19 @@ a {
   color: rgb(0, 0, 0);
   font-weight: bold;
   font-size: 14px;
+}
+/* 명함목록 네임택 */
+.name-tag-sec {
+  position: absolute;
+  top: 455px; /* 서류에서 튀어나온 듯한 느낌 */
+  left: 5px;
+  background-color: #efeded; /* 네임택 색상 */
+  padding: 5px 15px;
+  border-radius: 5px;
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+  font-size: 14px;
+  z-index: 0;
 }
 
 /* 명함 내용 스타일 */
@@ -163,9 +210,13 @@ a {
 
 /* 명함 목록 스타일 */
 .card-list {
-  background-color: #ffffff;
+  background-color: #efeded; /* 기존 배경색을 사용 */
   padding: 20px;
   border-radius: 10px;
+  width: 350px; /* 명함 목록의 너비 조정 */
+  height: 350px;
+  margin-top: 28px;
+  overflow-y: auto; /* 스크롤 가능하도록 설정 */
 }
 
 .card-item {
