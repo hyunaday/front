@@ -7,6 +7,7 @@ import BusinessCard from '../views/BusinessCard.vue';
 import GroupPay from '../views/GroupPay.vue';
 import SignUp from '../views/SignUp.vue';
 import AddList from '../views/AddList.vue';
+import Cards from '../views/Cards.vue';
 
 const routes = [
   {
@@ -48,6 +49,11 @@ const routes = [
     path: '/addlist',
     name: 'AddList',
     component: AddList,
+  },
+  {
+    path: '/cards',
+    name: 'Cards',
+    component: Cards,
   },
 ];
 

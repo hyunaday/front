@@ -4,24 +4,25 @@
     <div class="selected-card">
       <!-- 네임택 -->
       <div class="name-tag">
-        <span>{{ selectedCard.name }}</span>
+        <span>나의 명함</span>
       </div>
       <div class="card">
         <!-- 명함 이미지 -->
         <img src="https://via.placeholder.com/300x150" alt="명함 이미지" />
         <div class="card-details">
+          <p><strong>이름:</strong> {{ selectedCard.name }}</p>
           <p><strong>연락처:</strong> {{ selectedCard.phone }}</p>
           <p><strong>이메일:</strong> {{ selectedCard.email }}</p>
           <p><strong>주소:</strong> {{ selectedCard.address }}</p>
+          <p><strong>메모:</strong> {{ selectedCard.memo }}</p>
         </div>
         <!-- QR 코드 이미지 -->
-        <img src="https://via.placeholder.com/100" alt="QR 코드" />
+        <img src="https://via.placeholder.com/70" alt="QR 코드" />
       </div>
     </div>
 
     <!-- 명함 목록 -->
     <div class="card-list">
-      <h3>명함 목록</h3>
       <div
         v-for="card in cardList"
         :key="card.id"
@@ -36,6 +37,7 @@
 
     <div class="divider"></div>
 
+    <!-- 네비게이션 바 -->
     <div class="navbar">
       <router-link to="/" class="nav-item" exact-active-class="active">
         <i class="fas fa-home"></i>
@@ -47,7 +49,7 @@
         <span>내 자산</span>
       </router-link>
 
-      <!--  수기 작성 페이지로 이동 -->
+      <!-- 수기 작성 페이지로 이동 -->
       <router-link to="/addlist" class="pay-btn" exact-active-class="active">
         <i class="fa-solid fa-plus"></i>
         <span></span>
@@ -84,28 +86,9 @@ export default {
         phone: '010-2315-6941',
         email: 'email@gmail.com',
         address: '서울 광진구 능동로 195-16 6층',
+        memo: '',
       },
-      cardList: [
-        { id: 1, name: '조국민', position: '직책 / 부서명', company: '회사명' },
-        {
-          id: 2,
-          name: '서시한',
-          position: '직책 / 부서명',
-          company: '우리투자증권',
-        },
-        {
-          id: 3,
-          name: '백우리',
-          position: '직책 / 부서명',
-          company: '신한카드',
-        },
-        {
-          id: 4,
-          name: '공기업',
-          position: '직책 / 부서명',
-          company: '하나금융그룹',
-        },
-      ],
+      cardList: [],
     };
   },
   methods: {
@@ -121,6 +104,10 @@ export default {
 </script>
 
 <style scoped>
+a {
+  text-decoration: none;
+}
+
 .main-container {
   display: flex;
   flex-direction: column;
@@ -131,42 +118,50 @@ export default {
   overflow-y: auto;
 }
 
+/* 명함 카드 스타일 */
 .selected-card {
-  background-color: #ffffff;
+  background-color: #efeded;
   padding: 20px;
+  margin-top: 40px;
   margin-bottom: 20px;
   border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 서류 모양의 그림자 */
   position: relative;
-  border: 1px solid #ddd; /* 서류 경계선 */
+  border: 1px solid #ffffff; /* 서류 경계선 */
   width: 350px; /* 카드 너비 */
 }
 
 /* 네임택 스타일 */
 .name-tag {
   position: absolute;
-  top: -15px; /* 서류에서 튀어나온 듯한 느낌 */
-  left: 20px;
-  background-color: #3b82f6; /* 네임택 색상 */
+  top: -20px; /* 서류에서 튀어나온 듯한 느낌 */
+  left: 1px;
+  background-color: #efeded; /* 네임택 색상 */
   padding: 5px 15px;
   border-radius: 5px;
-  color: white;
+  color: rgb(0, 0, 0);
   font-weight: bold;
   font-size: 14px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 입체감 추가 */
 }
 
+/* 명함 내용 스타일 */
 .card {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background-color: #efeded;
+  z-index: 2;
 }
 
 .card-details {
   flex: 1;
-  margin-left: 20px;
+  margin-top: 10px;
+  margin-left: -70px;
+  font-size: 13px;
+  line-height: 0.6; /* 줄 간격을 줄여줌 */
 }
 
+/* 명함 목록 스타일 */
 .card-list {
   background-color: #ffffff;
   padding: 20px;
@@ -242,6 +237,15 @@ export default {
 }
 
 .navbar .nav-item.active i {
-  color: #7189ff;
+  color: #7189ff; /* 아이콘 색상 변경 */
+}
+
+/* 내 자산과 가계부 사이의 간격 조정을 위해 flex-grow 사용 */
+.nav-item:nth-child(4) {
+  flex-grow: 1.7;
+}
+
+.nav-item:nth-child(2) {
+  flex-grow: 1.7;
 }
 </style>
