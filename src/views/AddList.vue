@@ -59,43 +59,23 @@
 
     <div class="divider"></div>
 
-    <div class="navbar">
-      <router-link to="/" class="nav-item" exact-active-class="active">
-        <i class="fas fa-home"></i>
-        <span>홈</span>
-      </router-link>
-      <router-link to="/myassets" class="nav-item" exact-active-class="active">
-        <i class="fas fa-wallet"></i>
-        <span>내 자산</span>
-      </router-link>
-
-      <!-- 수기 작성 페이지로 이동 -->
-      <router-link to="/addlist" class="pay-btn">
-        <span>등록</span>
-      </router-link>
-
-      <router-link
-        to="/accountbook"
-        class="nav-item"
-        exact-active-class="active"
-      >
-        <i class="fas fa-book"></i>
-        <span>가계부</span>
-      </router-link>
-      <router-link
-        to="/businesscard"
-        class="nav-item"
-        exact-active-class="active"
-      >
-        <i class="fas fa-id-card"></i>
-        <span>전자 명함</span>
-      </router-link>
-    </div>
+    <!-- FooterNav 컴포넌트 사용 -->
+    <FooterNav
+      buttonText="등록"
+      :iconClass="null"
+      @button-click="handleRegister"
+    />
   </div>
 </template>
 
 <script>
+import FooterNav from '../components/FooterNav.vue';
+
 export default {
+  name: 'MyAssets',
+  components: {
+    FooterNav,
+  },
   data() {
     return {
       isIncomeTab: true,
@@ -133,26 +113,22 @@ export default {
       this.formattedAmount = '';
       this.desc = '';
     },
+    handleRegister() {
+      alert('등록 기능이 실행되었습니다!');
+    },
   },
 };
 </script>
 
 <style scoped>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 /* 링크의 기본 텍스트 장식 제거 */
 a {
   text-decoration: none;
-}
-
-/* 메인 컨테이너 스타일 */
-.main-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  min-height: 100vh;
-  background-color: white;
-  overflow-y: auto;
-  padding-top: 20px;
 }
 
 .tabs {
@@ -206,77 +182,5 @@ select {
   margin-left: 10px;
   margin-right: 70px;
   min-width: 260px;
-}
-
-/* 네비게이션 바 스타일 */
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding: 10px;
-  background-color: white;
-  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
-  position: fixed;
-  bottom: 0;
-  max-width: 360px;
-}
-
-/* 네비게이션 아이템 스타일 */
-.navbar .nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 14px;
-  color: #555;
-  flex: 1;
-}
-
-/* 네비게이션 아이템 아이콘 스타일 */
-.navbar .nav-item i {
-  font-size: 24px;
-  margin-bottom: 5px;
-}
-
-/* 결제 버튼 스타일 */
-.pay-btn {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: auto;
-  min-width: 65px;
-  height: 65px;
-  background-color: #7189ff;
-  border-radius: 32.5px;
-  color: white;
-  font-size: 20px;
-  font-weight: bold;
-  white-space: nowrap;
-  padding: 0 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-/* 활성화된 네비게이션 아이템 스타일 */
-.navbar .nav-item.active {
-  color: #7189ff;
-  font-weight: bold;
-}
-
-.navbar .nav-item.active i {
-  color: #7189ff; /* 아이콘 색상 변경 */
-}
-
-/* 내 자산과 가계부 사이의 간격 조정을 위해 flex-grow 사용 */
-.nav-item:nth-child(4) {
-  flex-grow: 1.7;
-}
-
-.nav-item:nth-child(2) {
-  flex-grow: 1.7;
 }
 </style>
