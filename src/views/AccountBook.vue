@@ -41,12 +41,9 @@
 
     <div class="divider"></div>
   </div>
+
   <!-- FooterNav 컴포넌트 사용 -->
-  <FooterNav
-    buttonText="등록"
-    :iconClass="null"
-    @button-click="handleRegister"
-  />
+  <FooterNav buttonText="+" :iconClass="null" :buttonAction="handleAddList" />
 </template>
 
 <script>
@@ -77,7 +74,7 @@ export default {
     toggleView(isCalendar) {
       this.isCalendarView = isCalendar;
     },
-    handleRegister() {
+    handleAddList() {
       this.$router.push('/addlist'); // AddList 페이지로 이동
     },
   },
@@ -171,57 +168,5 @@ a {
 .list-view li {
   padding: 10px;
   border-bottom: 1px solid #ddd;
-}
-
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding: 10px;
-  background-color: white;
-  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
-  position: fixed;
-  bottom: 0;
-  max-width: 360px;
-  width: 100%;
-}
-
-.navbar .nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 14px;
-  color: #555;
-  flex: 1;
-}
-
-.navbar .nav-item i {
-  font-size: 24px;
-  margin-bottom: 5px;
-}
-
-.pay-btn {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 65px;
-  height: 65px;
-  background-color: #7189ff;
-  border-radius: 50%;
-  color: white;
-  font-size: 50px;
-  font-weight: bold;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-.navbar .nav-item.active {
-  color: #7189ff;
-  font-weight: bold;
 }
 </style>

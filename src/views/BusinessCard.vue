@@ -2,12 +2,10 @@
   <div class="main-container">
     <!-- 선택된 명함 표시 -->
     <div class="selected-card">
-      <!-- 네임택 -->
       <div class="name-tag">
         <span>나의 명함</span>
       </div>
       <div class="card">
-        <!-- 명함 이미지 -->
         <img src="https://via.placeholder.com/300x150" alt="명함 이미지" />
         <div class="card-details">
           <p><strong>이름:</strong> {{ selectedCard.name }}</p>
@@ -16,16 +14,13 @@
           <p><strong>주소:</strong> {{ selectedCard.address }}</p>
           <p><strong>메모:</strong> {{ selectedCard.memo }}</p>
         </div>
-        <!-- QR 코드 이미지 -->
         <img src="https://via.placeholder.com/70" alt="QR 코드" />
       </div>
     </div>
 
-    <!-- 네임택 -->
     <div class="name-tag-sec">
       <span>명함목록</span>
     </div>
-    <!-- 명함 목록 -->
     <div class="card-list">
       <div
         v-for="card in cardList"
@@ -41,52 +36,22 @@
 
     <div class="divider"></div>
 
-    <!-- 네비게이션 바 -->
-    <div class="navbar">
-      <router-link to="/" class="nav-item" exact-active-class="active">
-        <i class="fas fa-home"></i>
-        <span>홈</span>
-      </router-link>
-
-      <router-link to="/myassets" class="nav-item" exact-active-class="active">
-        <i class="fas fa-wallet"></i>
-        <span>내 자산</span>
-      </router-link>
-
-      <!-- 수기 작성 페이지로 이동 -->
-      <router-link
-        to="/businesscardlist"
-        class="pay-btn"
-        exact-active-class="active"
-      >
-        <i class="fa-solid fa-plus"></i>
-        <span></span>
-      </router-link>
-
-      <router-link
-        to="/accountbook"
-        class="nav-item"
-        exact-active-class="active"
-      >
-        <i class="fas fa-book"></i>
-        <span>가계부</span>
-      </router-link>
-
-      <router-link
-        to="/businesscard"
-        class="nav-item"
-        exact-active-class="active"
-      >
-        <i class="fas fa-id-card"></i>
-        <span>전자 명함</span>
-      </router-link>
-    </div>
+    <!-- FooterNav 컴포넌트 추가 -->
+    <FooterNav
+      :iconClass="'fa-solid fa-plus'"
+      :buttonAction="goToBusinessCardList"
+    />
   </div>
 </template>
 
 <script>
+import FooterNav from '../components/FooterNav.vue'; // 경로를 올바르게 수정
+
 export default {
   name: 'BusinessCard',
+  components: {
+    FooterNav, // FooterNav 컴포넌트 등록
+  },
   data() {
     return {
       selectedCard: {
@@ -128,9 +93,9 @@ export default {
     selectCard(card) {
       this.selectedCard = card;
     },
-    addNewCard() {
-      // 새로운 명함 추가하는 페이지로 이동
-      this.$router.push('/add-card');
+    goToBusinessCardList() {
+      // 명함 목록 페이지로 이동
+      this.$router.push('/businesscardlist');
     },
   },
 };
@@ -271,10 +236,9 @@ a {
   background-color: #7189ff;
   border-radius: 50%;
   color: white;
-  font-size: 50px;
+  font-size: 50px; /* 폰트 크기를 크게 설정 */
   font-weight: bold;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
