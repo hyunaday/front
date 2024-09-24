@@ -69,30 +69,30 @@
 </template>
 
 <script>
-import FooterNav from '../components/FooterNav.vue';
+import FooterNav from "../components/FooterNav.vue";
 
 export default {
-  name: 'MyAssets',
+  name: "MyAssets",
   components: {
     FooterNav,
   },
   data() {
     return {
       isIncomeTab: true,
-      date: '',
-      category: '',
-      amount: '',
-      formattedAmount: '',
-      desc: '',
+      date: "",
+      category: "",
+      amount: "",
+      formattedAmount: "",
+      desc: "",
       incomes: [],
       expenses: [],
     };
   },
   methods: {
     updateAmount() {
-      const num = this.formattedAmount.replace(/[^0-9]/g, '');
+      const num = this.formattedAmount.replace(/[^0-9]/g, "");
       this.amount = num;
-      this.formattedAmount = num.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      this.formattedAmount = num.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
     addEntry() {
       const newEntry = {
@@ -107,14 +107,14 @@ export default {
       } else {
         this.expenses.push(newEntry);
       }
-      this.date = '';
-      this.category = '';
-      this.amount = '';
-      this.formattedAmount = '';
-      this.desc = '';
+      this.date = "";
+      this.category = "";
+      this.amount = "";
+      this.formattedAmount = "";
+      this.desc = "";
     },
     handleRegister() {
-      alert('등록 기능이 실행되었습니다!');
+      alert("등록 기능이 실행되었습니다!");
     },
   },
 };

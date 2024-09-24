@@ -3,22 +3,46 @@
     class="main-container d-flex flex-column justify-content-center align-items-center"
   >
     <h1 class="card-title">내 카드</h1>
-    <!-- 카드추가하기 창 -->
+    <!-- 카드 추가하기 창 -->
     <div class="card-container">
       <button class="add-button" @click="addCard">+</button>
-      <!-- 플러스 버튼 -->
     </div>
     <!-- 안내 문구 추가 -->
-    <p class="register-message">카드를 등록해주세요.</p>
+    <p class="register-message">카드를 추가해주세요.</p>
+    <!-- 최근 거래 내역 목록 -->
+    <div class="transaction-history">
+      <div class="line"></div>
+      <h2 style="text-align: left">최근 거래 내역</h2>
+      <div class="line"></div>
+      <ul>
+        <!-- 최근 거래 항목 추가 -->
+      </ul>
+      <div class="fixed-line"></div>
+      <!-- 하단에 고정된 선 -->
+    </div>
+    <!-- 카드 등록 창 오버레이 -->
+    <div class="overlay" v-if="isCardRegistrationVisible"></div>
     <!-- 카드 등록 창 -->
     <div class="card-registration" v-if="isCardRegistrationVisible">
       <div class="card-info-header">
         <i class="fas fa-credit-card"></i>
         <span class="card-info-title">카드정보 입력</span>
       </div>
-      <label for="card-company">카드사:</label>
-      <input type="text" id="card-company" placeholder="카드사 입력" />
-      <label for="card-number">카드번호:</label>
+      <!-- 카드사 선택 -->
+      <label for="card-company">카드사:<span class="required">*</span></label>
+      <select id="card-company">
+        <option value="" disabled selected>카드사를 선택하세요</option>
+        <option value="kb">KB국민카드</option>
+        <option value="shinhan">신한카드</option>
+        <option value="hana">하나카드</option>
+        <option value="lotte">롯데카드</option>
+        <option value="bc">BC카드</option>
+        <option value="nh">NH농협카드</option>
+        <option value="samsung">삼성카드</option>
+        <option value="hyundai">현대카드</option>
+      </select>
+      <!-- 카드번호 입력 -->
+      <label for="card-number">카드번호:<span class="required">*</span></label>
       <div class="card-number-inputs">
         <input
           type="text"
@@ -49,49 +73,33 @@
           placeholder=""
         />
       </div>
-      <label for="expiry-date">유효기간:</label>
+
+      <!-- 유효기간 입력 -->
+      <label for="expiry-date">유효기간:<span class="required">*</span></label>
       <input type="text" id="expiry-date" placeholder="MM/YY" />
-      <label for="password">비밀번호:</label>
+
+      <!-- 비밀번호 입력 -->
+      <label for="password">비밀번호:<span class="required">*</span></label>
       <input type="password" id="password" placeholder="비밀번호 입력" />
-      <button type="submit" @click="registerCard">확인</button>
-      <button @click="closeCardRegistration">취소</button>
+      <!-- 확인, 취소 버튼 배치 -->
+      <div class="button-container">
+        <button type="submit" @click="registerCard">확인</button>
+        <button @click="closeCardRegistration">취소</button>
+      </div>
     </div>
-  </div>
-  <div class="navbar">
-    <!-- 홈 버튼, 홈 페이지로 이동 -->
-    <router-link to="/" class="nav-item" exact-active-class="active">
-      <i class="fas fa-home"></i>
-      <span>홈</span>
-    </router-link>
-    <!-- 내 자산 버튼, 내 자산 페이지로 이동 -->
-    <router-link to="/myassets" class="nav-item" exact-active-class="active">
-      <i class="fas fa-wallet"></i>
-      <span>내 자산</span>
-    </router-link>
-    <!-- 결제 버튼, 결제 페이지로 이동 -->
-    <router-link to="/grouppay" class="pay-btn" exact-active-class="active">
-      <i class="fas fa-credit-card"></i>
-      <span>결제</span>
-    </router-link>
-    <!-- 가계부 버튼, 가계부 페이지로 이동 -->
-    <router-link to="/accountbook" class="nav-item" exact-active-class="active">
-      <i class="fas fa-book"></i>
-      <span>가계부</span>
-    </router-link>
-    <!-- 전자 명함 버튼, 전자 명함 페이지로 이동 -->
-    <router-link
-      to="/businesscard"
-      class="nav-item"
-      exact-active-class="active"
-    >
-      <i class="fas fa-id-card"></i>
-      <span>전자 명함</span>
-    </router-link>
+
+    <FooterNav />
   </div>
 </template>
+
 <script>
+import FooterNav from "../components/FooterNav.vue";
+
 export default {
-  name: 'Cards',
+  name: "Cards",
+  components: {
+    FooterNav,
+  },
   data() {
     return {
       isCardRegistrationVisible: false, // 카드 등록 창의 가시성 상태
@@ -107,42 +115,48 @@ export default {
         document.getElementById(nextInputId).focus();
       }
     },
+
     registerCard() {
-      const cardCompany = document.getElementById('card-company').value;
-      const cardNumber1 = document.getElementById('card-number-1').value;
-      const cardNumber2 = document.getElementById('card-number-2').value;
-      const cardNumber3 = document.getElementById('card-number-3').value;
-      const cardNumber4 = document.getElementById('card-number-4').value;
-      const expiryDate = document.getElementById('expiry-date').value;
-      const password = document.getElementById('password').value;
+      const cardCompany = document.getElementById("card-company").value;
+      const cardNumber1 = document.getElementById("card-number-1").value;
+      const cardNumber2 = document.getElementById("card-number-2").value;
+      const cardNumber3 = document.getElementById("card-number-3").value;
+      const cardNumber4 = document.getElementById("card-number-4").value;
+      const expiryDate = document.getElementById("expiry-date").value;
+      const password = document.getElementById("password").value;
+
       // 카드번호를 하나의 문자열로 결합
       const cardNumber = `${cardNumber1}${cardNumber2}${cardNumber3}${cardNumber4}`;
+
       // 유효성 검사
       if (!cardCompany) {
-        alert('카드사를 입력해주세요.');
+        alert("카드사를 입력해주세요.");
         return;
       }
       if (!/^\d{16}$/.test(cardNumber)) {
-        alert('카드번호는 16자리 숫자여야 합니다.');
+        alert("카드번호는 16자리 숫자여야 합니다.");
         return;
       }
       if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiryDate)) {
-        alert('유효기간은 MM/YY 형식이어야 합니다.');
+        alert("유효기간은 MM/YY 형식이어야 합니다.");
         return;
       }
-      if (!/^\d{3,4}$/.test(password)) {
-        alert('비밀번호는 3자리 또는 4자리 숫자여야 합니다.');
+      if (!/^\d{6}$/.test(password)) {
+        // 6자리 숫자 확인
+        alert("비밀번호는 6자리 숫자여야 합니다.");
         return;
       }
-      console.log('카드 등록 버튼 클릭');
+      console.log("카드 등록 버튼 클릭");
       this.closeCardRegistration();
     },
+
     closeCardRegistration() {
       this.isCardRegistrationVisible = false;
     },
   },
 };
 </script>
+
 <style scoped>
 * {
   margin: 0;
@@ -152,15 +166,7 @@ export default {
 a {
   text-decoration: none;
 }
-/* 전체 컨테이너 스타일 */
-.main-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background-color: white;
-}
+
 /* 제목 스타일 */
 h1 {
   margin-bottom: 20px;
@@ -183,13 +189,14 @@ h1 {
 .card-registration {
   position: absolute;
   width: 235px;
-  height: auto; /* 높이는 자동으로 조정 */
-  left: calc(50% - 117.5px); /* 중앙 정렬 */
+  height: auto;
+  left: calc(50% - 117.5px);
   top: 255px;
   background: #f6f6f6;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-radius: 20px;
-  padding: 20px; /* 내부 여백 */
+  padding: 20px;
+  z-index: 20; /* 오버레이보다 위에 위치하도록 설정 */
 }
 /* 입력 필드 스타일 */
 .card-registration label {
@@ -205,58 +212,7 @@ h1 {
   border-radius: 5px;
   font-size: 14px;
 }
-/* 네비게이션 바 스타일 */
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding: 10px;
-  background-color: white;
-  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
-  position: fixed;
-  bottom: 0;
-  max-width: 360px;
-  width: 100%;
-}
-/* 네비게이션 아이템 스타일 */
-.navbar .nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 14px;
-  color: #555;
-  flex: 1;
-}
-/* 네비게이션 아이템 아이콘 스타일 */
-.navbar .nav-item i {
-  font-size: 24px;
-  margin-bottom: 5px;
-}
-/* 결제 버튼 스타일 */
-.pay-btn {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 65px;
-  height: 65px;
-  background-color: #7189ff;
-  border-radius: 50%;
-  color: white;
-  font-size: 18px;
-  font-weight: bold;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-/* 활성화된 네비게이션 아이템 스타일 */
-.navbar .nav-item.active {
-  color: #7189ff; /* 텍스트 색상 변경 */
-  font-weight: bold; /* 강조를 위해 볼드체로 */
-}
+
 /* 카드 추가 버튼 스타일 */
 .card-container {
   width: 259.15px; /* 카드 추가 창 너비 */
@@ -272,7 +228,7 @@ h1 {
 .add-button {
   width: 46px; /* 버튼 너비 */
   height: 46px; /* 버튼 높이 */
-  font-size: 36px; /* 버튼 텍스트 크기 */
+  font-size: 42px; /* 버튼 텍스트 크기 */
   color: white; /* 버튼 텍스트 색상 */
   background-color: #7189ff; /* 버튼 배경색 */
   border: none; /* 버튼 테두리 제거 */
@@ -280,7 +236,6 @@ h1 {
   cursor: pointer; /* 마우스 커서 변경 */
   display: flex; /* Flexbox 사용 */
   justify-content: center; /* 수평 중앙 정렬 */
-  align-items: center; /* 수직 중앙 정렬 */
   text-align: center; /* 텍스트 중앙 정렬 */
   line-height: 1; /* 텍스트 줄 간격 설정 */
 }
@@ -327,5 +282,100 @@ h1 {
   cursor: pointer; /* 커서 변경 */
   font-size: 12px; /* 텍스트 크기 조정 */
   margin-top: 10px; /* 버튼 간 간격 */
+}
+
+/* 오버레이 스타일 */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 반투명 검정 배경 */
+  z-index: 10; /* 카드 등록 창보다 위에 위치하도록 설정 */
+}
+
+/* *별표시 */
+.required {
+  color: red;
+  font-weight: bold;
+  margin-left: 5px; /* 글자와의 간격 */
+}
+
+/* 확인 취소 버튼 */
+.button-container {
+  display: flex;
+  justify-content: center; /* 버튼을 중앙으로 정렬 */
+  gap: 10px; /* 버튼 사이 간격 */
+  margin-top: 10px; /* 상단 여백 */
+}
+.button-container button {
+  width: 40px;
+  height: 25px;
+  border-radius: 5px;
+  background-color: white;
+  color: #555;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/* 카드사 선택 영역 스타일 */
+label[for="card-company"] {
+  font-size: 14px; /* 텍스트 크기 */
+  margin-bottom: 5px; /* 텍스트와 셀렉트박스 사이의 간격 */
+  display: block; /* 블록 형태로 표시해 요소들이 세로로 정렬되게 함 */
+}
+
+#card-company {
+  width: 100%; /* 선택 박스 너비 */
+  padding: 8px; /* 선택 박스 내부 여백 */
+  margin-top: 5px; /* 라벨과 선택 박스 사이의 간격 */
+  border: 1px solid #ccc; /* 선택 박스 테두리 */
+  border-radius: 5px; /* 모서리를 둥글게 */
+  font-size: 14px; /* 텍스트 크기 */
+  background-color: white; /* 배경색 */
+  color: black;
+}
+
+/* 최근 거래 내역창 */
+.transaction-history {
+  width: 297px;
+  position: relative; /* 상대 위치 설정 */
+}
+
+/* 선 스타일 */
+.line {
+  width: 297px; /* 선의 너비 */
+  height: 1px; /* 선의 두께 */
+  background-color: black; /* 선의 색상 */
+  margin: 10px 0; /* 상하 여백 */
+}
+
+/* 제목 스타일 */
+.transaction-history h2 {
+  font-size: 16px;
+  text-align: center; /* 중앙 정렬 */
+  margin: 0; /* 기본 마진 제거 */
+}
+
+/* 거래 목록 스타일 */
+.transaction-history ul {
+  list-style-type: none; /* 기본 리스트 스타일 제거 */
+  padding: 0; /* 기본 패딩 제거 */
+  margin: 10px 0; /* 항목 간격 */
+}
+
+.transaction-history li {
+  font-size: 14px; /* 글자 크기 */
+  color: #333; /* 글자 색상 */
+}
+
+.fixed-line {
+  position: absolute; /* 절대 위치로 설정 */
+  top: 220px; /* 하단에 고정 */
+  width: 297px; /* 선의 너비 */
+  height: 1px; /* 선의 두께 */
+  background-color: black; /* 선의 색상 */
 }
 </style>

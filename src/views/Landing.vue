@@ -6,16 +6,16 @@
 </template>
 
 <script>
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 
 export default {
-  name: 'LandingPage',
+  name: "LandingPage",
   setup() {
     const router = useRouter();
 
     // 컴포넌트가 마운트될 때 3초 후 로그인 페이지로 이동
     setTimeout(() => {
-      router.push({ name: 'Login' });
+      router.push({ name: "Login" });
     }, 3000);
   },
 };

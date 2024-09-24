@@ -37,19 +37,19 @@ export default {
   props: {
     buttonText: {
       type: String,
-      default: '결제', // 기본값은 "결제"
+      default: "결제", // 기본값은 "결제"
     },
     iconClass: {
       type: String,
-      default: 'fas fa-credit-card', // 기본 아이콘 클래스
+      default: "fas fa-credit-card", // 기본 아이콘 클래스
     },
   },
   methods: {
     handleButtonClick() {
-      if (this.buttonText === '결제') {
-        this.$router.push('/grouppay');
+      if (this.buttonText === "결제") {
+        this.$router.push("/grouppay");
       } else {
-        this.$emit('button-click');
+        this.$emit("button-click");
       }
     },
   },
