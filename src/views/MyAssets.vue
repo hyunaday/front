@@ -5,7 +5,7 @@
     <h1>내 자산</h1>
 
     <!-- '나의 계좌' 버튼, 계좌 페이지로 이동 -->
-    <router-link to="/accounts">
+    <router-link to="/account">
       <button class="button">나의 계좌</button>
     </router-link>
 

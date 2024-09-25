@@ -10,9 +10,8 @@
       <span>내 자산</span>
     </router-link>
 
-    <!-- 버튼 모양을 prop으로 제어하여 + 또는 등록 표시 -->
+    <!-- 버튼을 등록 기능으로 변경 -->
     <button @click="handleButtonClick" class="pay-btn">
-      <!-- 아이콘과 텍스트 함께 표시 -->
       <i v-if="iconClass" :class="iconClass + ' button-icon'"></i>
       <span>{{ buttonText }}</span>
     </button>
@@ -37,20 +36,17 @@ export default {
   props: {
     buttonText: {
       type: String,
-      default: '결제', // 기본값은 "결제"
+      default: '등록', // 기본값을 "등록"으로 설정
     },
     iconClass: {
       type: String,
-      default: 'fas fa-credit-card', // 기본 아이콘 클래스
+      default: 'fas fa-plus', // 기본 아이콘 클래스를 더하기 아이콘으로 설정
     },
   },
   methods: {
     handleButtonClick() {
-      if (this.buttonText === '결제') {
-        this.$router.push('/grouppay');
-      } else {
-        this.$emit('button-click');
-      }
+      // 버튼 클릭 시 등록 페이지로 이동
+      this.$router.push('/account');
     },
   },
 };
@@ -86,7 +82,7 @@ export default {
   margin-bottom: 5px;
 }
 
-/* 결제 버튼 스타일 */
+/* 등록 버튼 스타일 */
 .pay-btn {
   position: absolute;
   bottom: 20px;

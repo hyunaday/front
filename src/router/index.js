@@ -9,6 +9,7 @@ import SignUp from '../views/SignUp.vue';
 import AddList from '../views/AddList.vue';
 import Cards from '../views/Cards.vue';
 import Account from '../views/Account.vue';
+import AccountAddList from '../views/AccountAddList.vue';
 
 const routes = [
   {
@@ -27,8 +28,8 @@ const routes = [
     component: MyAssets,
   },
   {
-    path: '/accounts',
-    name: 'Accounts',
+    path: '/account',
+    name: 'Account',
     component: Account,
   },
   {
@@ -60,6 +61,11 @@ const routes = [
     path: '/cards',
     name: 'Cards',
     component: Cards,
+  },
+  {
+    path: '/accountaddlist',
+    name: 'AccountAddList',
+    component: AccountAddList,
   },
 ];
 
