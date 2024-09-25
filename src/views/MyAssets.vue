@@ -44,6 +44,17 @@ export default {
   box-sizing: border-box;
 }
 
+.main-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 100vh;
+  background-color: white;
+  overflow-y: auto;
+  margin-bottom: 60px;
+}
+
 /* 제목 스타일 */
 h1 {
   margin-bottom: 20px;

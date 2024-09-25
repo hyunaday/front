@@ -7,14 +7,16 @@
       </div>
       <div class="card">
         <img src="https://via.placeholder.com/300x150" alt="명함 이미지" />
-        <div class="card-details">
-          <p><strong>이름:</strong> {{ selectedCard.name }}</p>
-          <p><strong>연락처:</strong> {{ selectedCard.phone }}</p>
-          <p><strong>이메일:</strong> {{ selectedCard.email }}</p>
-          <p><strong>주소:</strong> {{ selectedCard.address }}</p>
-          <p><strong>메모:</strong> {{ selectedCard.memo }}</p>
+        <div class="card-details-container">
+          <div class="card-details">
+            <p><strong>이름:</strong> {{ selectedCard.name }}</p>
+            <p><strong>연락처:</strong> {{ selectedCard.phone }}</p>
+            <p><strong>이메일:</strong> {{ selectedCard.email }}</p>
+            <p><strong>주소:</strong> {{ selectedCard.address }}</p>
+            <p><strong>메모:</strong> {{ selectedCard.memo }}</p>
+          </div>
+          <qrcode-vue :value="qrValue" :size="60" class="qr-code" />
         </div>
-        <img src="https://via.placeholder.com/70" alt="QR 코드" />
       </div>
     </div>
 
@@ -43,11 +45,13 @@
 
 <script>
 import FooterNav from '../components/FooterNav.vue'; // 경로를 올바르게 수정
+import QrcodeVue from 'qrcode.vue'; // QR 코드 라이브러리 임포트
 
 export default {
   name: 'BusinessCard',
   components: {
     FooterNav, // FooterNav 컴포넌트 등록
+    QrcodeVue, // QR 코드 컴포넌트 등록
   },
   data() {
     return {
@@ -55,7 +59,7 @@ export default {
         name: 'John Smith',
         phone: '010-2315-6941',
         email: 'email@gmail.com',
-        address: '서울 광진구 능동로 195-16 6층',
+        address: '서울 광진구 능동로 195-16 6층 ',
         memo: '',
       },
       cardList: [
@@ -85,6 +89,18 @@ export default {
         },
       ],
     };
+  },
+  computed: {
+    qrValue() {
+      // QR 코드에 사용할 문자열을 생성
+      return `
+        이름: ${this.selectedCard.name}
+        연락처: ${this.selectedCard.phone}
+        이메일: ${this.selectedCard.email}
+        주소: ${this.selectedCard.address}
+        메모: ${this.selectedCard.memo}
+      `.trim();
+    },
   },
   methods: {
     selectCard(card) {
@@ -142,7 +158,7 @@ a {
 /* 명함목록 네임택 */
 .name-tag-sec {
   position: absolute;
-  top: 455px; /* 서류에서 튀어나온 듯한 느낌 */
+  top: 385px; /* 서류에서 튀어나온 듯한 느낌 */
   left: 5px;
   background-color: #efeded; /* 네임택 색상 */
   padding: 5px 15px;
@@ -162,12 +178,23 @@ a {
   z-index: 2;
 }
 
+.card-details-container {
+  display: flex; /* Flexbox로 설정하여 수평 배치 */
+  align-items: center; /* 수직 가운데 정렬 */
+}
+
 .card-details {
-  flex: 1;
+  flex: 1; /* 텍스트가 QR 코드보다 더 넓은 영역을 차지하도록 설정 */
   margin-top: 10px;
-  margin-left: -70px;
+  margin-left: 5px;
   font-size: 13px;
   line-height: 0.6; /* 줄 간격을 줄여줌 */
+}
+
+/* QR 코드 스타일 */
+.qr-code {
+  margin-left: 10px; /* QR 코드와 텍스트 간의 간격 */
+  margin-top: -50px;
 }
 
 /* 명함 목록 스타일 */
