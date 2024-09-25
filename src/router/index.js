@@ -8,6 +8,7 @@ import GroupPay from '../views/GroupPay.vue';
 import SignUp from '../views/SignUp.vue';
 import AddList from '../views/AddList.vue';
 import Cards from '../views/Cards.vue';
+import Account from '../views/Account.vue';
 
 const routes = [
   {
@@ -24,6 +25,11 @@ const routes = [
     path: '/myassets',
     name: 'MyAssets',
     component: MyAssets,
+  },
+  {
+    path: '/accounts',
+    name: 'Accounts',
+    component: Account,
   },
   {
     path: '/accountbook',
