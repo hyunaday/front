@@ -55,7 +55,6 @@
         </form>
       </div>
   
-      <!-- FooterNav 컴포넌트 사용 -->
       <FooterNav/>
     </div>
   </template>
