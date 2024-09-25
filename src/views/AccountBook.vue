@@ -43,7 +43,7 @@
   </div>
 
   <!-- FooterNav 컴포넌트 사용 -->
-  <FooterNav buttonText="+" :iconClass="null" :buttonAction="handleAddList" />
+  <FooterNav :buttonType="'plus'" :buttonAction="goToAddList" />
 </template>
 
 <script>
@@ -74,7 +74,7 @@ export default {
     toggleView(isCalendar) {
       this.isCalendarView = isCalendar;
     },
-    handleAddList() {
+    goToAddList() {
       this.$router.push('/addlist'); // AddList 페이지로 이동
     },
   },

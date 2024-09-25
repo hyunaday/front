@@ -9,9 +9,23 @@
       <span>내 자산</span>
     </router-link>
 
-    <!-- + 버튼으로 수정 -->
+    <!-- 버튼 타입에 따라 다르게 렌더링 -->
     <button @click="handleButtonClick" class="pay-btn">
-      <i class="fas fa-plus" style="font-size: 50px"></i>
+      <template v-if="buttonType === 'pay'">
+        <div class="icon-container">
+          <i class="fas fa-credit-card"></i>
+          <span>결제</span>
+        </div>
+      </template>
+      <template v-else-if="buttonType === 'plus'">
+        <i class="fas fa-plus" style="font-size: 50px"></i>
+      </template>
+      <template v-else-if="buttonType === 'register'">
+        <div class="icon-container">
+          <i class="fas fa-pencil-alt"></i>
+          <span>등록</span>
+        </div>
+      </template>
     </button>
 
     <router-link to="/accountbook" class="nav-item" exact-active-class="active">
@@ -32,6 +46,10 @@
 <script>
 export default {
   props: {
+    buttonType: {
+      type: String,
+      default: 'pay', // 기본값은 'pay'
+    },
     buttonAction: {
       type: Function,
       required: true, // 버튼 클릭 시 호출할 함수
@@ -75,24 +93,31 @@ export default {
   margin-bottom: 5px;
 }
 
-/* + 버튼 스타일 수정 */
+/* 버튼 스타일 */
 .pay-btn {
   position: absolute;
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  width: 80px; /* 고정된 너비 */
-  height: 80px; /* 높이 증가 */
+  width: 80px;
+  height: 80px;
   background-color: #6981d6;
-  border-radius: 40px; /* 모서리 반경 증가 */
+  border-radius: 40px;
   color: white;
-  font-size: 30px; /* 기본 글꼴 크기 */
+  font-size: 23px;
   display: flex;
-  justify-content: center; /* 세로 중앙 정렬 */
-  align-items: center; /* 가로 중앙 정렬 */
+  justify-content: center;
+  align-items: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
   border: none;
+}
+
+/* 아이콘과 텍스트를 수직으로 쌓기 위한 스타일 */
+.icon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* 활성화된 네비게이션 아이템 스타일 */

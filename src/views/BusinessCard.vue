@@ -36,11 +36,8 @@
 
     <div class="divider"></div>
 
-    <!-- FooterNav 컴포넌트 추가 -->
-    <FooterNav
-      :iconClass="'fa-solid fa-plus'"
-      :buttonAction="goToBusinessCardList"
-    />
+    <!-- FooterNav 컴포넌트 사용 -->
+    <FooterNav :buttonType="'plus'" :buttonAction="goToBusinessCardList" />
   </div>
 </template>
 

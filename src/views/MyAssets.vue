@@ -17,7 +17,7 @@
     </router-link>
 
     <!-- FooterNav 컴포넌트 사용 -->
-    <FooterNav />
+    <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
   </div>
 </template>
 
@@ -28,6 +28,11 @@ export default {
   name: 'MyAssets',
   components: {
     FooterNav,
+  },
+  methods: {
+    goToGroupPayPage() {
+      this.$router.push('/grouppay'); // 그룹 결제 페이지로 이동
+    },
   },
 };
 </script>
