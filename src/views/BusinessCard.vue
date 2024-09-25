@@ -15,10 +15,18 @@
             <p><strong>주소:</strong> {{ selectedCard.address }}</p>
             <div class="memo-container">
               <strong>메모:</strong>
-              <textarea v-model="selectedCard.memo" class="memo-textarea"></textarea>
+              <textarea
+                v-model="selectedCard.memo"
+                class="memo-textarea"
+              ></textarea>
             </div>
           </div>
-          <qrcode-vue :value="qrValue" :size="60" class="qr-code" />
+          <qrcode-vue
+            :value="qrValue"
+            :size="60"
+            class="qr-code"
+            @click="showModal = true"
+          />
         </div>
       </div>
     </div>
@@ -52,6 +60,20 @@
 
     <!-- FooterNav 컴포넌트 사용 -->
     <FooterNav :buttonType="'plus'" :buttonAction="goToBusinessCardList" />
+    <!-- QR 코드 모달 -->
+    <div v-if="showModal" class="modal" @click="closeModal">
+      <div class="modal-content" @click.stop>
+        <!-- 추가된 텍스트 -->
+        <!-- QR 코드 감싸는 추가 div -->
+        <div class="qr-code-container">
+          <qrcode-vue :value="qrValue" :size="200" />
+        </div>
+        <!-- 확대된 QR 코드 -->
+        <!-- <button class="close-button" @click="closeModal">닫기</button> -->
+      </div>
+      <p class="additional-text">QR코드를 스캔하세요</p>
+      <!-- 추가된 텍스트 -->
+    </div>
   </div>
 </template>
 
@@ -108,6 +130,7 @@ export default {
           imageUrl: 'https://via.placeholder.com/100x50', // 이미지 URL
         },
       ],
+      showModal: false, // 모달 표시 상태
     };
   },
   computed: {
@@ -130,11 +153,54 @@ export default {
       // 명함 목록 페이지로 이동
       this.$router.push('/businesscardlist');
     },
+    closeModal() {
+      this.showModal = false; // 모달 닫기
+    },
   },
 };
 </script>
 
 <style scoped>
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7); /* 불투명한 검은색 배경 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.additional-text {
+  position: absolute; /* 절대 위치 설정 */
+  top: 25%; /* 화면의 세로 중앙으로 이동 */
+  left: 50%; /* 화면의 가로 중앙으로 이동 */
+  transform: translate(-50%, -50%); /* 중앙 정렬을 위한 변환 */
+  font-size: 37px; /* 글꼴 크기 설정 */
+  font-weight: bolder; /* 글꼴 두께 설정 */
+  color: white; /* 글꼴 색상 설정 */
+  text-align: center; /* 중앙 정렬 */
+  justify-content: center; /* 수평 중앙 정렬 */
+}
+.modal-content {
+  padding: 10px;
+  text-align: center;
+  position: relative; /* 내용이 절대 위치 설정된 요소에 대해 상대적임을 나타냄 */
+  width: 242px;
+  max-height: 90%;
+  overflow-y: auto;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  display: flex; /* 플렉스 박스 사용 */
+  flex-direction: column; /* 세로 방향 정렬 */
+  align-items: center; /* 아이템을 중앙 정렬 */
+  justify-content: center; /* 아이템을 중앙 정렬 */
+  text-align: center; /* 텍스트 중앙 정렬 */
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
 /* 추가된 스타일 */
 .card-content {
   display: flex;
