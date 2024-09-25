@@ -13,7 +13,10 @@
             <p><strong>연락처:</strong> {{ selectedCard.phone }}</p>
             <p><strong>이메일:</strong> {{ selectedCard.email }}</p>
             <p><strong>주소:</strong> {{ selectedCard.address }}</p>
-            <p><strong>메모:</strong> {{ selectedCard.memo }}</p>
+            <div class="memo-container">
+              <strong>메모:</strong>
+              <textarea v-model="selectedCard.memo" class="memo-textarea"></textarea>
+            </div>
           </div>
           <qrcode-vue :value="qrValue" :size="60" class="qr-code" />
         </div>
@@ -30,9 +33,18 @@
         class="card-item"
         @click="selectCard(card)"
       >
-        <p>{{ card.name }}</p>
-        <p>{{ card.position }}</p>
-        <p>{{ card.company }}</p>
+        <div class="card-content">
+          <div class="card-text">
+            <p>
+              <strong>{{ card.name }}</strong>
+            </p>
+            <p>{{ card.position }} / {{ card.department }}</p>
+            <p>{{ card.company }}</p>
+          </div>
+          <div class="card-image">
+            <img :src="card.imageUrl" alt="명함 이미지" />
+          </div>
+        </div>
       </div>
     </div>
 
@@ -67,25 +79,33 @@ export default {
           id: 1,
           name: 'Alice Johnson',
           position: 'Developer',
+          department: 'Engineering',
           company: 'Tech Corp',
+          imageUrl: 'https://via.placeholder.com/100x50', // 이미지 URL
         },
         {
           id: 2,
           name: 'Bob Lee',
           position: 'Designer',
+          department: 'Creative',
           company: 'Creative Agency',
+          imageUrl: 'https://via.placeholder.com/100x50', // 이미지 URL
         },
         {
           id: 3,
           name: 'Charlie Kim',
           position: 'Project Manager',
+          department: 'Operations',
           company: 'Business Solutions',
+          imageUrl: 'https://via.placeholder.com/100x50', // 이미지 URL
         },
         {
           id: 4,
           name: 'David Park',
           position: 'Marketing Specialist',
+          department: 'Marketing',
           company: 'Marketing Group',
+          imageUrl: 'https://via.placeholder.com/100x50', // 이미지 URL
         },
       ],
     };
@@ -115,10 +135,46 @@ export default {
 </script>
 
 <style scoped>
-a {
-  text-decoration: none;
+/* 추가된 스타일 */
+.card-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
 }
 
+.card-text {
+  flex: 1;
+  padding-right: 10px; /* 이미지와 텍스트 간격 확보 */
+  word-wrap: break-word; /* 텍스트가 너무 길 경우 줄바꿈 처리 */
+}
+
+.card-image {
+  min-width: 80px; /* 이미지가 고정된 너비를 가지도록 설정 */
+  margin-left: 10px; /* 이미지와 텍스트 간격 확보 */
+}
+
+.card-image img {
+  width: 80px;
+  height: 40px;
+  object-fit: cover; /* 이미지 비율 유지 */
+  border-radius: 5px;
+}
+
+/* 카드 아이템 스타일 */
+.card-item {
+  border-bottom: 1px solid #ccc;
+  padding: 10px 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.card-item:hover {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+/* 기존 스타일 */
 .main-container {
   display: flex;
   flex-direction: column;
@@ -158,7 +214,7 @@ a {
 /* 명함목록 네임택 */
 .name-tag-sec {
   position: absolute;
-  top: 385px; /* 서류에서 튀어나온 듯한 느낌 */
+  top: 410px; /* 서류에서 튀어나온 듯한 느낌 */
   left: 5px;
   background-color: #efeded; /* 네임택 색상 */
   padding: 5px 15px;
@@ -178,23 +234,52 @@ a {
   z-index: 2;
 }
 
-.card-details-container {
-  display: flex; /* Flexbox로 설정하여 수평 배치 */
-  align-items: center; /* 수직 가운데 정렬 */
+card-details-container {
+  display: flex;
+  align-items: flex-start;
+  max-width: 100%;
+  overflow: hidden;
+  position: relative; /* 상대적 위치 설정 */
+  min-height: 150px; /* 컨테이너의 최소 높이 설정 */
 }
 
 .card-details {
-  flex: 1; /* 텍스트가 QR 코드보다 더 넓은 영역을 차지하도록 설정 */
+  flex: 1;
   margin-top: 10px;
-  margin-left: 5px;
+  margin-left: 0;
   font-size: 13px;
-  line-height: 0.6; /* 줄 간격을 줄여줌 */
+  line-height: 1.2;
+  overflow-y: overlay; /* auto에서 overlay로 변경 */
+  max-height: 150px;
+  padding-right: 70px; /* QR 코드 공간 확보 */
 }
 
-/* QR 코드 스타일 */
+/* 스크롤바 스타일 */
+.card-details::-webkit-scrollbar {
+  width: 6px;
+}
+
+.card-details::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.card-details::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+/* 호버 시에만 스크롤바 표시 */
+.card-details:not(:hover)::-webkit-scrollbar-thumb {
+  background-color: transparent;
+}
+
+/* QR 코드 스타일 수정 */
 .qr-code {
-  margin-left: 10px; /* QR 코드와 텍스트 간의 간격 */
-  margin-top: -50px;
+  position: absolute; /* 절대 위치 설정 */
+  right: 15px; /* 오른쪽에서 10px 떨어짐 */
+  bottom: 85px; /* 아래에서 10px 떨어짐 */
+  width: 60px; /* QR 코드의 너비 설정 */
+  height: 60px; /* QR 코드의 높이 설정 */
 }
 
 /* 명함 목록 스타일 */
@@ -204,87 +289,35 @@ a {
   border-radius: 10px;
   width: 350px; /* 명함 목록의 너비 조정 */
   height: 350px;
-  margin-top: 28px;
-  overflow-y: auto; /* 스크롤 가능하도록 설정 */
+  margin-top: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
 }
 
-.card-item {
-  border-bottom: 1px solid #ccc;
-  padding: 10px 0;
-}
-
-.card-item:hover {
-  background-color: #f0f0f0;
-  cursor: pointer;
-}
-
-/* 네비게이션 바 스타일 */
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.divider {
   width: 100%;
-  padding: 10px;
-  background-color: white;
-  box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1);
-  position: fixed;
-  bottom: 0;
-  max-width: 360px;
-  width: 100%;
+  border-top: 1px solid #ccc;
+  margin: 10px 0;
 }
 
-/* 네비게이션 아이템 스타일 */
-.navbar .nav-item {
+.memo-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 14px;
-  color: #555;
-  flex: 1;
+  align-items: center; /* 텍스트와 텍스트 영역이 같은 높이에 위치하도록 설정 */
+  margin-top: 10px;
 }
 
-/* 네비게이션 아이템 아이콘 스타일 */
-.navbar .nav-item i {
-  font-size: 24px;
-  margin-bottom: 5px;
+.memo-container strong {
+  margin-right: 10px; /* "메모:"와 textarea 사이 간격 설정 */
 }
 
-/* 결제 버튼 스타일 */
-.pay-btn {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 65px;
-  height: 65px;
-  background-color: #7189ff;
-  border-radius: 50%;
-  color: white;
-  font-size: 50px; /* 폰트 크기를 크게 설정 */
-  font-weight: bold;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-}
-
-/* 활성화된 네비게이션 아이템 스타일 */
-.navbar .nav-item.active {
-  color: #7189ff;
-  font-weight: bold;
-}
-
-.navbar .nav-item.active i {
-  color: #7189ff; /* 아이콘 색상 변경 */
-}
-
-/* 내 자산과 가계부 사이의 간격 조정을 위해 flex-grow 사용 */
-.nav-item:nth-child(4) {
-  flex-grow: 1.7;
-}
-
-.nav-item:nth-child(2) {
-  flex-grow: 1.7;
+.memo-textarea {
+  background-color: #efeded; /* 배경색 설정 */
+  border: none; /* 테두리 제거 */
+  padding: 5px; /* 내부 여백 추가 */
+  width: 170px; /* textarea가 남은 공간을 모두 차지하도록 설정 */
+  resize: none; /* 크기 조절 불가 */
+  height: 60px; /* 기본 높이 설정 */
+  font-size: 13px; /* 글꼴 크기 설정 */
+  font-family: inherit; /* 부모 요소의 폰트 상속 */
 }
 </style>

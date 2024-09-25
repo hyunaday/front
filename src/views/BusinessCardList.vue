@@ -38,6 +38,16 @@ export default {
   padding: 0;
   box-sizing: border-box;
 }
+.main-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 100vh;
+  margin-bottom: 60px;
+  background-color: white;
+  overflow-y: auto;
+}
 
 /* 제목 스타일 */
 h3 {
