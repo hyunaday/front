@@ -3,31 +3,42 @@
     class="main-container d-flex flex-column justify-content-center align-items-center"
   >
     <h1 class="card-title">내 카드</h1>
+
     <!-- 카드 추가하기 창 -->
     <div class="card-container">
       <button class="add-button" @click="addCard">+</button>
     </div>
-    <!-- 안내 문구 추가 -->
-    <p class="register-message">카드를 추가해주세요.</p>
-    <!-- 최근 거래 내역 목록 -->
-    <div class="transaction-history">
-      <div class="line"></div>
-      <h2 style="text-align: left">최근 거래 내역</h2>
-      <div class="line"></div>
+
+    <!-- 안내 문구: 마지막 빈 페이지에서만 표시 -->
+    <p class="register-message" v-if="currentPage === totalPages">
+      카드를 추가해주세요.
+    </p>
+
+    <!-- 등록된 카드 목록을 페이지네이션으로 표시 (마지막 페이지가 아닐 때만) -->
+    <div class="card-list" v-if="currentPage !== totalPages">
+      <h2>등록된 카드 목록</h2>
       <ul>
-        <!-- 최근 거래 항목 추가 -->
+        <li v-for="(card, index) in paginatedCards" :key="index">
+          <p>
+            {{ card.cardCompany }} - {{ card.cardNumber }} -
+            {{ card.expiryDate }}
+          </p>
+          <!-- 삭제 버튼 추가 -->
+          <button @click="deleteCard(index)">삭제</button>
+        </li>
       </ul>
-      <div class="fixed-line"></div>
-      <!-- 하단에 고정된 선 -->
     </div>
-    <!-- 카드 등록 창 오버레이 -->
+
+    <!-- 카드 등록창 오버레이 -->
     <div class="overlay" v-if="isCardRegistrationVisible"></div>
+
     <!-- 카드 등록 창 -->
     <div class="card-registration" v-if="isCardRegistrationVisible">
       <div class="card-info-header">
         <i class="fas fa-credit-card"></i>
         <span class="card-info-title">카드정보 입력</span>
       </div>
+
       <!-- 카드사 선택 -->
       <label for="card-company">카드사:<span class="required">*</span></label>
       <select id="card-company">
@@ -41,6 +52,7 @@
         <option value="samsung">삼성카드</option>
         <option value="hyundai">현대카드</option>
       </select>
+
       <!-- 카드번호 입력 -->
       <label for="card-number">카드번호:<span class="required">*</span></label>
       <div class="card-number-inputs">
@@ -49,28 +61,24 @@
           maxlength="4"
           @input="moveToNext($event, 'card-number-2')"
           id="card-number-1"
-          placeholder=""
         />
         <input
           type="text"
           maxlength="4"
           @input="moveToNext($event, 'card-number-3')"
           id="card-number-2"
-          placeholder=""
         />
         <input
           type="text"
           maxlength="4"
           @input="moveToNext($event, 'card-number-4')"
           id="card-number-3"
-          placeholder=""
         />
         <input
           type="text"
           maxlength="4"
           @input="moveToNext($event, '')"
           id="card-number-4"
-          placeholder=""
         />
       </div>
 
@@ -81,11 +89,76 @@
       <!-- 비밀번호 입력 -->
       <label for="password">비밀번호:<span class="required">*</span></label>
       <input type="password" id="password" placeholder="비밀번호 입력" />
-      <!-- 확인, 취소 버튼 배치 -->
+
+      <!-- 확인, 취소 버튼 -->
       <div class="button-container">
         <button type="submit" @click="registerCard">확인</button>
         <button @click="closeCardRegistration">취소</button>
       </div>
+    </div>
+
+    <!-- 최근 거래 내역 -->
+    <div class="transaction-history">
+      <h2>최근 거래 내역</h2>
+      <div
+        class="transaction-summary"
+        v-if="currentPage !== totalPages"
+        style="min-height: 50px"
+      >
+        <div class="transaction-date">
+          <span class="day">20</span>
+          <span class="day-info">수요일</span>
+          <span class="year-month">2024.01</span>
+        </div>
+        <div class="transaction-total">
+          <span :class="totalAmount < 0 ? 'negative' : 'positive'">
+            {{ totalAmount < 0 ? "-" : ""
+            }}{{ Math.abs(totalAmount).toLocaleString() }}원
+          </span>
+        </div>
+      </div>
+
+      <div class="line"></div>
+
+      <ul class="transaction-list">
+        <li
+          v-for="(transaction, index) in transactions"
+          :key="index"
+          class="transaction-item"
+          style="min-height: 40px"
+        >
+          <div class="transaction-details">
+            <div class="description" v-if="currentPage !== totalPages">
+              {{ transaction.description }}
+            </div>
+            <div class="category" v-if="currentPage !== totalPages">
+              {{ transaction.category }}
+            </div>
+            <div class="time" v-if="currentPage !== totalPages">
+              {{ transaction.time }}
+            </div>
+            <div class="bank" v-if="currentPage !== totalPages">
+              {{ transaction.bank }}
+            </div>
+          </div>
+          <div class="transaction-amount" v-if="currentPage !== totalPages">
+            <span :class="transaction.amount < 0 ? 'negative' : 'positive'">
+              {{ transaction.amount < 0 ? "-" : ""
+              }}{{ Math.abs(transaction.amount).toLocaleString() }}원
+            </span>
+          </div>
+        </li>
+      </ul>
+
+      <div class="fixed-line"></div>
+    </div>
+
+    <div class="pagination">
+      <button @click="prevPage" :disabled="currentPage === 1">이전</button>
+      <span>{{ currentPage }} / {{ totalPages }}</span>
+      <button @click="nextPage" :disabled="currentPage === totalPages">
+        다음
+      </button>
     </div>
 
     <FooterNav />
@@ -102,20 +175,55 @@ export default {
   },
   data() {
     return {
-      isCardRegistrationVisible: false, // 카드 등록 창의 가시성 상태
+      isCardRegistrationVisible: false,
+      cards: [],
+      currentPage: 1,
+      cardsPerPage: 1,
+      transactions: [
+        {
+          description: "생활용품",
+          category: "주방/욕실",
+          bank: "신한은행",
+          time: "오후 2:42",
+          amount: -30000,
+        },
+        {
+          description: "부수입",
+          category: "현금",
+          bank: "",
+          time: "오후 1:42",
+          amount: 3000,
+        },
+      ],
+      totalAmount: -27000,
     };
+  },
+  computed: {
+    totalPages() {
+      return Math.ceil(this.cards.length / this.cardsPerPage) + 1;
+    },
+    paginatedCards() {
+      const start = (this.currentPage - 1) * this.cardsPerPage;
+      const end = start + this.cardsPerPage;
+
+      if (this.currentPage === this.totalPages) {
+        return [];
+      }
+
+      return this.cards.slice(start, end);
+    },
   },
   methods: {
     addCard() {
       this.isCardRegistrationVisible = true;
     },
+    // 카드 번호 입력 시 4자리를 입력하면 다음 필드로 이동
     moveToNext(event, nextInputId) {
-      // 입력 필드가 가득 차면 다음 입력 필드로 포커스 이동
-      if (event.target.value.length >= 4 && nextInputId) {
+      if (event.target.value.length === 4 && nextInputId) {
+        // 다음 입력 필드로 포커스를 이동
         document.getElementById(nextInputId).focus();
       }
     },
-
     registerCard() {
       const cardCompany = document.getElementById("card-company").value;
       const cardNumber1 = document.getElementById("card-number-1").value;
@@ -125,10 +233,8 @@ export default {
       const expiryDate = document.getElementById("expiry-date").value;
       const password = document.getElementById("password").value;
 
-      // 카드번호를 하나의 문자열로 결합
       const cardNumber = `${cardNumber1}${cardNumber2}${cardNumber3}${cardNumber4}`;
 
-      // 유효성 검사
       if (!cardCompany) {
         alert("카드사를 입력해주세요.");
         return;
@@ -142,16 +248,36 @@ export default {
         return;
       }
       if (!/^\d{6}$/.test(password)) {
-        // 6자리 숫자 확인
         alert("비밀번호는 6자리 숫자여야 합니다.");
         return;
       }
-      console.log("카드 등록 버튼 클릭");
+
+      this.cards.push({
+        cardCompany,
+        cardNumber,
+        expiryDate,
+      });
+
       this.closeCardRegistration();
     },
-
+    deleteCard(index) {
+      this.cards.splice(index, 1);
+      if (this.currentPage > this.totalPages) {
+        this.currentPage--;
+      }
+    },
     closeCardRegistration() {
       this.isCardRegistrationVisible = false;
+    },
+    prevPage() {
+      if (this.currentPage > 1) {
+        this.currentPage--;
+      }
+    },
+    nextPage() {
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+      }
     },
   },
 };
@@ -340,42 +466,129 @@ label[for="card-company"] {
 
 /* 최근 거래 내역창 */
 .transaction-history {
-  width: 297px;
-  position: relative; /* 상대 위치 설정 */
-}
-
-/* 선 스타일 */
-.line {
-  width: 297px; /* 선의 너비 */
-  height: 1px; /* 선의 두께 */
-  background-color: black; /* 선의 색상 */
-  margin: 10px 0; /* 상하 여백 */
+  width: 350px;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+  position: relative;
+  /* 부모 컨테이너가 상대적 위치를 갖도록 설정 */
 }
 
 /* 제목 스타일 */
-.transaction-history h2 {
+h2 {
+  font-size: 18px;
+  font-weight: bold;
+  text-align: left;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+}
+
+/* 날짜 및 총합 블록 */
+.transaction-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.transaction-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.day {
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.day-info,
+.year-month {
+  font-size: 14px;
+  color: #888;
+}
+
+.transaction-total {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.negative {
+  color: red;
+}
+
+.positive {
+  color: blue;
+}
+
+/* 거래 목록 */
+.transaction-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.transaction-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.transaction-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.description {
   font-size: 16px;
-  text-align: center; /* 중앙 정렬 */
-  margin: 0; /* 기본 마진 제거 */
+  font-weight: bold;
 }
 
-/* 거래 목록 스타일 */
-.transaction-history ul {
-  list-style-type: none; /* 기본 리스트 스타일 제거 */
-  padding: 0; /* 기본 패딩 제거 */
-  margin: 10px 0; /* 항목 간격 */
+.category,
+.bank,
+.time {
+  font-size: 14px;
+  color: #888;
 }
 
-.transaction-history li {
-  font-size: 14px; /* 글자 크기 */
-  color: #333; /* 글자 색상 */
+.transaction-amount {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.line {
+  height: 1px;
+  background-color: #ccc;
+  margin: 20px 0;
 }
 
 .fixed-line {
-  position: absolute; /* 절대 위치로 설정 */
-  top: 220px; /* 하단에 고정 */
-  width: 297px; /* 선의 너비 */
-  height: 1px; /* 선의 두께 */
-  background-color: black; /* 선의 색상 */
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: #ccc;
+  margin-top: 20px;
+}
+
+/* 페이지네이션 */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+.pagination button {
+  margin: 0 10px;
+  padding: 5px 10px;
+  background-color: #7189ff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 </style>

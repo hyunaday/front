@@ -48,12 +48,12 @@
 </template>
 
 <script>
-import 'vue-cal/dist/vuecal.css'; // 수정된 경로
-import VueCal from 'vue-cal';
-import CalendarComponent from '../components/CalendarComponent.vue'; // CalendarComponent를 import
+import "vue-cal/dist/vuecal.css"; // 수정된 경로
+import VueCal from "vue-cal";
+import CalendarComponent from "../components/CalendarComponent.vue"; // CalendarComponent를 import
 
 export default {
-  name: 'AccountBook',
+  name: "AccountBook",
   components: {
     VueCal,
     CalendarComponent, // 필요한 컴포넌트 등록
@@ -64,18 +64,18 @@ export default {
       selectedMonth: new Date().getMonth() + 1,
       years: [],
       months: [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December',
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
       ],
     };
   },
@@ -106,7 +106,7 @@ a {
 
 .calendar-container {
   text-align: center;
-  font-family: 'Poppins', sans-serif; /* Poppins 폰트 적용 */
+  font-family: "Poppins", sans-serif; /* Poppins 폰트 적용 */
 }
 
 .calendar {
