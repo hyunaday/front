@@ -8,9 +8,12 @@ import GroupPay from '../views/GroupPay.vue';
 import SignUp from '../views/SignUp.vue';
 import AddList from '../views/AddList.vue';
 import Cards from '../views/Cards.vue';
+import Account from '../views/Account.vue';
+import AccountAddList from '../views/AccountAddList.vue';
 import BusinessCardList from '../views/BusinessCardList.vue';
 import MyCardRegistration from '../views/MyCardRegistration.vue'; // MyCardRegistration 추가
 import FriendCardRegistration from '../views/FriendCardRegistration.vue'; // FriendCardRegistration 추가
+
 
 const routes = [
   {
@@ -27,6 +30,11 @@ const routes = [
     path: '/myassets',
     name: 'MyAssets',
     component: MyAssets,
+  },
+  {
+    path: '/account',
+    name: 'Account',
+    component: Account,
   },
   {
     path: '/accountbook',
@@ -62,6 +70,11 @@ const routes = [
     path: '/cards',
     name: 'Cards',
     component: Cards,
+  },
+  {
+    path: '/accountaddlist',
+    name: 'AccountAddList',
+    component: AccountAddList,
   },
   {
     path: '/friend-card-registration', // 새로운 경로 추가
