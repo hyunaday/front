@@ -1,6 +1,6 @@
 <template>
     <div>
-      <h1>invitefriends Page</h1>
+      <h1>InviteFriends Page</h1>
     </div>
   </template>
   

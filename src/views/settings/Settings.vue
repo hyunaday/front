@@ -1,7 +1,9 @@
 <template>
+    <div class="main-container d-flex flex-column justify-content-center align-items-center">
+
   <div class="settings">
     <button class="close-button" @click="goToMainPage">X</button>
-    <h1>환경 설정</h1>
+ 
 
     <div class="section">
       <h2>친구 목록</h2>
@@ -10,14 +12,14 @@
         <li @click="navigateTo('/invitefriends')">친구 초대</li>
       </ul>
     </div>
-
+<hr>
     <div class="section">
       <h2>함께 결제</h2>
       <ul>
         <li @click="navigateTo('/paylist')">함께 결제 내역 조회</li>
       </ul>
     </div>
-
+    <hr>
     <div class="section">
       <h2>설정</h2>
       <ul>
@@ -26,56 +28,64 @@
         <li @click="logout">로그아웃</li>
       </ul>
     </div>
-
+    <hr>
     <div class="section">
-      <h2>회원 탈퇴</h2>
+      <h2>회원탈퇴</h2>
       <button @click="deleteAccount">회원탈퇴</button>
     </div>
+  </div>
+  <FooterNav />
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import FooterNav from '../../components/FooterNav.vue';
 
 export default {
+  name: "Settings",
+    components: {
+      FooterNav,
+    },
   methods: {
-    navigateTo(apiEndpoint) {
-      console.log(`Navigating to API: ${apiEndpoint}`);
-      axios.get(apiEndpoint)
-        .then(response => {
-          // 성공적인 응답 처리
-          console.log(response.data);
-          // 응답에 따라 페이지 이동 또는 상태 업데이트 가능
-        })
-        .catch(error => {
-          // 오류 처리
-          console.error('Error fetching data:', error);
-        });
+    navigateTo(route) {
+      console.log(`Navigating to route: ${route}`);
+      this.$router.push(route).catch(err => {
+        console.error('Navigation error:', err);
+      });
     },
     goToMainPage() {
       console.log('Navigating to main page');
       this.$router.push({ path: '/' });
     },
     logout() {
-      console.log('Logging out...');
-      axios.post('/logout')  // 로그아웃 API 호출
-        .then(() => {
-          // 로그아웃 후 처리
-          this.goToMainPage();
-        })
-        .catch(error => {
-          console.error('Error logging out:', error);
-        });
-    },
+  console.log('로그아웃 중...');
+  
+  // 로그아웃 API 호출
+  axios.post('/logout')
+    .then(response => {
+      console.log('로그아웃 성공:', response.data);
+      // 로그아웃 후 메인 페이지로 이동
+      this.goToMainPage();
+    })
+    .catch(error => {
+      // 오류가 발생했을 경우
+      console.error('로그아웃 에러:', error.response ? error.response.data : error.message);
+      // 사용자에게 알림 표시
+      alert('로그아웃 중 오류가 발생했습니다. 다시 시도해 주세요.');
+    })
+},
+
     deleteAccount() {
-      console.log('Deleting account...');
+      console.log('회원탈퇴 중');
       axios.post('/cancel')  // 회원 탈퇴 API 호출
         .then(() => {
-          // 탈퇴 후 처리
+          console.log('회원탈퇴 성공');
           this.goToMainPage();
         })
         .catch(error => {
-          console.error('Error deleting account:', error);
+          console.error('회원탈퇴 에러', error);
+          alert('회원탈퇴 중 오류가 발생했습니다. 다시 시도해 주세요.');
         });
     }
   }
