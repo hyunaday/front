@@ -26,38 +26,11 @@
       </div>
     </div>
 
-    <FooterNav />
-    <div class="navbar">
-      <router-link to="/" class="nav-item" exact-active-class="active">
-        <i class="fas fa-home"></i>
-        <span>홈</span>
-      </router-link>
-
-      <router-link to="/myassets" class="nav-item" exact-active-class="active">
-        <i class="fas fa-wallet"></i>
-        <span>내 자산</span>
-      </router-link>
-
-      <router-link to="/accountaddlist" class="pay-btn" exact-active-class="active">
-        <i class="fa-solid fa-plus"></i>
-        <span></span>
-      </router-link>
-
-      <router-link to="/accountbook" class="nav-item" exact-active-class="active">
-        <i class="fas fa-book"></i>
-        <span>가계부</span>
-      </router-link>
-
-      <router-link to="/businesscard" class="nav-item" exact-active-class="active">
-        <i class="fas fa-id-card"></i>
-        <span>전자 명함</span>
-      </router-link>
-    </div>
+      <!-- FooterNav 컴포넌트 사용 -->
+    <FooterNav :buttonType="'plus'" :buttonAction="goToAddList" />
+   
   </div>
 </template>
-
-
-
 
  <script>
 import FooterNav from '../components/FooterNav.vue';
@@ -97,6 +70,9 @@ export default {
     // this.fetchAccounts();
   },
   methods: {
+    goToAddList() {
+      this.$router.push('/accountaddlist'); // AccountAddList 페이지로 이동
+    },
     confirmDeleteAccount(idx) {
       if (confirm("정말 삭제하겠습니까?")) {
         this.deleteAccount(idx);
