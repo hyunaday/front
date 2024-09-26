@@ -1,3 +1,5 @@
+페이지네이션_다음페이지 초기화_삭제버튼
+
 <template>
   <div
     class="main-container d-flex flex-column justify-content-center align-items-center"
@@ -23,8 +25,10 @@
             {{ card.cardCompany }} - {{ card.cardNumber }} -
             {{ card.expiryDate }}
           </p>
-          <!-- 삭제 버튼 추가 -->
-          <button @click="deleteCard(index)">삭제</button>
+          <!-- 삭제 버튼에 아이콘만 표시되도록 수정 -->
+          <button @click="deleteCard(index)" class="delete-button">
+            <i class="fa-solid fa-trash"></i>
+          </button>
         </li>
       </ul>
     </div>
@@ -590,5 +594,22 @@ h2 {
 .pagination button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
+}
+
+/* 삭제 버튼 스타일 */
+.delete-button {
+  background: none; /* 배경 없애기 */
+  border: none; /* 테두리 없애기 */
+  padding: 0; /* 기본 여백 없애기 */
+  cursor: pointer; /* 클릭 가능 커서 */
+}
+
+.delete-button i {
+  font-size: 18px; /* 아이콘 크기 조정 */
+  color: #ff6b6b; /* 아이콘 색상 */
+}
+
+.delete-button i:hover {
+  color: #ff4b4b; /* 마우스 오버 시 색상 변경 */
 }
 </style>
