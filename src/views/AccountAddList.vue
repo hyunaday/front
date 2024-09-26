@@ -55,7 +55,9 @@
         </form>
       </div>
   
-      <FooterNav/>
+ <!-- FooterNav 컴포넌트 사용 -->
+ <FooterNav :buttonType="'back'" :buttonAction="goToAddList" />
+  
     </div>
   </template>
   
@@ -79,6 +81,7 @@
         formattedAccountNumber: '',
         password: '',
         successMessage: '',
+        showFooterNav: false,
       };
     },
     methods: {
@@ -93,6 +96,9 @@
           this.formattedAccountNumber = `${value.slice(0, 4)}-${value.slice(4, 10)}-${value.slice(10, 13)}`;
         }
       },
+      goToAddList() {
+      this.$router.push('/account'); // account 페이지로 이동
+    },
       validatePassword() {
         const value = this.password.replace(/\D/g, '').slice(0, 6); // Limit to 6 digits
         this.password = value;
@@ -119,7 +125,6 @@
   </script>
   
   <style scoped>
-  /* 스타일은 변경되지 않았습니다. */
   .main-container {
     width: 100%;
     height: 100vh;

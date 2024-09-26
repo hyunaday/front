@@ -17,6 +17,7 @@
           <span>결제</span>
         </div>
       </template>
+
       <template v-else-if="buttonType === 'plus'">
         <i class="fas fa-plus" style="font-size: 50px"></i>
       </template>
@@ -26,6 +27,16 @@
           <span>등록</span>
         </div>
       </template>
+
+      <!-- 2024.09.26 back 버튼 생성 ========== -->
+      <template v-else-if="buttonType === 'back'">
+        <div class="icon-container">
+          <i class="fa-solid fa-arrow-rotate-left"></i>
+          <span>취소</span>
+        </div>
+      </template>
+      <!-- =================================== -->
+
     </button>
 
     <router-link to="/accountbook" class="nav-item" exact-active-class="active">
@@ -46,6 +57,12 @@
 <script>
 export default {
   props: {
+    // 2024.09.26 back 버튼 생성===============
+    buttonType: {
+      type: Function,
+      default: 'back', // 기본값은 'back'
+    },
+    // ========================================
     buttonType: {
       type: String,
       default: 'pay', // 기본값은 'pay'

@@ -13,6 +13,14 @@ import AccountAddList from '../views/AccountAddList.vue';
 import BusinessCardList from '../views/BusinessCardList.vue';
 import MyCardRegistration from '../views/MyCardRegistration.vue'; // MyCardRegistration 추가
 import FriendCardRegistration from '../views/FriendCardRegistration.vue'; // FriendCardRegistration 추가
+import Settings from '../views/settings/Settings.vue';
+import InviteFriends from '../views/settings/InviteFriends.vue';
+import SearchFriends from '../views/settings/SearchFriends.vue';
+import PayList from '../views/settings/PayList.vue';
+import Cancel from '../views/settings/Cancel.vue';
+import Logout from '../views/settings/Logout.vue';
+import Alert from '../views/settings/Alert.vue';
+import ChangePassword from '../views/settings/ChangePassword.vue';
 
 
 const routes = [
@@ -85,6 +93,46 @@ const routes = [
     path: '/my-card-registration', // 나의 명함 등록 페이지 추가
     name: 'MyCardRegistration',
     component: MyCardRegistration,
+  },
+
+  {
+    // Settings path 설정 - 2024.09.26 
+    path: "/settings",
+    name: "Settings",
+    component: Settings,
+  },
+  {
+    path: "/searchfriends",
+    name: "SearchFriends",
+    component: SearchFriends,
+  },
+  {
+    path: "/invitefriends",
+    name: "InviteFriends",
+    component: InviteFriends,
+  },
+  {
+    path: "/paylist",
+    name: "PayList",
+    component: PayList,
+  },
+  {
+    path: "/changepassword",
+    name: "ChangePassword",
+    component: ChangePassword,
+  },
+  {
+    path: "/alert",
+    name: "Alert",
+    component: Alert,
+  },  {
+    path: "/logout",
+    name: "Logout",
+    component: Logout,
+  },  {
+    path: "/cancel",
+    name: "Cancel",
+    component: Cancel,
   },
 ];
 
