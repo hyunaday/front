@@ -6,7 +6,7 @@
     <h1>내 자산</h1>
 
     <!-- '나의 계좌' 버튼, 계좌 페이지로 이동 -->
-    <router-link to="/accounts">
+    <router-link to="/account">
       <button class="button">나의 계좌</button>
     </router-link>
 
@@ -18,6 +18,7 @@
     </router-link>
 
     <!-- FooterNav 컴포넌트 사용 -->
+<<<<<<< HEAD
     <FooterNav />
 =======
   <div class="main-container">
@@ -27,6 +28,9 @@
     <div class="separator"></div>
     <button class="custom-button">나의 카드</button>
 >>>>>>> ed0dd9beb4a94c32e47f6fbe36f52ccc213bb00c
+=======
+    <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
+>>>>>>> 469c5af64762e1f155551e66c110f89118c673e3
   </div>
 </template>
 
@@ -39,10 +43,18 @@ export default {
   components: {
     FooterNav,
   },
+<<<<<<< HEAD
 =======
 export default {
   name: "MyAssets",
 >>>>>>> ed0dd9beb4a94c32e47f6fbe36f52ccc213bb00c
+=======
+  methods: {
+    goToGroupPayPage() {
+      this.$router.push('/grouppay'); // 그룹 결제 페이지로 이동
+    },
+  },
+>>>>>>> 469c5af64762e1f155551e66c110f89118c673e3
 };
 </script>
 
@@ -52,6 +64,17 @@ export default {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 100vh;
+  background-color: white;
+  overflow-y: auto;
+  margin-bottom: 60px;
 }
 
 /* 제목 스타일 */

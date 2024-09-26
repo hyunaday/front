@@ -19,6 +19,7 @@ body {
   justify-content: flex-start;  /* 상단부터 배치 */
   align-items: center;  /* 중앙에 배치 */
   position: relative;
+<<<<<<< HEAD
 }
 
 body {
@@ -42,3 +43,6 @@ body {
   align-items: center; /* 중앙에 배치 */
   position: relative;
 }
+=======
+}
+>>>>>>> 469c5af64762e1f155551e66c110f89118c673e3
