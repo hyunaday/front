@@ -43,14 +43,14 @@ export default {
       type: String,
       default: 'fas fa-credit-card', // 기본 아이콘 클래스
     },
+    customRoute: {
+      type: String,
+      default: '/grouppay',
+    },
   },
   methods: {
     handleButtonClick() {
-      if (this.buttonText === '결제') {
-        this.$router.push('/grouppay');
-      } else {
-        this.$emit('button-click');
-      }
+      this.$router.push(this.customRoute);
     },
   },
 };
