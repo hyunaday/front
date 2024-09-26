@@ -1,41 +1,25 @@
 <template>
-<<<<<<< HEAD
-  <div
-    class="main-container d-flex flex-column justify-content-center align-items-center"
-  >
+  <div class="main-container d-flex flex-column justify-content-center align-items-center">
     <h1>내 자산</h1>
 
     <!-- '나의 계좌' 버튼, 계좌 페이지로 이동 -->
     <router-link to="/account">
-      <button class="button">나의 계좌</button>
+      <button class="custom-button">나의 계좌</button>
     </router-link>
 
-    <div class="divider"></div>
+    <div class="separator"></div>
 
     <!-- '나의 카드' 버튼, 카드 페이지로 이동 -->
     <router-link to="/cards">
-      <button class="button">나의 카드</button>
+      <button class="custom-button">나의 카드</button>
     </router-link>
 
     <!-- FooterNav 컴포넌트 사용 -->
-<<<<<<< HEAD
-    <FooterNav />
-=======
-  <div class="main-container">
-    <h1>내 자산</h1>
-    <!-- 나의 계좌, 나의 카드 버튼 -->
-    <button class="custom-button">나의 계좌</button>
-    <div class="separator"></div>
-    <button class="custom-button">나의 카드</button>
->>>>>>> ed0dd9beb4a94c32e47f6fbe36f52ccc213bb00c
-=======
     <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
->>>>>>> 469c5af64762e1f155551e66c110f89118c673e3
   </div>
 </template>
 
 <script>
-<<<<<<< HEAD
 import FooterNav from '../components/FooterNav.vue';
 
 export default {
@@ -43,67 +27,15 @@ export default {
   components: {
     FooterNav,
   },
-<<<<<<< HEAD
-=======
-export default {
-  name: "MyAssets",
->>>>>>> ed0dd9beb4a94c32e47f6fbe36f52ccc213bb00c
-=======
   methods: {
     goToGroupPayPage() {
       this.$router.push('/grouppay'); // 그룹 결제 페이지로 이동
     },
   },
->>>>>>> 469c5af64762e1f155551e66c110f89118c673e3
 };
 </script>
 
 <style scoped>
-<<<<<<< HEAD
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-.main-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  min-height: 100vh;
-  background-color: white;
-  overflow-y: auto;
-  margin-bottom: 60px;
-}
-
-/* 제목 스타일 */
-h1 {
-  margin-bottom: 20px;
-  font-weight: bold;
-  margin-top: 0;
-}
-
-/* 버튼 스타일 */
-.button {
-  width: 200px;
-  padding: 15px;
-  margin: 10px 0;
-  background-color: #7189ff;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-/* 구분선 스타일 */
-.divider {
-  width: 200px;
-  height: 1px;
-  background-color: #ccc;
-  margin: 15px 0;
-=======
 /* 전체 템플릿 */
 body {
   margin: 0;
@@ -156,6 +88,5 @@ h1 {
   height: 2px; /* 선의 두께 */
   background-color: #000; /* 선 색상 */
   margin-bottom: 25px; /* 선과 다음 버튼 사이의 간격 */
->>>>>>> ed0dd9beb4a94c32e47f6fbe36f52ccc213bb00c
 }
 </style>
