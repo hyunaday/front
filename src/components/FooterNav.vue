@@ -54,6 +54,10 @@ export default {
       type: Function,
       required: true, // 버튼 클릭 시 호출할 함수
     },
+    customRoute: {
+      type: String,
+      default: '/grouppay',
+    },
   },
   methods: {
     handleButtonClick() {

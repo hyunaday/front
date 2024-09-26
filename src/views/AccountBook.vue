@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import 'vue-cal/dist/vuecal.css'; // 수정된 경로
+import 'vue-cal/dist/vuecal.css';
 import VueCal from 'vue-cal';
 import CalendarComponent from '../components/CalendarComponent.vue'; // CalendarComponent를 import
 import FooterNav from '../components/FooterNav.vue';
@@ -57,7 +57,8 @@ export default {
   components: {
     FooterNav,
     VueCal,
-    CalendarComponent, // 필요한 컴포넌트 등록
+    CalendarComponent,
+    FooterNav,
   },
   data() {
     return {
