@@ -8,6 +8,9 @@ import GroupPay from '../views/GroupPay.vue';
 import SignUp from '../views/SignUp.vue';
 import AddList from '../views/AddList.vue';
 import Cards from '../views/Cards.vue';
+import BusinessCardList from '../views/BusinessCardList.vue';
+import MyCardRegistration from '../views/MyCardRegistration.vue'; // MyCardRegistration 추가
+import FriendCardRegistration from '../views/FriendCardRegistration.vue'; // FriendCardRegistration 추가
 
 const routes = [
   {
@@ -36,6 +39,11 @@ const routes = [
     component: BusinessCard,
   },
   {
+    path: '/businesscardlist',
+    name: 'BusinessCardList',
+    component: BusinessCardList,
+  },
+  {
     path: '/grouppay',
     name: 'GroupPay',
     component: GroupPay,
@@ -54,6 +62,16 @@ const routes = [
     path: '/cards',
     name: 'Cards',
     component: Cards,
+  },
+  {
+    path: '/friend-card-registration', // 새로운 경로 추가
+    name: 'FriendCardRegistration',
+    component: FriendCardRegistration,
+  },
+  {
+    path: '/my-card-registration', // 나의 명함 등록 페이지 추가
+    name: 'MyCardRegistration',
+    component: MyCardRegistration,
   },
 ];
 

@@ -1,4 +1,3 @@
-<!-- components/FooterNav.vue -->
 <template>
   <div class="navbar">
     <router-link to="/" class="nav-item" exact-active-class="active">
@@ -10,11 +9,23 @@
       <span>내 자산</span>
     </router-link>
 
-    <!-- 버튼 모양을 prop으로 제어하여 + 또는 등록 표시 -->
+    <!-- 버튼 타입에 따라 다르게 렌더링 -->
     <button @click="handleButtonClick" class="pay-btn">
-      <!-- 아이콘과 텍스트 함께 표시 -->
-      <i v-if="iconClass" :class="iconClass + ' button-icon'"></i>
-      <span>{{ buttonText }}</span>
+      <template v-if="buttonType === 'pay'">
+        <div class="icon-container">
+          <i class="fas fa-credit-card"></i>
+          <span>결제</span>
+        </div>
+      </template>
+      <template v-else-if="buttonType === 'plus'">
+        <i class="fas fa-plus" style="font-size: 50px"></i>
+      </template>
+      <template v-else-if="buttonType === 'register'">
+        <div class="icon-container">
+          <i class="fas fa-pencil-alt"></i>
+          <span>등록</span>
+        </div>
+      </template>
     </button>
 
     <router-link to="/accountbook" class="nav-item" exact-active-class="active">
@@ -35,13 +46,13 @@
 <script>
 export default {
   props: {
-    buttonText: {
+    buttonType: {
       type: String,
-      default: '결제', // 기본값은 "결제"
+      default: 'pay', // 기본값은 'pay'
     },
-    iconClass: {
-      type: String,
-      default: 'fas fa-credit-card', // 기본 아이콘 클래스
+    buttonAction: {
+      type: Function,
+      required: true, // 버튼 클릭 시 호출할 함수
     },
     customRoute: {
       type: String,
@@ -50,7 +61,7 @@ export default {
   },
   methods: {
     handleButtonClick() {
-      this.$router.push(this.customRoute);
+      this.buttonAction(); // 전달된 action 호출
     },
   },
 };
@@ -86,23 +97,19 @@ export default {
   margin-bottom: 5px;
 }
 
-/* 결제 버튼 스타일 */
+/* 버튼 스타일 */
 .pay-btn {
   position: absolute;
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  width: auto;
-  min-width: 65px;
-  height: 65px;
+  width: 80px;
+  height: 80px;
   background-color: #6981d6;
-  border-radius: 32.5px;
+  border-radius: 40px;
   color: white;
-  font-size: 17px;
-  white-space: nowrap;
-  padding: 0 10px;
+  font-size: 23px;
   display: flex;
-  flex-direction: column; /* 수직 정렬 */
   justify-content: center;
   align-items: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -110,12 +117,14 @@ export default {
   border: none;
 }
 
-/* 아이콘 스타일 */
-.button-icon {
-  font-size: 20px;
-  margin-bottom: 5px; /* 아이콘과 텍스트 사이의 간격 */
+/* 아이콘과 텍스트를 수직으로 쌓기 위한 스타일 */
+.icon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
+/* 활성화된 네비게이션 아이템 스타일 */
 .navbar .nav-item.active {
   color: #7189ff;
   font-weight: bold;

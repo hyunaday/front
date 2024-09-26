@@ -2,22 +2,22 @@
   <div
     class="main-container d-flex flex-column justify-content-center align-items-center"
   >
-    <h1>내 자산</h1>
+    <h3>추가할 명함을 선택해주세요.</h3>
 
-    <!-- '나의 계좌' 버튼, 계좌 페이지로 이동 -->
-    <router-link to="/accounts">
-      <button class="button">나의 계좌</button>
+    <!-- '나의 명함' 버튼, 나의 명함 등록 페이지로 이동 -->
+    <router-link to="/my-card-registration">
+      <button class="button">나의 명함 등록하기</button>
     </router-link>
 
     <div class="divider"></div>
 
-    <!-- '나의 카드' 버튼, 카드 페이지로 이동 -->
-    <router-link to="/cards">
-      <button class="button">나의 카드</button>
+    <!-- '친구 명함' 버튼, 친구 명함 등록 페이지로 이동 -->
+    <router-link to="/friend-card-registration">
+      <button class="button">친구 명함 등록하기</button>
     </router-link>
 
     <!-- FooterNav 컴포넌트 사용 -->
-    <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
+    <FooterNav />
   </div>
 </template>
 
@@ -25,14 +25,9 @@
 import FooterNav from '../components/FooterNav.vue';
 
 export default {
-  name: 'MyAssets',
+  name: 'BusinessCardList',
   components: {
     FooterNav,
-  },
-  methods: {
-    goToGroupPayPage() {
-      this.$router.push('/grouppay'); // 그룹 결제 페이지로 이동
-    },
   },
 };
 </script>
@@ -43,23 +38,22 @@ export default {
   padding: 0;
   box-sizing: border-box;
 }
-
 .main-container {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   min-height: 100vh;
+  margin-bottom: 60px;
   background-color: white;
   overflow-y: auto;
-  margin-bottom: 60px;
 }
 
 /* 제목 스타일 */
-h1 {
-  margin-bottom: 20px;
+h3 {
+  margin-bottom: 80px;
   font-weight: bold;
-  margin-top: 0;
+  font-size: 20px;
 }
 
 /* 버튼 스타일 */

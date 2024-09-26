@@ -3,28 +3,59 @@
     class="main-container d-flex flex-column justify-content-center align-items-center"
   >
     <div>
-      <CalendarComponent :year="selectedYear" :month="selectedMonth" />
+      <!-- CalendarComponent 또는 리스트 보기 -->
+      <div v-if="isCalendarView">
+        <CalendarComponent :year="selectedYear" :month="selectedMonth" />
+      </div>
+      <div v-else>
+        <!-- 리스트 보기 -->
+        <div class="list-view">
+          <h2>리스트 보기</h2>
+          <ul>
+            <li v-for="(item, index) in budgetList" :key="index">
+              {{ item.date }} - {{ item.type }} - {{ item.amount }}원
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- 캘린더/리스트 전환 버튼 -->
+    <div class="view-toggle">
+      <button
+        :class="{ active: isCalendarView }"
+        @click="toggleView(true)"
+        class="toggle-btn"
+      >
+        캘린더
+      </button>
+      <div class="divider-line"></div>
+      <button
+        :class="{ active: !isCalendarView }"
+        @click="toggleView(false)"
+        class="toggle-btn"
+      >
+        리스트
+      </button>
     </div>
 
     <div class="divider"></div>
-
-    <FooterNav
-      buttonText="등록"
-      :iconClass="null"
-      customRoute="/addlist"
-    />
   </div>
+
+  <!-- FooterNav 컴포넌트 사용 -->
+  <FooterNav :buttonType="'plus'" :buttonAction="goToAddList" />
 </template>
 
 <script>
 import 'vue-cal/dist/vuecal.css';
 import VueCal from 'vue-cal';
-import CalendarComponent from '../components/CalendarComponent.vue';
+import CalendarComponent from '../components/CalendarComponent.vue'; // CalendarComponent를 import
 import FooterNav from '../components/FooterNav.vue';
 
 export default {
   name: 'AccountBook',
   components: {
+    FooterNav,
     VueCal,
     CalendarComponent,
     FooterNav,
@@ -33,28 +64,20 @@ export default {
     return {
       selectedYear: new Date().getFullYear(),
       selectedMonth: new Date().getMonth() + 1,
-      years: [],
-      months: [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December',
+      isCalendarView: true, // 캘린더 보기 여부 상태 관리
+      budgetList: [
+        { date: '2024-09-23', type: 'income', amount: 50000 },
+        { date: '2024-09-24', type: 'expense', amount: 30000 },
       ],
     };
   },
-  mounted() {
-    const currentYear = new Date().getFullYear();
-    for (let i = 0; i < 10; i++) {
-      this.years.push(currentYear + i);
-    }
+  methods: {
+    toggleView(isCalendar) {
+      this.isCalendarView = isCalendar;
+    },
+    goToAddList() {
+      this.$router.push('/addlist'); // AddList 페이지로 이동
+    },
   },
 };
 </script>
@@ -67,23 +90,84 @@ a {
 .main-container {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* 중앙 정렬 대신 상단 정렬로 변경 */
+  justify-content: flex-start;
   align-items: center;
-  min-height: 100vh; /* 최소 높이 설정 */
+  min-height: 100vh;
   background-color: white;
-  overflow-y: auto; /* 수직 스크롤 활성화 */
+  overflow-y: auto;
+  margin-bottom: 60px;
 }
 
 .calendar-container {
   text-align: center;
-  font-family: 'Poppins', sans-serif; /* Poppins 폰트 적용 */
+  font-family: 'Poppins', sans-serif;
 }
 
 .calendar {
   width: 100%;
-  max-width: 800px; /* 캘린더 최대 너비 조정 */
-  margin: 0 px; /* 좌우 여백 추가 */
-  margin-bottom: 15px; /* 네비게이션 바와의 간격 */
+  max-width: 800px;
+  margin-bottom: 15px;
 }
 
+/* 캘린더/리스트 전환 버튼 스타일 */
+.view-toggle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 300px;
+  height: 30px;
+  margin: 20px 0;
+  background-color: #d9d9d9;
+  border-radius: 25px;
+  padding: 5px;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.toggle-btn.active {
+  font-weight: bold;
+  color: white;
+  background: #8d8a8a;
+  border-radius: 25px;
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  max-width: 250px;
+  height: 17px;
+  margin: 20px 0;
+}
+
+.divider-line {
+  width: 1px;
+  height: 30px;
+  background-color: #ddd;
+}
+
+.list-view {
+  width: 100%;
+  max-width: 800px;
+  padding: 10px;
+  background-color: #f9f9f9;
+}
+
+.list-view ul {
+  list-style: none;
+  padding: 0;
+}
+
+.list-view li {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
 </style>
