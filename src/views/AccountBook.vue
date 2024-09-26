@@ -47,13 +47,19 @@
 </template>
 
 <script>
+<<<<<<< HEAD
+import "vue-cal/dist/vuecal.css"; // 수정된 경로
+import VueCal from "vue-cal";
+import CalendarComponent from "../components/CalendarComponent.vue"; // CalendarComponent를 import
+=======
 import 'vue-cal/dist/vuecal.css';
 import VueCal from 'vue-cal';
 import CalendarComponent from '../components/CalendarComponent.vue'; // CalendarComponent를 import
 import FooterNav from '../components/FooterNav.vue';
+>>>>>>> 469c5af64762e1f155551e66c110f89118c673e3
 
 export default {
-  name: 'AccountBook',
+  name: "AccountBook",
   components: {
     FooterNav,
     VueCal,
@@ -64,10 +70,27 @@ export default {
     return {
       selectedYear: new Date().getFullYear(),
       selectedMonth: new Date().getMonth() + 1,
+<<<<<<< HEAD
+      years: [],
+      months: [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+=======
       isCalendarView: true, // 캘린더 보기 여부 상태 관리
       budgetList: [
         { date: '2024-09-23', type: 'income', amount: 50000 },
         { date: '2024-09-24', type: 'expense', amount: 30000 },
+>>>>>>> 469c5af64762e1f155551e66c110f89118c673e3
       ],
     };
   },
@@ -100,7 +123,11 @@ a {
 
 .calendar-container {
   text-align: center;
+<<<<<<< HEAD
+  font-family: "Poppins", sans-serif; /* Poppins 폰트 적용 */
+=======
   font-family: 'Poppins', sans-serif;
+>>>>>>> 469c5af64762e1f155551e66c110f89118c673e3
 }
 
 .calendar {

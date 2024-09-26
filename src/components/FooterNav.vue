@@ -48,7 +48,11 @@ export default {
   props: {
     buttonType: {
       type: String,
+<<<<<<< HEAD
+      default: "결제", // 기본값은 "결제"
+=======
       default: 'pay', // 기본값은 'pay'
+>>>>>>> 469c5af64762e1f155551e66c110f89118c673e3
     },
     buttonAction: {
       type: Function,
@@ -56,12 +60,24 @@ export default {
     },
     customRoute: {
       type: String,
+<<<<<<< HEAD
+      default: "fas fa-credit-card", // 기본 아이콘 클래스
+=======
       default: '/grouppay',
+>>>>>>> 469c5af64762e1f155551e66c110f89118c673e3
     },
   },
   methods: {
     handleButtonClick() {
+<<<<<<< HEAD
+      if (this.buttonText === "결제") {
+        this.$router.push("/grouppay");
+      } else {
+        this.$emit("button-click");
+      }
+=======
       this.buttonAction(); // 전달된 action 호출
+>>>>>>> 469c5af64762e1f155551e66c110f89118c673e3
     },
   },
 };

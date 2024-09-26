@@ -1,5 +1,20 @@
 <template>
   <div class="main-container">
+<<<<<<< HEAD
+    <h1>Main Page</h1>
+    <nav>
+      <ul>
+        <li><router-link to="/login">Login Page</router-link></li>
+        <li><router-link to="/myassets">My Assets Page</router-link></li>
+        <li><router-link to="/accountbook">Account Book Page</router-link></li>
+        <li>
+          <router-link to="/businesscard">Business Card Page</router-link>
+        </li>
+        <li><router-link to="/grouppay">Group Pay Page</router-link></li>
+        <li><router-link to="/signup">Signup Page</router-link></li>
+      </ul>
+    </nav>
+=======
     <Header />
     <div class="container mt-3">
       <!-- 내 계좌 섹션 -->
@@ -56,6 +71,7 @@
     </div>
 
     <FooterNav />
+>>>>>>> 469c5af64762e1f155551e66c110f89118c673e3
   </div>
 </template>
 
@@ -65,6 +81,8 @@ import Header from "../components/Header.vue";
 
 export default {
   name: "MainPage",
+<<<<<<< HEAD
+=======
   components: {
     FooterNav,
     Header,
@@ -86,6 +104,7 @@ export default {
       return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
   },
+>>>>>>> 469c5af64762e1f155551e66c110f89118c673e3
 };
 </script>
 
