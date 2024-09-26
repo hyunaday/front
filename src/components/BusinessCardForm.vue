@@ -1,9 +1,7 @@
 <template>
   <div>
     <h3>{{ title }}</h3>
-    <!-- 명함 등록 폼 내용 -->
     <form @submit.prevent="submitForm">
-      <!-- 명함 이미지 업로드 -->
       <label for="card-image" class="upload-label">
         <div class="upload-box">
           <span>이미지를 추가해주세요.</span>
@@ -20,56 +18,48 @@
         />
       </label>
       <div class="divider"></div>
-      <!-- 이름부터 메모까지 필드들 -->
       <div class="form-group">
         <label for="name">이름&nbsp;<span class="required">*</span></label>
         <div class="input-container">
           <input type="text" id="name" v-model="formData.name" required />
         </div>
       </div>
-
       <div class="form-group">
         <label for="phone">연락처&nbsp;<span class="required">*</span></label>
         <div class="input-container">
           <input type="tel" id="phone" v-model="formData.phone" required />
         </div>
       </div>
-
       <div class="form-group">
         <label for="email">이메일&nbsp;<span class="required">*</span></label>
         <div class="input-container">
           <input type="email" id="email" v-model="formData.email" required />
         </div>
       </div>
-
       <div class="form-group">
         <label for="position">직책</label>
         <div class="input-container">
           <input type="text" id="position" v-model="formData.position" />
         </div>
       </div>
-
       <div class="form-group">
         <label for="department">부서/파트</label>
         <div class="input-container">
           <input type="text" id="department" v-model="formData.department" />
         </div>
       </div>
-
       <div class="form-group">
         <label for="company">소속명</label>
         <div class="input-container">
           <input type="text" id="company" v-model="formData.company" />
         </div>
       </div>
-
       <div class="form-group">
         <label for="address">주소</label>
         <div class="input-container">
           <input type="text" id="address" v-model="formData.address" />
         </div>
       </div>
-
       <div class="form-group">
         <label for="phone-landline">유선번호</label>
         <div class="input-container">
@@ -80,13 +70,14 @@
           />
         </div>
       </div>
-
       <div class="form-group">
         <label for="memo">메모:</label>
         <div class="input-container">
           <textarea id="memo" v-model="formData.memo"></textarea>
         </div>
       </div>
+      <button type="submit">등록</button>
+      <!-- 등록 버튼 추가 -->
     </form>
   </div>
 </template>
@@ -112,6 +103,7 @@ export default {
         phoneLandline: '',
         memo: '',
       },
+      imageFile: null, // 이미지 파일 변수 추가
     };
   },
   methods: {
@@ -123,7 +115,23 @@ export default {
       }
     },
     submitForm() {
-      console.log('폼이 제출되었습니다.', this.formData);
+      // 데이터베이스에 저장하는 API 요청
+      const formData = new FormData();
+      formData.append('image', this.imageFile);
+      formData.append('name', this.formData.name);
+      formData.append('phone', this.formData.phone);
+      formData.append('email', this.formData.email);
+      formData.append('position', this.formData.position);
+      formData.append('department', this.formData.department);
+      formData.append('company', this.formData.company);
+      formData.append('address', this.formData.address);
+      formData.append('phoneLandline', this.formData.phoneLandline);
+      formData.append('memo', this.formData.memo);
+
+      // 여기에 API 요청 코드 추가
+      // 예시: axios.post('/api/businesscards', formData)
+      console.log('폼이 제출되었습니다.', formData);
+      // 실제 API 요청을 위해 주석 제거 및 추가
     },
   },
 };

@@ -13,22 +13,22 @@ import AccountAddList from '../views/AccountAddList.vue';
 import BusinessCardList from '../views/BusinessCardList.vue';
 import MyCardRegistration from '../views/MyCardRegistration.vue'; // MyCardRegistration 추가
 import FriendCardRegistration from '../views/FriendCardRegistration.vue'; // FriendCardRegistration 추가
-
+import AddBusinessCard from '../views/AddBusinessCard.vue';
 
 const routes = [
   {
-    path: "/",
-    name: "MainPage",
+    path: '/',
+    name: 'MainPage',
     component: MainPage,
   },
   {
-    path: "/login",
-    name: "Login",
+    path: '/login',
+    name: 'Login',
     component: Login,
   },
   {
-    path: "/myassets",
-    name: "MyAssets",
+    path: '/myassets',
+    name: 'MyAssets',
     component: MyAssets,
   },
   {
@@ -42,8 +42,8 @@ const routes = [
     component: AccountBook,
   },
   {
-    path: "/businesscard",
-    name: "BusinessCard",
+    path: '/businesscard',
+    name: 'BusinessCard',
     component: BusinessCard,
   },
   {
@@ -57,18 +57,18 @@ const routes = [
     component: GroupPay,
   },
   {
-    path: "/signup",
-    name: "SignUp",
+    path: '/signup',
+    name: 'SignUp',
     component: SignUp,
   },
   {
-    path: "/addlist",
-    name: "AddList",
+    path: '/addlist',
+    name: 'AddList',
     component: AddList,
   },
   {
-    path: "/cards",
-    name: "Cards",
+    path: '/cards',
+    name: 'Cards',
     component: Cards,
   },
   {
@@ -85,6 +85,11 @@ const routes = [
     path: '/my-card-registration', // 나의 명함 등록 페이지 추가
     name: 'MyCardRegistration',
     component: MyCardRegistration,
+  },
+  {
+    path: '/addbusinesscard', //  명함 등록 페이지 추가
+    name: 'AddBusinessCard',
+    component: AddBusinessCard,
   },
 ];
 
