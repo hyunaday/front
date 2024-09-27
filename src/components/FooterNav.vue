@@ -48,7 +48,7 @@ export default {
   props: {
     buttonType: {
       type: String,
-      default: 'pay', // 기본값은 'pay'
+      default: "pay", // 기본값은 'pay'
     },
     buttonAction: {
       type: Function,
@@ -56,7 +56,7 @@ export default {
     },
     customRoute: {
       type: String,
-      default: '/grouppay',
+      default: "/grouppay",
     },
   },
   methods: {
