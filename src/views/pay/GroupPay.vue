@@ -1,12 +1,9 @@
 <template>
-  <div
-    class="main-container d-flex flex-column justify-content-center align-items-center"
-  >
+  <div class="main-container d-flex flex-column justify-content-center align-items-center">
     <button @click="goBack" class="back-button">
       <i class="fas fa-chevron-left"></i>
     </button>
     <h3>함께 결제하기</h3>
-
     <button class="custom-button" @click="showScanner('SoloPay')">
       개인 결제
     </button>
@@ -71,6 +68,7 @@ export default {
       console.log('Decoded data:', data);
       this.decodedData = data; // 스캔된 데이터 저장
       this.errorMessage = ''; // 오류 메시지 초기화
+      this.redirectToPayment(data); // 결제 페이지로 리디렉션
     },
     async onInit(success, error) {
       if (error) {
@@ -104,6 +102,7 @@ export default {
 };
 </script>
 
+
 <style scoped>
 /* 전체 템플릿 */
 body {
@@ -117,59 +116,53 @@ body {
 }
 
 .main-container {
-  width: 360px; /* 고정된 너비 */
-  height: 800px; /* 고정된 높이 */
-  background-color: white; /* 흰색 배경 */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 살짝 그림자 추가 */
+  width: 360px;
+  height: 800px;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* 중앙 정렬 */
-  align-items: center; /* 중앙 정렬 */
+  justify-content: center;
+  align-items: center;
   position: relative;
 }
 
 h3 {
   font-size: 20px;
   font-weight: 530;
-  text-align: left; /* 왼쪽 정렬로 변경 */
+  text-align: left;
   margin-left: -170px;
-  margin-bottom: 50px; /* 제목과 버튼 사이의 여백 */
-  display: flex; /* 플렉스 박스로 변경 */
-  align-items: center; /* 수직 정렬 */
+  margin-bottom: 50px;
 }
 
 .back-button {
-  background: none; /* 배경 제거 */
-  border: none; /* 테두리 제거 */
-  cursor: pointer; /* 마우스 커서 변경 */
-  font-size: 18px; /* 화살표 크기 조정 */
-  font-weight: 400;
-  color: #000; /* 화살표 색상 */
-  text-align: left; /* 왼쪽 정렬로 변경 */
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #000;
   margin-left: -270px;
   margin-top: -300px;
   margin-bottom: 30px; /* 제목과 버튼 사이의 여백 */
 }
 
 .back-button:hover {
-  color: #7189ff; /* 호버 시 색상 변경 */
+  color: #7189ff;
 }
 
-/* 모달 오버레이 스타일 */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7); /* 불투명한 검정색 배경 */
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* 모달 콘텐츠 스타일 */
 .modal-content {
   background: white; /* 모달 배경 색상 */
   padding: 10px;
@@ -189,42 +182,34 @@ h3 {
   cursor: pointer;
 }
 
-/* router-link의 기본 스타일 제거 */
-.link {
-  text-decoration: none; /* 링크의 밑줄 제거 */
-}
-
 .custom-button {
   width: 300px;
   height: 100px;
   background-color: #ffffff;
-  border: 1px solid gray; /* 기본 테두리 제거 */
+  border: 1px solid gray;
   border-radius: 9px;
-  color: #000000; /* 텍스트 색상 */
+  color: #000000;
   font-size: 20px;
-  cursor: pointer; /* 마우스 커서 변경 */
-  outline: none; /* 포커스 시 기본 테두리 제거 */
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 10px; /* 버튼 사이의 간격 */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* 박스 쉐도우 추가 */
-  transition: background-color 0.3s, color 0.3s; /* 부드러운 전환 효과 추가 */
+  margin-bottom: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .custom-button:hover {
-  background-color: #f3f8fe; /* 호버 시 배경색 변경 */
-  color: #333; /* 호버 시 텍스트 색상 변경 */
+  background-color: #f3f8fe;
+  color: #333;
 }
 
 .error-message {
-  color: red; /* 오류 메시지 색상 */
-  margin-top: 20px; /* 오류 메시지와 여백 */
+  color: red;
+  margin-top: 20px;
 }
 
 .decoded-data {
-  margin-top: 20px; /* 스캔된 데이터와 여백 */
+  margin-top: 20px;
 }
-
-/* 필요에 따라 추가 스타일을 작성하세요 */
 </style>

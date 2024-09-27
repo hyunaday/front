@@ -20,17 +20,44 @@
         </ul>
       </div>
       <hr>
+
+      <!-- 2024.09.27 알림 기능 추가 및 서버 연동 -->
       <div class="section">
-        <h2>설정</h2>
+        <h2>환경설정</h2>
         <ul>
-          <li @click="navigateTo('/changepassword')">비밀번호 변경</li>
-          <li @click="navigateTo('/alert')">앱 알림 설정</li>
+          <li @click="navigateTo('/currentpassword')">비밀번호 변경</li>
+          <div class="section">
+            <hr>
+        <h2>알림 설정</h2>
+        <div class="form-check form-switch">
+          <label class="form-check-label me-2" for="notificationToggle">앱 푸시 알림</label>
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="notificationToggle"
+            v-model="notificationsEnabled"
+            @change="updateNotificationSettings"
+          />
+        </div>
+        <div class="form-check form-switch">
+          <label class="form-check-label me-2" for="eventToggle">이벤트 혜택 알림</label>
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="eventToggle"
+            v-model="eventEnabled"
+             @change="updateNotificationSettings"
+          />
+        </div>
+        <hr>
+      </div>
           <li @click="logout">로그아웃</li>
         </ul>
       </div>
+      <!-- ============================== -->
+  
       <hr>
       <div class="section">
-        <h2>회원탈퇴</h2>
         <button @click="deleteAccount">회원탈퇴</button>
       </div>
     </div>
@@ -39,13 +66,18 @@
 </template>
 
 <script>
-import axios from 'axios';
 import FooterNav from '../../components/FooterNav.vue';
 
 export default {
   name: "Settings",
   components: {
     FooterNav,
+  },
+  data() {
+    return {
+      notificationsEnabled: false, // 알림 상태를 저장하는 변수
+      eventEnabled: false,
+    };
   },
   methods: {
     navigateTo(route) {
@@ -60,15 +92,14 @@ export default {
     },
     logout() {
       console.log('로그아웃 중...');
-      axios.post('/logout')
-        .then(response => {
-          console.log('로그아웃 성공:', response.data);
-          this.goToMainPage();
-        })
-        .catch(error => {
-          console.error('로그아웃 에러:', error.response ? error.response.data : error.message);
-          alert('로그아웃 중 오류가 발생했습니다. 다시 시도해 주세요.');
-        });
+      
+      // 토큰 삭제
+      localStorage.removeItem('accessToken');
+
+      // 로그인 페이지로 리다이렉트
+      this.$router.push('/login').catch(err => {
+        console.error('Navigation error:', err);
+      });
     },
     deleteAccount() {
       console.log('회원탈퇴 중...');
@@ -81,55 +112,59 @@ export default {
           console.error('회원탈퇴 에러', error);
           alert('회원탈퇴 중 오류가 발생했습니다. 다시 시도해 주세요.');
         });
-    }
+    },
+     updateNotificationSettings() {
+    // 알림 설정을 서버에 저장하는 API 호출
+    axios.post('/update-notifications', {
+      notificationsEnabled: this.notificationsEnabled,
+      eventEnabled: this.eventEnabled,
+    })
+    .then(response => {
+      console.log('알림 설정 업데이트 성공:', response.data);
+    })
+    .catch(error => {
+      console.error('알림 설정 업데이트 에러:', error);
+    });
+  }
   }
 }
 </script>
 
 <style scoped>
+/* 기존 스타일 유지 */
 .settings {
+  margin: 20px;
   padding: 20px;
   position: relative;
+  width: 250px;
 }
 
 .close-button {
   position: absolute;
   top: 20px;
   right: 20px;
-  background-color: transparent; /* 배경 투명 */
-  border: none; /* 테두리 제거 */
-  font-size: 24px;
-  cursor: pointer;
-  color: #333; /* 아이콘 색상 */
-  transition: transform 0.2s ease, color 0.3s ease; /* 변환 효과 추가 */
-}
-
-.close-button {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background-color: #ff4d4f;
-  border: none; /* Remove border */
-  border-radius: 50%; /* Make it circular */
-  width: 40px; /* Fixed width */
-  height: 40px; /* Fixed height */
-  font-size: 24px; /* Icon size */
-  color: white; /* Icon color */
-  cursor: pointer; /* Pointer cursor */
-  display: flex; /* Flex for centering */
-  align-items: center; /* Center vertically */
-  justify-content: center; /* Center horizontally */
-  transition: background-color 0.3s ease, transform 0.2s ease; /* Transition for hover effect */
+  background-color: #6981D9;
+  border: none; 
+  border-radius: 50%; 
+  width: 20px; 
+  height: 30px; 
+  font-size: px; 
+  color: white; 
+  cursor: pointer; 
+  display: flex;
+  align-items: center; 
+  justify-content: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .close-button:hover {
-  background-color: #ff7875; /* Lighter red on hover */
-  transform: scale(1.1); /* Scale effect on hover */
+  background-color: #98B6EF; 
+  transform: scale(1.1); 
 }
 
 .close-button:focus {
-  outline: none; /* Remove focus outline */
-  box-shadow: 0 0 0 4px rgba(255, 77, 79, 0.5); /* Add focus ring */
+  outline: none; 
+  box-shadow: 0 0 0 4px rgba(255, 77, 79, 0.5); 
 }
 
 
@@ -152,7 +187,7 @@ ul {
 }
 
 li {
-  padding: 10px;
+  padding: 5px;
   cursor: pointer;
 }
 
@@ -162,13 +197,15 @@ li:hover {
 
 button {
   padding: 10px 15px;
-  background-color: #ff4d4f; /* 회원탈퇴 버튼 배경색 */
-  color: white; /* 회원탈퇴 버튼 텍스트 색상 */
-  border: none; /* 회원탈퇴 버튼 테두리 제거 */
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
   cursor: pointer;
+  border-radius: 9px; 
+
 }
 
 button:hover {
-  background-color: #ff7875; /* 회원탈퇴 버튼 호버 색상 */
+  background-color: #ff7875;
 }
 </style>
