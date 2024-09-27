@@ -19,9 +19,9 @@ import SearchFriends from '../views/settings/SearchFriends.vue';
 import PayList from '../views/settings/PayList.vue';
 import Cancel from '../views/settings/Cancel.vue';
 import Logout from '../views/settings/Logout.vue';
-import Alert from '../views/settings/Alert.vue';
 import ChangePassword from '../views/settings/ChangePassword.vue';
 import AddBusinessCard from '../views/business/AddBusinessCard.vue';
+import CurrentPassword from '../views/settings/CurrentPassword.vue';
 
 
 const routes = [
@@ -122,10 +122,10 @@ const routes = [
     component: ChangePassword,
   },
   {
-    path: "/alert",
-    name: "Alert",
-    component: Alert,
-  },  
+    path: "/currentpassword",
+    name: "CurrentPassword",
+    component: CurrentPassword,
+  },
   {
     path: "/logout",
     name: "Logout",

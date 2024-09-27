@@ -21,13 +21,13 @@
       </div>
       <hr>
 
-      <!-- 2024.09.27 알림 설정 기능 추가 -->
+      <!-- 2024.09.27 알림 기능 추가 및 서버 연동 -->
       <div class="section">
         <h2>환경설정</h2>
         <ul>
-          <li @click="navigateTo('/changepassword')">비밀번호 변경</li>
+          <li @click="navigateTo('/currentpassword')">비밀번호 변경</li>
           <div class="section">
-            <hr>햣
+            <hr>
         <h2>알림 설정</h2>
         <div class="form-check form-switch">
           <label class="form-check-label me-2" for="notificationToggle">앱 푸시 알림</label>
@@ -188,7 +188,7 @@ ul {
 }
 
 li {
-  padding: 10px;
+  padding: 5px;
   cursor: pointer;
 }
 
