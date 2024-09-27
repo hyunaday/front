@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import FooterNav from "../components/FooterNav.vue";
+import FooterNav from "../../components/FooterNav.vue";
 
 export default {
   name: "MyAssets",

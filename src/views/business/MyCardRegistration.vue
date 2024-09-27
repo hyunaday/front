@@ -1,7 +1,7 @@
 <template>
   <div class="main-container d-flex flex-column">
     <div class="form-container">
-      <BusinessCardForm title="친구 명함 등록하기" />
+      <BusinessCardForm title="나의 명함 등록하기" />
     </div>
     <!-- FooterNav 컴포넌트 추가 -->
     <FooterNav />
@@ -9,8 +9,9 @@
 </template>
 
 <script>
-import BusinessCardForm from '../components/BusinessCardForm.vue';
-import FooterNav from '../components/FooterNav.vue'; // FooterNav 컴포넌트 import
+import BusinessCardForm from '../../components/BusinessCardForm.vue';
+import FooterNav from '../../components/FooterNav.vue'; // FooterNav 컴포넌트 import
+
 
 export default {
   components: {
@@ -31,7 +32,6 @@ a {
   justify-content: space-between;
   min-height: 100vh;
   background-color: white;
-  overflow-y: auto;
   margin-bottom: 60px;
 }
 
@@ -43,6 +43,7 @@ a {
   width: 100%;
   margin-top: 40px;
   padding: 0 10px; /* 좌우 여백 줄임 */
+  overflow-y: auto;
   max-height: calc(100vh - 80px);
 }
 

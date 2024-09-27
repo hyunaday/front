@@ -42,9 +42,9 @@
 <script>
 import "vue-cal/dist/vuecal.css";
 import VueCal from "vue-cal";
-import CalendarComponent from "../components/CalendarComponent.vue"; // CalendarComponent를 import
-import FooterNav from "../components/FooterNav.vue";
-import AccountBookList from "../components/AccountBookList.vue"; // AccountBookList 컴포넌트 import
+import CalendarComponent from "../../components/CalendarComponent.vue"; // CalendarComponent를 import
+import FooterNav from "../../components/FooterNav.vue";
+import AccountBookList from "../../components/AccountBookList.vue"; // AccountBookList 컴포넌트 import
 
 export default {
   name: "AccountBook",

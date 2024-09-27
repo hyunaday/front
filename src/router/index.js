@@ -1,18 +1,18 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Login from '../views/Login.vue';
 import MainPage from '../views/Mainpage.vue';
-import MyAssets from '../views/MyAssets.vue';
-import AccountBook from '../views/AccountBook.vue';
-import BusinessCard from '../views/BusinessCard.vue';
-import GroupPay from '../views/GroupPay.vue';
+import MyAssets from '../views/asset/MyAssets.vue';
+import AccountBook from '../views/book/AccountBook.vue';
+import BusinessCard from '../views/business/BusinessCard.vue';
+import GroupPay from '../views/pay/GroupPay.vue';
 import SignUp from '../views/SignUp.vue';
-import AddList from '../views/AddList.vue';
-import Cards from '../views/Cards.vue';
-import Account from '../views/Account.vue';
-import AccountAddList from '../views/AccountAddList.vue';
-import BusinessCardList from '../views/BusinessCardList.vue';
-import MyCardRegistration from '../views/MyCardRegistration.vue'; // MyCardRegistration 추가
-import FriendCardRegistration from '../views/FriendCardRegistration.vue'; // FriendCardRegistration 추가
+import AddList from '../views/book/AddList.vue';
+import Cards from '../views/asset/Cards.vue';
+import Account from '../views/asset/Account.vue';
+import AccountAddList from '../views/asset/AccountAddList.vue';
+import BusinessCardList from '../views/business/BusinessCardList.vue';
+import MyCardRegistration from '../views/business/MyCardRegistration.vue'; // MyCardRegistration 추가
+import FriendCardRegistration from '../views/business/FriendCardRegistration.vue'; // FriendCardRegistration 추가
 import Settings from '../views/settings/Settings.vue';
 import InviteFriends from '../views/settings/InviteFriends.vue';
 import SearchFriends from '../views/settings/SearchFriends.vue';
@@ -21,7 +21,7 @@ import Cancel from '../views/settings/Cancel.vue';
 import Logout from '../views/settings/Logout.vue';
 import Alert from '../views/settings/Alert.vue';
 import ChangePassword from '../views/settings/ChangePassword.vue';
-import AddBusinessCard from '../views/AddBusinessCard.vue';
+import AddBusinessCard from '../views/business/AddBusinessCard.vue';
 
 
 const routes = [
