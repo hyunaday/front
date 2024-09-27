@@ -63,7 +63,7 @@
   
   <script>
   import { useRouter } from 'vue-router';
-  import FooterNav from '../components/FooterNav.vue';
+  import FooterNav from '../../components/FooterNav.vue';
   
   export default {
     name: "Account",

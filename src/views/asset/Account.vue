@@ -33,7 +33,7 @@
 </template>
 
  <script>
-import FooterNav from '../components/FooterNav.vue';
+import FooterNav from '../../components/FooterNav.vue';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { faTrashCan } from '@fortawesome/free-solid-svg-icons';

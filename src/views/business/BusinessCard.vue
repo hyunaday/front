@@ -78,7 +78,7 @@
 </template>
 
 <script>
-import FooterNav from '../components/FooterNav.vue'; // 경로를 올바르게 수정
+import FooterNav from '../../components/FooterNav.vue'; // 경로를 올바르게 수정
 import QrcodeVue from 'qrcode.vue'; // QR 코드 라이브러리 임포트
 
 export default {
