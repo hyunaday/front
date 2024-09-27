@@ -48,7 +48,7 @@
         <span>가계부</span>
       </router-link>
 
-      <router-link to="/businesscard" class="nav-item" exact-active-class="active">
+      <router-link to="/addbusinesscard" class="nav-item" exact-active-class="active">
         <i class="fas fa-id-card"></i>
         <span>전자 명함</span>
       </router-link>

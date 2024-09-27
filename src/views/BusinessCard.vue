@@ -59,7 +59,7 @@
     <div class="divider"></div>
 
     <!-- FooterNav 컴포넌트 사용 -->
-    <FooterNav :buttonType="'plus'" :buttonAction="goToBusinessCardList" />
+    <FooterNav :buttonType="'plus'" :buttonAction="goToaddBusinessCard" />
     <!-- QR 코드 모달 -->
     <div v-if="showModal" class="modal" @click="closeModal">
       <div class="modal-content" @click.stop>
@@ -149,9 +149,9 @@ export default {
     selectCard(card) {
       this.selectedCard = card;
     },
-    goToBusinessCardList() {
-      // 명함 목록 페이지로 이동
-      this.$router.push('/businesscardlist');
+    goToaddBusinessCard() {
+      // '/addbusinesscard' 페이지로 라우팅
+      this.$router.push('/addbusinesscard');
     },
     closeModal() {
       this.showModal = false; // 모달 닫기

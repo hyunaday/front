@@ -61,7 +61,12 @@ export default {
   },
   methods: {
     handleButtonClick() {
-      this.buttonAction(); // 전달된 action 호출
+      // 현재 라우트가 'BusinessCard'일 때만 /addbusinesscard 경로로 이동
+      if (this.buttonType === 'plus' && this.$route.name === 'BusinessCard') {
+        this.$router.push('/addbusinesscard');
+      } else {
+        this.buttonAction(); // 전달된 action 호출
+      }
     },
   },
 };
