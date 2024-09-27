@@ -80,6 +80,7 @@ export default {
   bottom: 0;
   max-width: 360px;
   width: 100%;
+  z-index: 999;
 }
 
 .navbar .nav-item {

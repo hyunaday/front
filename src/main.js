@@ -10,6 +10,10 @@ import router from './router'; // router 설정을 불러옴
 import '@fortawesome/fontawesome-free/css/all.css';
 import '@fortawesome/fontawesome-free/js/all.js';
 
+// Swiper CSS 파일 가져오기
+import 'swiper/css';
+import 'swiper/css/pagination';
+
 const app = createApp(App);
 
 // Pinia 설정

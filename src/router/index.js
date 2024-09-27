@@ -11,81 +11,24 @@ import Cards from '../views/Cards.vue';
 import Account from '../views/Account.vue';
 import AccountAddList from '../views/AccountAddList.vue';
 import BusinessCardList from '../views/BusinessCardList.vue';
-import MyCardRegistration from '../views/MyCardRegistration.vue'; // MyCardRegistration 추가
-import FriendCardRegistration from '../views/FriendCardRegistration.vue'; // FriendCardRegistration 추가
-
+import MyCardRegistration from '../views/MyCardRegistration.vue';
+import FriendCardRegistration from '../views/FriendCardRegistration.vue';
 
 const routes = [
-  {
-    path: "/",
-    name: "MainPage",
-    component: MainPage,
-  },
-  {
-    path: "/login",
-    name: "Login",
-    component: Login,
-  },
-  {
-    path: "/myassets",
-    name: "MyAssets",
-    component: MyAssets,
-  },
-  {
-    path: '/account',
-    name: 'Account',
-    component: Account,
-  },
-  {
-    path: '/accountbook',
-    name: 'AccountBook',
-    component: AccountBook,
-  },
-  {
-    path: "/businesscard",
-    name: "BusinessCard",
-    component: BusinessCard,
-  },
-  {
-    path: '/businesscardlist',
-    name: 'BusinessCardList',
-    component: BusinessCardList,
-  },
-  {
-    path: '/grouppay',
-    name: 'GroupPay',
-    component: GroupPay,
-  },
-  {
-    path: "/signup",
-    name: "SignUp",
-    component: SignUp,
-  },
-  {
-    path: "/addlist",
-    name: "AddList",
-    component: AddList,
-  },
-  {
-    path: "/cards",
-    name: "Cards",
-    component: Cards,
-  },
-  {
-    path: '/accountaddlist',
-    name: 'AccountAddList',
-    component: AccountAddList,
-  },
-  {
-    path: '/friend-card-registration', // 새로운 경로 추가
-    name: 'FriendCardRegistration',
-    component: FriendCardRegistration,
-  },
-  {
-    path: '/my-card-registration', // 나의 명함 등록 페이지 추가
-    name: 'MyCardRegistration',
-    component: MyCardRegistration,
-  },
+  { path: "/", name: "MainPage", component: MainPage },
+  { path: "/login", name: "Login", component: Login },
+  { path: "/myassets", name: "MyAssets", component: MyAssets },
+  { path: "/account", name: "Account", component: Account },
+  { path: "/accountbook", name: "AccountBook", component: AccountBook },
+  { path: "/businesscard", name: "BusinessCard", component: BusinessCard },
+  { path: "/businesscardlist", name: "BusinessCardList", component: BusinessCardList },
+  { path: "/grouppay", name: "GroupPay", component: GroupPay },
+  { path: "/signup", name: "SignUp", component: SignUp },
+  { path: "/addlist", name: "AddList", component: AddList },
+  { path: "/cards", name: "Cards", component: Cards },
+  { path: "/accountaddlist", name: "AccountAddList", component: AccountAddList },
+  { path: "/friend-card-registration", name: "FriendCardRegistration", component: FriendCardRegistration },
+  { path: "/my-card-registration", name: "MyCardRegistration", component: MyCardRegistration },
 ];
 
 const router = createRouter({
