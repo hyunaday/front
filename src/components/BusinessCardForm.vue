@@ -77,7 +77,6 @@
         </div>
       </div>
       <button type="submit">등록</button>
-      <!-- 등록 버튼 추가 -->
     </form>
   </div>
 </template>
@@ -103,7 +102,7 @@ export default {
         phoneLandline: '',
         memo: '',
       },
-      imageFile: null, // 이미지 파일 변수 추가
+      imageFile: null,
     };
   },
   methods: {
@@ -115,7 +114,6 @@ export default {
       }
     },
     submitForm() {
-      // 데이터베이스에 저장하는 API 요청
       const formData = new FormData();
       formData.append('image', this.imageFile);
       formData.append('name', this.formData.name);
@@ -128,10 +126,8 @@ export default {
       formData.append('phoneLandline', this.formData.phoneLandline);
       formData.append('memo', this.formData.memo);
 
-      // 여기에 API 요청 코드 추가
-      // 예시: axios.post('/api/businesscards', formData)
       console.log('폼이 제출되었습니다.', formData);
-      // 실제 API 요청을 위해 주석 제거 및 추가
+      // API 요청을 실제로 보내는 코드는 여기에 추가
     },
   },
 };

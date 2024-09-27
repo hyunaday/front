@@ -4,17 +4,26 @@
       <i class="fas fa-chevron-left"></i>
     </button>
     <h3>함께 결제하기</h3>
+    <button class="custom-button" @click="showScanner('SoloPay')">
+      개인 결제
+    </button>
+    <button class="custom-button" @click="showScanner('MainPay')">
+      대표 결제
+    </button>
+    <button class="custom-button" @click="showScanner('MemberPay')">
+      팀원 결제
+    </button>
 
-    <button class="custom-button" @click="showScanner = true">개인 결제</button>
-    <button class="custom-button" @click="showScanner = true">대표 결제</button>
-    <button class="custom-button" @click="showScanner = true">팀원 결제</button>
-
-    <div v-if="showScanner" class="modal-overlay" @click="closeModal">
+    <div v-if="showScannerModal" class="modal-overlay" @click="closeModal">
       <div class="modal-content" @click.stop>
         <button class="close-button" @click="closeModal">X</button>
-        <qrcode-stream @decode="onDecode" @init="onInit" />
+        <qrcode-stream @decode="onDecode" @init="onInit" style="width: 360px" />
+
+        <!-- 스캔 결과 출력 -->
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-        <p v-if="decodedData" class="decoded-data">스캔된 데이터: {{ decodedData }}</p>
+        <p v-if="decodedData" class="decoded-data">
+          스캔된 데이터: <strong>{{ decodedData }}</strong>
+        </p>
       </div>
     </div>
   </div>
@@ -22,43 +31,72 @@
 
 <script>
 import { QrcodeStream } from 'vue-qrcode-reader';
+import SoloPay from './SoloPay.vue';
+import MainPay from './MainPay.vue';
+import MemberPay from './MemberPay.vue';
 
 export default {
-  name: 'MyAssets',
+  name: 'PaymentSelection',
   components: {
     QrcodeStream,
+    SoloPay,
+    MainPay,
+    MemberPay,
   },
   data() {
     return {
       decodedData: '',
       errorMessage: '',
-      showScanner: false,
+      showScannerModal: false,
+      currentPaymentComponent: null,
     };
   },
   methods: {
     goBack() {
-      this.$router.go(-1); // 이전 페이지로 이동
+      this.$router.go(-1);
+    },
+    showScanner(paymentType) {
+      this.currentPaymentComponent =
+        paymentType === 'SoloPay'
+          ? SoloPay
+          : paymentType === 'MainPay'
+          ? MainPay
+          : MemberPay;
+      this.showScannerModal = true;
     },
     onDecode(data) {
+      console.log('Decoded data:', data);
       this.decodedData = data; // 스캔된 데이터 저장
       this.errorMessage = ''; // 오류 메시지 초기화
       this.redirectToPayment(data); // 결제 페이지로 리디렉션
     },
-    onInit(success, error) {
+    async onInit(success, error) {
       if (error) {
+        console.error('Camera initialization failed:', error);
         this.errorMessage = '카메라에 접근할 수 없습니다. 권한을 확인하세요.';
       } else if (success) {
+        console.log('Camera initialization successful');
         this.errorMessage = '';
+
+        // 카메라 접근 권한 요청
+        try {
+          await this.requestCameraPermission();
+        } catch (err) {
+          console.error('Camera permission denied:', err);
+          this.errorMessage = '카메라 권한이 필요합니다.';
+        }
       }
     },
     closeModal() {
-      this.showScanner = false; // 모달 닫기
-      this.decodedData = ''; // 스캔된 데이터 초기화
-      this.errorMessage = ''; // 오류 메시지 초기화
+      this.showScannerModal = false;
+      this.decodedData = ''; // 모달 닫을 때 결과 초기화
     },
-    redirectToPayment(url) {
-      // 스캔된 URL로 리디렉션
-      window.location.href = url; // 또는 this.$router.push(url)로 Vue Router 사용
+    async requestCameraPermission() {
+      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        await navigator.mediaDevices.getUserMedia({ video: true });
+      } else {
+        throw new Error('getUserMedia is not supported in this browser.');
+      }
     },
   },
 };
@@ -105,7 +143,8 @@ h3 {
   font-size: 18px;
   color: #000;
   margin-left: -270px;
-  margin-bottom: 30px;
+  margin-top: -300px;
+  margin-bottom: 30px; /* 제목과 버튼 사이의 여백 */
 }
 
 .back-button:hover {
@@ -125,10 +164,11 @@ h3 {
 }
 
 .modal-content {
-  background: white;
-  padding: 20px;
+  background: white; /* 모달 배경 색상 */
+  padding: 10px;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  width: 380px;
   position: relative;
 }
 

@@ -4,7 +4,7 @@ import MainPage from '../views/Mainpage.vue';
 import MyAssets from '../views/asset/MyAssets.vue';
 import AccountBook from '../views/book/AccountBook.vue';
 import BusinessCard from '../views/business/BusinessCard.vue';
-import GroupPay from '../views/pay/GroupPay.vue';
+import GroupPay from '../views/Pay/GroupPay.vue';
 import SignUp from '../views/SignUp.vue';
 import AddList from '../views/book/AddList.vue';
 import Cards from '../views/asset/Cards.vue';
@@ -21,7 +21,11 @@ import Cancel from '../views/settings/Cancel.vue';
 import Logout from '../views/settings/Logout.vue';
 import ChangePassword from '../views/settings/ChangePassword.vue';
 import AddBusinessCard from '../views/business/AddBusinessCard.vue';
+import MainPay from '../views/Pay/MainPay.vue';
+import MemberPay from '../views/Pay/MemberPay.vue';
+import SoloPay from '../views/Pay/SoloPay.vue';
 import CurrentPassword from '../views/settings/CurrentPassword.vue';
+
 
 const routes = [
   {
@@ -107,6 +111,7 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    // Settings path 설정 - 2024.09.26
     path: '/settings',
     name: 'Settings',
     component: Settings,
@@ -137,6 +142,11 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
+    path: '/alert',
+    name: 'Alert',
+    component: Alert,
+  },
+  {
     path: "/currentpassword",
     name: "CurrentPassword",
     component: CurrentPassword,
@@ -158,6 +168,21 @@ const routes = [
     name: 'AddBusinessCard',
     component: AddBusinessCard,
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/solopay', //  개인 결제 페이지
+    name: 'SoloPay',
+    component: SoloPay,
+  },
+  {
+    path: '/mainpay', //  대표 결제 추가
+    name: 'MainPay',
+    component: MainPay,
+  },
+  {
+    path: '/memberpay', // 팀원 결제 추가
+    name: 'MemberPay',
+    component: MemberPay,
   },
 ];
 
