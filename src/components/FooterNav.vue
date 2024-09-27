@@ -1,10 +1,10 @@
 <template>
   <div class="navbar">
-    <router-link to="/" class="nav-item" exact-active-class="active">
+    <router-link to="/" class="nav-item home" exact-active-class="active">
       <i class="fas fa-home"></i>
       <span>홈</span>
     </router-link>
-    <router-link to="/myassets" class="nav-item" exact-active-class="active">
+    <router-link to="/myassets" class="nav-item my-assets" exact-active-class="active">
       <i class="fas fa-wallet"></i>
       <span>내 자산</span>
     </router-link>
@@ -39,13 +39,13 @@
 
     </button>
 
-    <router-link to="/accountbook" class="nav-item" exact-active-class="active">
+    <router-link to="/accountbook" class="nav-item account-book" exact-active-class="active">
       <i class="fas fa-book"></i>
       <span>가계부</span>
     </router-link>
     <router-link
       to="/businesscard"
-      class="nav-item"
+      class="nav-item business-card"
       exact-active-class="active"
     >
       <i class="fas fa-id-card"></i>
@@ -90,6 +90,23 @@ export default {
 </script>
 
 <style scoped>
+@font-face {
+  font-family: "Pretendard-Regular";
+  src: url("https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff")
+    format("woff");
+  font-weight: 400;
+  font-style: normal;
+}
+
+body,
+h2,
+label,
+button,
+input,
+span {
+  font-family: "Pretendard", sans-serif;
+}
+
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -126,12 +143,12 @@ export default {
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   background-color: #6981d6;
   border-radius: 40px;
   color: white;
-  font-size: 23px;
+  font-size: 15px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -153,15 +170,38 @@ export default {
   font-weight: bold;
 }
 
-.nav-item:nth-child(4) {
-  flex-grow: 1.7;
+/* 각 메뉴 항목에 대한 개별 스타일 */
+.navbar .nav-item.home {
+  order: 1; /* 순서 조정 */
+  margin-left: -20px;
 }
 
+.navbar .nav-item.my-assets {
+  order: 2;
+  margin-left: -25px;
+}
+
+.navbar .nav-item.account-book {
+  order: 4;
+  margin-right: -25px;
+  margin-left: 50px;
+}
+
+.navbar .nav-item.business-card {
+  order: 5;
+  margin-right: -10px;
+}
+
+/* 중앙 버튼의 순서 */
+.pay-btn {
+  order: 3;
+}
+
+/* flex-grow 조정 삭제 */
+.nav-item:nth-child(4),
 .nav-item:nth-child(2) {
-  flex-grow: 1.7;
+  flex-grow: 1;
 }
 
-.navbar .nav-item.active i {
-  color: #7189ff;
-}
+/* 필요에 따라 추가 스타일 조정 */
 </style>

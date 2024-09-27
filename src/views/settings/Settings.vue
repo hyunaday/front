@@ -39,7 +39,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import FooterNav from '../../components/FooterNav.vue';
 
 export default {
@@ -60,33 +59,29 @@ export default {
     },
     logout() {
       console.log('로그아웃 중...');
-      axios.post('/logout')
-        .then(response => {
-          console.log('로그아웃 성공:', response.data);
-          this.goToMainPage();
-        })
-        .catch(error => {
-          console.error('로그아웃 에러:', error.response ? error.response.data : error.message);
-          alert('로그아웃 중 오류가 발생했습니다. 다시 시도해 주세요.');
-        });
+      
+      // 토큰 삭제
+      localStorage.removeItem('accessToken');
+
+      // 로그인 페이지로 리다이렉트
+      this.$router.push('/login').catch(err => {
+        console.error('Navigation error:', err);
+      });
     },
     deleteAccount() {
       console.log('회원탈퇴 중...');
-      axios.post('/cancel')
-        .then(() => {
-          console.log('회원탈퇴 성공');
-          this.goToMainPage();
-        })
-        .catch(error => {
-          console.error('회원탈퇴 에러', error);
-          alert('회원탈퇴 중 오류가 발생했습니다. 다시 시도해 주세요.');
-        });
+      // 회원탈퇴 처리 로직 추가
+      this.$router.push('/login').catch(err => {
+        console.error('회원탈퇴 에러', err);
+        alert('회원탈퇴 중 오류가 발생했습니다. 다시 시도해 주세요.');
+      });
     }
   }
 }
 </script>
 
 <style scoped>
+/* 기존 스타일 유지 */
 .settings {
   padding: 20px;
   position: relative;
@@ -96,45 +91,22 @@ export default {
   position: absolute;
   top: 20px;
   right: 20px;
-  background-color: transparent; /* 배경 투명 */
-  border: none; /* 테두리 제거 */
+  background-color: transparent;
+  border: none;
   font-size: 24px;
   cursor: pointer;
-  color: #333; /* 아이콘 색상 */
-  transition: transform 0.2s ease, color 0.3s ease; /* 변환 효과 추가 */
-}
-
-.close-button {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background-color: #ff4d4f;
-  border: none; /* Remove border */
-  border-radius: 50%; /* Make it circular */
-  width: 40px; /* Fixed width */
-  height: 40px; /* Fixed height */
-  font-size: 24px; /* Icon size */
-  color: white; /* Icon color */
-  cursor: pointer; /* Pointer cursor */
-  display: flex; /* Flex for centering */
-  align-items: center; /* Center vertically */
-  justify-content: center; /* Center horizontally */
-  transition: background-color 0.3s ease, transform 0.2s ease; /* Transition for hover effect */
+  color: #333;
+  transition: transform 0.2s ease, color 0.3s ease;
 }
 
 .close-button:hover {
-  background-color: #ff7875; /* Lighter red on hover */
-  transform: scale(1.1); /* Scale effect on hover */
+  background-color: #ff7875;
+  transform: scale(1.1);
 }
 
 .close-button:focus {
-  outline: none; /* Remove focus outline */
-  box-shadow: 0 0 0 4px rgba(255, 77, 79, 0.5); /* Add focus ring */
-}
-
-
-h1 {
-  font-size: 24px;
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(255, 77, 79, 0.5);
 }
 
 .section {
@@ -162,13 +134,13 @@ li:hover {
 
 button {
   padding: 10px 15px;
-  background-color: #ff4d4f; /* 회원탈퇴 버튼 배경색 */
-  color: white; /* 회원탈퇴 버튼 텍스트 색상 */
-  border: none; /* 회원탈퇴 버튼 테두리 제거 */
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
   cursor: pointer;
 }
 
 button:hover {
-  background-color: #ff7875; /* 회원탈퇴 버튼 호버 색상 */
+  background-color: #ff7875;
 }
 </style>

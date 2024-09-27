@@ -9,10 +9,10 @@
       <br />
       <br />
       <main class="main-content">
-        <form>
+        <form @submit.prevent="handleSubmit">
           <div class="input-group">
-            <label for="username">이메일</label>
-            <input type="text" id="username" placeholder="아이디 입력" />
+            <label for="email">이메일</label>
+            <input type="text" id="email" v-model="email" placeholder="아이디 입력" />
           </div>
           <br />
           <div class="input-group">
@@ -21,46 +21,17 @@
               <input
                 type="password"
                 id="password"
+                v-model="password"
                 placeholder="비밀번호 입력"
               />
               <a href="#" class="forgot-password">비밀번호를 잊으셨나요?</a>
             </div>
           </div>
           <br />
-          <div class="simple-login">
-            <p>간편로그인</p>
-            <div class="logo-links">
-              <a href="#" class="logo-link">
-                <img
-                  src="../assets/images/kakao.png"
-                  alt="Logo 1"
-                  class="logo-image"
-                />
-              </a>
-              <a href="#" class="logo-link">
-                <img
-                  src="../assets/images/naver.png"
-                  alt="Logo 2"
-                  class="logo-image"
-                />
-              </a>
-              <a href="#" class="logo-link">
-                <img
-                  src="../assets/images/google.png"
-                  alt="Logo 3"
-                  class="logo-image"
-                />
-              </a>
-            </div>
-          </div>
-          <br />
           <button type="submit" class="login-btn">로그인</button>
           <div class="signup-link">
             <p>처음 오셨나요?</p>
-            <a @click.prevent="$router.push('/signup')" class="signup-btn"
-              >회원가입</a
-            >
-            <!-- 클릭 이벤트 추가 -->
+            <a @click.prevent="$router.push('/signup')" class="signup-btn">회원가입</a>
           </div>
         </form>
       </main>
@@ -69,12 +40,54 @@
 </template>
 
 <script>
+import apiClient from '../api/axios.js'; // Axios 설정 파일을 임포트
+
 export default {
   name: "Login",
+  data() {
+    return {
+      email: '',
+      password: ''
+    };
+  },
+  methods: {
+    async handleSubmit() {
+      const loginData = {
+        memberId: this.email,
+        password: this.password
+      };
+
+      try {
+        // 로그인 요청
+        const response = await apiClient.post('/member/login', loginData);
+
+        if (response.data.isSuccess) {
+          // 로그인 성공
+          alert('로그인 성공!');
+          // 토큰 저장 (localStorage나 Vuex 등을 사용할 수 있음)
+          localStorage.setItem('accessToken', response.data.result.accessToken);
+
+          // 메인 페이지로 이동
+          this.$router.push('/');
+        } else {
+          // 로그인 실패 시 메시지
+          alert(`로그인 실패: ${response.data.message || '알 수 없는 오류'}`);
+        }
+      } catch (error) {
+        console.error('로그인 오류:', error);
+        if (error.response) {
+          alert(`서버 오류: ${error.response.data.message || '알 수 없는 오류'}`);
+        } else {
+          alert('서버에 연결할 수 없습니다. 네트워크를 확인해주세요.');
+        }
+      }
+    }
+  }
 };
 </script>
 
 <style scoped>
+/* 스타일링은 기존 코드를 유지 */
 .content-wrapper {
   width: 100%;
   max-width: 1200px;
@@ -138,30 +151,6 @@ form {
 .forgot-password:hover {
   text-decoration: underline;
 }
-.simple-login {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 20px;
-}
-.simple-login p {
-  font-size: 0.9em;
-  color: #777;
-  margin: 0;
-}
-.logo-links {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-top: 10px;
-}
-.logo-link {
-  display: flex;
-}
-.logo-image {
-  width: 40px;
-  height: auto;
-}
 .login-btn {
   width: 100%;
   padding: 10px;
@@ -177,11 +166,6 @@ form {
   flex-direction: column;
   align-items: center;
   margin-top: 20px;
-}
-.signup-link p {
-  font-size: 0.9em;
-  color: #777;
-  margin: 0;
 }
 .signup-btn {
   font-size: 0.9em;
