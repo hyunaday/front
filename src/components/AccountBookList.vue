@@ -33,66 +33,58 @@
       <i class="fa-solid fa-filter filter-icon" @click="toggleFilter"></i>
     </div>
 
-    <!-- 필터 옵션 토글 -->
-    <div v-if="showFilter" class="filter-options">
-      <!-- 입/출금 체크박스 섹션 -->
-      <div class="filter-section">
-        <strong>입/출금</strong>
-        <div>
-          <input type="checkbox" id="income" v-model="filterOptions.income" />
-          <label for="income">입금</label>
-          <input type="checkbox" id="expense" v-model="filterOptions.expense" />
-          <label for="expense">출금</label>
+    <!-- 필터 창 -->
+    <div v-if="showFilter" class="filter-dropdown">
+      <div class="filter-option" v-for="category in categories" :key="category">
+        <input type="checkbox" :id="category" />
+        <label :for="category">{{ category }}</label>
+      </div>
+    </div>
+
+    <!-- 날짜별 가계부 내역 표시 시작 -->
+    <!-- 바뀐 부분: 날짜별로 가계부 내역을 표시 -->
+    <div
+      v-for="(entryGroup, index) in entries"
+      :key="index"
+      class="entry-group"
+    >
+      <div class="entry-header">
+        <div class="date-section">
+          <div class="date">{{ entryGroup.date }}</div>
+          <div class="day">{{ entryGroup.day }}</div>
+          <div class="year-month">{{ entryGroup.yearMonth }}</div>
+        </div>
+        <div
+          class="total-amount"
+          :class="entryGroup.totalAmount < 0 ? 'negative' : 'positive'"
+        >
+          {{ formatAmount(entryGroup.totalAmount) }}
         </div>
       </div>
 
-      <!-- 카테고리 체크박스 섹션 -->
-      <div class="filter-section">
-        <strong>카테고리</strong>
-        <div class="categories">
-          <div>
-            <input type="checkbox" id="food" v-model="filterOptions.food" />
-            <label for="food">식비</label>
+      <div class="entry-details">
+        <div
+          v-for="(entry, index) in entryGroup.entries"
+          :key="index"
+          class="entry-item"
+        >
+          <div class="category">
+            <div>{{ entry.category }}</div>
+            <div>{{ entry.detail }}</div>
+            <!-- 바뀐 부분: 세부 항목 표시 -->
           </div>
-          <div>
-            <input
-              type="checkbox"
-              id="transport"
-              v-model="filterOptions.transport"
-            />
-            <label for="transport">교통</label>
-          </div>
-          <div>
-            <input
-              type="checkbox"
-              id="shopping"
-              v-model="filterOptions.shopping"
-            />
-            <label for="shopping">쇼핑</label>
-          </div>
-          <div>
-            <input
-              type="checkbox"
-              id="culture"
-              v-model="filterOptions.culture"
-            />
-            <label for="culture">문화</label>
-          </div>
-          <div>
-            <input
-              type="checkbox"
-              id="housing"
-              v-model="filterOptions.housing"
-            />
-            <label for="housing">주거/통신</label>
-          </div>
-          <div>
-            <input type="checkbox" id="etc" v-model="filterOptions.etc" />
-            <label for="etc">기타</label>
+          <div class="payment">{{ entry.paymentMethod }}</div>
+          <div class="time">{{ entry.time }}</div>
+          <div
+            class="amount"
+            :class="entry.amount < 0 ? 'negative' : 'positive'"
+          >
+            {{ formatAmount(entry.amount) }}
           </div>
         </div>
       </div>
     </div>
+    <!-- 날짜별 가계부 내역 표시 끝 -->
   </div>
 </template>
 
@@ -117,24 +109,62 @@ export default {
         "November",
         "December",
       ],
-      calendar: [],
-      data: {}, // 날짜별 데이터를 저장하는 객체
-      showFilter: false, // 필터 버튼 클릭 시 필터 메뉴 표시 여부
-      filterOptions: {
-        income: false, // 입금 필터
-        expense: false, // 출금 필터
-        food: false, // 카테고리: 식비
-        transport: false, // 카테고리: 교통
-        shopping: false, // 카테고리: 쇼핑
-        culture: false, // 카테고리: 문화
-        housing: false, // 카테고리: 주거/통신
-        etc: false, // 카테고리: 기타
-      },
+      showFilter: false, // 필터 창의 표시 상태
+      categories: ["식비", "교통비", "의료비", "엔터테인먼트", "기타"], // 카테고리 리스트
+
+      // 바뀐 부분: 가계부 내역
+      entries: [
+        {
+          date: "19",
+          day: "화요일",
+          yearMonth: "2024.01",
+          totalAmount: -27000,
+          entries: [
+            {
+              category: "생활용품",
+              detail: "주방/욕실",
+              paymentMethod: "신한은행",
+              time: "오후 2:42",
+              amount: -30000,
+            },
+            {
+              category: "부수입",
+              detail: "",
+              paymentMethod: "현금",
+              time: "오후 1:42",
+              amount: 3000,
+            },
+          ],
+        },
+        {
+          date: "20",
+          day: "수요일",
+          yearMonth: "2024.01",
+          totalAmount: -27000,
+          entries: [
+            {
+              category: "생활용품",
+              detail: "주방/욕실",
+              paymentMethod: "신한은행",
+              time: "오후 2:42",
+              amount: -30000,
+            },
+            {
+              category: "부수입",
+              detail: "",
+              paymentMethod: "현금",
+              time: "오후 1:42",
+              amount: 3000,
+            },
+          ],
+        },
+      ],
     };
   },
   methods: {
     toggleFilter() {
-      this.showFilter = !this.showFilter;
+      this.showFilter = !this.showFilter; // 필터 창 표시 여부 토글
+      console.log("Filter toggle status: ", this.showFilter); // 상태가 토글되는지 확인
     },
     generateYears() {
       const currentYear = new Date().getFullYear();
@@ -173,6 +203,13 @@ export default {
         weeks.push(week);
       }
       this.calendar = weeks;
+    },
+    // 바뀐 부분: 금액 포맷팅 함수
+    formatAmount(amount) {
+      return new Intl.NumberFormat("ko-KR", {
+        style: "currency",
+        currency: "KRW",
+      }).format(amount);
     },
   },
 };
@@ -335,5 +372,110 @@ button:hover {
 
 .filter-icon:hover {
   color: #888; /* 필터 아이콘 호버 시 색상 변경 */
+}
+
+.filter-dropdown {
+  background-color: white;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-top: 10px;
+  width: 200px;
+  z-index: 100; /* 다른 요소보다 위에 표시되도록 설정 */
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.filter-option input {
+  margin-right: 10px;
+}
+
+/* 바뀐 부분: 날짜별 가계부 내역 스타일 */
+.date-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.date-section {
+  display: flex;
+  align-items: center;
+}
+
+.date {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.day {
+  font-size: 0.7rem;
+  margin-left: 10px;
+  background-color: #ddd;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.year-month {
+  margin-left: 10px;
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.total-amount {
+  margin-left: 200px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 10px;
+  padding: 5px 10px;
+  background-color: #ddd;
+  display: inline-block; /* 글자 크기에 맞춰 사이즈 조정 */
+}
+
+.positive {
+  color: #62d0ff;
+}
+
+.negative {
+  color: #ee8282;
+}
+
+.entry-details {
+  margin-top: 10px;
+}
+
+.entry-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.category {
+  flex: 1;
+  font-size: 0.8rem;
+}
+
+.payment {
+  flex: 1;
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+.time {
+  flex: 1;
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+.amount {
+  flex: 1;
+  text-align: right;
+  font-size: 0.8rem;
+  font-weight: bold;
 }
 </style>
