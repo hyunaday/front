@@ -27,7 +27,8 @@
         <ul>
           <li @click="navigateTo('/changepassword')">비밀번호 변경</li>
           <div class="section">
-        <div>알림 설정</div>
+            <hr>햣
+        <h2>알림 설정</h2>
         <div class="form-check form-switch">
           <label class="form-check-label me-2" for="notificationToggle">앱 푸시 알림</label>
           <input
@@ -35,6 +36,7 @@
             type="checkbox"
             id="notificationToggle"
             v-model="notificationsEnabled"
+            @change="updateNotificationSettings"
           />
         </div>
         <div class="form-check form-switch">
@@ -44,6 +46,7 @@
             type="checkbox"
             id="eventToggle"
             v-model="eventEnabled"
+             @change="updateNotificationSettings"
           />
         </div>
         <hr>
@@ -111,7 +114,20 @@ export default {
           console.error('회원탈퇴 에러', error);
           alert('회원탈퇴 중 오류가 발생했습니다. 다시 시도해 주세요.');
         });
-    }
+    },
+     updateNotificationSettings() {
+    // 알림 설정을 서버에 저장하는 API 호출
+    axios.post('/update-notifications', {
+      notificationsEnabled: this.notificationsEnabled,
+      eventEnabled: this.eventEnabled,
+    })
+    .then(response => {
+      console.log('알림 설정 업데이트 성공:', response.data);
+    })
+    .catch(error => {
+      console.error('알림 설정 업데이트 에러:', error);
+    });
+  }
   }
 }
 </script>
@@ -129,27 +145,27 @@ export default {
   top: 20px;
   right: 20px;
   background-color: #6981D9;
-  border: none; /* Remove border */
-  border-radius: 50%; /* Make it circular */
-  width: 20px; /* Fixed width */
-  height: 30px; /* Fixed height */
-  font-size: px; /* Icon size */
-  color: white; /* Icon color */
-  cursor: pointer; /* Pointer cursor */
-  display: flex; /* Flex for centering */
-  align-items: center; /* Center vertically */
-  justify-content: center; /* Center horizontally */
-  transition: background-color 0.3s ease, transform 0.2s ease; /* Transition for hover effect */
+  border: none; 
+  border-radius: 50%; 
+  width: 20px; 
+  height: 30px; 
+  font-size: px; 
+  color: white; 
+  cursor: pointer; 
+  display: flex;
+  align-items: center; 
+  justify-content: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .close-button:hover {
-  background-color: #98B6EF; /* Lighter red on hover */
-  transform: scale(1.1); /* Scale effect on hover */
+  background-color: #98B6EF; 
+  transform: scale(1.1); 
 }
 
 .close-button:focus {
-  outline: none; /* Remove focus outline */
-  box-shadow: 0 0 0 4px rgba(255, 77, 79, 0.5); /* Add focus ring */
+  outline: none; 
+  box-shadow: 0 0 0 4px rgba(255, 77, 79, 0.5); 
 }
 
 
@@ -186,7 +202,7 @@ button {
   color: white; /* 회원탈퇴 버튼 텍스트 색상 */
   border: none; /* 회원탈퇴 버튼 테두리 제거 */
   cursor: pointer;
-  border-radius: 9px; /* Make it circular */
+  border-radius: 9px; 
 
 }
 
