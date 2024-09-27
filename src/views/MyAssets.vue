@@ -1,5 +1,7 @@
 <template>
-  <div class="main-container d-flex flex-column justify-content-center align-items-center">
+  <div
+    class="main-container d-flex flex-column justify-content-center align-items-center"
+  >
     <h1>내 자산</h1>
 
     <!-- '나의 계좌' 버튼, 계좌 페이지로 이동 -->
@@ -84,9 +86,9 @@ h1 {
 }
 
 .separator {
-  width: 245.5px;
+  width: 200px;
   height: 2px; /* 선의 두께 */
-  background-color: #000; /* 선 색상 */
+  background-color: #908f8f; /* 선 색상 */
   margin-bottom: 25px; /* 선과 다음 버튼 사이의 간격 */
 }
 </style>

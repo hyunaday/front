@@ -65,7 +65,7 @@ export default {
     // ========================================
     buttonType: {
       type: String,
-      default: 'pay', // 기본값은 'pay'
+      default: "pay", // 기본값은 'pay'
     },
     buttonAction: {
       type: Function,
@@ -73,12 +73,17 @@ export default {
     },
     customRoute: {
       type: String,
-      default: '/grouppay',
+      default: "/grouppay",
     },
   },
   methods: {
     handleButtonClick() {
-      this.buttonAction(); // 전달된 action 호출
+      // 현재 라우트가 'BusinessCard'일 때만 /addbusinesscard 경로로 이동
+      if (this.buttonType === 'plus' && this.$route.name === 'BusinessCard') {
+        this.$router.push('/addbusinesscard');
+      } else {
+        this.buttonAction(); // 전달된 action 호출
+      }
     },
   },
 };
@@ -97,6 +102,7 @@ export default {
   bottom: 0;
   max-width: 360px;
   width: 100%;
+  z-index: 999;
 }
 
 .navbar .nav-item {

@@ -21,22 +21,23 @@ import Cancel from '../views/settings/Cancel.vue';
 import Logout from '../views/settings/Logout.vue';
 import Alert from '../views/settings/Alert.vue';
 import ChangePassword from '../views/settings/ChangePassword.vue';
+import AddBusinessCard from '../views/AddBusinessCard.vue';
 
 
 const routes = [
   {
-    path: "/",
-    name: "MainPage",
+    path: '/',
+    name: 'MainPage',
     component: MainPage,
   },
   {
-    path: "/login",
-    name: "Login",
+    path: '/login',
+    name: 'Login',
     component: Login,
   },
   {
-    path: "/myassets",
-    name: "MyAssets",
+    path: '/myassets',
+    name: 'MyAssets',
     component: MyAssets,
   },
   {
@@ -50,8 +51,8 @@ const routes = [
     component: AccountBook,
   },
   {
-    path: "/businesscard",
-    name: "BusinessCard",
+    path: '/businesscard',
+    name: 'BusinessCard',
     component: BusinessCard,
   },
   {
@@ -65,18 +66,18 @@ const routes = [
     component: GroupPay,
   },
   {
-    path: "/signup",
-    name: "SignUp",
+    path: '/signup',
+    name: 'SignUp',
     component: SignUp,
   },
   {
-    path: "/addlist",
-    name: "AddList",
+    path: '/addlist',
+    name: 'AddList',
     component: AddList,
   },
   {
-    path: "/cards",
-    name: "Cards",
+    path: '/cards',
+    name: 'Cards',
     component: Cards,
   },
   {
@@ -94,7 +95,6 @@ const routes = [
     name: 'MyCardRegistration',
     component: MyCardRegistration,
   },
-
   {
     // Settings path 설정 - 2024.09.26 
     path: "/settings",
@@ -125,14 +125,21 @@ const routes = [
     path: "/alert",
     name: "Alert",
     component: Alert,
-  },  {
+  },  
+  {
     path: "/logout",
     name: "Logout",
     component: Logout,
-  },  {
+  },  
+  {
     path: "/cancel",
     name: "Cancel",
     component: Cancel,
+  },
+  {
+    path: '/addbusinesscard', //  명함 등록 페이지 추가
+    name: 'AddBusinessCard',
+    component: AddBusinessCard,
   },
 ];
 

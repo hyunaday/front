@@ -9,14 +9,7 @@
       </div>
       <div v-else>
         <!-- 리스트 보기 -->
-        <div class="list-view">
-          <h2>리스트 보기</h2>
-          <ul>
-            <li v-for="(item, index) in budgetList" :key="index">
-              {{ item.date }} - {{ item.type }} - {{ item.amount }}원
-            </li>
-          </ul>
-        </div>
+        <AccountBookList />
       </div>
     </div>
 
@@ -47,10 +40,11 @@
 </template>
 
 <script>
-import 'vue-cal/dist/vuecal.css';
-import VueCal from 'vue-cal';
-import CalendarComponent from '../components/CalendarComponent.vue'; // CalendarComponent를 import
-import FooterNav from '../components/FooterNav.vue';
+import "vue-cal/dist/vuecal.css";
+import VueCal from "vue-cal";
+import CalendarComponent from "../components/CalendarComponent.vue"; // CalendarComponent를 import
+import FooterNav from "../components/FooterNav.vue";
+import AccountBookList from "../components/AccountBookList.vue"; // AccountBookList 컴포넌트 import
 
 export default {
   name: "AccountBook",
@@ -58,7 +52,7 @@ export default {
     FooterNav,
     VueCal,
     CalendarComponent,
-    FooterNav,
+    AccountBookList, // 리스트 보기 컴포넌트 추가
   },
   data() {
     return {
@@ -80,10 +74,6 @@ export default {
         "December",
       ],
       isCalendarView: true, // 캘린더 보기 여부 상태 관리
-      budgetList: [
-        { date: '2024-09-23', type: 'income', amount: 50000 },
-        { date: '2024-09-24', type: 'expense', amount: 30000 },
-      ],
     };
   },
   methods: {
@@ -91,7 +81,7 @@ export default {
       this.isCalendarView = isCalendar;
     },
     goToAddList() {
-      this.$router.push('/addlist'); // AddList 페이지로 이동
+      this.$router.push("/addlist"); // AddList 페이지로 이동
     },
   },
 };
@@ -115,7 +105,7 @@ a {
 
 .calendar-container {
   text-align: center;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif; /* Poppins 폰트 적용 */
 }
 
 .calendar {

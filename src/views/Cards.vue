@@ -1,5 +1,3 @@
-페이지네이션_다음페이지 초기화_삭제버튼
-
 <template>
   <div
     class="main-container d-flex flex-column justify-content-center align-items-center"
@@ -16,16 +14,11 @@
       카드를 추가해주세요.
     </p>
 
-    <!-- 등록된 카드 목록을 페이지네이션으로 표시 (마지막 페이지가 아닐 때만) -->
-    <div class="card-list" v-if="currentPage !== totalPages">
-      <h2>등록된 카드 목록</h2>
+    <!-- 등록된 카드 목록을 숨기고 삭제 버튼만 표시 -->
+    <div class="card-list" v-if="cards.length > 0">
+      <h2 class="visually-hidden">등록된 카드 목록</h2>
       <ul>
-        <li v-for="(card, index) in paginatedCards" :key="index">
-          <p>
-            {{ card.cardCompany }} - {{ card.cardNumber }} -
-            {{ card.expiryDate }}
-          </p>
-          <!-- 삭제 버튼에 아이콘만 표시되도록 수정 -->
+        <li v-for="(card, index) in paginatedCards" :key="card.id">
           <button @click="deleteCard(index)" class="delete-button">
             <i class="fa-solid fa-trash"></i>
           </button>
@@ -102,7 +95,7 @@
     </div>
 
     <!-- 최근 거래 내역 -->
-    <div class="transaction-history">
+    <div class="transaction-history" v-if="cards.length > 0">
       <h2>최근 거래 내역</h2>
       <div
         class="transaction-summary"
@@ -257,6 +250,7 @@ export default {
       }
 
       this.cards.push({
+        id: Date.now(), // 고유한 ID 추가
         cardCompany,
         cardNumber,
         expiryDate,
@@ -264,6 +258,7 @@ export default {
 
       this.closeCardRegistration();
     },
+
     deleteCard(index) {
       this.cards.splice(index, 1);
       if (this.currentPage > this.totalPages) {
@@ -611,5 +606,12 @@ h2 {
 
 .delete-button i:hover {
   color: #ff4b4b; /* 마우스 오버 시 색상 변경 */
+}
+
+/* 카드 목록에서 불릿포인트 제거 */
+.card-list ul {
+  list-style-type: none; /* 기본 리스트 스타일 제거 */
+  padding: 0; /* 리스트의 기본 패딩 제거 */
+  margin: 0; /* 리스트의 기본 마진 제거 */
 }
 </style>
