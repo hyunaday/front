@@ -20,17 +20,44 @@
         </ul>
       </div>
       <hr>
+
+      <!-- 2024.09.27 알림 기능 추가 및 서버 연동 -->
       <div class="section">
-        <h2>설정</h2>
+        <h2>환경설정</h2>
         <ul>
-          <li @click="navigateTo('/changepassword')">비밀번호 변경</li>
-          <li @click="navigateTo('/alert')">앱 알림 설정</li>
+          <li @click="navigateTo('/currentpassword')">비밀번호 변경</li>
+          <div class="section">
+            <hr>
+        <h2>알림 설정</h2>
+        <div class="form-check form-switch">
+          <label class="form-check-label me-2" for="notificationToggle">앱 푸시 알림</label>
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="notificationToggle"
+            v-model="notificationsEnabled"
+            @change="updateNotificationSettings"
+          />
+        </div>
+        <div class="form-check form-switch">
+          <label class="form-check-label me-2" for="eventToggle">이벤트 혜택 알림</label>
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="eventToggle"
+            v-model="eventEnabled"
+             @change="updateNotificationSettings"
+          />
+        </div>
+        <hr>
+      </div>
           <li @click="logout">로그아웃</li>
         </ul>
       </div>
+      <!-- ============================== -->
+  
       <hr>
       <div class="section">
-        <h2>회원탈퇴</h2>
         <button @click="deleteAccount">회원탈퇴</button>
       </div>
     </div>
@@ -45,6 +72,12 @@ export default {
   name: "Settings",
   components: {
     FooterNav,
+  },
+  data() {
+    return {
+      notificationsEnabled: false, // 알림 상태를 저장하는 변수
+      eventEnabled: false,
+    };
   },
   methods: {
     navigateTo(route) {
@@ -70,12 +103,29 @@ export default {
     },
     deleteAccount() {
       console.log('회원탈퇴 중...');
-      // 회원탈퇴 처리 로직 추가
-      this.$router.push('/login').catch(err => {
-        console.error('회원탈퇴 에러', err);
-        alert('회원탈퇴 중 오류가 발생했습니다. 다시 시도해 주세요.');
-      });
-    }
+      axios.post('/cancel')
+        .then(() => {
+          console.log('회원탈퇴 성공');
+          this.goToMainPage();
+        })
+        .catch(error => {
+          console.error('회원탈퇴 에러', error);
+          alert('회원탈퇴 중 오류가 발생했습니다. 다시 시도해 주세요.');
+        });
+    },
+     updateNotificationSettings() {
+    // 알림 설정을 서버에 저장하는 API 호출
+    axios.post('/update-notifications', {
+      notificationsEnabled: this.notificationsEnabled,
+      eventEnabled: this.eventEnabled,
+    })
+    .then(response => {
+      console.log('알림 설정 업데이트 성공:', response.data);
+    })
+    .catch(error => {
+      console.error('알림 설정 업데이트 에러:', error);
+    });
+  }
   }
 }
 </script>
@@ -83,30 +133,43 @@ export default {
 <style scoped>
 /* 기존 스타일 유지 */
 .settings {
+  margin: 20px;
   padding: 20px;
   position: relative;
+  width: 250px;
 }
 
 .close-button {
   position: absolute;
   top: 20px;
   right: 20px;
-  background-color: transparent;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #333;
-  transition: transform 0.2s ease, color 0.3s ease;
+  background-color: #6981D9;
+  border: none; 
+  border-radius: 50%; 
+  width: 20px; 
+  height: 30px; 
+  font-size: px; 
+  color: white; 
+  cursor: pointer; 
+  display: flex;
+  align-items: center; 
+  justify-content: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .close-button:hover {
-  background-color: #ff7875;
-  transform: scale(1.1);
+  background-color: #98B6EF; 
+  transform: scale(1.1); 
 }
 
 .close-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 4px rgba(255, 77, 79, 0.5);
+  outline: none; 
+  box-shadow: 0 0 0 4px rgba(255, 77, 79, 0.5); 
+}
+
+
+h1 {
+  font-size: 24px;
 }
 
 .section {
@@ -124,7 +187,7 @@ ul {
 }
 
 li {
-  padding: 10px;
+  padding: 5px;
   cursor: pointer;
 }
 
@@ -138,6 +201,8 @@ button {
   color: white;
   border: none;
   cursor: pointer;
+  border-radius: 9px; 
+
 }
 
 button:hover {
