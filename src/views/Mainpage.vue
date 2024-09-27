@@ -171,7 +171,7 @@
       </div>
     </div>
 
-    <FooterNav />
+    <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
   </div>
 </template>
 
@@ -222,6 +222,9 @@ export default {
     },
     formatNumber(num) {
       return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+    goToGroupPayPage() {
+      this.$router.push('/grouppay'); // 그룹 결제 페이지로 이동
     },
   },
 };

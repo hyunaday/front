@@ -40,7 +40,7 @@
         />
       </div>
 
-      <div class="mb-3">
+      <!-- <div class="mb-3">
         <label for="idNumber" class="form-label"
           >주민등록번호<span class="text-danger">*</span></label
         >
@@ -65,7 +65,7 @@
             required
           />
         </div>
-      </div>
+      </div> -->
 
       <div class="mb-3">
         <label for="email" class="form-label"
@@ -214,6 +214,8 @@
 </template>
 
 <script>
+import apiClient from '../api/axios'; // Axios 설정 파일을 임포트
+
 export default {
   name: 'SignUp',
   data() {
@@ -235,40 +237,43 @@ export default {
     };
   },
   methods: {
-    // 숫자만 입력되도록 유효성 검사
     validateNumber(event) {
       const input = event.target.value;
       event.target.value = input.replace(/[^0-9]/g, ''); // 숫자가 아닌 값은 제거
     },
-    // 비밀번호와 확인 비밀번호가 일치하는지 확인
-    handleSubmit() {
-      // 주민등록번호 조합
+    // 회원가입 API 호출
+    async handleSubmit() {
       const fullIdNumber = this.idNumberFront + this.idNumberBack;
 
       if (this.password !== this.confirmPassword) {
         alert('비밀번호가 일치하지 않습니다. 다시 확인해 주세요.');
-      } else if (fullIdNumber.length !== 13) {
+        return;
+      }
+
+      if (fullIdNumber.length !== 13) {
         alert('주민등록번호를 올바르게 입력해주세요.');
-      } else {
-        // 비밀번호와 주민등록번호 검증이 완료되면 모달 창을 띄움
-        this.showModal = true;
+        return;
+      }
+
+      // 회원가입 API 호출
+      try {
+        const response = await apiClient.post('/api/member/signup', {
+          memberId: this.email,
+          password: this.password,
+          phoneNum: this.phone,
+          name: this.name,
+        });
+
+        if (response.data.isSuccess) {
+          alert('회원가입이 성공적으로 완료되었습니다.');
+          // 추가 로직: 로그인 페이지로 이동 또는 다른 동작 수행
+        } else {
+          alert('회원가입에 실패했습니다. 다시 시도해 주세요.');
+        }
+      } catch (error) {
+        alert('오류가 발생했습니다. 다시 시도해 주세요.');
       }
     },
-    // 동의하고 가입 버튼 클릭 시 처리
-    confirmAgreement() {
-      if (this.agreement1 && this.agreement2 && this.agreement3) {
-        alert('회원 가입이 완료되었습니다.');
-        this.closeModal();
-        // 여기서 실제 회원 가입 처리 로직 추가 가능
-      } else {
-        alert('필수 동의 항목에 모두 체크해 주세요.');
-      }
-    },
-    // 모달 창 닫기
-    closeModal() {
-      this.showModal = false;
-    },
-    // 이름 입력 필드에 글자만 입력되도록 유효성 검사
     validateName(event) {
       const input = event.target.value;
       this.name = input.replace(/[^ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z\s]/g, '');
