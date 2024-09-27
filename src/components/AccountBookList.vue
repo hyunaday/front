@@ -16,27 +16,82 @@
         </select>
       </div>
     </div>
-    <div class="calendar">
-      <!-- <h1>{{ selectedYear }} {{ months[selectedMonth] }}</h1> -->
-      <div class="financial-summary">
-        <div class="expense">
-          지출:
-          <span class="expense-amount"
-            >{{ totalExpense }} <span style="color: black">원</span></span
-          >
-        </div>
-        <div class="income">
-          수입:
-          <span class="income-amount"
-            >{{ totalIncome }} <span style="color: black">원</span></span
-          >
+
+    <!-- 검색창 추가 -->
+    <div class="search-bar">
+      <input
+        type="text"
+        placeholder="검색어를 입력하세요"
+        class="search-input"
+      />
+    </div>
+
+    <!-- 편집, 삭제, 필터 버튼 추가 -->
+    <div class="button-container">
+      <button class="edit-btn">편집</button>
+      <button class="delete-btn">삭제</button>
+      <i class="fa-solid fa-filter filter-icon" @click="toggleFilter"></i>
+    </div>
+
+    <!-- 필터 옵션 토글 -->
+    <div v-if="showFilter" class="filter-options">
+      <!-- 입/출금 체크박스 섹션 -->
+      <div class="filter-section">
+        <strong>입/출금</strong>
+        <div>
+          <input type="checkbox" id="income" v-model="filterOptions.income" />
+          <label for="income">입금</label>
+          <input type="checkbox" id="expense" v-model="filterOptions.expense" />
+          <label for="expense">출금</label>
         </div>
       </div>
-      <table>
-        <thead>
-            <tr></tr>
-        </thead>
-      </table>
+
+      <!-- 카테고리 체크박스 섹션 -->
+      <div class="filter-section">
+        <strong>카테고리</strong>
+        <div class="categories">
+          <div>
+            <input type="checkbox" id="food" v-model="filterOptions.food" />
+            <label for="food">식비</label>
+          </div>
+          <div>
+            <input
+              type="checkbox"
+              id="transport"
+              v-model="filterOptions.transport"
+            />
+            <label for="transport">교통</label>
+          </div>
+          <div>
+            <input
+              type="checkbox"
+              id="shopping"
+              v-model="filterOptions.shopping"
+            />
+            <label for="shopping">쇼핑</label>
+          </div>
+          <div>
+            <input
+              type="checkbox"
+              id="culture"
+              v-model="filterOptions.culture"
+            />
+            <label for="culture">문화</label>
+          </div>
+          <div>
+            <input
+              type="checkbox"
+              id="housing"
+              v-model="filterOptions.housing"
+            />
+            <label for="housing">주거/통신</label>
+          </div>
+          <div>
+            <input type="checkbox" id="etc" v-model="filterOptions.etc" />
+            <label for="etc">기타</label>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -63,27 +118,24 @@ export default {
         "December",
       ],
       calendar: [],
-      data: {},
+      data: {}, // 날짜별 데이터를 저장하는 객체
+      showFilter: false, // 필터 버튼 클릭 시 필터 메뉴 표시 여부
+      filterOptions: {
+        income: false, // 입금 필터
+        expense: false, // 출금 필터
+        food: false, // 카테고리: 식비
+        transport: false, // 카테고리: 교통
+        shopping: false, // 카테고리: 쇼핑
+        culture: false, // 카테고리: 문화
+        housing: false, // 카테고리: 주거/통신
+        etc: false, // 카테고리: 기타
+      },
     };
   },
-  computed: {
-    totalIncome() {
-      return Object.values(this.data).reduce(
-        (acc, day) => acc + (day.income || 0),
-        0
-      );
-    },
-    totalExpense() {
-      return Object.values(this.data).reduce(
-        (acc, day) => acc + (day.expense || 0),
-        0
-      );
-    },
-  },
-  mounted() {
-    this.updateCalendar();
-  },
   methods: {
+    toggleFilter() {
+      this.showFilter = !this.showFilter;
+    },
     generateYears() {
       const currentYear = new Date().getFullYear();
       const years = [];
@@ -129,15 +181,15 @@ export default {
 <style scoped>
 .calendar-container {
   text-align: center;
-  font-family: "Poppins", sans-serif; /* Poppins 폰트 적용 */
+  font-family: "Poppins", sans-serif;
 }
 
 .calendar {
   width: 100%;
-  max-width: 800px; /* 캘린더 최대 너비 조정 */
-  margin: 0 auto; /* 중앙 정렬 */
-  margin-bottom: 15px; /* 네비게이션 바와의 간격 */
-  padding: 0 15px; /* 추가적인 좌우 여백 */
+  max-width: 800px;
+  margin: 0 auto;
+  margin-bottom: 15px;
+  padding: 0 15px;
 }
 
 h1 {
@@ -158,10 +210,9 @@ h1 {
   padding: 0.5rem;
   margin-right: 0.5rem;
   border-radius: 5px;
-  border: none; /* 테두리 제거 */
-  appearance: none; /* 기본 드롭다운 화살표 제거 */
-  background: transparent; /* 배경을 투명으로 설정 */
-  font-family: "Poppins", sans-serif; /* Poppins 폰트 적용 */
+  border: none;
+  background: transparent;
+  font-family: "Poppins", sans-serif;
 }
 
 .financial-summary {
@@ -174,16 +225,31 @@ h1 {
 
 .expense,
 .income {
-  color: black; /* 텍스트 색상: 검정색 */
+  color: black;
   font-size: 1rem;
 }
 
 .expense-amount {
-  color: #ee8282; /* 지출 색상 */
+  color: #ee8282;
 }
 
 .income-amount {
-  color: #62d0ff; /* 수입 색상 */
+  color: #62d0ff;
+}
+
+/* 검색창 스타일 추가 */
+.search-bar {
+  margin: 1rem 0;
+  text-align: center; /* 중앙 정렬 */
+}
+
+.search-input {
+  padding: 0.5rem;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  width: 100%;
+  height: 35px;
+  max-width: 300px;
 }
 
 table {
@@ -197,8 +263,8 @@ th,
 td {
   width: 14.28%;
   height: 30px;
-  padding: 5px; /* 패딩 조정 */
-  line-height: 1.2; /* 줄 높이 조정 */
+  padding: 5px;
+  line-height: 1.2;
   border: none;
   vertical-align: top;
 }
@@ -210,7 +276,7 @@ th {
 
 thead tr {
   border-bottom: 1px solid #cfcbcb;
-  height: 40px; /* 높이를 자동으로 설정하여 padding에 맞게 조정 */
+  height: 40px;
 }
 
 .day-cell {
@@ -230,5 +296,44 @@ thead tr {
   font-size: 0.8rem;
   margin-top: 5px;
   color: #666;
+}
+
+/* 버튼 컨테이너 스타일 - 오른쪽 정렬 */
+.button-container {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end; /* 버튼을 오른쪽에 정렬 */
+  gap: 5px; /* 버튼 간 간격을 좁게 설정 */
+}
+
+button {
+  background-color: #e0e0e0;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #bdbdbd; /* 마우스 호버 시 색상 변경 */
+}
+
+.edit-btn {
+  background-color: #d9d9d9; /* 편집 버튼 배경색 */
+}
+
+.delete-btn {
+  background-color: #d9d9d9; /* 삭제 버튼 배경색 */
+}
+
+.filter-icon {
+  font-size: 16px;
+  color: #bdbdbd;
+  margin-left: 5px; /* 필터 아이콘과 삭제 버튼 간 간격 */
+  cursor: pointer;
+}
+
+.filter-icon:hover {
+  color: #888; /* 필터 아이콘 호버 시 색상 변경 */
 }
 </style>

@@ -51,9 +51,7 @@
                 />
                 <label class="bank-name">카카오뱅크</label>
                 <div class="amount-container" v-if="showBalance">
-                  <label class="amount"
-                    >&#8361; {{ formatNumber(1565) }}</label
-                  >
+                  <label class="amount">&#8361; {{ formatNumber(1565) }}</label>
                 </div>
                 <div class="amount-container" v-else>
                   <label class="amount-hidden">잔액 숨김</label>
@@ -61,7 +59,9 @@
               </div>
               <div class="account-button">
                 <div class="d-grid gap-4 d-md-flex justify-content-center">
-                  <button class="btn btn-light check" type="button">조회</button>
+                  <button class="btn btn-light check" type="button">
+                    조회
+                  </button>
                   <button class="btn btn-light transfer" type="button">
                     이체
                   </button>
@@ -97,7 +97,9 @@
               </div>
               <div class="account-button">
                 <div class="d-grid gap-4 d-md-flex justify-content-center">
-                  <button class="btn btn-light check" type="button">조회</button>
+                  <button class="btn btn-light check" type="button">
+                    조회
+                  </button>
                   <button class="btn btn-light transfer" type="button">
                     이체
                   </button>
@@ -132,7 +134,9 @@
               </div>
               <div class="account-button">
                 <div class="d-grid gap-4 d-md-flex justify-content-center">
-                  <button class="btn btn-light check" type="button">조회</button>
+                  <button class="btn btn-light check" type="button">
+                    조회
+                  </button>
                   <button class="btn btn-light transfer" type="button">
                     이체
                   </button>
@@ -176,8 +180,8 @@
 </template>
 
 <script>
-import { Swiper, SwiperSlide } from 'swiper/vue';
-import { Pagination } from 'swiper/modules';
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { Pagination } from "swiper/modules";
 import FooterNav from "../components/FooterNav.vue";
 import Header from "../components/Header.vue";
 
@@ -194,7 +198,7 @@ export default {
       console.log(swiper);
     };
     const onSlideChange = () => {
-      console.log('slide change');
+      console.log("slide change");
     };
     return {
       onSwiper,
@@ -224,7 +228,7 @@ export default {
       return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
     goToGroupPayPage() {
-      this.$router.push('/grouppay'); // 그룹 결제 페이지로 이동
+      this.$router.push("/grouppay"); // 그룹 결제 페이지로 이동
     },
   },
 };
@@ -318,7 +322,7 @@ h4 {
   display: inline-block;
   margin-bottom: 4px;
   margin-left: -15px;
-  margin-top: 8px
+  margin-top: 8px;
 }
 
 .account-button {
