@@ -19,6 +19,7 @@
     "qrcode.vue": "^3.4.1",
     "vue": "^3.4.37",
     "vue-cal": "^4.9.0",
+    "vue-qrcode-reader": "^5.5.10",
     "vue-router": "^4.4.5"
   },
   "devDependencies": {
