@@ -593,10 +593,12 @@ h2 {
 
 /* 삭제 버튼 스타일 */
 .delete-button {
-  background: none; /* 배경 없애기 */
-  border: none; /* 테두리 없애기 */
-  padding: 0; /* 기본 여백 없애기 */
-  cursor: pointer; /* 클릭 가능 커서 */
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  margin-left: 238px; /* 버튼과 텍스트 사이 여백 추가 */
+
 }
 
 .delete-button i {

@@ -20,17 +20,41 @@
         </ul>
       </div>
       <hr>
+
+      <!-- 2024.09.27 알림 설정 기능 추가 -->
       <div class="section">
-        <h2>설정</h2>
+        <h2>환경설정</h2>
         <ul>
           <li @click="navigateTo('/changepassword')">비밀번호 변경</li>
-          <li @click="navigateTo('/alert')">앱 알림 설정</li>
+          <div class="section">
+        <div>알림 설정</div>
+        <div class="form-check form-switch">
+          <label class="form-check-label me-2" for="notificationToggle">앱 푸시 알림</label>
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="notificationToggle"
+            v-model="notificationsEnabled"
+          />
+        </div>
+        <div class="form-check form-switch">
+          <label class="form-check-label me-2" for="eventToggle">이벤트 혜택 알림</label>
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="eventToggle"
+            v-model="eventEnabled"
+          />
+        </div>
+        <hr>
+      </div>
           <li @click="logout">로그아웃</li>
         </ul>
       </div>
+      <!-- ============================== -->
+  
       <hr>
       <div class="section">
-        <h2>회원탈퇴</h2>
         <button @click="deleteAccount">회원탈퇴</button>
       </div>
     </div>
@@ -46,6 +70,12 @@ export default {
   name: "Settings",
   components: {
     FooterNav,
+  },
+  data() {
+    return {
+      notificationsEnabled: false, // 알림 상태를 저장하는 변수
+      eventEnabled: false,
+    };
   },
   methods: {
     navigateTo(route) {
@@ -88,32 +118,22 @@ export default {
 
 <style scoped>
 .settings {
+  margin: 20px;
   padding: 20px;
   position: relative;
+  width: 250px;
 }
 
 .close-button {
   position: absolute;
   top: 20px;
   right: 20px;
-  background-color: transparent; /* 배경 투명 */
-  border: none; /* 테두리 제거 */
-  font-size: 24px;
-  cursor: pointer;
-  color: #333; /* 아이콘 색상 */
-  transition: transform 0.2s ease, color 0.3s ease; /* 변환 효과 추가 */
-}
-
-.close-button {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background-color: #ff4d4f;
+  background-color: #6981D9;
   border: none; /* Remove border */
   border-radius: 50%; /* Make it circular */
-  width: 40px; /* Fixed width */
-  height: 40px; /* Fixed height */
-  font-size: 24px; /* Icon size */
+  width: 20px; /* Fixed width */
+  height: 30px; /* Fixed height */
+  font-size: px; /* Icon size */
   color: white; /* Icon color */
   cursor: pointer; /* Pointer cursor */
   display: flex; /* Flex for centering */
@@ -123,7 +143,7 @@ export default {
 }
 
 .close-button:hover {
-  background-color: #ff7875; /* Lighter red on hover */
+  background-color: #98B6EF; /* Lighter red on hover */
   transform: scale(1.1); /* Scale effect on hover */
 }
 
@@ -166,6 +186,8 @@ button {
   color: white; /* 회원탈퇴 버튼 텍스트 색상 */
   border: none; /* 회원탈퇴 버튼 테두리 제거 */
   cursor: pointer;
+  border-radius: 9px; /* Make it circular */
+
 }
 
 button:hover {
