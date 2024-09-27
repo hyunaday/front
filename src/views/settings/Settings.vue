@@ -66,7 +66,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import FooterNav from '../../components/FooterNav.vue';
 
 export default {
@@ -93,15 +92,14 @@ export default {
     },
     logout() {
       console.log('로그아웃 중...');
-      axios.post('/logout')
-        .then(response => {
-          console.log('로그아웃 성공:', response.data);
-          this.goToMainPage();
-        })
-        .catch(error => {
-          console.error('로그아웃 에러:', error.response ? error.response.data : error.message);
-          alert('로그아웃 중 오류가 발생했습니다. 다시 시도해 주세요.');
-        });
+      
+      // 토큰 삭제
+      localStorage.removeItem('accessToken');
+
+      // 로그인 페이지로 리다이렉트
+      this.$router.push('/login').catch(err => {
+        console.error('Navigation error:', err);
+      });
     },
     deleteAccount() {
       console.log('회원탈퇴 중...');
@@ -133,6 +131,7 @@ export default {
 </script>
 
 <style scoped>
+/* 기존 스타일 유지 */
 .settings {
   margin: 20px;
   padding: 20px;
@@ -198,15 +197,15 @@ li:hover {
 
 button {
   padding: 10px 15px;
-  background-color: #ff4d4f; /* 회원탈퇴 버튼 배경색 */
-  color: white; /* 회원탈퇴 버튼 텍스트 색상 */
-  border: none; /* 회원탈퇴 버튼 테두리 제거 */
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
   cursor: pointer;
   border-radius: 9px; 
 
 }
 
 button:hover {
-  background-color: #ff7875; /* 회원탈퇴 버튼 호버 색상 */
+  background-color: #ff7875;
 }
 </style>
