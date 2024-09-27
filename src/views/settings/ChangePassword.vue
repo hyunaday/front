@@ -87,6 +87,7 @@ export default {
         this.message = '비밀번호가 변경되었습니다.';
         this.newPassword = '';
         this.confirmPassword = '';
+        this.$router.push('/settings'); // 설정 페이지로 이동
       }
     },
   },
