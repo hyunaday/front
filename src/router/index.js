@@ -142,9 +142,9 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/alert',
-    name: 'Alert',
-    component: Alert,
+    // path: '/alert',
+    // name: 'Alert',
+    // component: Alert,
   },
   {
     path: "/currentpassword",

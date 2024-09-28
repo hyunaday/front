@@ -58,13 +58,9 @@
                 </div>
               </div>
               <div class="account-button">
-                <div class="d-grid gap-4 d-md-flex justify-content-center">
-                  <button class="btn btn-light check" type="button">
-                    조회
-                  </button>
-                  <button class="btn btn-light transfer" type="button">
-                    이체
-                  </button>
+                <div class="d-flex justify-content-between gap-4">
+                  <button class="btn btn-light check" type="button">조회</button>
+                  <button class="btn btn-light transfer" type="button">이체</button>
                 </div>
               </div>
             </div>
@@ -96,14 +92,12 @@
                 </div>
               </div>
               <div class="account-button">
-                <div class="d-grid gap-4 d-md-flex justify-content-center">
-                  <button class="btn btn-light check" type="button">
-                    조회
-                  </button>
-                  <button class="btn btn-light transfer" type="button">
-                    이체
-                  </button>
+                <div class="account-button">
+                <div class="d-flex justify-content-between gap-4">
+                  <button class="btn btn-light check" type="button">조회</button>
+                  <button class="btn btn-light transfer" type="button">이체</button>
                 </div>
+              </div>
               </div>
             </div>
           </swiper-slide>
@@ -133,14 +127,12 @@
                 </div>
               </div>
               <div class="account-button">
-                <div class="d-grid gap-4 d-md-flex justify-content-center">
-                  <button class="btn btn-light check" type="button">
-                    조회
-                  </button>
-                  <button class="btn btn-light transfer" type="button">
-                    이체
-                  </button>
+                <div class="account-button">
+                <div class="d-flex justify-content-between gap-4">
+                  <button class="btn btn-light check" type="button">조회</button>
+                  <button class="btn btn-light transfer" type="button">이체</button>
                 </div>
+              </div>
               </div>
             </div>
           </swiper-slide>
