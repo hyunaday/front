@@ -23,6 +23,7 @@ import MainPay from '../views/pay/MainPay.vue';
 import MemberPay from '../views/pay/MemberPay.vue';
 import SoloPay from '../views/pay/SoloPay.vue';
 import CurrentPassword from '../views/settings/CurrentPassword.vue';
+import Transfer from '../views/asset/Transfer.vue';
 
 
 const routes = [
@@ -164,6 +165,11 @@ const routes = [
     path: '/memberpay', // 팀원 결제 추가
     name: 'MemberPay',
     component: MemberPay,
+  },
+  {
+    path: '/transfer', // 송금 페이지
+    name: 'Transfer',
+    component: Transfer,
   },
 ];
 
