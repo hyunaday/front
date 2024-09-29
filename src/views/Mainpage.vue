@@ -62,6 +62,7 @@
                   <button class="btn btn-light check" type="button">
                     조회
                   </button>
+
                   <router-link to="/transfer">
                   <button class="btn btn-light transfer" type="button">
                     이체
