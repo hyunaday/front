@@ -9,6 +9,17 @@
         <button class="analyze-button">분석</button>
       </div>
 
+      <!-- 광고 배너 -->
+      <div class="advertisement-banner">
+        <div class="banner-content">
+          <img src="/Users/hyuna/Desktop/teamirum/front/src/assets/images/kbpay.png" alt="광고 배너" class="banner-image" />
+          <div class="banner-text">
+            <p class="banner-title">KB Pay</p>
+            <p class="banner-subtitle">편리한 국민 생활 파트너</p>
+          </div>
+        </div>
+      </div>
+
       <!-- 위의 계좌 총 합과 동일한 값 return -->
       <div class="account">
         <span class="account-title">계좌</span>
@@ -201,7 +212,42 @@ h1 {
   font-size: 12px;
 }
 
-.withdraw-deposit-section{
+.withdraw-deposit-section {
   margin-bottom: 40px;
+}
+
+.advertisement-banner {
+  background-color: #f3f3f3;
+  border-radius: 10px;
+  padding: 5px;
+  margin-top: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.banner-content {
+  display: flex;
+  align-items: center; /* 세로 정렬 */
+}
+
+.banner-image {
+  width: 45px; /* 원하는 너비 */
+  height: auto; /* 비율 유지 */
+  margin-right: 10px; /* 텍스트와의 간격 */
+}
+
+.banner-text {
+  text-align: left; /* 텍스트 왼쪽 정렬 */
+}
+
+.banner-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.banner-subtitle {
+  margin: 0;
+  font-size: 12px; /* 폰트 크기 줄임 */
+  font-weight: 300; /* 폰트 연하게 */
 }
 </style>
