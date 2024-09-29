@@ -59,9 +59,13 @@
               </div>
               <div class="account-button">
                 <div class="d-grid gap-4 d-md-flex justify-content-center">
+
+                    <!-- '조회' 버튼, 내자산 페이지로 이동 -->
+                    <router-link to="/myassets">
                   <button class="btn btn-light check" type="button">
                     조회
                   </button>
+                </router-link>
 
                     <!-- '이체' 버튼, 송금 페이지로 이동 -->
                   <router-link to="/transfer">
