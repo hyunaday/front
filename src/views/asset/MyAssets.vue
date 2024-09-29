@@ -2,26 +2,32 @@
   <div class="main-container d-flex flex-column justify-content-center align-items-center">
     <div class="my-assets">
       <h1>{{ userName }}님의 총 자산</h1>
+
+      <!-- 계좌 총 합 -->
       <div class="total-assets">
-        <span class="amount">{{ formatNumber(totalAssets) }}원</span>
+        <span class="amount">{{ formatNumber(transactionAmount) }}원</span>
         <button class="analyze-button">분석</button>
       </div>
-      
+
+      <!-- 위의 계좌 총 합과 동일한 값 return -->
       <div class="account">
         <span class="account-title">계좌</span>
-        <span class="account-amount">{{ formatNumber(totalAssets) }}원</span>
+        <span class="account-amount">{{ formatNumber(transactionAmount) }}원</span>
       </div>
-      
-      <div class="transactions-summary">
+
+      <!-- 입출금 섹션 -->
+      <div class="withdraw-deposit-section">
+        <!-- 입출금 내역 합 -->
         <div class="transactions">
           <span class="transactions-title">입출금</span>
-          <span class="transactions-amount">{{ formatNumber(transactionAmount) }}원</span>
+          <span class="transactions-amount">{{ formatNumber(totalWithdrawDeposit) }}원</span>
         </div>
-        
+
+        <!-- 입출금 개별 통장 -->
         <div class="account-list">
           <div v-for="(account, index) in accounts" :key="index" class="account-card">
             <div class="account-info">
-              <span class="transactions-title">입출금통장</span>
+              <span class="transactions-title">입출금통장 {{ index + 1 }}</span>
               <span class="account-balance">{{ formatNumber(account.balance) }}원</span>
             </div>
             <div class="transfer-button-container">
@@ -33,19 +39,21 @@
         </div>
       </div>
 
-      <div class="transactions-summary">
-        <div class="transactions">
+      <!-- 예적금 섹션 -->
+      <div class="savings-section">
+        <!-- 예적금 내역 합 -->
+        <div class="transactions savings">
           <span class="transactions-title">예적금</span>
-          <span class="transactions-amount">{{ formatNumber(transactionAmount) }}원</span>
+          <span class="transactions-amount">{{ formatNumber(savingsAccount.balance) }}원</span>
         </div>
-        
-        <div class="account-list">
-          <div v-for="(account, index) in accounts" :key="index" class="account-card">
-            <div class="account-info">
-              <span class="transactions-title">적금</span>
-              <span class="account-balance">{{ formatNumber(account.balance) }}원</span>
-            </div>
 
+        <!-- 예적금 개별 통장 -->
+        <div class="account-list">
+          <div class="account-card">
+            <div class="account-info">
+              <span class="transactions-title">KB국민프리미엄적금</span>
+              <span class="account-balance">{{ formatNumber(savingsAccount.balance) }}원</span>
+            </div>
           </div>
         </div>
       </div>
@@ -65,25 +73,30 @@ export default {
   data() {
     return {
       userName: '조현아',
-      totalAssets: 8028652,
       accounts: [
-        { balance: 1160112 },
-        { balance: 3800 },
-        { balance: 28400 },
-      ]
+        { balance: 1960112 },
+        { balance: 5800 },
+        { balance: 82400 },
+      ],
+      savingsAccount: {
+        balance: 6000000, // 예적금 잔액
+      },
     };
   },
 
   computed: {
     transactionAmount() {
-      return this.accounts.reduce((total, account) => total + account.balance, 0);
+      return this.accounts.reduce((total, account) => total + account.balance, 0) + this.savingsAccount.balance;
+    },
+    totalWithdrawDeposit() {
+      return this.accounts.reduce((total, account) => total + account.balance, 0); // 입출금 통장 총합
     }
   },
   methods: {
     formatNumber(num) {
       return num.toLocaleString();
-    }
-  }
+    },
+  },
 }
 </script>
 
@@ -137,13 +150,10 @@ h1 {
   text-align: right;
 }
 
-.transactions-summary {
-  margin-top: 10px; /* 섹션 간격 조정 */
-}
-
 .transactions {
   font-size: 12px;
   color: #b0b0b0;
+  margin-top: 10px;
   display: flex;
   justify-content: space-between;
 }
@@ -160,12 +170,11 @@ h1 {
 .account-list {
   display: flex;
   flex-direction: column;
-  margin-top: 10px; /* 리스트와 간격 조정 */
 }
 
 .account-card {
   display: flex;
-  justify-content: space-between; /* 두 요소 간격 조정 */
+  justify-content: space-between;
   margin-top: 10px;
 }
 
@@ -180,7 +189,7 @@ h1 {
 
 .transfer-button-container {
   display: flex;
-  align-items: center; /* 수직 정렬 */
+  align-items: center;
 }
 
 .transfer-button {
@@ -190,5 +199,9 @@ h1 {
   padding: 5px 15px;
   border-radius: 10px;
   font-size: 12px;
+}
+
+.withdraw-deposit-section{
+  margin-bottom: 40px;
 }
 </style>
