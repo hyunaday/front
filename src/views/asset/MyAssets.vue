@@ -12,21 +12,40 @@
         <span class="account-amount">{{ formatNumber(totalAssets) }}원</span>
       </div>
       
-      <div class="transactions">
-        <span class="transactions-title">입출금</span>
-        <span class="transactions-amount">{{ formatNumber(transactionAmount) }}원</span>
-      </div>
-      
-      <div class="account-list">
-        <div v-for="(account, index) in accounts" :key="index" class="account-card">
-          <div class="account-info">
-            <span class="transactions-title">입출금통장</span>
-            <span class="account-balance">{{ formatNumber(account.balance) }}원</span>
+      <div class="transactions-summary">
+        <div class="transactions">
+          <span class="transactions-title">입출금</span>
+          <span class="transactions-amount">{{ formatNumber(transactionAmount) }}원</span>
+        </div>
+        
+        <div class="account-list">
+          <div v-for="(account, index) in accounts" :key="index" class="account-card">
+            <div class="account-info">
+              <span class="transactions-title">입출금통장</span>
+              <span class="account-balance">{{ formatNumber(account.balance) }}원</span>
+            </div>
+            <div class="transfer-button-container">
+              <router-link to="/transfer">
+                <button class="transfer-button">송금</button>
+              </router-link>
+            </div>
           </div>
-          <div class="transfer-button-container">
-            <router-link to="/transfer">
-              <button class="transfer-button">송금</button>
-            </router-link>
+        </div>
+      </div>
+
+      <div class="transactions-summary">
+        <div class="transactions">
+          <span class="transactions-title">예적금</span>
+          <span class="transactions-amount">{{ formatNumber(transactionAmount) }}원</span>
+        </div>
+        
+        <div class="account-list">
+          <div v-for="(account, index) in accounts" :key="index" class="account-card">
+            <div class="account-info">
+              <span class="transactions-title">적금</span>
+              <span class="account-balance">{{ formatNumber(account.balance) }}원</span>
+            </div>
+
           </div>
         </div>
       </div>
@@ -118,10 +137,13 @@ h1 {
   text-align: right;
 }
 
+.transactions-summary {
+  margin-top: 10px; /* 섹션 간격 조정 */
+}
+
 .transactions {
   font-size: 12px;
   color: #b0b0b0;
-  margin-top: 10px;
   display: flex;
   justify-content: space-between;
 }
@@ -138,6 +160,7 @@ h1 {
 .account-list {
   display: flex;
   flex-direction: column;
+  margin-top: 10px; /* 리스트와 간격 조정 */
 }
 
 .account-card {
