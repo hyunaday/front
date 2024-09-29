@@ -17,10 +17,22 @@
       </div>
     </div>
 
+    <!-- 월별 토탈 지출금액과 수입금액을 추가 -->
+    <div class="monthly-summary">
+      <div class="expense">
+        지출 <span class="amount">{{ formatAmount(totalExpense) }}</span>
+      </div>
+      <div class="income">
+        수입 <span class="amount">{{ formatAmount(totalIncome) }}</span>
+      </div>
+    </div>
+
     <!-- 검색창 추가 -->
     <div class="search-bar">
       <input
         type="text"
+        v-model="searchQuery"
+        @keydown.enter="executeSearch"
         placeholder="검색어를 입력하세요"
         class="search-input"
       />
@@ -28,9 +40,9 @@
 
     <!-- 편집, 삭제, 필터 버튼 추가 -->
     <div class="button-container">
-      <button class="edit-btn">편집</button>
-      <button class="delete-btn">삭제</button>
-      <i class="fa-solid fa-filter filter-icon" @click="toggleFilter"></i>
+      <button @click="toggleadd" class="add-btn">
+        <i class="fa-solid fa-plus"></i>
+      </button>
     </div>
 
     <!-- 필터 창 -->
@@ -44,7 +56,7 @@
     <!-- 날짜별 가계부 내역 표시 시작 -->
     <!-- 바뀐 부분: 날짜별로 가계부 내역을 표시 -->
     <div
-      v-for="(entryGroup, index) in entries"
+      v-for="(entryGroup, index) in filteredEntries"
       :key="index"
       class="entry-group"
     >
@@ -52,13 +64,12 @@
         <div class="date-section">
           <div class="date">{{ entryGroup.date }}</div>
           <div class="day">{{ entryGroup.day }}</div>
-          <div class="year-month">{{ entryGroup.yearMonth }}</div>
-        </div>
-        <div
-          class="total-amount"
-          :class="entryGroup.totalAmount < 0 ? 'negative' : 'positive'"
-        >
-          {{ formatAmount(entryGroup.totalAmount) }}
+          <div
+            class="total-amount"
+            :class="entryGroup.totalAmount < 0 ? 'negative' : 'positive'"
+          >
+            {{ formatAmount(entryGroup.totalAmount) }}
+          </div>
         </div>
       </div>
 
@@ -71,10 +82,8 @@
           <div class="category">
             <div>{{ entry.category }}</div>
             <div>{{ entry.detail }}</div>
-            <!-- 바뀐 부분: 세부 항목 표시 -->
           </div>
           <div class="payment">{{ entry.paymentMethod }}</div>
-          <div class="time">{{ entry.time }}</div>
           <div
             class="amount"
             :class="entry.amount < 0 ? 'negative' : 'positive'"
@@ -94,6 +103,9 @@ export default {
     return {
       selectedYear: new Date().getFullYear(),
       selectedMonth: new Date().getMonth(),
+      searchQuery: "", // 검색어 저장 변수
+      showFilter: false, // 필터 창 표시 여부를 위한 변수 추가
+      finalQuery: "", // 엔터를 쳤을 때 실제 검색에 사용하는 검색어
       years: this.generateYears(),
       months: [
         "January",
@@ -109,29 +121,24 @@ export default {
         "November",
         "December",
       ],
-      showFilter: false, // 필터 창의 표시 상태
-      categories: ["식비", "교통비", "의료비", "엔터테인먼트", "기타"], // 카테고리 리스트
-
-      // 바뀐 부분: 가계부 내역
+      totalExpense: 90000, // 예시 값
+      totalIncome: 1000000, // 예시 값
       entries: [
         {
           date: "19",
           day: "화요일",
-          yearMonth: "2024.01",
           totalAmount: -27000,
           entries: [
             {
               category: "생활용품",
               detail: "주방/욕실",
               paymentMethod: "신한은행",
-              time: "오후 2:42",
               amount: -30000,
             },
             {
               category: "부수입",
               detail: "",
               paymentMethod: "현금",
-              time: "오후 1:42",
               amount: 3000,
             },
           ],
@@ -139,21 +146,18 @@ export default {
         {
           date: "20",
           day: "수요일",
-          yearMonth: "2024.01",
           totalAmount: -27000,
           entries: [
             {
               category: "생활용품",
               detail: "주방/욕실",
               paymentMethod: "신한은행",
-              time: "오후 2:42",
               amount: -30000,
             },
             {
               category: "부수입",
               detail: "",
               paymentMethod: "현금",
-              time: "오후 1:42",
               amount: 3000,
             },
           ],
@@ -161,11 +165,49 @@ export default {
       ],
     };
   },
-  methods: {
-    toggleFilter() {
-      this.showFilter = !this.showFilter; // 필터 창 표시 여부 토글
-      console.log("Filter toggle status: ", this.showFilter); // 상태가 토글되는지 확인
+
+  // 검색기능
+  computed: {
+    filteredEntries() {
+      if (!this.finalQuery) {
+        return this.entries; // 검색어가 없으면 전체 목록 표시
+      }
+      return this.entries
+        .map((entryGroup) => {
+          const filteredGroup = {
+            ...entryGroup,
+            entries: entryGroup.entries.filter((entry) =>
+              this.finalQuery
+                .toLowerCase()
+                .split(" ")
+                .every((query) =>
+                  [
+                    entry.category,
+                    entry.detail,
+                    entry.paymentMethod,
+                    entryGroup.date.toString(), // 날짜 검색 가능
+                    entryGroup.day.toLowerCase(), // 요일 검색 가능
+                  ]
+                    .map((value) => value.toLowerCase())
+                    .some((field) => field.includes(query))
+                )
+            ),
+          };
+          return filteredGroup.entries.length ? filteredGroup : null;
+        })
+        .filter(Boolean); // 빈 그룹은 제외
     },
+  },
+
+  methods: {
+    executeSearch() {
+      this.finalQuery = this.searchQuery; // 엔터를 눌렀을 때 검색어 반영
+    },
+
+    formatAmount(amount) {
+      return `${amount.toLocaleString("ko-KR")}원`; // 금액 뒤에 '원'을 붙여서 표시
+    },
+
     generateYears() {
       const currentYear = new Date().getFullYear();
       const years = [];
@@ -175,41 +217,7 @@ export default {
       return years;
     },
     updateCalendar() {
-      const year = this.selectedYear;
-      const month = this.selectedMonth;
-      const firstDay = new Date(year, month, 1).getDay();
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-      const weeks = [];
-      let week = [];
-      for (let i = 0; i < firstDay; i++) {
-        week.push({ day: "", data: {} });
-      }
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dateString = `${year}-${String(month + 1).padStart(
-          2,
-          "0"
-        )}-${String(day).padStart(2, "0")}`;
-        week.push({ day, data: this.data[dateString] || {} });
-        if (week.length === 7) {
-          weeks.push(week);
-          week = [];
-        }
-      }
-      while (week.length < 7) {
-        week.push({ day: "", data: {} });
-      }
-      if (week.length) {
-        weeks.push(week);
-      }
-      this.calendar = weeks;
-    },
-    // 바뀐 부분: 금액 포맷팅 함수
-    formatAmount(amount) {
-      return new Intl.NumberFormat("ko-KR", {
-        style: "currency",
-        currency: "KRW",
-      }).format(amount);
+      // 캘린더 업데이트 로직
     },
   },
 };
@@ -252,28 +260,33 @@ h1 {
   font-family: "Poppins", sans-serif;
 }
 
-.financial-summary {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  font-size: 1.2rem;
+/* 월별 지출/수입 요약 스타일 */
+.monthly-summary {
+  text-align: right;
+  justify-content: space-between;
   margin: 1rem 0;
+  font-size: 1rem;
 }
 
 .expense,
 .income {
-  color: black;
+  font-weight: bold;
+}
+
+.amount {
+  font-size: 1.2rem;
+  margin-left: 0.5rem;
+}
+
+.expense .amount {
   font-size: 1rem;
+  color: #000000;
 }
 
-.expense-amount {
-  color: #ee8282;
+.income .amount {
+  font-size: 1rem;
+  color: #6981d9;
 }
-
-.income-amount {
-  color: #62d0ff;
-}
-
 /* 검색창 스타일 추가 */
 .search-bar {
   margin: 1rem 0;
@@ -344,37 +357,37 @@ thead tr {
 }
 
 button {
-  background-color: #e0e0e0;
+  background-color: #ffffff;
   border: none;
   border-radius: 5px;
-  font-size: 14px;
+  font-size: 18px;
   cursor: pointer;
 }
 
 button:hover {
-  background-color: #bdbdbd; /* 마우스 호버 시 색상 변경 */
+  background-color: #d9d9d9; /* 마우스 호버 시 색상 변경 */
 }
 
 .edit-btn {
   background-color: #d9d9d9; /* 편집 버튼 배경색 */
 }
 
-.delete-btn {
-  background-color: #d9d9d9; /* 삭제 버튼 배경색 */
+.add-btn {
+  background-color: #ffffff; /* 버튼 배경색 */
+  border: none;
+  border-radius: 5px;
 }
 
-.filter-icon {
-  font-size: 16px;
-  color: #bdbdbd;
-  margin-left: 5px; /* 필터 아이콘과 삭제 버튼 간 간격 */
-  cursor: pointer;
+.add-btn:hover {
+  background-color: #d9d9d9; /* 버튼 호버시 색상 */
 }
 
-.filter-icon:hover {
-  color: #888; /* 필터 아이콘 호버 시 색상 변경 */
+.add-btn i {
+  font-size: 18px; /* 아이콘 크기 */
+  color: white; /* 아이콘 색상 */
 }
 
-.filter-dropdown {
+.add-dropdown {
   background-color: white;
   border: 1px solid #ddd;
   padding: 10px;
@@ -383,15 +396,57 @@ button:hover {
   z-index: 100; /* 다른 요소보다 위에 표시되도록 설정 */
 }
 
-.filter-option {
+.add-option {
   display: flex;
   align-items: center;
   margin-bottom: 5px;
 }
 
-.filter-option input {
+.-option input {
   margin-right: 10px;
 }
+
+/* 날짜별 가계부 내역 스타일 */
+/* 날짜 섹션 스타일 */
+.entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.date-section {
+  display: flex;
+  align-items: center;
+}
+
+.date {
+  font-size: 0.8rem; /* 날짜 글자 크기 */
+  color: #212529;
+}
+
+.day {
+  font-size: 0.8rem; /* 요일 글자 크기 */
+  padding: 1px 10px;
+  border-radius: 5px;
+}
+
+/* 총 금액 스타일 */
+.total-amount {
+  font-size: 1rem; /* 금액 글자 크기 */
+  padding: 5px 15px;
+  border-radius: 5px;
+}
+
+.positive {
+  color: #6981d9; /* 양수일 때의 색상 */
+}
+
+/* 음수일 때 빨간색 */
+/* .negative {
+  color: #ff6b6b; 
+} */
 
 /* 바뀐 부분: 날짜별 가계부 내역 스타일 */
 .date-header {
@@ -402,48 +457,6 @@ button:hover {
   border-bottom: 1px solid #ddd;
 }
 
-.date-section {
-  display: flex;
-  align-items: center;
-}
-
-.date {
-  font-size: 2rem;
-  font-weight: bold;
-}
-
-.day {
-  font-size: 0.7rem;
-  margin-left: 10px;
-  background-color: #ddd;
-  padding: 5px 10px;
-  border-radius: 5px;
-}
-
-.year-month {
-  margin-left: 10px;
-  font-size: 0.8rem;
-  color: #888;
-}
-
-.total-amount {
-  margin-left: 200px;
-  font-size: 1rem;
-  font-weight: bold;
-  border-radius: 10px;
-  padding: 5px 10px;
-  background-color: #ddd;
-  display: inline-block; /* 글자 크기에 맞춰 사이즈 조정 */
-}
-
-.positive {
-  color: #62d0ff;
-}
-
-.negative {
-  color: #ee8282;
-}
-
 .entry-details {
   margin-top: 10px;
 }
@@ -452,7 +465,6 @@ button:hover {
   display: flex;
   justify-content: space-between;
   padding: 10px 0;
-  border-bottom: 1px solid #ddd;
 }
 
 .category {
@@ -466,16 +478,9 @@ button:hover {
   font-size: 0.8rem;
 }
 
-.time {
-  flex: 1;
-  text-align: center;
-  font-size: 0.8rem;
-}
-
 .amount {
   flex: 1;
   text-align: right;
   font-size: 0.8rem;
-  font-weight: bold;
 }
 </style>
