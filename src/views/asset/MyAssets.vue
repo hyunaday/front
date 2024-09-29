@@ -1,96 +1,173 @@
 <template>
-  <div
-    class="main-container d-flex flex-column justify-content-center align-items-center"
-  >
-  <Header />
-    <h1>내 자산</h1>
-
-    <!-- '나의 계좌' 버튼, 계좌 페이지로 이동 -->
-    <router-link to="/transfer">
-      <button class="custom-button">송금</button>
-    </router-link>
-
-    <div class="separator"></div>
-
-    <!-- '나의 카드' 버튼, 카드 페이지로 이동 -->
-    <router-link to="/cards">
-      <button class="custom-button">나의 카드</button>
-    </router-link>
-
-    <!-- FooterNav 컴포넌트 사용 -->
+  <div class="main-container d-flex flex-column justify-content-center align-items-center">
+    <div class="my-assets" v-if="!loading">
+      <h1>{{ userName }}님의 총 자산</h1>
+      <div class="total-assets">
+        <span class="amount">{{ formatNumber(totalAssets) }}원</span>
+        <button class="analyze-button">분석</button>
+      </div>
+      
+      <div class="account">
+        <span class="account-title">계좌</span>
+        <span class="account-amount">{{ formatNumber(totalAssets) }}원</span>
+      </div>
+      
+      <div class="transactions">
+        <span class="transactions-title">입출금</span>
+        <span class="transactions-amount">{{ formatNumber(transactionAmount) }}원</span>
+      </div>
+      
+      <div class="account-list">
+        <div v-for="(account, index) in accounts" :key="index" class="account-card">
+          <span class="account-balance">{{ formatNumber(account.balance) }}원</span>
+          <router-link to="/transfer">
+            <button class="transfer-button">송금</button>
+          </router-link>
+        </div>
+      </div>
+    </div>
+    <div v-else>
+      <p>로딩 중...</p>
+    </div>
     <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
   </div>
 </template>
 
 <script>
 import FooterNav from '../../components/FooterNav.vue';
-import Header from '../../components/Header.vue';
+import axios from 'axios';
 
 export default {
   name: 'MyAssets',
   components: {
     FooterNav,
-    Header,
+  },
+  data() {
+    return {
+      userName: '',
+      totalAssets: 0,
+      transactionAmount: 0,
+      accounts: [],
+      loading: true,
+    };
   },
   methods: {
-    goToGroupPayPage() {
-      this.$router.push('/grouppay'); // 그룹 결제 페이지로 이동
+    formatNumber(num) {
+      return num.toLocaleString();
     },
+    async fetchData() {
+      try {
+        const response = await axios.get('https://your-api-endpoint.com/assets');
+        this.userName = response.data.userName;
+        this.totalAssets = response.data.totalAssets;
+        this.transactionAmount = response.data.transactionAmount;
+        this.accounts = response.data.accounts;
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        this.loading = false;
+      }
+    }
   },
-};
+  mounted() {
+    this.fetchData();
+  }
+}
 </script>
 
-<style scoped>
-/* 전체 템플릿 */
-body {
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-  background-color: #c0c0c0; /* 나머지 화면은 회색 */
-}
 
-.main-container {
-  width: 360px; /* 고정된 너비 */
-  height: 800px; /* 고정된 높이 */
-  background-color: white; /* 흰색 배경 */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 살짝 그림자 추가 */
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: center; /* 중앙 정렬 */
-  align-items: center; /* 중앙 정렬 */
-  position: relative;
+
+
+<style scoped>
+.my-assets {
+  padding: 20px 0;  /* 상하 20px 패딩, 좌우 0px */
+  width: 100%;      /* 가로 크기 100% */
+  max-width: 300px; /* 최대 가로 크기 300px */
 }
 
 h1 {
-  font-size: 28.55px;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 130px; /* 제목과 버튼 사이의 여백 */
+  font-size: 16px;  /* h1 크기 작게 설정 */
+  font-weight: normal; /* 기본 두께로 설정 */
+  margin-bottom: 20px; /* 아래 여백 추가 */
 }
 
-.custom-button {
-  width: 197px;
-  height: 57px;
-  background-color: #6981d9;
-  border: none; /* 기본 테두리 제거 */
-  border-radius: 9px;
-  color: #fff; /* 텍스트 색상 */
-  font-size: 16px;
-  cursor: pointer; /* 마우스 커서 변경 */
-  outline: none; /* 포커스 시 기본 테두리 제거 */
+.total-assets {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 25px; /* 버튼 사이의 간격 */
+  justify-content: space-between; /* 양쪽 정렬 */
 }
 
-.separator {
-  width: 200px;
-  height: 2px; /* 선의 두께 */
-  background-color: #908f8f; /* 선 색상 */
-  margin-bottom: 25px; /* 선과 다음 버튼 사이의 간격 */
+.amount {
+  font-size: 28px; /* 가장 큰 폰트 */
+  font-weight: bold;
+}
+
+.analyze-button {
+  background-color: #6981d9;
+  color: white;
+  border: none;
+  padding: 5px 15px;  /* 버튼 크기 조정 */
+  border-radius: 10px;
+  font-size: 14px;  /* 폰트 크기 조정 */
+}
+
+.account {
+  display: flex;
+  justify-content: space-between; /* 양쪽 정렬 */
+  margin-top: 20px;
+}
+
+.account-title {
+  font-size: 20px; /* 두 번째로 큰 폰트 */
+  font-weight: bold; /* 굵게 표시 */
+  text-align: left; /* 왼쪽 정렬 */
+}
+
+.account-amount {
+  font-size: 20px; /* 같은 크기의 폰트 */
+  text-align: right; /* 오른쪽 정렬 */
+}
+
+.transactions {
+  font-size: 12px; /* 작게 표시 */
+  color: #b0b0b0;
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between; /* 양쪽 정렬 */
+}
+
+.transactions-title {
+  font-size: 12px; /* 작게 표시 */
+}
+
+.transactions-amount {
+  font-size: 12px; /* 작게 표시 */
+  text-align: right; /* 오른쪽 정렬 */
+}
+
+.account-list {
+  display: flex;
+  flex-direction: column; /* 세로 방향으로 배치 */
+}
+
+.account-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.account-balance {
+  font-size: 12px; /* 작게 표시 */
+}
+
+.transfer-button {
+  background-color: #6981d9;
+  color: white;
+  border: none;
+  padding: 5px 15px;  /* 버튼 크기 조정 */
+  border-radius: 10px;
+  margin-left: 20px;
+  font-size: 12px;  /* 작게 표시 */
 }
 </style>
