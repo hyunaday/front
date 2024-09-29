@@ -40,16 +40,25 @@
 
     <!-- 편집, 삭제, 필터 버튼 추가 -->
     <div class="button-container">
-      <button @click="toggleadd" class="add-btn">
+      <button @click="toggleBottomSheet" class="add-btn">
         <i class="fa-solid fa-plus"></i>
       </button>
     </div>
 
-    <!-- 필터 창 -->
-    <div v-if="showFilter" class="filter-dropdown">
-      <div class="filter-option" v-for="category in categories" :key="category">
-        <input type="checkbox" :id="category" />
-        <label :for="category">{{ category }}</label>
+    <!-- Bottom Sheet -->
+    <div
+      v-if="isBottomSheetOpen"
+      class="bottom-sheet-overlay"
+      @click="closeBottomSheet"
+    >
+      <div class="bottom-sheet" @click.stop>
+        <!-- 닫기 버튼 -->
+        <div class="bottom-sheet-header">
+          <button class="close-btn" @click="closeBottomSheet">
+            <i class="fa-solid fa-times"></i>
+          </button>
+        </div>
+        <!-- 나중에 추가될 내용 -->
       </div>
     </div>
 
@@ -103,7 +112,9 @@ export default {
     return {
       selectedYear: new Date().getFullYear(),
       selectedMonth: new Date().getMonth(),
+      selectedCategory: "전체", // 기본 선택값
       searchQuery: "", // 검색어 저장 변수
+      isBottomSheetOpen: false, // bottom-sheet 상태
       showFilter: false, // 필터 창 표시 여부를 위한 변수 추가
       finalQuery: "", // 엔터를 쳤을 때 실제 검색에 사용하는 검색어
       years: this.generateYears(),
@@ -202,6 +213,18 @@ export default {
   methods: {
     executeSearch() {
       this.finalQuery = this.searchQuery; // 엔터를 눌렀을 때 검색어 반영
+    },
+
+    toggleadd() {
+      // 추가 버튼 로직
+    },
+
+    // bottom-sheet
+    toggleBottomSheet() {
+      this.isBottomSheetOpen = !this.isBottomSheetOpen;
+    },
+    closeBottomSheet() {
+      this.isBottomSheetOpen = false;
     },
 
     formatAmount(amount) {
@@ -350,13 +373,11 @@ thead tr {
 
 /* 버튼 컨테이너 스타일 - 오른쪽 정렬 */
 .button-container {
-  margin-top: 10px;
   display: flex;
-  justify-content: flex-end; /* 버튼을 오른쪽에 정렬 */
-  gap: 5px; /* 버튼 간 간격을 좁게 설정 */
+  justify-content: flex-end;
 }
 
-button {
+.add-btn {
   background-color: #ffffff;
   border: none;
   border-radius: 5px;
@@ -364,46 +385,67 @@ button {
   cursor: pointer;
 }
 
-button:hover {
-  background-color: #d9d9d9; /* 마우스 호버 시 색상 변경 */
-}
-
-.edit-btn {
-  background-color: #d9d9d9; /* 편집 버튼 배경색 */
-}
-
-.add-btn {
-  background-color: #ffffff; /* 버튼 배경색 */
-  border: none;
-  border-radius: 5px;
+.add-btn i {
+  font-size: 24px;
+  color: #6981d9;
 }
 
 .add-btn:hover {
-  background-color: #d9d9d9; /* 버튼 호버시 색상 */
+  background-color: #d9d9d9;
 }
 
-.add-btn i {
-  font-size: 18px; /* 아이콘 크기 */
-  color: white; /* 아이콘 색상 */
+/* Bottom Sheet Overlay */
+.bottom-sheet-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
 }
 
-.add-dropdown {
-  background-color: white;
-  border: 1px solid #ddd;
-  padding: 10px;
-  margin-top: 10px;
-  width: 200px;
-  z-index: 100; /* 다른 요소보다 위에 표시되도록 설정 */
+/* Bottom Sheet */
+.bottom-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70%;
+  max-height: 800px;
+  width: 80%; /* 예시로 80%로 설정 */
+  margin: 0 auto;
+  max-width: 360px; /* 최대 너비 설정 */
+  background: white;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  padding: 20px;
+  box-shadow: 0px -4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1001;
+  margin: 0 auto; /* 가운데 정렬 */
+  transition: transform 0.3s ease-in-out;
 }
 
-.add-option {
+/* Bottom Sheet Header */
+.bottom-sheet-header {
   display: flex;
-  align-items: center;
-  margin-bottom: 5px;
+  justify-content: flex-end;
 }
 
-.-option input {
-  margin-right: 10px;
+/* 닫기 버튼 스타일 */
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.close-btn i {
+  color: #333;
+}
+
+.close-btn:hover {
+  color: #ff6b6b;
 }
 
 /* 날짜별 가계부 내역 스타일 */
@@ -443,7 +485,7 @@ button:hover {
   color: #6981d9; /* 양수일 때의 색상 */
 }
 
-/* 음수일 때 빨간색 */
+/* 음수일 때의 색상 */
 /* .negative {
   color: #ff6b6b; 
 } */
