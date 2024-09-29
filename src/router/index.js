@@ -8,8 +8,6 @@ import GroupPay from '../views/pay/GroupPay.vue';
 import SignUp from '../views/SignUp.vue';
 import AddList from '../views/book/AddList.vue';
 import Cards from '../views/asset/Cards.vue';
-import Account from '../views/asset/Account.vue';
-import AccountAddList from '../views/asset/AccountAddList.vue';
 import BusinessCardList from '../views/business/BusinessCardList.vue';
 import MyCardRegistration from '../views/business/MyCardRegistration.vue'; 
 import FriendCardRegistration from '../views/business/FriendCardRegistration.vue'; 
@@ -51,12 +49,6 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/account',
-    name: 'Account',
-    component: Account,
-    meta: { requiresAuth: true },
-  },
-  {
     path: '/accountbook',
     name: 'AccountBook',
     component: AccountBook,
@@ -90,12 +82,6 @@ const routes = [
     path: '/cards',
     name: 'Cards',
     component: Cards,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/accountaddlist',
-    name: 'AccountAddList',
-    component: AccountAddList,
     meta: { requiresAuth: true },
   },
   {
