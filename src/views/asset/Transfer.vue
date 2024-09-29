@@ -1,29 +1,34 @@
 <template>
     <div class="main-container d-flex flex-column justify-content-center align-items-center">
-      <Header />
+      <!-- <Header /> -->
       <div class="transfer-page">
         <div class="transfer-form">
-          <label for="recipient"><span class="point">누구</span>에게<br> 보내겠습니까?</label>
+          <label for="recipient">
+            <span class="point">누구</span>에게<br /> 보내겠습니까?
+          </label>
           <input
             type="text"
             id="recipient"
             v-model="recipient"
             placeholder="계좌번호 입력"
             @input="validateInput"
-            class="number-only"
+            maxlength="13"
           />
+          <!-- <button type="button" class="stroke-button" @click="sendMoney">송금하기</button> -->
         </div>
-        
+  
         <div class="recent-transactions">
-          <h2>최근 거래</h2>
-          <ul>
-            <li v-for="transaction in recentTransactions" :key="transaction.id">
-              {{ transaction.date }} - {{ transaction.amount }} - {{ transaction.recipient }}
-            </li>
-          </ul>
+          <h3 class="recent-title">최근 거래</h3>
+          <div v-if="recentTransactions.length > 0">
+            <div v-for="transaction in recentTransactions" :key="transaction.id">
+              <p class="transaction-name">{{ transaction.name }}</p>
+              <p class="transaction-account">{{ formatAccountNumber(transaction.accountNumber) }}</p>
+              <hr class="transaction-divider" />
+            </div>
+          </div>
+          <p v-else class="no-transactions">최근 거래 내역이 없습니다.</p>
         </div>
       </div>
-      <!-- FooterNav 컴포넌트 사용 -->
       <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
     </div>
   </template>
@@ -41,17 +46,35 @@
     data() {
       return {
         recipient: '',
-        recentTransactions: [
-          { id: 1, date: '2024-09-01', amount: '100,000 원', recipient: '123-456-7890' },
-          { id: 2, date: '2024-09-05', amount: '50,000 원', recipient: '987-654-3210' },
-          { id: 3, date: '2024-09-10', amount: '75,000 원', recipient: '456-123-7890' },
-        ],
+        recentTransactions: [], // 거래 내역을 저장할 배열
       };
     },
     methods: {
       validateInput() {
         this.recipient = this.recipient.replace(/[^0-9]/g, '').slice(0, 13);
       },
+      sendMoney() {
+        if (this.recipient.length === 13) {
+          console.log(`송금할 계좌번호: ${this.recipient}`);
+        } else {
+          alert("송금할 계좌번호를 확인해주세요.");
+        }
+      },
+      formatAccountNumber(accountNumber) {
+        // 계좌번호 포맷팅 함수
+        return `${accountNumber.slice(0, 3)}-${accountNumber.slice(3, 7)}-${accountNumber.slice(7, 11)}-${accountNumber.slice(11)}`;
+      },
+      fetchTransactions() {
+        // 여기에 DB에서 거래 내역을 불러오는 로직 추가
+        // 예시 데이터
+        this.recentTransactions = [
+          { id: 1, name: '홍길동', accountNumber: '3604562599743' },
+          { id: 2, name: '김철수', accountNumber: '1234567890123' },
+        ];
+      },
+    },
+    mounted() {
+      this.fetchTransactions(); // 컴포넌트가 마운트될 때 거래 내역 가져오기
     },
   };
   </script>
@@ -70,30 +93,67 @@
   }
   
   .point {
-    color: #6981D9;
+    color: #6981d9;
   }
   
   .transfer-form {
-    margin-bottom: 20px;
+    margin-bottom: 70px;
   }
   
   label {
-    font-size: 16px;
+    font-size: 20px;
+    font-weight: bold;
     display: block;
     margin-bottom: 10px;
   }
   
   input[type="text"] {
     width: 100%;
-    padding: 10px;
-    border-radius: 5px;
+    padding: 10px 90px 3px 2px;
+    border: none;
+    border-bottom: 2px solid #6981d9;
     font-size: 16px;
-    color: transparent; /* 텍스트 색상을 투명하게 */
-    text-shadow: 0 0 0 #000; /* 숫자만 보이도록 */
+    margin-bottom: 10px;
+    outline: none;
+    background-color: transparent;
   }
   
-  .number-only {
-    caret-color: #000; /* 커서 색상 */
+  input[type="text"]::placeholder {
+    color: #aaa;
+  }
+  
+  .recent-transactions {
+    margin-top: 20px;
+  }
+  
+  .recent-title {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .transaction-name {
+    font-size: 12px; /* 이름 폰트 크기 작게 설정 */
+    font-weight: bold;
+    margin-bottom: 0;
+    margin-top: 6px;
+  }
+  
+  .transaction-account {
+    font-size: 12px; /* 계좌번호 폰트 크기 */
+    color: #6981d9; /* 계좌번호 색상 변경 */
+    margin-bottom: 6px;
+  }
+  
+  .no-transactions {
+    font-size: 12px;
+    color: #555;
+  }
+  
+  .transaction-divider {
+    border: none;
+    border-top: 1px solid #ccc; /* 수평선 색상 */
+    margin: 5px 0; /* 수평선 위아래 간격 */
   }
   </style>
   
