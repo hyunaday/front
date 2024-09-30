@@ -45,20 +45,90 @@
       </button>
     </div>
 
-    <!-- Bottom Sheet -->
+    <!-- Bottom Sheet 내부에 가계부 내역 추가 폼 구현 -->
     <div
       v-if="isBottomSheetOpen"
       class="bottom-sheet-overlay"
       @click="closeBottomSheet"
     >
       <div class="bottom-sheet" @click.stop>
-        <!-- 닫기 버튼 -->
         <div class="bottom-sheet-header">
           <button class="close-btn" @click="closeBottomSheet">
             <i class="fa-solid fa-times"></i>
           </button>
         </div>
-        <!-- 나중에 추가될 내용 -->
+
+        <!-- 내역 추가 폼 -->
+        <main>
+          <h3>내역 추가</h3>
+          <form @submit.prevent="addTransaction">
+            <!-- 카테고리 선택 -->
+            <div class="form-group">
+              <label for="category">카테고리</label>
+              <select
+                v-model="newTransaction.category"
+                @change="updateDetailOptions"
+                required
+              >
+                <option value="">카테고리 선택</option>
+                <option value="수입">수입</option>
+                <option value="지출">지출</option>
+              </select>
+            </div>
+
+            <div class="form-group" v-if="newTransaction.category">
+              <label for="detail">세부 항목</label>
+              <select v-model="newTransaction.detail" required>
+                <option value="">세부 항목 선택</option>
+                <option
+                  v-for="detail in detailOptions"
+                  :key="detail"
+                  :value="detail"
+                >
+                  {{ detail }}
+                </option>
+              </select>
+            </div>
+
+            <!-- 결제 수단 -->
+            <div class="form-group">
+              <label for="paymentMethod">결제 수단</label>
+              <select v-model="newTransaction.paymentMethod" required>
+                <option value="">결제 수단 선택</option>
+                <option value="신한은행">신한은행</option>
+                <option value="현금">현금</option>
+                <!-- 추가 결제 수단 필요 시 여기에 옵션 추가 -->
+              </select>
+            </div>
+
+            <!-- 금액 입력 -->
+            <div class="form-group">
+              <label for="amount">금액</label>
+              <input
+                type="number"
+                id="amount"
+                v-model="newTransaction.amount"
+                placeholder="금액 입력"
+                required
+              />
+            </div>
+
+            <!-- 메모 입력 -->
+            <div class="form-group">
+              <label for="memo">메모</label>
+              <textarea
+                id="memo"
+                v-model="newTransaction.memo"
+                placeholder="메모 입력 (선택 사항)"
+              ></textarea>
+            </div>
+
+            <!-- 저장 버튼 -->
+            <div class="form-group">
+              <button type="submit" class="submit-btn">저장</button>
+            </div>
+          </form>
+        </main>
       </div>
     </div>
 
@@ -145,12 +215,16 @@ export default {
               detail: "주방/욕실",
               paymentMethod: "신한은행",
               amount: -30000,
+              storeName: "마트",
+              memo: "주방용품 구매",
             },
             {
               category: "부수입",
               detail: "",
               paymentMethod: "현금",
               amount: 3000,
+              storeName: "",
+              memo: "",
             },
           ],
         },
@@ -164,20 +238,40 @@ export default {
               detail: "주방/욕실",
               paymentMethod: "신한은행",
               amount: -30000,
+              storeName: "다이소",
+              memo: "생활용품",
             },
             {
               category: "부수입",
               detail: "",
               paymentMethod: "현금",
               amount: 3000,
+              storeName: "",
+              memo: "",
             },
           ],
         },
       ],
+      currentTransaction: {}, // 현재 거래 내역 저장
+      newTransaction: {
+        category: "", // 카테고리
+        detail: "", // 세부 항목
+        paymentMethod: "", // 결제 수단
+        amount: null, // 금액
+        memo: "", // 메모
+      },
+
+      newTransaction: {
+        category: "", // 카테고리
+        detail: "", // 세부 항목
+        paymentMethod: "", // 결제 수단
+        amount: null, // 금액
+        memo: "", // 메모
+      },
+      detailOptions: [], // 선택한 카테고리에 따른 세부 항목 목록
     };
   },
 
-  // 검색기능
   computed: {
     filteredEntries() {
       if (!this.finalQuery) {
@@ -215,20 +309,31 @@ export default {
       this.finalQuery = this.searchQuery; // 엔터를 눌렀을 때 검색어 반영
     },
 
-    toggleadd() {
-      // 추가 버튼 로직
+    openBottomSheet(transaction) {
+      this.currentTransaction = transaction.entries[0]; // 첫 거래 내역 표시
+      this.isBottomSheetOpen = true;
     },
 
-    // bottom-sheet
     toggleBottomSheet() {
-      this.isBottomSheetOpen = !this.isBottomSheetOpen;
+      console.log("toggleBottomSheet called"); // 상태가 변경되는지 확인
+      this.isBottomSheetOpen = !this.isBottomSheetOpen; // true <-> false 토글
     },
+
     closeBottomSheet() {
       this.isBottomSheetOpen = false;
     },
 
+    deleteTransaction() {
+      alert("거래 내역이 삭제되었습니다.");
+      this.closeBottomSheet();
+    },
+
     formatAmount(amount) {
-      return `${amount.toLocaleString("ko-KR")}원`; // 금액 뒤에 '원'을 붙여서 표시
+      if (typeof amount !== "number") {
+        // amount가 숫자가 아니면 0으로 처리하거나 기본 값 처리
+        return "0원";
+      }
+      return `${amount.toLocaleString("ko-KR")}원`;
     },
 
     generateYears() {
@@ -239,8 +344,55 @@ export default {
       }
       return years;
     },
-    updateCalendar() {
-      // 캘린더 업데이트 로직
+
+    // 트랜잭션 추가 메서드
+    addTransaction() {
+      if (!this.newTransaction.category || !this.newTransaction.amount) {
+        alert("필수 항목을 모두 입력해주세요!");
+        return;
+      }
+
+      // 내역을 추가하는 로직
+      const newEntry = {
+        ...this.newTransaction, // 입력된 데이터를 복사
+        date: new Date().getDate(), // 현재 날짜를 추가
+        day: new Date().toLocaleString("ko-KR", { weekday: "long" }), // 현재 요일 추가
+      };
+
+      // 새로운 거래 내역을 목록에 추가
+      this.entries.push({
+        date: newEntry.date,
+        day: newEntry.day,
+        totalAmount: newEntry.amount,
+        entries: [newEntry],
+      });
+
+      // 폼 리셋 및 Bottom Sheet 닫기
+      this.newTransaction = {
+        category: "",
+        detail: "",
+        paymentMethod: "",
+        amount: null,
+        memo: "",
+      };
+      this.closeBottomSheet();
+    },
+    updateDetailOptions() {
+      if (this.newTransaction.category === "수입") {
+        this.detailOptions = ["월급", "이자", "용돈"];
+      } else if (this.newTransaction.category === "지출") {
+        this.detailOptions = [
+          "식비",
+          "쇼핑",
+          "교통",
+          "문화",
+          "주거/통신",
+          "기타",
+        ];
+      } else {
+        this.detailOptions = [];
+      }
+      this.newTransaction.detail = ""; // 세부 항목 초기화
     },
   },
 };
@@ -379,6 +531,7 @@ thead tr {
 
 .add-btn {
   background-color: #ffffff;
+  margin-left: 280px;
   border: none;
   border-radius: 5px;
   font-size: 18px;
@@ -394,7 +547,6 @@ thead tr {
   background-color: #d9d9d9;
 }
 
-/* Bottom Sheet Overlay */
 .bottom-sheet-overlay {
   position: fixed;
   top: 0;
@@ -405,15 +557,14 @@ thead tr {
   z-index: 1000;
 }
 
-/* Bottom Sheet */
 .bottom-sheet {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 70%;
-  max-height: 800px;
-  width: 80%; /* 예시로 80%로 설정 */
+  height: 80%; /* 고정된 높이 */
+  max-height: 800px; /* 최대 높이 설정 */
+  width: 100%;
   margin: 0 auto;
   max-width: 360px; /* 최대 너비 설정 */
   background: white;
@@ -424,6 +575,21 @@ thead tr {
   z-index: 1001;
   margin: 0 auto; /* 가운데 정렬 */
   transition: transform 0.3s ease-in-out;
+  overflow-y: auto; /* 내부 스크롤 활성화 */
+}
+
+/* Bottom Sheet 내부 내용이 충분히 길 경우에만 스크롤이 나타나도록 합니다 */
+.bottom-sheet::-webkit-scrollbar {
+  width: 6px; /* 스크롤바 너비 */
+}
+
+.bottom-sheet::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2); /* 스크롤바 색상 */
+  border-radius: 10px;
+}
+
+.bottom-sheet::-webkit-scrollbar-track {
+  background-color: transparent; /* 트랙 배경 투명 */
 }
 
 /* Bottom Sheet Header */
@@ -432,7 +598,6 @@ thead tr {
   justify-content: flex-end;
 }
 
-/* 닫기 버튼 스타일 */
 .close-btn {
   background: none;
   border: none;
@@ -446,6 +611,102 @@ thead tr {
 
 .close-btn:hover {
   color: #ff6b6b;
+}
+
+/* Bottom Sheet 내 폼 스타일 */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.form-group textarea {
+  resize: vertical;
+  height: 100px;
+}
+
+.submit-btn {
+  background-color: #6981d9;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background-color: #576bb5;
+}
+
+/* 거래 내역 상세 */
+.transaction-details h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.transaction-details h2 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.transaction-details p {
+  font-size: 1rem;
+  color: #666;
+}
+
+.transaction-info {
+  margin-bottom: 1rem;
+}
+
+.transaction-info div {
+  margin-bottom: 0.5rem;
+}
+
+.memo {
+  margin-top: 1rem;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+.delete-btn {
+  background-color: #ffffff;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.next-btn {
+  background-color: #6981d9;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.next-btn:hover {
+  background-color: #576bb5;
 }
 
 /* 날짜별 가계부 내역 스타일 */
