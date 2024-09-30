@@ -7,7 +7,6 @@
         <span class="amount">{{ formatNumber(transactionAmount) }}원</span>
         <button class="analyze-button">분석</button>
       </div>
-
       <div class="advertisement-banner">
         <div class="banner-content">
           <img src="../assets/images/kbpay.png" alt="광고 배너" class="banner-image" />
@@ -22,7 +21,6 @@
         <span class="account-title">계좌</span>
         <span class="account-amount">{{ formatNumber(totalAccountBalance) }}원</span>
       </div>
-
       <div class="withdraw-deposit-section">
         <div class="transactions">
           <span class="transactions-title">입출금</span>
@@ -207,7 +205,6 @@ h1 {
   font-size: 20px;
   text-align: right;
 }
-
 .transactions {
   font-size: 12px;
   color: #b0b0b0;

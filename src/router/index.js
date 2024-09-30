@@ -26,7 +26,11 @@ import CurrentPassword from '../views/settings/CurrentPassword.vue';
 import Transfer from '../views/asset/Transfer.vue';
 import TransactionHistory from '../views/TransactionHistory.vue';
 import Loading from '../views/Loading.vue';
-
+import Name from '../views/signup/Name.vue';
+import Phone from '../views/signup/Phone.vue';
+import Verification from '../views/signup/Verification.vue';
+import Email from '../views/signup/Email.vue';
+import Password from '../views/signup/Password.vue';
 
 const routes = [
   {
@@ -182,6 +186,29 @@ const routes = [
     path: '/loading', // 로딩 페이지
     name: 'Loading',
     component: Loading,
+    path: '/name',
+    name: 'Name',
+    component: Name,
+  },
+  {
+    path: '/phone',
+    name: 'Phone',
+    component: Phone,
+  },
+  {
+    path: '/verification',
+    name: 'Verification',
+    component: Verification,
+  },
+  {
+    path: '/email',
+    name: 'Email',
+    component: Email,
+  },
+  {
+    path: '/password',
+    name: 'Password',
+    component: Password,
   },
 ];
 
