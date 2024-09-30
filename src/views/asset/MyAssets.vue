@@ -3,16 +3,14 @@
     <div class="my-assets">
       <h1>{{ userName }}님의 총 자산</h1>
 
-      <!-- 계좌 총 합 -->
       <div class="total-assets">
         <span class="amount">{{ formatNumber(transactionAmount) }}원</span>
         <button class="analyze-button">분석</button>
       </div>
 
-      <!-- 광고 배너 -->
       <div class="advertisement-banner">
         <div class="banner-content">
-          <img src="/Users/hyuna/Desktop/teamirum/front/src/assets/images/kbpay.png" alt="광고 배너" class="banner-image" />
+          <img src="../assets/images/kbpay.png" alt="광고 배너" class="banner-image" />
           <div class="banner-text">
             <p class="banner-title">KB Pay</p>
             <p class="banner-subtitle">편리한 국민 생활 파트너</p>
@@ -20,21 +18,17 @@
         </div>
       </div>
 
-      <!-- 위의 계좌 총 합과 동일한 값 return -->
       <div class="account">
         <span class="account-title">계좌</span>
-        <span class="account-amount">{{ formatNumber(transactionAmount) }}원</span>
+        <span class="account-amount">{{ formatNumber(totalAccountBalance) }}원</span>
       </div>
 
-      <!-- 입출금 섹션 -->
       <div class="withdraw-deposit-section">
-        <!-- 입출금 내역 합 -->
         <div class="transactions">
           <span class="transactions-title">입출금</span>
           <span class="transactions-amount">{{ formatNumber(totalWithdrawDeposit) }}원</span>
         </div>
 
-        <!-- 입출금 개별 통장 -->
         <div class="account-list">
           <div v-for="(account, index) in accounts" :key="index" class="account-card">
             <div class="account-info">
@@ -50,15 +44,12 @@
         </div>
       </div>
 
-      <!-- 예적금 섹션 -->
       <div class="savings-section">
-        <!-- 예적금 내역 합 -->
         <div class="transactions savings">
           <span class="transactions-title">예적금</span>
           <span class="transactions-amount">{{ formatNumber(savingsAccount.balance) }}원</span>
         </div>
 
-        <!-- 예적금 개별 통장 -->
         <div class="account-list">
           <div class="account-card">
             <div class="account-info">
@@ -68,6 +59,45 @@
           </div>
         </div>
       </div>
+
+      <hr>
+
+      <div class="credit-card-section">
+        <span class="account-title">카드</span>
+      </div>
+
+      <div>
+        <div class="transactions">
+          <span class="transactions-title">신용카드</span>
+        </div>
+
+        <div class="account-list">
+          <div v-for="(card, index) in creditCards" :key="index" class="account-card">
+            <!-- <img
+            src="../assets/images/KB카드알파원.png" alt=" 배너" class="banner-image" /> -->
+
+            <div class="account-info">
+              <span class="transactions-title">{{ card.name }}</span>
+              <span class="account-balance credit-card-balance">{{ formatNumber(card.balance) }}원</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr>
+
+      <div class="loan-section">
+        <span class="account-title">대출</span>
+        <div class="account-list">
+          <div class="account-card">
+            <div class="account-info">
+              <span class="transactions-title">주택담보대출</span>
+              <span class="account-balance credit-card-balance">{{ `${formatNumber(loanAmount)}` }}원</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
     <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
   </div>
@@ -90,17 +120,26 @@ export default {
         { balance: 82400 },
       ],
       savingsAccount: {
-        balance: 6000000, // 예적금 잔액
+        balance: 6000000,
       },
+      creditCards: [
+        { name: 'KB알파원', balance: 150000 },
+        { name: 'KB청춘대로 톡톡', balance: 100000000 },
+        { name: '현대 네이버페이', balance: 1385290000 },
+      ],
+      loanAmount: 480000000,
     };
   },
 
   computed: {
-    transactionAmount() {
+    totalAccountBalance() {
       return this.accounts.reduce((total, account) => total + account.balance, 0) + this.savingsAccount.balance;
     },
+    transactionAmount() {
+      return this.totalAccountBalance;
+    },
     totalWithdrawDeposit() {
-      return this.accounts.reduce((total, account) => total + account.balance, 0); // 입출금 통장 총합
+      return this.accounts.reduce((total, account) => total + account.balance, 0);
     }
   },
   methods: {
@@ -112,10 +151,18 @@ export default {
 </script>
 
 <style scoped>
+.main-container {
+  position: relative; /* 전체 컨테이너 */
+}
+
 .my-assets {
-  padding: 20px 0;
+  padding: 20px;
   width: 100%;
-  max-width: 300px;
+  max-width: 320px;
+  overflow-y: auto; /* 세로 스크롤 추가 */
+  max-height: 80vh; /* 최대 높이 설정 */
+  position: absolute; /* 페이지 안에서의 위치 설정 */
+  top: 0; /* 페이지 상단에 고정 */
 }
 
 h1 {
@@ -198,6 +245,10 @@ h1 {
   font-size: 12px;
 }
 
+.credit-card-balance::before {
+  content: '- ';
+}
+
 .transfer-button-container {
   display: flex;
   align-items: center;
@@ -226,17 +277,17 @@ h1 {
 
 .banner-content {
   display: flex;
-  align-items: center; /* 세로 정렬 */
+  align-items: center;
 }
 
 .banner-image {
-  width: 45px; /* 원하는 너비 */
-  height: auto; /* 비율 유지 */
-  margin-right: 10px; /* 텍스트와의 간격 */
+  width: 45px;
+  height: auto;
+  margin-right: 10px;
 }
 
 .banner-text {
-  text-align: left; /* 텍스트 왼쪽 정렬 */
+  text-align: left;
 }
 
 .banner-title {
@@ -247,7 +298,11 @@ h1 {
 
 .banner-subtitle {
   margin: 0;
-  font-size: 12px; /* 폰트 크기 줄임 */
-  font-weight: 300; /* 폰트 연하게 */
+  font-size: 12px;
+  font-weight: 300;
+}
+
+.loan-section {
+  margin-top: 20px;
 }
 </style>
