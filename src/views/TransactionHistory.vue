@@ -8,7 +8,6 @@
           <div class="account-info">
             <span class="bank-name">국민</span>
             <span class="account-number">{{ formattedAccountNumber }}</span>
-            <!-- 여기를 변경합니다. -->
             <img
               src="../assets/images/copy.png"
               class="copy-icon"
@@ -18,7 +17,7 @@
           </div>
         </div>
         <div class="account-description">국민은행 입출금 통장</div>
-        <div class="amount-div" v-if="amount !== null">{{ formattedAmount }}</div>
+        <div class="amount-div" v-if="totalAmount !== null">{{ formattedAmount }}</div>
         
         <router-link to="/transfer">
           <div class="button-container">
@@ -54,186 +53,187 @@
 import FooterNav from '../components/FooterNav.vue';
 
 export default {
-name: 'TransactionHistory',
-components: {
-  FooterNav,
-},
-data() {
-  return {
-    imageSrc: 'src/assets/images/kbbank.png',
-    accountNumber: '3333091416050',
-    amount: 1000000000,
-    searchQuery: '', // 검색어를 저장하는 변수
-    transactions: [
-      { id: 1, date: '09/12', name: '홍길동', amount: -30000 },
-      { id: 2, date: '09/18', name: '이순신', amount: 8000 },
-      { id: 3, date: '09/21', name: '김유신', amount: -50000 },
-      { id: 4, date: '09/27', name: '조국민', amount: 10000 },
-      { id: 5, date: '09/30', name: '네이버', amount: 2000000 },
-      // 추가 거래 내역을 여기에 삽입
-    ],
-  };
-},
-computed: {
-  formattedAccountNumber() {
-    return this.accountNumber.replace(/(\d{4})(\d{2})(\d{6})/, '$1-$2-$3');
+  name: 'TransactionHistory',
+  components: {
+    FooterNav,
   },
-  formattedAmount() {
-    return this.amount.toLocaleString() + '원';
+  data() {
+    return {
+      imageSrc: 'src/assets/images/kbbank.png',
+      accountNumber: '3333091416050',
+      transactions: [
+        { id: 1, date: '09/12', name: '홍길동', amount: -30000 },
+        { id: 2, date: '09/18', name: '이순신', amount: 8000 },
+        { id: 3, date: '09/21', name: '김유신', amount: -50000 },
+        { id: 4, date: '09/27', name: '조국민', amount: 10000 },
+        { id: 5, date: '09/30', name: '네이버', amount: 2000000 },
+      ],
+    };
   },
-},
-methods: {
-  copyAccountNumber() {
-    navigator.clipboard.writeText(this.accountNumber)
-      .then(() => {
-        alert('계좌번호가 복사되었습니다!');
-      })
-      .catch(err => {
-        console.error('복사 실패:', err);
-      });
+  computed: {
+    formattedAccountNumber() {
+      // 총 거래 내역의 합계
+      return this.totalAmount.toLocaleString() + '원';
+    },
+    totalAmount() {
+      return this.transactions.reduce((sum, transaction) => sum + transaction.amount, 0);
+    },
+    formattedAmount() {
+      return this.totalAmount.toLocaleString() + '원';
+    },
   },
-  performSearch() {
-    if (this.searchQuery) {
-      console.log(`검색어: ${this.searchQuery}`);
-    } else {
-      console.log('검색어가 비어 있습니다.');
-    }
+  methods: {
+    copyAccountNumber() {
+      navigator.clipboard.writeText(this.accountNumber)
+        .then(() => {
+          alert('계좌번호가 복사되었습니다!');
+        })
+        .catch(err => {
+          console.error('복사 실패:', err);
+        });
+    },
+    performSearch() {
+      if (this.searchQuery) {
+        console.log(`검색어: ${this.searchQuery}`);
+      } else {
+        console.log('검색어가 비어 있습니다.');
+      }
+    },
+    formatTransactionAmount(amount) {
+      const formattedAmount = Math.abs(amount).toLocaleString();
+      return (amount < 0 ? '-' : '+') + formattedAmount + '원';
+    },
   },
-  formatTransactionAmount(amount) {
-    const formattedAmount = Math.abs(amount).toLocaleString();
-    return (amount < 0 ? '-' : '+') + formattedAmount + '원';
-  },
-},
 };
 </script>
 
 <style scoped>
 .title {
-text-align: center;
-font-size: 16px;
-font-weight: bold;
-margin: 20px 0;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 20px 0;
 }
 
 .container {
-background-color: #6981D9;
-padding: 20px;
-width: 360px;
-color: white;
+  background-color: #6981D9;
+  padding: 20px;
+  width: 360px;
+  color: white;
 }
 
 .transaction-details {
-display: flex;
-align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .bank-logo {
-width: 30px;
-height: 30px;
-margin-right: 10px;
+  width: 30px;
+  height: 30px;
+  margin-right: 10px;
 }
 
 .account-info {
-align-items: center;
-flex-grow: 1;
-justify-content: space-between; /* 좌우 정렬 */
+  align-items: center;
+  flex-grow: 1;
+  justify-content: space-between;
 }
 
 .copy-icon {
-margin-left:5px;
-width: 10px; /* 아이콘 크기 조정 */
-height: 10px; /* 아이콘 크기 조정 */
-cursor: pointer; /* 커서 포인터 */
+  margin-left: 5px;
+  width: 10px;
+  height: 10px;
+  cursor: pointer;
 }
 
 .account-description {
-font-size: 12px;
-margin-left: 40px;
+  font-size: 12px;
+  margin-left: 40px;
 }
 
 .amount-div {
-text-align: center; /* 중앙 정렬 */
-font-size: 20px; /* 폰트 크기 조정 */
-margin-top: 10px; /* 상단 여백 추가 */
-text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* 그림자 추가 */
+  text-align: center;
+  font-size: 20px;
+  margin-top: 10px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .button-container {
-display: flex;
-justify-content: center;
-margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }
 
 .transfer-button {
-background-color: white;
-border: none;
-padding: 5px 30px;
-border-radius: 7px;
-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-cursor: pointer;
-font-size: 14px;
-font-weight: bold;
+  background-color: white;
+  border: none;
+  padding: 5px 30px;
+  border-radius: 7px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
 }
 
 .search-filter {
-display: flex;
-align-items: center;
-margin: 20px 13px;
+  display: flex;
+  align-items: center;
+  margin: 20px 13px;
 }
 
 .search-input {
-flex: 1;
-padding: 5px;
-border-radius: 10px;
-background-color: rgba(255, 255, 255, 0.5); /* 연한 배경색 추가 */
-border: 1px solid #ccc; /* 테두리 추가 (원하는 경우) */
+  flex: 1;
+  padding: 5px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border: 1px solid #ccc;
 }
 
 .filter-icon {
-margin-left: 10px;
-cursor: pointer;
+  margin-left: 10px;
+  cursor: pointer;
 }
 
 .transaction-list {
-padding: 15px;
-width: 100%; /* 전체 폭 사용 */
+  padding: 15px;
+  width: 100%;
 }
 
 .transaction-item {
-display: flex;
-align-items: center;
-border-bottom: 1px solid #ccc; /* 가로줄 */
-padding: 10px 0; /* 위 아래 여백 */
-font-size: 10px; /* 폰트 크기 조정 */
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+  padding: 10px 0;
+  font-size: 10px;
 }
 
 .date-label {
-margin-right: 5px; /* 날짜와 이름 사이의 간격 조정 */ 
+  margin-right: 5px;
 }
 
 .name {
-font-weight: bold; /* 이름 bold 처리 */
-font-size: 12px; /* 이름 폰트 크기 조정 */
+  font-weight: bold;
+  font-size: 12px;
 }
 
 .transaction-item .amount {
-margin-left: auto; /* amount를 오른쪽으로 밀어줌 */
-text-align: right; /* 우측 정렬 */
+  margin-left: auto;
+  text-align: right;
 }
 
 .info {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
 }
 
 .bank-name {
-margin-right: 5px;
-font-size: 12px; /* 폰트 크기 조정 */
+  margin-right: 5px;
+  font-size: 12px;
 }
 
 .account-number {
-font-size: 12px; /* 계좌번호 폰트 크기 조정 */
+  font-size: 12px;
 }
 </style>
