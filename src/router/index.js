@@ -24,6 +24,7 @@ import MemberPay from '../views/pay/MemberPay.vue';
 import SoloPay from '../views/pay/SoloPay.vue';
 import CurrentPassword from '../views/settings/CurrentPassword.vue';
 import Transfer from '../views/asset/Transfer.vue';
+import TransactionHistory from '../views/TransactionHistory.vue';
 
 
 const routes = [
@@ -170,6 +171,11 @@ const routes = [
     path: '/transfer', // 송금 페이지
     name: 'Transfer',
     component: Transfer,
+  },
+  {
+    path: '/transactionhistory', // 거래내역조회 페이지
+    name: 'TransactionHistory',
+    component: TransactionHistory,
   },
 ];
 
