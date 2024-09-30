@@ -25,6 +25,7 @@ import SoloPay from '../views/pay/SoloPay.vue';
 import CurrentPassword from '../views/settings/CurrentPassword.vue';
 import Transfer from '../views/asset/Transfer.vue';
 import TransactionHistory from '../views/TransactionHistory.vue';
+import Loading from '../views/Loading.vue';
 
 
 const routes = [
@@ -176,6 +177,11 @@ const routes = [
     path: '/transactionhistory', // 거래내역조회 페이지
     name: 'TransactionHistory',
     component: TransactionHistory,
+  },
+  {
+    path: '/loading', // 로딩 페이지
+    name: 'Loading',
+    component: Loading,
   },
 ];
 
