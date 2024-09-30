@@ -71,8 +71,25 @@
               <!-- 연필 아이콘 -->
             </div>
           </div>
-          <div class="description">
-            {{ description }}
+          <div class="description">인식 금액 {{ formattedFixedPrice }}</div>
+
+          <!-- 분류 버튼 (수입, 지출) 추가 -->
+          <div class="category-container">
+            <span class="category-label">분류</span>
+            <div class="category-buttons">
+              <button
+                :class="{ active: selectedCategory === 'income' }"
+                @click="selectCategory('income')"
+              >
+                수입
+              </button>
+              <button
+                :class="{ active: selectedCategory === 'expense' }"
+                @click="selectCategory('expense')"
+              >
+                지출
+              </button>
+            </div>
           </div>
         </main>
       </bottom-sheet>
@@ -159,10 +176,12 @@ export default {
       finalQuery: "",
       totalExpense: 90000,
       totalIncome: 1000000,
-      editablePrice: 2500,
-      isEditingPrice: false,
-      description: "인식 금액 2,500원",
-      storeName: "컴포즈커피세종대학교점",
+
+      storeName: "컴포즈커피세종대학교점", // 상점명
+      fixedAmount: 2500, // 고정된 인식 금액
+      editablePrice: 2500, // 수정 가능한 금액
+      isEditingPrice: false, // 가격 수정 모드 여부
+      selectedCategory: "income", // 기본 분류 카테고리 (수입)
       entries: [
         {
           date: "19",
@@ -261,6 +280,9 @@ export default {
     },
     closeBottomSheet() {
       document.getElementById("testBottomSheet").closeSheet();
+    },
+    selectCategory(category) {
+      this.selectedCategory = category; // 선택한 분류로 업데이트
     },
     formatAmount(amount) {
       return typeof amount === "number"
@@ -480,5 +502,44 @@ export default {
   text-align: left;
   font-size: 0.8rem;
   color: #888;
+}
+
+/* 분류와 버튼이 일렬로 나타나도록 설정 */
+.category-container {
+  display: flex;
+  justify-content: space-between; /* 텍스트와 버튼을 양 끝으로 배치 */
+  align-items: center;
+  margin-top: 20px;
+}
+
+.category-label {
+  font-size: 1rem;
+  color: #888888;
+  line-height: 36px; /* 버튼과 같은 높이로 수평 정렬 */
+}
+
+.category-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.category-buttons button {
+  padding: 5px 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+  color: #888;
+  cursor: pointer;
+}
+
+.category-buttons button.active {
+  border: 1px solid #6981d9;
+  color: #6981d9;
+  background-color: #ffffff;
+}
+
+.category-buttons button:hover {
+  background-color: #e0e0e0;
 }
 </style>
