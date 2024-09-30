@@ -18,7 +18,7 @@
     },
     methods: {
       goToGroupPayPage() {
-        this.$router.push('/grouppaㅓy'); // 그룹 결제 페이지로 이동
+        this.$router.push('/grouppay'); // 그룹 결제 페이지로 이동
       },
     },
   };
