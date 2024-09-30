@@ -29,15 +29,50 @@
         <label for="phone" class="form-label"
           >연락처<span class="text-danger">*</span></label
         >
-        <input
-          type="text"
-          class="form-control"
-          id="phone"
-          v-model="phone"
-          placeholder="연락처를 입력하세요"
-          @input="validateNumber($event)"
-          required
-        />
+        <div class="d-flex align-items-center">
+          <input
+            type="text"
+            class="form-control form-control-sm me-2"
+            id="phone"
+            v-model="phone"
+            placeholder="연락처를 입력하세요"
+            @input="validateNumber"
+            required
+            style="width: 70%"
+          />
+          <button
+            type="button"
+            class="btn btn-secondary btn-sm verification-btn"
+            @click="sendVerificationCode"
+            style="width: 30%"
+          >
+            인증번호 전송
+          </button>
+        </div>
+      </div>
+
+      <!-- 인증번호 입력 필드 (조건부 렌더링) -->
+      <div v-if="showVerificationInput" class="mb-3">
+        <label for="verificationCode" class="form-label">인증번호</label>
+        <div class="d-flex align-items-center">
+          <input
+            type="text"
+            class="form-control form-control-sm me-2"
+            id="verificationCode"
+            v-model="verificationCode"
+            placeholder="인증번호를 입력하세요"
+            required
+            style="width: 70%"
+          />
+          <button
+            type="button"
+            class="btn btn-primary btn-sm"
+            @click="verifyCode"
+            style="width: 30%"
+          >
+            확인
+          </button>
+        </div>
       </div>
 
       <div class="mb-3">
@@ -107,13 +142,100 @@
       </div>
 
       <!-- 다음 버튼 -->
-      <button type="submit" class="btn btn-primary w-100 py-2">다음</button>
+      <button
+        type="button"
+        class="btn btn-primary w-100 py-2"
+        @click="openBottomSheet"
+      >
+        다음
+      </button>
     </form>
+
+    <!-- 바텀시트 모달 (Bootstrap 이용) -->
+    <div
+      class="modal fade"
+      id="agreementModal"
+      tabindex="-1"
+      aria-labelledby="agreementModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-bottom"> <!-- 이 부분을 수정 -->
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="agreementModalLabel">
+              모두의 결제를 사용하려면 동의가 필요해요
+            </h5>
+          </div>
+          <div class="modal-body">
+            <!-- 체크박스 목록 -->
+            <div class="list-group">
+              <div class="list-group-item">
+                <div class="custom-checkbox">
+                  <input
+                    type="checkbox"
+                    id="terms1"
+                    v-model="agreement.terms1"
+                  />
+                  <label for="terms1">모두의결제 회원 약관 및 동의사항(필수)</label>
+                </div>
+              </div>
+              <div class="list-group-item">
+                <div class="custom-checkbox">
+                  <input
+                    type="checkbox"
+                    id="terms2"
+                    v-model="agreement.terms2"
+                  />
+                  <label for="terms2">본인 확인 서비스 약관 및 동의사항(필수)</label>
+                </div>
+              </div>
+              <div class="list-group-item">
+                <div class="custom-checkbox">
+                  <input
+                    type="checkbox"
+                    id="terms3"
+                    v-model="agreement.terms3"
+                  />
+                  <label for="terms3">마이데이터 서비스 이용약관(필수)</label>
+                </div>
+              </div>
+              <div class="list-group-item">
+                <div class="custom-checkbox">
+                  <input
+                    type="checkbox"
+                    id="terms4"
+                    v-model="agreement.terms4"
+                  />
+                  <label for="terms4">마케팅 목적 약관 및 수신 동의 사항(선택)</label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer d-flex flex-column">
+            <button
+              type="button"
+              class="btn btn-primary w-100"
+              @click="agreeAndSubmit"
+            >
+              동의하고 가입하기
+            </button>
+            <button
+              type="button"
+              class="btn btn-light w-100 mt-2"
+              data-bs-dismiss="modal"
+            >
+              닫기
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import apiClient from "../api/axios.js"; // Axios 설정 파일을 임포트
+import { Modal } from "bootstrap"; // Bootstrap 모달 가져오기
 
 export default {
   name: "SignUp",
@@ -126,56 +248,113 @@ export default {
       customDomain: "",
       password: "",
       confirmPassword: "",
-      authToken: "", // 휴대폰 인증 완료 시 받은 토큰을 저장할 새 필드
+      authToken: "", // 인증 성공 시 받을 토큰
+      showVerificationInput: false,
+      verificationCode: "",
+      agreement: {
+        terms1: false,
+        terms2: false,
+        terms3: false,
+        terms4: false, // 선택 항목
+      },
     };
   },
   methods: {
     validateNumber(event) {
       const input = event.target.value;
-      event.target.value = input.replace(/[^0-9]/g, ""); // 숫자가 아닌 값은 제거
+      event.target.value = input.replace(/[^0-9]/g, ""); // 숫자가 아닌 값 제거
     },
-    async handleSubmit() {
-      if (this.password !== this.confirmPassword) {
-        alert('비밀번호가 일치하지 않습니다. 다시 확인해 주세요.');
+    openBottomSheet() {
+      const modal = new Modal(document.getElementById("agreementModal"));
+      modal.show();
+    },
+    agreeAndSubmit() {
+      if (!this.agreement.terms1 || !this.agreement.terms2 || !this.agreement.terms3) {
+        alert("필수 약관에 동의하셔야 가입이 가능합니다.");
         return;
       }
 
-      // signupData 객체 생성
+      // 회원가입 요청 전송
+      this.handleSubmit();
+    },
+    async sendVerificationCode() {
+      try {
+        const response = await apiClient.get(
+          `/message/send?phoneNum=${this.phone}`
+        );
+        if (response.data.isSuccess) {
+          alert("인증번호가 전송되었습니다.");
+          this.showVerificationInput = true; // 인증번호 입력 필드를 표시
+        } else {
+          alert("인증번호 전송에 실패했습니다.");
+        }
+      } catch (error) {
+        console.error("인증번호 전송 오류:", error);
+        alert("인증번호 전송 중 오류가 발생했습니다.");
+      }
+    },
+    async verifyCode() {
+      try {
+        const verificationData = {
+          phoneNum: this.phone,
+          authNum: this.verificationCode,
+        };
+
+        const response = await apiClient.post(
+          "/message/confirm",
+          verificationData
+        );
+
+        if (response.data.isSuccess) {
+          alert("인증번호가 확인되었습니다.");
+        } else {
+          alert("인증번호가 일치하지 않습니다.");
+        }
+      } catch (error) {
+        console.error("인증번호 확인 오류:", error);
+        alert("인증번호 확인 중 오류가 발생했습니다.");
+      }
+    },
+
+    async handleSubmit() {
+      if (this.password !== this.confirmPassword) {
+        alert("비밀번호가 일치하지 않습니다. 다시 확인해 주세요.");
+        return;
+      }
+
       const signupData = {
-        memberId: this.email, // email 값을 memberId로 사용
-        email: this.email,    // email 값을 그대로 사용
+        memberId: this.email,
+        email: this.email,
         password: this.password,
         phoneNum: this.phone,
         name: this.name,
       };
 
-      console.log('회원가입 데이터:', signupData);
-
       try {
-        // API 요청 URL에 authToken을 쿼리 파라미터로 추가
-        const response = await apiClient.post(`/member/signUp?authToken=${this.authToken}`, signupData);
-        console.log('서버 응답:', response);
-
+        const response = await apiClient.post(
+          `/member/signUp?authToken=${this.authToken}`,
+          signupData
+        );
         if (response.data.isSuccess) {
-          alert('회원가입이 성공적으로 완료되었습니다.');
-          this.$router.push('/login');
+          alert("회원가입이 성공적으로 완료되었습니다.");
+          this.$router.push("/login");
         } else {
-          alert(`회원가입에 실패했습니다: ${response.data.message || '알 수 없는 오류'}`);
+          alert(`회원가입에 실패했습니다: ${response.data.message || "알 수 없는 오류"}`);
         }
       } catch (error) {
-        console.error('회원가입 오류:', error);
+        console.error("회원가입 오류:", error);
+        let errorMessage = "회원가입 중 오류가 발생했습니다.";
         if (error.response) {
-          console.error('오류 응답:', error.response.data);
-          console.error('오류 상태:', error.response.status);
-          console.error('오류 헤더:', error.response.headers);
-          alert(`서버 오류: ${error.response.data.message || '알 수 없는 오류'}`);
+          // 서버에서 응답을 받았지만 2xx 범위를 벗어난 상태 코드인 경우
+          errorMessage = `회원가입 오류: ${error.response.data.message || error.response.statusText}`;
         } else if (error.request) {
-          console.error('요청 오류:', error.request);
-          alert('서버에 연결할 수 없습니다. 네트워크 연결을 확인해 주세요.');
+          // 요청이 전송되었지만 응답을 받지 못한 경우
+          errorMessage = "서버에 연결할 수 없습니다. 네트워크 연결을 확인해 주세요.";
         } else {
-          console.error('기타 오류:', error.message);
-          alert(`오류가 발생했습니다: ${error.message}`);
+          // 요청 설정 중에 오류가 발생한 경우
+          errorMessage = `회원가입 요청 중 오류 발생: ${error.message}`;
         }
+        alert(errorMessage);
       }
     },
     validateName(event) {
@@ -260,7 +439,7 @@ input {
 }
 
 .modal-title {
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   margin-bottom: 15px;
   text-align: center;
   font-weight: bold;
@@ -324,10 +503,138 @@ input {
 .btn-secondary {
   background-color: #6c757d;
   border-color: #6c757d;
+  color: white;
+  font-size: 0.85em;
 }
 
 input::placeholder {
   font-size: 0.8em;
   color: lightgray;
 }
+
+.form-control-sm,
+.btn-sm {
+  height: 38px;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.verification-btn {
+  margin-top: -1px; /* 버튼을 약간 위로 이동 */
+}
+
+.btn-sm {
+  margin-top: -1px; /* 버튼을 약간 위로 이동 */
+}
+
+/* 바텀시트 모달 스타일 수정 */
+.modal-dialog-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 120px;
+  right: 0;
+  margin: 0;
+}
+
+.modal-content {
+  border-radius: 20px 20px 0 0;
+  padding-bottom: 20px;
+  box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+  width: 72.5%;
+  max-width: 100%;
+}
+
+/* 모바일 기기를 위한 미디어 쿼리 */
+@media (min-width: 576px) {
+  .modal-dialog-bottom {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+}
+
+/* 바텀시트 체크박스 리스트 스타일 */
+.list-group {
+  margin-bottom: 30px;
+  font-size: 0.85rem;
+}
+
+.list-group-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #eaeaea;
+  border: none;
+}
+
+.custom-checkbox input[type="checkbox"] {
+  display: none;
+}
+
+.custom-checkbox input[type="checkbox"] + label:before {
+  content: "\2713";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #6981d9;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 18px;
+  background-color: white;
+}
+
+.custom-checkbox input[type="checkbox"]:checked + label:before {
+  background-color: #6981d9;
+  color: white;
+}
+
+/* 버튼 스타일 */
+.btn-primary {
+  background-color: #6981d9;
+  border-color: #6981d9;
+}
+
+.btn-light {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+/* 모달 헤더 스타일 수정 */
+.modal-header {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.modal-title {
+  width: 100%;
+  text-align: center;
+  font-size: 0.9rem; /* 텍스트 크기 줄임 */
+  font-weight: bold;
+}
+
+/* 체크박스 스타일 수정 */
+.custom-checkbox input[type="checkbox"] + label {
+  display: flex;
+  align-items: center;
+}
+
+.custom-checkbox input[type="checkbox"] + label:before {
+  content: "\2713";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #6981d9;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 18px;
+  background-color: white;
+  margin-right: 10px; /* 체크박스와 텍스트 사이 간격 추가 */
+}
+
+.custom-checkbox input[type="checkbox"]:checked + label:before {
+  background-color: #6981d9;
+  color: white;
+}
+
+/* 기존 스타일 유지 */
 </style>
