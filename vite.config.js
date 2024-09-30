@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://34.64.141.174:8080/api/',
+        target: 'http://34.64.141.174:8080/api',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '') // 여기를 수정
       }
