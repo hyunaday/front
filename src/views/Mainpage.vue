@@ -59,14 +59,21 @@
     </div>
     <div class="account-button">
       <div class="d-flex justify-content-between gap-4">
-        <button class="btn btn-light check" type="button">조회</button>
+        <!-- '조회' 버튼, 내자산 페이지로 이동 -->
+        <router-link to="/transactionhistory">
+        <button class="btn btn-light check" type="button">
+        조회
+        </button>
+        </router-link>
+        
+         <!-- '이체' 버튼, 송금 페이지로 이동 -->
+                  <router-link to="/transfer">
         <button class="btn btn-light transfer" type="button">이체</button>
+         </router-link>
       </div>
     </div>
   </div>
 </swiper-slide>
-
-
         </swiper>
       </div>
 

@@ -8,8 +8,6 @@ import GroupPay from '../views/pay/GroupPay.vue';
 import SignUp from '../views/SignUp.vue';
 import AddList from '../views/book/AddList.vue';
 import Cards from '../views/asset/Cards.vue';
-import Account from '../views/asset/Account.vue';
-import AccountAddList from '../views/asset/AccountAddList.vue';
 import BusinessCardList from '../views/business/BusinessCardList.vue';
 import MyCardRegistration from '../views/business/MyCardRegistration.vue'; 
 import FriendCardRegistration from '../views/business/FriendCardRegistration.vue'; 
@@ -25,6 +23,9 @@ import MainPay from '../views/pay/MainPay.vue';
 import MemberPay from '../views/pay/MemberPay.vue';
 import SoloPay from '../views/pay/SoloPay.vue';
 import CurrentPassword from '../views/settings/CurrentPassword.vue';
+import Transfer from '../views/asset/Transfer.vue';
+import TransactionHistory from '../views/TransactionHistory.vue';
+import Loading from '../views/Loading.vue';
 import Name from '../views/signup/Name.vue';
 import Phone from '../views/signup/Phone.vue';
 import Verification from '../views/signup/Verification.vue';
@@ -52,12 +53,6 @@ const routes = [
     path: '/myassets',
     name: 'MyAssets',
     component: MyAssets,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/account',
-    name: 'Account',
-    component: Account,
     meta: { requiresAuth: true },
   },
   {
@@ -94,12 +89,6 @@ const routes = [
     path: '/cards',
     name: 'Cards',
     component: Cards,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: '/accountaddlist',
-    name: 'AccountAddList',
-    component: AccountAddList,
     meta: { requiresAuth: true },
   },
   {
@@ -184,6 +173,19 @@ const routes = [
     component: MemberPay,
   },
   {
+    path: '/transfer', // 송금 페이지
+    name: 'Transfer',
+    component: Transfer,
+  },
+  {
+    path: '/transactionhistory', // 거래내역조회 페이지
+    name: 'TransactionHistory',
+    component: TransactionHistory,
+  },
+  {
+    path: '/loading', // 로딩 페이지
+    name: 'Loading',
+    component: Loading,
     path: '/name',
     name: 'Name',
     component: Name,

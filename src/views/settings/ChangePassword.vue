@@ -46,7 +46,7 @@ export default {
       message: '',
       newPasswordError: '',
       confirmPasswordError: '',
-      currentPassword: '12121212', // 테스트용 : 기존 비밀번호를 여기에서 설정
+      // currentPassword: '12121212', // 테스트용 : 기존 비밀번호를 여기에서 설정
     };
   },
   methods: {
