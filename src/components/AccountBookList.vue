@@ -73,19 +73,19 @@
           </div>
           <div class="description">인식 금액 {{ formattedFixedPrice }}</div>
 
-          <!-- 분류 버튼 (수입, 지출) 추가 -->
+          <!-- 분류 버튼 (수입, 지출 등록) -->
           <div class="category-container">
             <span class="category-label">분류</span>
             <div class="category-buttons">
               <button
                 :class="{ active: selectedCategory === 'income' }"
-                @click="selectCategory('income')"
+                @click="setCategory('income')"
               >
                 수입
               </button>
               <button
                 :class="{ active: selectedCategory === 'expense' }"
-                @click="selectCategory('expense')"
+                @click="setCategory('expense')"
               >
                 지출
               </button>
@@ -93,6 +93,22 @@
           </div>
         </main>
       </bottom-sheet>
+    </div>
+
+    <!-- 필터링 버튼을 왼쪽 아래에 고정 -->
+    <div class="filter-container">
+      <button
+        :class="{ active: selectedFilter === 'income' }"
+        @click="toggleFilter('income')"
+      >
+        수입
+      </button>
+      <button
+        :class="{ active: selectedFilter === 'expense' }"
+        @click="toggleFilter('expense')"
+      >
+        지출
+      </button>
     </div>
 
     <!-- 날짜별 가계부 내역 표시 시작 -->
@@ -134,7 +150,6 @@
         </div>
       </div>
     </div>
-    <!-- 날짜별 가계부 내역 표시 끝 -->
   </div>
 </template>
 
@@ -181,7 +196,8 @@ export default {
       fixedAmount: 2500, // 고정된 인식 금액
       editablePrice: 2500, // 수정 가능한 금액
       isEditingPrice: false, // 가격 수정 모드 여부
-      selectedCategory: "income", // 기본 분류 카테고리 (수입)
+      selectedCategory: null, // 기본 분류는 null
+      selectedFilter: null, // 필터링에 사용
       entries: [
         {
           date: "19",
@@ -235,10 +251,28 @@ export default {
 
   computed: {
     filteredEntries() {
+      // 선택된 필터에 따른 필터링 (수입/지출)
+      let filteredByCategory = this.entries.map((entryGroup) => {
+        let filteredGroup = { ...entryGroup };
+        filteredGroup.entries = entryGroup.entries.filter((entry) => {
+          if (this.selectedFilter === "income") {
+            return entry.amount > 0; // 수입 필터링
+          } else if (this.selectedFilter === "expense") {
+            return entry.amount < 0; // 지출 필터링
+          }
+          return true; // 필터가 없을 때는 전체 데이터
+        });
+        return filteredGroup.entries.length ? filteredGroup : null;
+      });
+
+      // 검색 기능과 필터링 적용
+      filteredByCategory = filteredByCategory.filter(Boolean);
+
       if (!this.finalQuery) {
-        return this.entries;
+        return filteredByCategory;
       }
-      return this.entries
+
+      return filteredByCategory
         .map((entryGroup) => {
           const filteredGroup = {
             ...entryGroup,
@@ -281,8 +315,13 @@ export default {
     closeBottomSheet() {
       document.getElementById("testBottomSheet").closeSheet();
     },
-    selectCategory(category) {
-      this.selectedCategory = category; // 선택한 분류로 업데이트
+    toggleFilter(filter) {
+      // 이미 선택된 필터를 다시 클릭하면 선택 해제
+      this.selectedFilter = this.selectedFilter === filter ? null : filter;
+    },
+    setCategory(category) {
+      this.selectedCategory = category; // 분류를 등록
+      console.log(`분류가 등록되었습니다: ${category}`);
     },
     formatAmount(amount) {
       return typeof amount === "number"
@@ -454,6 +493,31 @@ export default {
 
 .editable-sheet {
   padding: 20px;
+}
+
+/* 필터링 버튼 스타일 */
+.filter-container {
+  margin: 1rem 0;
+  display: flex;
+  gap: 10px;
+}
+
+.filter-container button {
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #888;
+}
+
+.filter-container button.active {
+  border: 1px solid #6981d9;
+  background-color: #fff;
+  color: #6981d9;
+}
+
+.filter-container button:hover {
+  background-color: #e0e0e0;
 }
 
 .header {
