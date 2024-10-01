@@ -2,21 +2,20 @@
   <div>
     <h3>{{ title }}</h3>
     <form @submit.prevent="submitForm">
-      <label for="card-image" class="upload-label">
-        <div class="upload-box">
-          <!-- <span>이미지를 추가해주세요.</span>
-          <div class="upload-icon">
-            <i class="fas fa-plus"></i>
-          </div> -->
+      <div class="upload-box">
+        <!-- 입력 내용 실시간 미리보기 -->
+        <div class="preview-box">
+          <h3>{{ formData.company }}</h3>
+          <p>{{ formData.address }}</p>
+          <p>{{ formData.name }}</p>
+          <p>{{ formData.position }}</p>
+          <p>{{ formData.department }}</p>
+          <p>{{ formData.phone }}</p>
+          <p>{{ formData.phoneLandline }}</p>
+          <p>{{ formData.email }}</p>
         </div>
-        <input
-          type="file"
-          id="card-image"
-          accept="image/*"
-          @change="handleImageUpload"
-          class="image-input"
-        />
-      </label>
+      </div>
+
       <div class="divider"></div>
       <div class="form-group">
         <label for="name">이름&nbsp;<span class="required">*</span></label>
@@ -77,6 +76,7 @@
           <textarea id="memo" v-model="formData.memo"></textarea>
         </div>
       </div> -->
+
       <button type="submit">등록</button>
     </form>
   </div>
@@ -177,26 +177,6 @@ textarea {
   overflow: hidden; /* 텍스트 영역에서 스크롤바 숨기기 */
 }
 
-.upload-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 300px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  width: 100%;
-  max-width: 400px;
-}
-
-.upload-label {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
-}
-
 .upload-box {
   font-size: 15px;
   font-weight: bold;
@@ -207,28 +187,69 @@ textarea {
   height: 200px;
   width: 300px;
   border: 1px solid black;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
 }
 
-.upload-box span {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 10px;
+.preview-box {
+  text-align: center; /* 가운데 정렬 */
+  padding: 20px; /* 내부 패딩 */
+  height: 200px;
+  width: 300px; /* 고정된 너비 */
 }
 
-.upload-icon {
-  background-color: #7189ff;
-  color: white;
-  font-size: 45px;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.preview-box h3 {
+  font-size: 20px; /* 회사명 폰트 크기 */
+  font-weight: bold; /* 굵게 */
+  text-align: left;
 }
 
-.image-input {
-  display: none;
+/* 이름 */
+.preview-box p {
+  margin: 0px 0; /* 각 문장 간의 간격 */
+  font-size: 18px; /* 일반 텍스트 크기 */
+  text-align: left;
+}
+
+.preview-box p:nth-child(2) {
+  font-size: 10px; /* 주소 폰트 크기 */
+  text-align: left;
+}
+
+.preview-box p:nth-child(4),
+.preview-box p:nth-child(5) {
+  font-size: 10px; /* 직책과 부서 폰트 크기 */
+  font-weight: bold; /* 직책과 부서 텍스트 굵게 */
+  text-align: left;
+}
+
+.preview-box p:nth-child(6),
+.preview-box p:nth-child(7),
+.preview-box p:nth-child(8) {
+  font-size: 10px; /*  전화번호, 유선전화번호, 이메일 크기 */
+  text-align: right;
+}
+
+.preview-box p:nth-child(4)::before {
+  content: "Position "; /* 직책 앞에 텍스트 추가 */
+}
+
+.preview-box p:nth-child(4)::before {
+  content: "Position "; /* 직책 앞에 텍스트 추가 */
+}
+
+.preview-box p:nth-child(5)::before {
+  content: "Dept "; /* 부서 앞에 텍스트 추가 */
+}
+
+.preview-box p:nth-child(6)::before {
+  content: "H.P "; /* 전화번호 앞에 텍스트 추가 */
+}
+
+.preview-box p:nth-child(7)::before {
+  content: "TEL "; /* 유선전화번호 앞에 텍스트 추가 */
+}
+
+.preview-box p:nth-child(8)::before {
 }
 
 .divider {
