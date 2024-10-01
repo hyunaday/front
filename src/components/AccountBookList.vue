@@ -91,6 +91,54 @@
               </button>
             </div>
           </div>
+
+          <!-- 구분선 추가 -->
+          <hr class="divider" />
+
+          <!-- 카테고리 -->
+          <!-- 수정 가능한 카테고리 -->
+          <div class="detail-row">
+            <span class="label">카테고리</span>
+            <input type="text" v-model="category" class="content" />
+          </div>
+
+          <!-- 수정 가능한 거래처 -->
+          <div class="detail-row">
+            <span class="label">거래처</span>
+            <input type="text" v-model="storeName" class="content" />
+          </div>
+
+          <!-- 수정 가능한 결제 수단 -->
+          <div class="detail-row">
+            <span class="label">결제 수단</span>
+            <input type="text" v-model="paymentMethod" class="content" />
+          </div>
+
+          <!-- 수정 가능한 날짜 -->
+          <div class="detail-row">
+            <span class="label">날짜</span>
+            <input type="date" v-model="transactionDate" class="content" />
+          </div>
+
+          <!-- 메모 -->
+          <div class="detail-row">
+            <span class="label">메모 · 태그</span>
+            <span class="content">
+              <textarea
+                placeholder="입력하세요."
+                v-model="memo"
+                class="memo-input"
+              ></textarea>
+            </span>
+          </div>
+
+          <!-- 삭제 버튼과 다음 버튼 -->
+          <div class="button-row">
+            <button class="delete-btn">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+            <button class="next-btn" @click="submitDetails">다음</button>
+          </div>
         </main>
       </bottom-sheet>
     </div>
@@ -193,11 +241,15 @@ export default {
       totalIncome: 1000000,
 
       storeName: "컴포즈커피세종대학교점", // 상점명
-      fixedAmount: 2500, // 고정된 인식 금액
+      fixedAmount: 0, // 고정된 인식 금액
       editablePrice: 2500, // 수정 가능한 금액
       isEditingPrice: false, // 가격 수정 모드 여부
       selectedCategory: null, // 기본 분류는 null
       selectedFilter: null, // 필터링에 사용
+      transactionDate: "2024-10-28", // 날짜 기본 값
+      paymentMethod: "KB 국민카드", // 결제 수단 기본 값
+      memo: "", // 메모
+      category: "식비", // 카테고리 기본 값
       entries: [
         {
           date: "19",
@@ -327,6 +379,47 @@ export default {
       return typeof amount === "number"
         ? `${amount.toLocaleString("ko-KR")}원`
         : "0원";
+    },
+    submitDetails() {
+      // 저장할 데이터를 생성
+      const newEntry = {
+        storeName: this.storeName,
+        price: this.editablePrice,
+        category: this.category,
+        paymentMethod: this.paymentMethod,
+        transactionDate: this.transactionDate,
+        memo: this.memo,
+      };
+
+      // 데이터를 확인 (실제로는 API 호출이나 로컬 저장 가능)
+      console.log("저장된 내용:", newEntry);
+
+      // 데이터를 배열에 추가 (추후 목록에 반영 가능)
+      this.entries.push({
+        date: new Date().getDate().toString(),
+        day: new Date().toLocaleString("ko-KR", { weekday: "long" }),
+        totalAmount: this.editablePrice,
+        entries: [newEntry],
+      });
+
+      // bottom-sheet 닫기
+      this.closeBottomSheet();
+
+      // 필드 초기화
+      this.resetForm();
+    },
+    deleteEntry(index) {
+      // 인덱스를 기반으로 배열에서 해당 항목 삭제
+      this.entries.splice(index, 1);
+    },
+    resetForm() {
+      this.storeName = "";
+      this.editablePrice = 0;
+      this.category = "";
+      this.paymentMethod = "";
+      this.transactionDate = new Date().toISOString().slice(0, 10);
+      this.memo = "";
+      this.selectedCategory = null;
     },
   },
 };
@@ -605,5 +698,140 @@ export default {
 
 .category-buttons button:hover {
   background-color: #e0e0e0;
+}
+
+/* 가계부 추가_상세거래 내역 */
+.details-container {
+  padding: 20px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.label {
+  font-weight: bold;
+  color: #888;
+  flex-basis: 30%;
+  text-align: left;
+}
+
+.content {
+  flex-basis: 100%;
+  text-align: left;
+  color: #333;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+/* 입력 필드의 테두리를 없애는 스타일 */
+.no-border {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  width: 100%;
+}
+
+.price-input {
+  font-size: 1.8rem;
+  font-weight: bold;
+  border: none; /* 테두리 없애기 */
+  border-bottom: 2px solid #ccc; /* 하단에만 선 표시 */
+  outline: none;
+}
+
+/* memo-input도 테두리 제거 */
+.memo-input {
+  width: 100%;
+  height: 80px;
+  border: none;
+  background-color: transparent;
+  padding: 10px;
+  font-size: 1rem;
+  resize: none;
+  outline: none;
+}
+
+.memo-input {
+  width: 167.5px;
+  height: 80px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 1rem;
+  resize: none;
+}
+
+.details-container {
+  padding: 20px;
+}
+
+.button-row {
+  display: flex;
+  justify-content: center; /* 중앙 정렬 */
+  align-items: center;
+  gap: 20px; /* 버튼 간격 추가 */
+  margin-top: 20px;
+}
+
+/* 삭제 버튼 */
+.delete-btn {
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.delete-btn:hover {
+  background-color: #f0f0f0;
+}
+
+.delete-btn i {
+  color: #888;
+}
+
+/* 다음 버튼 */
+.next-btn {
+  background-color: #6981d9;
+  border: none;
+  color: white;
+  width: 200px; /* 너비를 더 넓게 설정 */
+  padding: 10px 0; /* 패딩을 수직으로만 설정 */
+  border-radius: 5px;
+  font-size: 18px;
+  text-align: center; /* 텍스트 중앙 정렬 */
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.next-btn:hover {
+  background-color: #6981d9;
+}
+
+.customBottomsheet .content {
+  padding: 0 30px 30px;
+  border: none;
+  height: 100%;
+  overflow-y: auto;
+  font-size: 14px;
+}
+.customBottomsheet._modal .sheet__wrapper {
+  width: 360px;
+  /* max-width: 500px; */
+  /* min-width: 400px; */
+  border-radius: 30px;
 }
 </style>

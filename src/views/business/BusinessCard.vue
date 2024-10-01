@@ -13,13 +13,14 @@
             <p><strong>연락처:</strong> {{ selectedCard.phone }}</p>
             <p><strong>이메일:</strong> {{ selectedCard.email }}</p>
             <p><strong>주소:</strong> {{ selectedCard.address }}</p>
-            <div class="memo-container">
+            <!-- 메모 -->
+            <!-- <div class="memo-container">
               <strong>메모:</strong>
               <textarea
                 v-model="selectedCard.memo"
                 class="memo-textarea"
               ></textarea>
-            </div>
+            </div> -->
           </div>
           <qrcode-vue
             :value="qrValue"
@@ -78,11 +79,11 @@
 </template>
 
 <script>
-import FooterNav from '../../components/FooterNav.vue'; // 경로를 올바르게 수정
-import QrcodeVue from 'qrcode.vue'; // QR 코드 라이브러리 임포트
+import FooterNav from "../../components/FooterNav.vue"; // 경로를 올바르게 수정
+import QrcodeVue from "qrcode.vue"; // QR 코드 라이브러리 임포트
 
 export default {
-  name: 'BusinessCard',
+  name: "BusinessCard",
   components: {
     FooterNav, // FooterNav 컴포넌트 등록
     QrcodeVue, // QR 코드 컴포넌트 등록
@@ -90,44 +91,44 @@ export default {
   data() {
     return {
       selectedCard: {
-        name: 'John Smith',
-        phone: '010-2315-6941',
-        email: 'email@gmail.com',
-        address: '서울 광진구 능동로 195-16 6층 ',
-        memo: '',
+        name: "John Smith",
+        phone: "010-2315-6941",
+        email: "email@gmail.com",
+        address: "서울 광진구 능동로 195-16 6층 ",
+        memo: "",
       },
       cardList: [
         {
           id: 1,
-          name: 'Alice Johnson',
-          position: 'Developer',
-          department: 'Engineering',
-          company: 'Tech Corp',
-          imageUrl: 'https://via.placeholder.com/100x50', // 이미지 URL
+          name: "Alice Johnson",
+          position: "Developer",
+          department: "Engineering",
+          company: "Tech Corp",
+          imageUrl: "https://via.placeholder.com/100x50", // 이미지 URL
         },
         {
           id: 2,
-          name: 'Bob Lee',
-          position: 'Designer',
-          department: 'Creative',
-          company: 'Creative Agency',
-          imageUrl: 'https://via.placeholder.com/100x50', // 이미지 URL
+          name: "Bob Lee",
+          position: "Designer",
+          department: "Creative",
+          company: "Creative Agency",
+          imageUrl: "https://via.placeholder.com/100x50", // 이미지 URL
         },
         {
           id: 3,
-          name: 'Charlie Kim',
-          position: 'Project Manager',
-          department: 'Operations',
-          company: 'Business Solutions',
-          imageUrl: 'https://via.placeholder.com/100x50', // 이미지 URL
+          name: "Charlie Kim",
+          position: "Project Manager",
+          department: "Operations",
+          company: "Business Solutions",
+          imageUrl: "https://via.placeholder.com/100x50", // 이미지 URL
         },
         {
           id: 4,
-          name: 'David Park',
-          position: 'Marketing Specialist',
-          department: 'Marketing',
-          company: 'Marketing Group',
-          imageUrl: 'https://via.placeholder.com/100x50', // 이미지 URL
+          name: "David Park",
+          position: "Marketing Specialist",
+          department: "Marketing",
+          company: "Marketing Group",
+          imageUrl: "https://via.placeholder.com/100x50", // 이미지 URL
         },
       ],
       showModal: false, // 모달 표시 상태
@@ -151,7 +152,7 @@ export default {
     },
     goToaddBusinessCard() {
       // '/addbusinesscard' 페이지로 라우팅
-      this.$router.push('/addbusinesscard');
+      this.$router.push("/addbusinesscard");
     },
     closeModal() {
       this.showModal = false; // 모달 닫기

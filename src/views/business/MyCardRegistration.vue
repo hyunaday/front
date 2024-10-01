@@ -9,9 +9,8 @@
 </template>
 
 <script>
-import BusinessCardForm from '../../components/BusinessCardForm.vue';
-import FooterNav from '../../components/FooterNav.vue'; // FooterNav 컴포넌트 import
-
+import BusinessCardForm from "../../components/BusinessCardForm.vue";
+import FooterNav from "../../components/FooterNav.vue"; // FooterNav 컴포넌트 import
 
 export default {
   components: {
@@ -43,7 +42,7 @@ a {
   width: 100%;
   margin-top: 40px;
   padding: 0 10px; /* 좌우 여백 줄임 */
-  overflow-y: auto;
+  /* overflow-y: auto; */
   max-height: calc(100vh - 80px);
 }
 

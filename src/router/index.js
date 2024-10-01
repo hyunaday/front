@@ -1,36 +1,36 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import Login from '../views/Login.vue';
-import MainPage from '../views/Mainpage.vue';
-import MyAssets from '../views/asset/MyAssets.vue';
-import AccountBook from '../views/book/AccountBook.vue';
-import BusinessCard from '../views/business/BusinessCard.vue';
-import GroupPay from '../views/pay/GroupPay.vue';
-import SignUp from '../views/SignUp.vue';
-import AddList from '../views/book/AddList.vue';
-import Cards from '../views/asset/Cards.vue';
-import BusinessCardList from '../views/business/BusinessCardList.vue';
-import MyCardRegistration from '../views/business/MyCardRegistration.vue'; 
-import FriendCardRegistration from '../views/business/FriendCardRegistration.vue'; 
-import Settings from '../views/settings/Settings.vue';
-import InviteFriends from '../views/settings/InviteFriends.vue';
-import SearchFriends from '../views/settings/SearchFriends.vue';
-import PayList from '../views/settings/PayList.vue';
-import Cancel from '../views/settings/Cancel.vue';
-import Logout from '../views/settings/Logout.vue';
-import ChangePassword from '../views/settings/ChangePassword.vue';
-import AddBusinessCard from '../views/business/AddBusinessCard.vue';
-import MainPay from '../views/pay/MainPay.vue';
-import MemberPay from '../views/pay/MemberPay.vue';
-import SoloPay from '../views/pay/SoloPay.vue';
-import CurrentPassword from '../views/settings/CurrentPassword.vue';
-import Transfer from '../views/asset/Transfer.vue';
-import TransactionHistory from '../views/TransactionHistory.vue';
-import Loading from '../views/Loading.vue';
-import Name from '../views/signup/Name.vue';
-import Phone from '../views/Phone.vue';
-import Verification from '../views/signup/Verification.vue';
-import Email from '../views/signup/Email.vue';
-import Password from '../views/signup/Password.vue';
+import { createRouter, createWebHistory } from "vue-router";
+import Login from "../views/Login.vue";
+import MainPage from "../views/Mainpage.vue";
+import MyAssets from "../views/asset/MyAssets.vue";
+import AccountBook from "../views/book/AccountBook.vue";
+import BusinessCard from "../views/business/BusinessCard.vue";
+import GroupPay from "../views/pay/GroupPay.vue";
+import SoloPay from "../views/pay/SoloPay.vue";
+import SignUp from "../views/SignUp.vue";
+import AddList from "../views/book/AddList.vue";
+import Cards from "../views/asset/Cards.vue";
+import BusinessCardList from "../views/business/BusinessCardList.vue";
+import MyCardRegistration from "../views/business/MyCardRegistration.vue";
+import FriendCardRegistration from "../views/business/FriendCardRegistration.vue";
+import Settings from "../views/settings/Settings.vue";
+import InviteFriends from "../views/settings/InviteFriends.vue";
+import SearchFriends from "../views/settings/SearchFriends.vue";
+import PayList from "../views/settings/PayList.vue";
+import Cancel from "../views/settings/Cancel.vue";
+import Logout from "../views/settings/Logout.vue";
+import ChangePassword from "../views/settings/ChangePassword.vue";
+import AddBusinessCard from "../views/business/AddBusinessCard.vue";
+import MainPay from "../views/pay/MainPay.vue";
+import CurrentPassword from "../views/settings/CurrentPassword.vue";
+import Transfer from "../views/asset/Transfer.vue";
+import TransactionHistory from "../views/TransactionHistory.vue";
+import Loading from "../views/Loading.vue";
+import Name from "../views/signup/Name.vue";
+import Phone from "../views/signup/Phone.vue";
+import Verification from "../views/signup/Verification.vue";
+import Email from "../views/signup/Email.vue";
+import Password from "../views/signup/Password.vue";
+import MemberPay from "../views/pay/MemberPay.vue";
 
 const routes = [
   {
@@ -56,8 +56,8 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/accountbook',
-    name: 'AccountBook',
+    path: "/accountbook",
+    name: "AccountBook",
     component: AccountBook,
     meta: { requiresAuth: true },
   },
@@ -92,8 +92,8 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/friend-card-registration',
-    name: 'FriendCardRegistration',
+    path: "/friend-card-registration",
+    name: "FriendCardRegistration",
     component: FriendCardRegistration,
     meta: { requiresAuth: true },
   },
@@ -173,41 +173,41 @@ const routes = [
     component: MemberPay,
   },
   {
-    path: '/transfer', // 송금 페이지
-    name: 'Transfer',
+    path: "/transfer", // 송금 페이지
+    name: "Transfer",
     component: Transfer,
   },
   {
-    path: '/transactionhistory', // 거래내역조회 페이지
-    name: 'TransactionHistory',
+    path: "/transactionhistory", // 거래내역조회 페이지
+    name: "TransactionHistory",
     component: TransactionHistory,
   },
   {
-    path: '/loading', // 로딩 페이지
-    name: 'Loading',
+    path: "/loading", // 로딩 페이지
+    name: "Loading",
     component: Loading,
-    path: '/name',
-    name: 'Name',
+    path: "/name",
+    name: "Name",
     component: Name,
   },
   {
-    path: '/phone',
-    name: 'Phone',
+    path: "/phone",
+    name: "Phone",
     component: Phone,
   },
   {
-    path: '/verification',
-    name: 'Verification',
+    path: "/verification",
+    name: "Verification",
     component: Verification,
   },
   {
-    path: '/email',
-    name: 'Email',
+    path: "/email",
+    name: "Email",
     component: Email,
   },
   {
-    path: '/password',
-    name: 'Password',
+    path: "/password",
+    name: "Password",
     component: Password,
   },
 ];
