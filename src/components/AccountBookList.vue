@@ -719,7 +719,7 @@ export default {
 }
 
 .content {
-  flex-basis: 70%;
+  flex-basis: 100%;
   text-align: left;
   color: #333;
 }
@@ -818,14 +818,20 @@ export default {
 }
 
 .next-btn:hover {
-  background-color: #576bb5;
+  background-color: #6981d9;
 }
 
 .customBottomsheet .content {
-  padding: 0 30px;
+  padding: 0 30px 30px;
   border: none;
   height: 100%;
   overflow-y: auto;
   font-size: 14px;
+}
+.customBottomsheet._modal .sheet__wrapper {
+  width: 360px;
+  /* max-width: 500px; */
+  /* min-width: 400px; */
+  border-radius: 30px;
 }
 </style>
