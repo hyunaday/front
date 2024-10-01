@@ -9,7 +9,7 @@
       </div>
       <div class="advertisement-banner">
         <div class="banner-content">
-          <img src="../assets/images/kbpay.png" alt="광고 배너" class="banner-image" />
+          <img src="../../assets/images/kbpay.png" alt="광고 배너" class="banner-image" />
           <div class="banner-text">
             <p class="banner-title">KB Pay</p>
             <p class="banner-subtitle">편리한 국민 생활 파트너</p>
