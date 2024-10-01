@@ -31,49 +31,51 @@
           :centered-slides="true"
           :space-between="10"
           :pagination="{ clickable: true }"
+          :initial-slide="1"
           @swiper="onSwiper"
           @slideChange="onSlideChange"
         >
           <!-- 계좌 카드 1 -->
           <swiper-slide v-for="account in accounts" :key="account.number">
-  <div class="account-card">
-    <label>입출금통장</label>
-    <label class="account-number">{{ account.number }}</label>
-    <img
-      :src="account.copyIcon" 
-      class="copy-icon"
-      @click="copyAccountNumber(account.number)"
-    />
-    <div class="account-name">
-      <img
-        :src="account.bankLogo"
-        class="kakaobank-icon"
-      />
-      <label class="bank-name">{{ account.bankName }}</label>
-      <div class="amount-container" v-if="showBalance">
-        <label class="amount">&#8361; {{ formatNumber(account.balance) }}</label>
-      </div>
-      <div class="amount-container" v-else>
-        <label class="amount-hidden">잔액 숨김</label>
-      </div>
-    </div>
-    <div class="account-button">
-      <div class="d-flex justify-content-between gap-4">
-        <!-- '조회' 버튼, 내자산 페이지로 이동 -->
-        <router-link to="/transactionhistory">
-        <button class="btn btn-light check" type="button">
-        조회
-        </button>
-        </router-link>
-        
-         <!-- '이체' 버튼, 송금 페이지로 이동 -->
+            <div class="account-card">
+              <label>입출금통장</label>
+              <label class="account-number">{{ account.number }}</label>
+              <img
+                :src="account.copyIcon"
+                class="copy-icon"
+                @click="copyAccountNumber(account.number)"
+              />
+              <div class="account-name">
+                <img :src="account.bankLogo" class="bank-icon" />
+                <label class="bank-name">{{ account.bankName }}</label>
+                <div class="amount-container" v-if="showBalance">
+                  <label class="amount"
+                    >&#8361; {{ formatNumber(account.balance) }}</label
+                  >
+                </div>
+                <div class="amount-container" v-else>
+                  <label class="amount-hidden">잔액 숨김</label>
+                </div>
+              </div>
+              <div class="account-button">
+                <div class="d-flex justify-content-between gap-4">
+                  <!-- '조회' 버튼, 내자산 페이지로 이동 -->
+                  <router-link to="/transactionhistory">
+                    <button class="btn btn-light check" type="button">
+                      조회
+                    </button>
+                  </router-link>
+
+                  <!-- '이체' 버튼, 송금 페이지로 이동 -->
                   <router-link to="/transfer">
-        <button class="btn btn-light transfer" type="button">이체</button>
-         </router-link>
-      </div>
-    </div>
-  </div>
-</swiper-slide>
+                    <button class="btn btn-light transfer" type="button">
+                      이체
+                    </button>
+                  </router-link>
+                </div>
+              </div>
+            </div>
+          </swiper-slide>
         </swiper>
       </div>
 
@@ -114,9 +116,8 @@ import { Swiper, SwiperSlide } from "swiper/vue";
 import { Pagination } from "swiper/modules";
 import FooterNav from "../components/FooterNav.vue";
 import Header from "../components/Header.vue";
-import bankLogo from '../assets/images/kakaobank.png'; 
-import copyIcon from '../assets/images/copy.png';
-
+import bankLogo from "../assets/images/kbbank.png";
+import copyIcon from "../assets/images/copy.png";
 
 export default {
   name: "MainPage",
@@ -143,26 +144,26 @@ export default {
     return {
       showBalance: false,
       accounts: [
-        { 
-          number: "3333-09-3029304", 
-          balance: 1565, 
-          bankName: "카카오뱅크", 
+        {
+          number: "941602-00-1605113",
+          balance: 1565,
+          bankName: "국민은행",
           bankLogo: bankLogo,
-          copyIcon: copyIcon
+          copyIcon: copyIcon,
         },
-        { 
-          number: "3333-09-3029305", 
-          balance: 1700000, 
-          bankName: "카카오뱅크", 
+        {
+          number: "503120-36-9568712",
+          balance: 1700000,
+          bankName: "국민은행",
           bankLogo: bankLogo,
-          copyIcon: copyIcon
+          copyIcon: copyIcon,
         },
-        { 
-          number: "3333-09-3029306", 
-          balance: 516000, 
-          bankName: "카카오뱅크", 
+        {
+          number: "621591-92-1567813",
+          balance: 516000,
+          bankName: "국민은행",
           bankLogo: bankLogo,
-          copyIcon: copyIcon
+          copyIcon: copyIcon,
         },
       ],
     };
@@ -188,7 +189,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 @font-face {
@@ -245,8 +245,8 @@ h4 {
   cursor: pointer;
 }
 
-.kakaobank-icon {
-  margin-left: -4px;
+.bank-icon {
+  margin-left: 0px;
   height: 20px;
   margin-top: 5px;
 }
@@ -298,10 +298,9 @@ h4 {
   width: 80px;
   height: 43px;
   color: #505050;
-  border-radius: 10px; 
+  border-radius: 10px;
   box-shadow: 2px 2px 5px rgba(86, 86, 86, 0.773); /* 그림자 추가 */
 }
-
 
 .account-button .check {
   margin-left: -13px;

@@ -26,7 +26,7 @@ import Transfer from "../views/asset/Transfer.vue";
 import TransactionHistory from "../views/TransactionHistory.vue";
 import Loading from "../views/Loading.vue";
 import Name from "../views/signup/Name.vue";
-import Phone from "../views/signup/Phone.vue";
+import Phone from "../views/Phone.vue";
 import Verification from "../views/signup/Verification.vue";
 import Email from "../views/signup/Email.vue";
 import Password from "../views/signup/Password.vue";
