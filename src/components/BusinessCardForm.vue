@@ -4,10 +4,10 @@
     <form @submit.prevent="submitForm">
       <label for="card-image" class="upload-label">
         <div class="upload-box">
-          <span>이미지를 추가해주세요.</span>
+          <!-- <span>이미지를 추가해주세요.</span>
           <div class="upload-icon">
             <i class="fas fa-plus"></i>
-          </div>
+          </div> -->
         </div>
         <input
           type="file"
@@ -70,12 +70,13 @@
           />
         </div>
       </div>
-      <div class="form-group">
+      <!-- 메모 -->
+      <!-- <div class="form-group">
         <label for="memo">메모:</label>
         <div class="input-container">
           <textarea id="memo" v-model="formData.memo"></textarea>
         </div>
-      </div>
+      </div> -->
       <button type="submit">등록</button>
     </form>
   </div>
@@ -92,41 +93,41 @@ export default {
   data() {
     return {
       formData: {
-        name: '',
-        phone: '',
-        email: '',
-        position: '',
-        department: '',
-        company: '',
-        address: '',
-        phoneLandline: '',
-        memo: '',
+        name: "",
+        phone: "",
+        email: "",
+        position: "",
+        department: "",
+        company: "",
+        address: "",
+        phoneLandline: "",
+        memo: "",
       },
       imageFile: null,
     };
   },
   methods: {
-    handleImageUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        this.imageFile = file;
-        console.log('이미지 파일이 업로드되었습니다:', file.name);
-      }
-    },
+    // handleImageUpload(event) {
+    //   const file = event.target.files[0];
+    //   if (file) {
+    //     this.imageFile = file;
+    //     console.log("이미지 파일이 업로드되었습니다:", file.name);
+    //   }
+    // },
     submitForm() {
       const formData = new FormData();
-      formData.append('image', this.imageFile);
-      formData.append('name', this.formData.name);
-      formData.append('phone', this.formData.phone);
-      formData.append('email', this.formData.email);
-      formData.append('position', this.formData.position);
-      formData.append('department', this.formData.department);
-      formData.append('company', this.formData.company);
-      formData.append('address', this.formData.address);
-      formData.append('phoneLandline', this.formData.phoneLandline);
-      formData.append('memo', this.formData.memo);
+      formData.append("image", this.imageFile);
+      formData.append("name", this.formData.name);
+      formData.append("phone", this.formData.phone);
+      formData.append("email", this.formData.email);
+      formData.append("position", this.formData.position);
+      formData.append("department", this.formData.department);
+      formData.append("company", this.formData.company);
+      formData.append("address", this.formData.address);
+      formData.append("phoneLandline", this.formData.phoneLandline);
+      formData.append("memo", this.formData.memo);
 
-      console.log('폼이 제출되었습니다.', formData);
+      console.log("폼이 제출되었습니다.", formData);
       // API 요청을 실제로 보내는 코드는 여기에 추가
     },
   },

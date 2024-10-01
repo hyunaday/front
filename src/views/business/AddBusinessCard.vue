@@ -17,15 +17,15 @@
     </router-link>
 
     <!-- FooterNav 컴포넌트 사용 -->
-    <FooterNav />
+    <FooterNav :buttonType="'plus'" :buttonAction="goToAddList" />
   </div>
 </template>
 
 <script>
-import FooterNav from '../../components/FooterNav.vue';
+import FooterNav from "../../components/FooterNav.vue";
 
 export default {
-  name: 'AddBusinessCard',
+  name: "AddBusinessCard",
   components: {
     FooterNav,
   },
