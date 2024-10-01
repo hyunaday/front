@@ -80,18 +80,18 @@ export default {
       selectedMonth: new Date().getMonth(),
       years: this.generateYears(),
       months: [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December',
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
       ],
       calendar: [],
       data: {},
@@ -132,13 +132,13 @@ export default {
       const weeks = [];
       let week = [];
       for (let i = 0; i < firstDay; i++) {
-        week.push({ day: '', data: {} });
+        week.push({ day: "", data: {} });
       }
       for (let day = 1; day <= daysInMonth; day++) {
         const dateString = `${year}-${String(month + 1).padStart(
           2,
-          '0'
-        )}-${String(day).padStart(2, '0')}`;
+          "0"
+        )}-${String(day).padStart(2, "0")}`;
         week.push({ day, data: this.data[dateString] || {} });
         if (week.length === 7) {
           weeks.push(week);
@@ -146,7 +146,7 @@ export default {
         }
       }
       while (week.length < 7) {
-        week.push({ day: '', data: {} });
+        week.push({ day: "", data: {} });
       }
       if (week.length) {
         weeks.push(week);
@@ -160,7 +160,7 @@ export default {
 <style scoped>
 .calendar-container {
   text-align: center;
-  font-family: 'Poppins', sans-serif; /* Poppins 폰트 적용 */
+  font-family: "Poppins", sans-serif; /* Poppins 폰트 적용 */
 }
 
 .calendar {
@@ -192,7 +192,7 @@ h1 {
   border: none; /* 테두리 제거 */
   appearance: none; /* 기본 드롭다운 화살표 제거 */
   background: transparent; /* 배경을 투명으로 설정 */
-  font-family: 'Poppins', sans-serif; /* Poppins 폰트 적용 */
+  font-family: "Poppins", sans-serif; /* Poppins 폰트 적용 */
 }
 
 .financial-summary {
@@ -214,7 +214,7 @@ h1 {
 }
 
 .income-amount {
-  color: #62d0ff; /* 수입 색상 */
+  color: #6981d9; /* 수입 색상 */
 }
 
 table {
