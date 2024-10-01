@@ -4,15 +4,15 @@ import MainPage from '../views/Mainpage.vue';
 import MyAssets from '../views/asset/MyAssets.vue';
 import AccountBook from '../views/book/AccountBook.vue';
 import BusinessCard from '../views/business/BusinessCard.vue';
-import GroupPay from '../views/Pay/GroupPay.vue';
+import GroupPay from '../views/pay/GroupPay.vue';
 import SignUp from '../views/SignUp.vue';
 import AddList from '../views/book/AddList.vue';
 import Cards from '../views/asset/Cards.vue';
 import Account from '../views/asset/Account.vue';
 import AccountAddList from '../views/asset/AccountAddList.vue';
 import BusinessCardList from '../views/business/BusinessCardList.vue';
-import MyCardRegistration from '../views/business/MyCardRegistration.vue'; 
-import FriendCardRegistration from '../views/business/FriendCardRegistration.vue'; 
+import MyCardRegistration from '../views/business/MyCardRegistration.vue';
+import FriendCardRegistration from '../views/business/FriendCardRegistration.vue';
 import Settings from '../views/settings/Settings.vue';
 import InviteFriends from '../views/settings/InviteFriends.vue';
 import SearchFriends from '../views/settings/SearchFriends.vue';
@@ -21,11 +21,21 @@ import Cancel from '../views/settings/Cancel.vue';
 import Logout from '../views/settings/Logout.vue';
 import ChangePassword from '../views/settings/ChangePassword.vue';
 import AddBusinessCard from '../views/business/AddBusinessCard.vue';
-import MainPay from '../views/Pay/MainPay.vue';
-import MemberPay from '../views/Pay/MemberPay.vue';
-import SoloPay from '../views/Pay/SoloPay.vue';
+import MainPay from '../views/pay/MainPay.vue';
+import MemberPay from '../views/pay/MemberPay.vue';
+import SoloPay from '../views/pay/SoloPay.vue';
 import CurrentPassword from '../views/settings/CurrentPassword.vue';
-
+import PaymentSuccess from '../views/pay/PaymentSuccess.vue';
+import PaymentFailure from '../views/pay/PaymentFailure.vue';
+import GameList from '../views/pay/GameList.vue';
+import GameLottery from '../components/GameLottery.vue'; // 상대 경로로 수정
+import '@solb/bottom-sheet';
+import '@solb/bottom-sheet/style/style.css';
+import PayInfo from '../views/pay/PayInfo.vue';
+import PaySplit from '../views/pay/PaySplit.vue';
+import PayMenu from '../views/pay/PayMenu.vue';
+import RequestPay from '../views/pay/RequestPay.vue';
+import PaymentWaiting from '../components/PaymentWaiting.vue'; // 경로를 맞게 수정
 
 const routes = [
   {
@@ -142,13 +152,8 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/alert',
-    name: 'Alert',
-    component: Alert,
-  },
-  {
-    path: "/currentpassword",
-    name: "CurrentPassword",
+    path: '/currentpassword',
+    name: 'CurrentPassword',
     component: CurrentPassword,
   },
   {
@@ -183,6 +188,51 @@ const routes = [
     path: '/memberpay', // 팀원 결제 추가
     name: 'MemberPay',
     component: MemberPay,
+  },
+  {
+    path: '/success', //  결제 성공
+    name: 'PaymentSuccess',
+    component: PaymentSuccess,
+  },
+  {
+    path: '/failure', //  결제 실패
+    name: 'PaymentFailure',
+    component: PaymentFailure,
+  },
+  {
+    path: '/gamelist',
+    name: 'GameList',
+    component: GameList,
+  },
+  {
+    path: '/lottery-game',
+    name: 'LotteryGame',
+    component: GameLottery,
+  },
+  {
+    path: '/payinfo',
+    name: 'PayInfo',
+    component: PayInfo,
+  },
+  {
+    path: '/paysplit',
+    name: 'PaySplit',
+    component: PaySplit,
+  },
+  {
+    path: '/paymenu',
+    name: 'PayMenu',
+    component: PayMenu,
+  },
+  {
+    path: '/requestpay',
+    name: 'RequestPay',
+    component: RequestPay,
+  },
+  {
+    path: '/payment-waiting',
+    name: 'PaymentWaiting',
+    component: PaymentWaiting,
   },
 ];
 

@@ -1,25 +1,30 @@
 <template>
-  <div class="main-container d-flex flex-column justify-content-center align-items-center">
+  <div
+    class="main-container d-flex flex-column justify-content-center align-items-center"
+  >
     <button @click="goBack" class="back-button">
       <i class="fas fa-chevron-left"></i>
     </button>
-    <h3>함께 결제하기</h3>
+
+    <h3>
+      결제할 <span style="color: #6981d9">방법</span>을 <br />
+      선택해주세요
+    </h3>
+
     <button class="custom-button" @click="showScanner('SoloPay')">
       개인 결제
     </button>
     <button class="custom-button" @click="showScanner('MainPay')">
-      대표 결제
+      함께 결제
     </button>
-    <button class="custom-button" @click="showScanner('MemberPay')">
-      팀원 결제
-    </button>
+
+    <div id="reader" style="width: 600px; display: none"></div>
 
     <div v-if="showScannerModal" class="modal-overlay" @click="closeModal">
       <div class="modal-content" @click.stop>
         <button class="close-button" @click="closeModal">X</button>
         <qrcode-stream @decode="onDecode" @init="onInit" style="width: 360px" />
 
-        <!-- 스캔 결과 출력 -->
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         <p v-if="decodedData" class="decoded-data">
           스캔된 데이터: <strong>{{ decodedData }}</strong>
@@ -31,9 +36,9 @@
 
 <script>
 import { QrcodeStream } from 'vue-qrcode-reader';
-import SoloPay from './SoloPay.vue';
-import MainPay from './MainPay.vue';
-import MemberPay from './MemberPay.vue';
+import SoloPay from '../pay/SoloPay.vue';
+import MainPay from '../pay/MainPay.vue';
+import { Html5Qrcode } from 'html5-qrcode';
 
 export default {
   name: 'PaymentSelection',
@@ -41,7 +46,6 @@ export default {
     QrcodeStream,
     SoloPay,
     MainPay,
-    MemberPay,
   },
   data() {
     return {
@@ -56,15 +60,46 @@ export default {
       this.$router.go(-1);
     },
     showScanner(paymentType) {
-      this.currentPaymentComponent =
-        paymentType === 'SoloPay'
-          ? SoloPay
-          : paymentType === 'MainPay'
-          ? MainPay
-          : MemberPay;
+      this.currentPaymentComponent = paymentType;
       this.showScannerModal = true;
+      this.initializeScanner(); // QR 코드 스캐너 초기화 호출
+    },
+    async initializeScanner() {
+      const html5QrCode = new Html5Qrcode('reader');
+      const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+        this.decodedData = decodedText;
+        this.errorMessage = '';
+      };
+      const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+      try {
+        const devices = await Html5Qrcode.getCameras();
+        if (devices.length) {
+          const cameraId = devices[0].id; // 첫 번째 카메라 선택
+          html5QrCode
+            .start(
+              { deviceId: { exact: cameraId } },
+              config,
+              qrCodeSuccessCallback
+            )
+            .catch((err) => {
+              console.error('카메라 시작 오류:', err);
+              this.errorMessage =
+                '카메라를 시작할 수 없습니다. 권한을 확인하세요.';
+            });
+        } else {
+          this.errorMessage = '사용 가능한 카메라가 없습니다.';
+        }
+      } catch (error) {
+        console.error('카메라 접근 오류:', error);
+        this.errorMessage = '카메라에 접근할 수 없습니다. 권한을 확인하세요.';
+      }
     },
     onDecode(data) {
+      console.log('스캔된 데이터:', data);
+      this.decodedData = data;
+      this.errorMessage = '';
+
       console.log('Decoded data:', data);
       this.decodedData = data; // 스캔된 데이터 저장
       this.errorMessage = ''; // 오류 메시지 초기화
@@ -72,39 +107,30 @@ export default {
     },
     async onInit(success, error) {
       if (error) {
-        console.error('Camera initialization failed:', error);
+        console.error('카메라 초기화 실패:', error);
         this.errorMessage = '카메라에 접근할 수 없습니다. 권한을 확인하세요.';
       } else if (success) {
-        console.log('Camera initialization successful');
+        console.log('카메라 초기화 성공');
         this.errorMessage = '';
-
-        // 카메라 접근 권한 요청
-        try {
-          await this.requestCameraPermission();
-        } catch (err) {
-          console.error('Camera permission denied:', err);
-          this.errorMessage = '카메라 권한이 필요합니다.';
-        }
+        await this.requestCameraPermission();
       }
     },
     closeModal() {
       this.showScannerModal = false;
-      this.decodedData = ''; // 모달 닫을 때 결과 초기화
+      this.decodedData = '';
     },
     async requestCameraPermission() {
       if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         await navigator.mediaDevices.getUserMedia({ video: true });
       } else {
-        throw new Error('getUserMedia is not supported in this browser.');
+        throw new Error('이 브라우저는 getUserMedia를 지원하지 않습니다.');
       }
     },
   },
 };
 </script>
 
-
 <style scoped>
-/* 전체 템플릿 */
 body {
   margin: 0;
   display: flex;
@@ -112,7 +138,7 @@ body {
   align-items: center;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #c0c0c0; /* 나머지 화면은 회색 */
+  background-color: #c0c0c0;
 }
 
 .main-container {
@@ -132,8 +158,10 @@ h3 {
   font-size: 20px;
   font-weight: 530;
   text-align: left;
-  margin-left: -170px;
-  margin-bottom: 50px;
+  margin-left: 70px;
+  margin-bottom: 100px;
+  display: block;
+  width: 100%;
 }
 
 .back-button {
@@ -141,10 +169,13 @@ h3 {
   border: none;
   cursor: pointer;
   font-size: 18px;
+  font-weight: 400;
+  color: #000;
+  text-align: left;
   color: #000;
   margin-left: -270px;
   margin-top: -300px;
-  margin-bottom: 30px; /* 제목과 버튼 사이의 여백 */
+  margin-bottom: 30px;
 }
 
 .back-button:hover {
@@ -164,7 +195,7 @@ h3 {
 }
 
 .modal-content {
-  background: white; /* 모달 배경 색상 */
+  background: white;
   padding: 10px;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
@@ -191,6 +222,7 @@ h3 {
   color: #000000;
   font-size: 20px;
   cursor: pointer;
+  outline: none;
   display: flex;
   align-items: center;
   justify-content: center;
