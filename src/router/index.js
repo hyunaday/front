@@ -186,9 +186,6 @@ const routes = [
     path: '/loading', // 로딩 페이지
     name: 'Loading',
     component: Loading,
-    path: '/name',
-    name: 'Name',
-    component: Name,
   },
   {
     path: '/phone',
