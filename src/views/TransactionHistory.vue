@@ -6,7 +6,7 @@
         <div class="transaction-details">
           <img :src="imageSrc" alt="Bank Logo" class="bank-logo" />
           <div class="account-info">
-            <span class="bank-name">국민</span>
+            <span class="bank-name">{{ bankName }}</span>
             <span class="account-number">{{ formattedAccountNumber }}</span>
             <img
               src="../assets/images/copy.png"
@@ -16,7 +16,7 @@
             />
           </div>
         </div>
-        <div class="account-description">국민은행 입출금 통장</div>
+        <div class="account-description">{{ accountDescription }}</div>
         <div class="amount-div" v-if="totalAmount !== null">{{ formattedAmount }}</div>
         
         <router-link to="/transfer">
@@ -27,7 +27,7 @@
       </div>
   
       <div class="search-filter">
-        <input type="text" class="search-input" @keyup.enter="performSearch" v-model="searchQuery" />
+        <input type="text" class="search-input" @keyup.enter="performSearch" v-model="searchQuery" placeholder="거래 내역 검색" />
         <button class="filter-icon" @click="performSearch">
           <i class="fa-solid fa-magnifying-glass"></i>
         </button>
@@ -36,11 +36,11 @@
         </div>
       </div>
 
-      <!-- 거래 내역 목록 추가 -->
+      <!-- 거래 내역 목록 -->
       <div class="transaction-list">
-        <div class="transaction-item" v-for="transaction in transactions" :key="transaction.id">
-          <span class="date-label">{{ transaction.date }}</span>
-          <span class="name">{{ transaction.name }}</span>
+        <div class="transaction-item" v-for="transaction in transactions" :key="transaction.idx">
+          <span class="date-label">{{ formatDate(transaction.createdAt) }}</span>
+          <span class="name">{{ transaction.accountHolderName }}</span>
           <span class="amount">{{ formatTransactionAmount(transaction.amount) }}</span>
         </div>
       </div>
@@ -50,6 +50,7 @@
 </template>
 
 <script>
+import apiClient from '../api/axios.js';
 import FooterNav from '../components/FooterNav.vue';
 
 export default {
@@ -60,20 +61,16 @@ export default {
   data() {
     return {
       imageSrc: 'src/assets/images/kbbank.png',
-      accountNumber: '3333091416050',
-      transactions: [
-        { id: 1, date: '09/12', name: '홍길동', amount: -30000 },
-        { id: 2, date: '09/18', name: '이순신', amount: 8000 },
-        { id: 3, date: '09/21', name: '김유신', amount: -50000 },
-        { id: 4, date: '09/27', name: '조국민', amount: 10000 },
-        { id: 5, date: '09/30', name: '네이버', amount: 2000000 },
-      ],
+      bankName: '국민은행',
+      accountNumber: '1234567890', // 예시 계좌 번호, 실제 데이터로 업데이트 필요
+      accountDescription: '국민은행 입출금 통장',
+      searchQuery: '',
+      transactions: [],
     };
   },
   computed: {
     formattedAccountNumber() {
-      // 총 거래 내역의 합계
-      return this.totalAmount.toLocaleString() + '원';
+      return this.accountNumber.toLocaleString();
     },
     totalAmount() {
       return this.transactions.reduce((sum, transaction) => sum + transaction.amount, 0);
@@ -83,10 +80,24 @@ export default {
     },
   },
   methods: {
+    async fetchTransactions() {
+      try {
+        const response = await apiClient.get('/account/all'); // API에서 계좌 데이터 가져오기
+        if (response.data.isSuccess) {
+          this.transactions = response.data.result.accountList; // 계좌 리스트에서 거래 내역을 가져오기
+          this.bankName = this.transactions[0].bankName; // 은행 이름 설정
+          this.accountNumber = this.transactions[0].accountNumber; // 계좌 번호 설정
+        } else {
+          console.error('계좌 정보를 가져오지 못했습니다.');
+        }
+      } catch (error) {
+        console.error('API 호출 중 오류 발생:', error);
+      }
+    },
     copyAccountNumber() {
       navigator.clipboard.writeText(this.accountNumber)
         .then(() => {
-          alert('계좌번호가 복사되었습니다!');
+          alert('계좌번호가 복사되었습니다.');
         })
         .catch(err => {
           console.error('복사 실패:', err);
@@ -95,6 +106,7 @@ export default {
     performSearch() {
       if (this.searchQuery) {
         console.log(`검색어: ${this.searchQuery}`);
+        // 여기서 검색 기능을 구현할 수 있어
       } else {
         console.log('검색어가 비어 있습니다.');
       }
@@ -103,6 +115,13 @@ export default {
       const formattedAmount = Math.abs(amount).toLocaleString();
       return (amount < 0 ? '-' : '+') + formattedAmount + '원';
     },
+    formatDate(dateString) {
+      const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString(undefined, options);
+    },
+  },
+  mounted() {
+    this.fetchTransactions(); // 컴포넌트가 마운트될 때 거래 내역 가져오기
   },
 };
 </script>
@@ -219,13 +238,6 @@ export default {
 .transaction-item .amount {
   margin-left: auto;
   text-align: right;
-}
-
-.info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 20px;
 }
 
 .bank-name {

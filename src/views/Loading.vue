@@ -1,130 +1,92 @@
 <template>
-    <div class="main-container">
-      <div class="loading-page">
-        <div class="loader-container">
-          <div class="coin" :style="{ animationDuration: `${totalDuration}s` }">
-            <svg viewBox="0 0 100 100" class="coin-icon">
-              <circle cx="50" cy="50" r="45" fill="gold" />
-              <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="12" fill="#333">COIN</text>
-            </svg>
+  <div class="main-container">
+      <div class="center-container">
+          <div class="coin">
+              <span class="coin-text">₩</span>
           </div>
-          <svg viewBox="0 0 36 36" class="circular-chart">
-            <path
-              class="circle"
-              stroke-dasharray="100, 100"
-              :stroke-dasharray="`${progress}, 100`"
-              d="M18 2.0845
-                a 15.9155 15.9155 0 0 1 0 31.831
-                a 15.9155 15.9155 0 0 1 0 -31.831"
-            />
-          </svg>
-          <div class="time">{{ formattedTime }}</div>
-        </div>
+          <div class="timer">
+              <span>{{ formattedTime }}</span>
+          </div>
       </div>
-      <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
-    </div>
-  </template>
-  
-  <script>
-  import FooterNav from '../components/FooterNav.vue';
-  
-  export default {
-    name: "Loading",
-    components: {
-      FooterNav,
-    },
-    data() {
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'Loading',
+  data() {
       return {
-        totalDuration: 120, // 로딩 시간, 120초 (2분)
-        timeRemaining: 120,
-        interval: null,
+          remainingTime: 120, // 초기 남은 시간 설정 (초)
       };
-    },
-    computed: {
+  },
+  computed: {
       formattedTime() {
-        const minutes = String(Math.floor(this.timeRemaining / 60)).padStart(2, "0");
-        const seconds = String(this.timeRemaining % 60).padStart(2, "0");
-        return `${minutes}:${seconds}`;
+          const minutes = Math.floor(this.remainingTime / 60);
+          const seconds = this.remainingTime % 60;
+          return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
       },
-      progress() {
-        return ((this.totalDuration - this.timeRemaining) / this.totalDuration) * 100;
-      },
-    },
-    mounted() {
+  },
+  mounted() {
       this.startTimer();
-    },
-    beforeDestroy() {
-      clearInterval(this.interval);
-    },
-    methods: {
+  },
+  methods: {
       startTimer() {
-        this.interval = setInterval(() => {
-          if (this.timeRemaining > 0) {
-            this.timeRemaining--;
-          } else {
-            clearInterval(this.interval);
-            // 로딩 완료 후 처리할 내용 추가
-          }
-        }, 1000);
+          const interval = setInterval(() => {
+              if (this.remainingTime > 0) {
+                  this.remainingTime--;
+              } else {
+                  clearInterval(interval); // 타이머 종료
+              }
+          }, 1000); // 1초마다 감소
       },
-    },
-  };
-  </script>
-  
-  <style scoped>
-  .loading-page {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+  },
+}
+</script>
+
+<style scoped>
+.center-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* 화면 높이 전체 사용 */
+}
+
+.coin {
+  width: 70px; /* 크기 줄임 */
+  height: 90px; /* 두께를 줄임 */
+  background: linear-gradient(145deg, #f9d71c, #d4af37); /* 금색 그라데이션 */
+  border-radius: 50%;
+  box-shadow: 
+      0 10px 30px rgba(0, 0, 0, 0.4), /* 하단 그림자 강화 */
+      0 -5px 20px rgba(255, 255, 255, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  animation: spin 1s linear infinite;
+}
+
+.coin-text {
+  font-size: 30px; /* 텍스트 크기 조정 */
+  font-weight: bold;
+  color: white;
+  position: absolute;
+  z-index: 2;
+}
+
+.timer {
+  margin-top: 20px; /* 코인과의 간격 */
+  font-size: 24px; /* 텍스트 크기 조정 */
+  color: #333; /* 텍스트 색상 */
+}
+
+@keyframes spin {
+  from {
+      transform: rotateY(0);
   }
-  
-  .loader-container {
-    position: relative;
-    width: 150px;
-    height: 150px;
+  to {
+      transform: rotateY(1turn);
   }
-  
-  .coin {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    animation: rotate 120s linear infinite; /* totalDuration에 따라 회전 속도 조절 */
-  }
-  
-  @keyframes rotate {
-    from {
-      transform: translate(-50%, -50%) rotate(0deg);
-    }
-    to {
-      transform: translate(-50%, -50%) rotate(360deg);
-    }
-  }
-  
-  .circular-chart {
-    width: 100%;
-    height: 100%;
-  }
-  
-  .circle {
-    fill: none;
-    stroke: #6981d6;
-    stroke-width: 2.8;
-    stroke-linecap: round;
-    transform: rotate(-90deg);
-    transform-origin: center;
-    transition: stroke-dasharray 0.3s ease;
-  }
-  
-  .time {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
-  }
-  </style>
-  
+}
+</style>
