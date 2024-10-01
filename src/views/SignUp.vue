@@ -146,6 +146,7 @@
         type="button"
         class="btn btn-primary w-100 py-2"
         @click="openBottomSheet"
+        :disabled="!isFormValid"
       >
         다음
       </button>
@@ -374,6 +375,17 @@ export default {
       }
       return this.emailDomain ? `${this.emailPrefix}@${this.emailDomain}` : "";
     },
+    isFormValid() {
+      return (
+        this.name.trim() !== '' &&
+        this.phone.trim() !== '' &&
+        this.emailPrefix.trim() !== '' &&
+        this.emailDomain !== '' &&
+        this.password.trim() !== '' &&
+        this.confirmPassword.trim() !== '' &&
+        this.password === this.confirmPassword
+      );
+    }
   },
 };
 </script>
@@ -531,9 +543,20 @@ input::placeholder {
 .modal-dialog-bottom {
   position: fixed;
   bottom: 0;
-  left: 120px;
-  right: 0;
+  left: 0;
+  right: 15px;
   margin: 0;
+  transform: translateY(100%);
+  animation: slide-up 0.3s ease-out forwards;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 .modal-content {
@@ -541,7 +564,8 @@ input::placeholder {
   padding-bottom: 20px;
   box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
   width: 72.5%;
-  max-width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
 /* 모바일 기기를 위한 미디어 쿼리 */
@@ -636,5 +660,9 @@ input::placeholder {
   color: white;
 }
 
-/* 기존 스타일 유지 */
+.btn-primary:disabled {
+  background-color: #b0b0b0;
+  border-color: #b0b0b0;
+  cursor: not-allowed;
+}
 </style>

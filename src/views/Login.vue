@@ -32,9 +32,7 @@
           <button type="submit" class="login-btn">로그인</button>
           <div class="signup-link">
             <p>처음 오셨나요?</p>
-            <a @click.prevent="$router.push('/signup')" class="signup-btn"
-              >회원가입</a
-            >
+            <a @click.prevent="$router.push('/signup')" class="signup-btn">회원가입</a>
           </div>
         </form>
       </main>
@@ -43,12 +41,11 @@
       <div class="social-login">
         <p>간편 로그인</p>
         <div class="social-icons">
-          <!-- 소셜 로그인 아이콘 클릭 시 각 소셜 로그인으로 이동 -->
           <img
             src="../assets/images/kakao.png"
             alt="Kakao Login"
             class="social-icon"
-            @click="handleSocialLogin('kakao')"
+            @click="kakaoLogin"
           />
           <img
             src="../assets/images/naver.png"
@@ -69,7 +66,7 @@
 </template>
 
 <script>
-import apiClient from "../api/axios.js"; // Axios 설정 파일을 임포트
+import axios from '../api/axios.js'; // Axios 설정 파일을 임포트
 
 export default {
   name: "Login",
@@ -87,29 +84,47 @@ export default {
       };
 
       try {
-        const response = await apiClient.post("/member/login", loginData);
+        const response = await axios.post("/member/login", loginData);
         if (response.data.isSuccess) {
-          alert("로그인 성공!");
           localStorage.setItem("accessToken", response.data.result.accessToken);
           this.$router.push("/");
         } else {
-          alert(`로그인 실패: ${response.data.message || "알 수 없는 오류"}`);
+          alert(`${response.data.message || "알 수 없는 오류"}`);
         }
       } catch (error) {
         console.error("로그인 오류:", error);
         if (error.response) {
-          alert(`서버 오류: ${error.response.data.message || "알 수 없는 오류"}`);
+          alert(`${error.response.data.message || "알 수 없는 오류"}`);
         } else {
           alert("서버에 연결할 수 없습니다. 네트워크를 확인해주세요.");
         }
       }
     },
+
+    // 카카오 로그인 리다이렉트
+    kakaoLogin() {
+      const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=305950b46b9c5e693c2be97edfa59770&redirect_uri=http://localhost:5173/login&response_type=code`;
+      window.location.href = kakaoAuthUrl;
+    },
+
+    async handleKakaoAuth(code) {
+      try {
+        const response = await axios.post(`/member/login/oauth2/kakao?code=${code}`);
+        if (response.data.isSuccess) {
+          localStorage.setItem("accessToken", response.data.result.accessToken);
+          this.$router.push("/phone");
+        } else {
+          alert(`카카오 로그인 실패: ${response.data.message || "알 수 없는 오류"}`);
+        }
+      } catch (error) {
+        console.error("카카오 로그인 오류:", error);
+        alert("카카오 로그인 중 오류가 발생했습니다.");
+      }
+    },
+
     handleSocialLogin(platform) {
       let loginUrl = "";
       switch (platform) {
-        case "kakao":
-          loginUrl = `https://kauth.kakao.com/oauth/authorize?client_id=ad54609e6ece7abc131bb27e2122a184&redirect_uri=http://localhost:8080/login/oauth2/code/kakao&response_type=code`;
-          break;
         case "naver":
           loginUrl = `https://nid.naver.com/oauth2.0/authorize?client_id=YOUR_NAVER_CLIENT_ID&redirect_uri=http://localhost:8080/login/oauth2/code/naver&response_type=code`;
           break;
@@ -123,9 +138,16 @@ export default {
       window.location.href = loginUrl;
     },
   },
+  async mounted() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get("code");
+
+    if (code) {
+      await this.handleKakaoAuth(code); // handleKakaoAuth 메서드 호출
+    }
+  },
 };
 </script>
-
 
 <style scoped>
 /* 기존 스타일 유지 */
