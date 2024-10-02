@@ -17,34 +17,151 @@
       </div>
     </div>
 
+    <!-- 월별 토탈 지출금액과 수입금액을 추가 -->
+    <div class="monthly-summary">
+      <div class="expense">
+        지출 <span class="amount">{{ formatAmount(totalExpense) }}</span>
+      </div>
+      <div class="income">
+        수입 <span class="amount">{{ formatAmount(totalIncome) }}</span>
+      </div>
+    </div>
+
     <!-- 검색창 추가 -->
     <div class="search-bar">
       <input
         type="text"
+        v-model="searchQuery"
+        @keydown.enter="executeSearch"
         placeholder="검색어를 입력하세요"
         class="search-input"
       />
     </div>
 
-    <!-- 편집, 삭제, 필터 버튼 추가 -->
+    <!-- bottom-sheet -->
     <div class="button-container">
-      <button class="edit-btn">편집</button>
-      <button class="delete-btn">삭제</button>
-      <i class="fa-solid fa-filter filter-icon" @click="toggleFilter"></i>
+      <button
+        type="button"
+        onclick="document.getElementById('testBottomSheet').openSheet()"
+        class="plus-btn"
+      >
+        <i class="fa-solid fa-plus"></i>
+        <!-- Font Awesome 플러스 아이콘 -->
+      </button>
+      <bottom-sheet id="testBottomSheet" title="세부 내역">
+        <main class="editable-sheet">
+          <div class="header">
+            <div class="store-name">{{ storeName }}</div>
+            <button class="close-btn" @click="closeBottomSheet">
+              <i class="fa-solid fa-xmark"></i>
+              <!-- 닫기 아이콘 -->
+            </button>
+          </div>
+          <div class="price-section">
+            <input
+              v-if="isEditingPrice"
+              type="text"
+              v-model="editablePrice"
+              @blur="stopEditingPrice"
+              class="price-input"
+            />
+            <div v-else @click="startEditingPrice">
+              <span class="price">{{ formattedPrice }}</span>
+              <i class="fa-solid fa-pen edit-icon"></i>
+              <!-- 연필 아이콘 -->
+            </div>
+          </div>
+          <div class="description">인식 금액 {{ formattedFixedPrice }}</div>
+
+          <!-- 분류 버튼 (수입, 지출 등록) -->
+          <div class="category-container">
+            <span class="category-label">분류</span>
+            <div class="category-buttons">
+              <button
+                :class="{ active: selectedCategory === 'income' }"
+                @click="setCategory('income')"
+              >
+                수입
+              </button>
+              <button
+                :class="{ active: selectedCategory === 'expense' }"
+                @click="setCategory('expense')"
+              >
+                지출
+              </button>
+            </div>
+          </div>
+
+          <!-- 구분선 추가 -->
+          <hr class="divider" />
+
+          <!-- 카테고리 -->
+          <!-- 수정 가능한 카테고리 -->
+          <div class="detail-row">
+            <span class="label">카테고리</span>
+            <input type="text" v-model="category" class="content" />
+          </div>
+
+          <!-- 수정 가능한 거래처 -->
+          <div class="detail-row">
+            <span class="label">거래처</span>
+            <input type="text" v-model="storeName" class="content" />
+          </div>
+
+          <!-- 수정 가능한 결제 수단 -->
+          <div class="detail-row">
+            <span class="label">결제 수단</span>
+            <input type="text" v-model="paymentMethod" class="content" />
+          </div>
+
+          <!-- 수정 가능한 날짜 -->
+          <div class="detail-row">
+            <span class="label">날짜</span>
+            <input type="date" v-model="transactionDate" class="content" />
+          </div>
+
+          <!-- 메모 -->
+          <div class="detail-row">
+            <span class="label">메모 · 태그</span>
+            <span class="content">
+              <textarea
+                placeholder="입력하세요."
+                v-model="memo"
+                class="memo-input"
+              ></textarea>
+            </span>
+          </div>
+
+          <!-- 삭제 버튼과 다음 버튼 -->
+          <div class="button-row">
+            <button class="delete-btn">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+            <button class="next-btn" @click="submitDetails">다음</button>
+          </div>
+        </main>
+      </bottom-sheet>
     </div>
 
-    <!-- 필터 창 -->
-    <div v-if="showFilter" class="filter-dropdown">
-      <div class="filter-option" v-for="category in categories" :key="category">
-        <input type="checkbox" :id="category" />
-        <label :for="category">{{ category }}</label>
-      </div>
+    <!-- 필터링 버튼을 왼쪽 아래에 고정 -->
+    <div class="filter-container">
+      <button
+        :class="{ active: selectedFilter === 'income' }"
+        @click="toggleFilter('income')"
+      >
+        수입
+      </button>
+      <button
+        :class="{ active: selectedFilter === 'expense' }"
+        @click="toggleFilter('expense')"
+      >
+        지출
+      </button>
     </div>
 
     <!-- 날짜별 가계부 내역 표시 시작 -->
-    <!-- 바뀐 부분: 날짜별로 가계부 내역을 표시 -->
     <div
-      v-for="(entryGroup, index) in entries"
+      v-for="(entryGroup, index) in filteredEntries"
       :key="index"
       class="entry-group"
     >
@@ -52,13 +169,12 @@
         <div class="date-section">
           <div class="date">{{ entryGroup.date }}</div>
           <div class="day">{{ entryGroup.day }}</div>
-          <div class="year-month">{{ entryGroup.yearMonth }}</div>
-        </div>
-        <div
-          class="total-amount"
-          :class="entryGroup.totalAmount < 0 ? 'negative' : 'positive'"
-        >
-          {{ formatAmount(entryGroup.totalAmount) }}
+          <div
+            class="total-amount"
+            :class="entryGroup.totalAmount < 0 ? 'negative' : 'positive'"
+          >
+            {{ formatAmount(entryGroup.totalAmount) }}
+          </div>
         </div>
       </div>
 
@@ -71,10 +187,8 @@
           <div class="category">
             <div>{{ entry.category }}</div>
             <div>{{ entry.detail }}</div>
-            <!-- 바뀐 부분: 세부 항목 표시 -->
           </div>
           <div class="payment">{{ entry.paymentMethod }}</div>
-          <div class="time">{{ entry.time }}</div>
           <div
             class="amount"
             :class="entry.amount < 0 ? 'negative' : 'positive'"
@@ -84,132 +198,228 @@
         </div>
       </div>
     </div>
-    <!-- 날짜별 가계부 내역 표시 끝 -->
   </div>
 </template>
 
 <script>
+// 상수 데이터 정의
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+// 함수 외부로 정의
+function generateYears() {
+  const currentYear = new Date().getFullYear();
+  const years = [];
+  for (let year = currentYear - 10; year <= currentYear + 10; year++) {
+    years.push(year);
+  }
+  return years;
+}
+
 export default {
   data() {
     return {
       selectedYear: new Date().getFullYear(),
       selectedMonth: new Date().getMonth(),
-      years: this.generateYears(),
-      months: [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ],
-      showFilter: false, // 필터 창의 표시 상태
-      categories: ["식비", "교통비", "의료비", "엔터테인먼트", "기타"], // 카테고리 리스트
+      years: generateYears(),
+      months,
+      searchQuery: "",
+      finalQuery: "",
+      totalExpense: 90000,
+      totalIncome: 1000000,
 
-      // 바뀐 부분: 가계부 내역
+      storeName: "컴포즈커피세종대학교점", // 상점명
+      fixedAmount: 0, // 고정된 인식 금액
+      editablePrice: 2500, // 수정 가능한 금액
+      isEditingPrice: false, // 가격 수정 모드 여부
+      selectedCategory: null, // 기본 분류는 null
+      selectedFilter: null, // 필터링에 사용
+      transactionDate: "2024-10-28", // 날짜 기본 값
+      paymentMethod: "KB 국민카드", // 결제 수단 기본 값
+      memo: "", // 메모
+      category: "식비", // 카테고리 기본 값
       entries: [
         {
           date: "19",
           day: "화요일",
-          yearMonth: "2024.01",
           totalAmount: -27000,
           entries: [
             {
               category: "생활용품",
               detail: "주방/욕실",
               paymentMethod: "신한은행",
-              time: "오후 2:42",
               amount: -30000,
+              storeName: "마트",
+              memo: "주방용품 구매",
             },
             {
               category: "부수입",
               detail: "",
               paymentMethod: "현금",
-              time: "오후 1:42",
               amount: 3000,
+              storeName: "",
+              memo: "",
             },
           ],
         },
         {
           date: "20",
           day: "수요일",
-          yearMonth: "2024.01",
           totalAmount: -27000,
           entries: [
             {
               category: "생활용품",
               detail: "주방/욕실",
               paymentMethod: "신한은행",
-              time: "오후 2:42",
               amount: -30000,
+              storeName: "다이소",
+              memo: "생활용품",
             },
             {
               category: "부수입",
               detail: "",
               paymentMethod: "현금",
-              time: "오후 1:42",
               amount: 3000,
+              storeName: "",
+              memo: "",
             },
           ],
         },
       ],
     };
   },
-  methods: {
-    toggleFilter() {
-      this.showFilter = !this.showFilter; // 필터 창 표시 여부 토글
-      console.log("Filter toggle status: ", this.showFilter); // 상태가 토글되는지 확인
-    },
-    generateYears() {
-      const currentYear = new Date().getFullYear();
-      const years = [];
-      for (let year = currentYear - 10; year <= currentYear + 10; year++) {
-        years.push(year);
-      }
-      return years;
-    },
-    updateCalendar() {
-      const year = this.selectedYear;
-      const month = this.selectedMonth;
-      const firstDay = new Date(year, month, 1).getDay();
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-      const weeks = [];
-      let week = [];
-      for (let i = 0; i < firstDay; i++) {
-        week.push({ day: "", data: {} });
+  computed: {
+    filteredEntries() {
+      // 선택된 필터에 따른 필터링 (수입/지출)
+      let filteredByCategory = this.entries.map((entryGroup) => {
+        let filteredGroup = { ...entryGroup };
+        filteredGroup.entries = entryGroup.entries.filter((entry) => {
+          if (this.selectedFilter === "income") {
+            return entry.amount > 0; // 수입 필터링
+          } else if (this.selectedFilter === "expense") {
+            return entry.amount < 0; // 지출 필터링
+          }
+          return true; // 필터가 없을 때는 전체 데이터
+        });
+        return filteredGroup.entries.length ? filteredGroup : null;
+      });
+
+      // 검색 기능과 필터링 적용
+      filteredByCategory = filteredByCategory.filter(Boolean);
+
+      if (!this.finalQuery) {
+        return filteredByCategory;
       }
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dateString = `${year}-${String(month + 1).padStart(
-          2,
-          "0"
-        )}-${String(day).padStart(2, "0")}`;
-        week.push({ day, data: this.data[dateString] || {} });
-        if (week.length === 7) {
-          weeks.push(week);
-          week = [];
-        }
-      }
-      while (week.length < 7) {
-        week.push({ day: "", data: {} });
-      }
-      if (week.length) {
-        weeks.push(week);
-      }
-      this.calendar = weeks;
+
+      return filteredByCategory
+        .map((entryGroup) => {
+          const filteredGroup = {
+            ...entryGroup,
+            entries: entryGroup.entries.filter((entry) =>
+              this.finalQuery
+                .toLowerCase()
+                .split(" ")
+                .every((query) =>
+                  [
+                    entry.category,
+                    entry.detail,
+                    entry.paymentMethod,
+                    entryGroup.date.toString(),
+                    entryGroup.day.toLowerCase(),
+                  ]
+                    .map((value) => value.toLowerCase())
+                    .some((field) => field.includes(query))
+                )
+            ),
+          };
+          return filteredGroup.entries.length ? filteredGroup : null;
+        })
+        .filter(Boolean);
     },
-    // 바뀐 부분: 금액 포맷팅 함수
+    formattedPrice() {
+      return `${this.editablePrice.toLocaleString()}원`;
+    },
+  },
+
+  methods: {
+    executeSearch() {
+      this.finalQuery = this.searchQuery;
+    },
+    startEditingPrice() {
+      this.isEditingPrice = true;
+    },
+    stopEditingPrice() {
+      this.isEditingPrice = false;
+    },
+    closeBottomSheet() {
+      document.getElementById("testBottomSheet").closeSheet();
+    },
+    toggleFilter(filter) {
+      // 이미 선택된 필터를 다시 클릭하면 선택 해제
+      this.selectedFilter = this.selectedFilter === filter ? null : filter;
+    },
+    setCategory(category) {
+      this.selectedCategory = category; // 분류를 등록
+      console.log(`분류가 등록되었습니다: ${category}`);
+    },
     formatAmount(amount) {
-      return new Intl.NumberFormat("ko-KR", {
-        style: "currency",
-        currency: "KRW",
-      }).format(amount);
+      return typeof amount === "number"
+        ? `${amount.toLocaleString("ko-KR")}원`
+        : "0원";
+    },
+    submitDetails() {
+      // 저장할 데이터를 생성
+      const newEntry = {
+        storeName: this.storeName,
+        price: this.editablePrice,
+        category: this.category,
+        paymentMethod: this.paymentMethod,
+        transactionDate: this.transactionDate,
+        memo: this.memo,
+      };
+
+      // 데이터를 확인 (실제로는 API 호출이나 로컬 저장 가능)
+      console.log("저장된 내용:", newEntry);
+
+      // 데이터를 배열에 추가 (추후 목록에 반영 가능)
+      this.entries.push({
+        date: new Date().getDate().toString(),
+        day: new Date().toLocaleString("ko-KR", { weekday: "long" }),
+        totalAmount: this.editablePrice,
+        entries: [newEntry],
+      });
+
+      // bottom-sheet 닫기
+      this.closeBottomSheet();
+
+      // 필드 초기화
+      this.resetForm();
+    },
+    deleteEntry(index) {
+      // 인덱스를 기반으로 배열에서 해당 항목 삭제
+      this.entries.splice(index, 1);
+    },
+    resetForm() {
+      this.storeName = "";
+      this.editablePrice = 0;
+      this.category = "";
+      this.paymentMethod = "";
+      this.transactionDate = new Date().toISOString().slice(0, 10);
+      this.memo = "";
+      this.selectedCategory = null;
     },
   },
 };
@@ -219,18 +429,6 @@ export default {
 .calendar-container {
   text-align: center;
   font-family: "Poppins", sans-serif;
-}
-
-.calendar {
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-  margin-bottom: 15px;
-  padding: 0 15px;
-}
-
-h1 {
-  font-size: 1.5rem;
 }
 
 .calendar-header {
@@ -252,32 +450,36 @@ h1 {
   font-family: "Poppins", sans-serif;
 }
 
-.financial-summary {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  font-size: 1.2rem;
+.monthly-summary {
+  text-align: right;
+  justify-content: space-between;
   margin: 1rem 0;
+  font-size: 1rem;
 }
 
 .expense,
 .income {
-  color: black;
+  font-weight: bold;
+}
+
+.amount {
+  font-size: 1.2rem;
+  margin-left: 0.5rem;
+}
+
+.expense .amount {
   font-size: 1rem;
+  color: #000000;
 }
 
-.expense-amount {
-  color: #ee8282;
+.income .amount {
+  font-size: 1rem;
+  color: #6981d9;
 }
 
-.income-amount {
-  color: #62d0ff;
-}
-
-/* 검색창 스타일 추가 */
 .search-bar {
   margin: 1rem 0;
-  text-align: center; /* 중앙 정렬 */
+  text-align: center;
 }
 
 .search-input {
@@ -289,116 +491,11 @@ h1 {
   max-width: 300px;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
-  table-layout: fixed;
-}
-
-th,
-td {
-  width: 14.28%;
-  height: 30px;
-  padding: 5px;
-  line-height: 1.2;
-  border: none;
-  vertical-align: top;
-}
-
-th {
-  color: black;
-  font-weight: bold;
-}
-
-thead tr {
-  border-bottom: 1px solid #cfcbcb;
-  height: 40px;
-}
-
-.day-cell {
-  font-size: 1rem;
-  text-align: center;
-  vertical-align: top;
-  padding: 10px;
-  height: 60px;
-}
-
-.day-number {
-  font-weight: bold;
-  color: #444;
-}
-
-.day-data {
-  font-size: 0.8rem;
-  margin-top: 5px;
-  color: #666;
-}
-
-/* 버튼 컨테이너 스타일 - 오른쪽 정렬 */
-.button-container {
-  margin-top: 10px;
-  display: flex;
-  justify-content: flex-end; /* 버튼을 오른쪽에 정렬 */
-  gap: 5px; /* 버튼 간 간격을 좁게 설정 */
-}
-
-button {
-  background-color: #e0e0e0;
-  border: none;
-  border-radius: 5px;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #bdbdbd; /* 마우스 호버 시 색상 변경 */
-}
-
-.edit-btn {
-  background-color: #d9d9d9; /* 편집 버튼 배경색 */
-}
-
-.delete-btn {
-  background-color: #d9d9d9; /* 삭제 버튼 배경색 */
-}
-
-.filter-icon {
-  font-size: 16px;
-  color: #bdbdbd;
-  margin-left: 5px; /* 필터 아이콘과 삭제 버튼 간 간격 */
-  cursor: pointer;
-}
-
-.filter-icon:hover {
-  color: #888; /* 필터 아이콘 호버 시 색상 변경 */
-}
-
-.filter-dropdown {
-  background-color: white;
-  border: 1px solid #ddd;
-  padding: 10px;
-  margin-top: 10px;
-  width: 200px;
-  z-index: 100; /* 다른 요소보다 위에 표시되도록 설정 */
-}
-
-.filter-option {
-  display: flex;
-  align-items: center;
-  margin-bottom: 5px;
-}
-
-.filter-option input {
-  margin-right: 10px;
-}
-
-/* 바뀐 부분: 날짜별 가계부 내역 스타일 */
-.date-header {
+.entry-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 10px;
+  padding: 10px;
   border-bottom: 1px solid #ddd;
 }
 
@@ -408,40 +505,28 @@ button:hover {
 }
 
 .date {
-  font-size: 2rem;
-  font-weight: bold;
+  font-size: 0.8rem;
+  color: #212529;
 }
 
 .day {
-  font-size: 0.7rem;
-  margin-left: 10px;
-  background-color: #ddd;
-  padding: 5px 10px;
+  font-size: 0.8rem;
+  padding: 1px 10px;
   border-radius: 5px;
 }
 
-.year-month {
-  margin-left: 10px;
-  font-size: 0.8rem;
-  color: #888;
-}
-
 .total-amount {
-  margin-left: 200px;
   font-size: 1rem;
-  font-weight: bold;
-  border-radius: 10px;
-  padding: 5px 10px;
-  background-color: #ddd;
-  display: inline-block; /* 글자 크기에 맞춰 사이즈 조정 */
+  padding: 5px 15px;
+  border-radius: 5px;
 }
 
 .positive {
-  color: #62d0ff;
+  color: #6981d9;
 }
 
 .negative {
-  color: #ee8282;
+  color: red;
 }
 
 .entry-details {
@@ -452,7 +537,6 @@ button:hover {
   display: flex;
   justify-content: space-between;
   padding: 10px 0;
-  border-bottom: 1px solid #ddd;
 }
 
 .category {
@@ -466,16 +550,288 @@ button:hover {
   font-size: 0.8rem;
 }
 
-.time {
-  flex: 1;
-  text-align: center;
-  font-size: 0.8rem;
-}
-
 .amount {
   flex: 1;
   text-align: right;
   font-size: 0.8rem;
+}
+
+/* 버튼 컨테이너 스타일 - 오른쪽 정렬 */
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* bottom-sheet 활성화 버튼 */
+.plus-btn {
+  background-color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.plus-btn:hover {
+  background-color: #f0f0f0;
+}
+
+.plus-btn i {
+  color: #6981d9;
+}
+
+.editable-sheet {
+  padding: 20px;
+}
+
+/* 필터링 버튼 스타일 */
+.filter-container {
+  margin: 1rem 0;
+  display: flex;
+  gap: 10px;
+}
+
+.filter-container button {
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #888;
+}
+
+.filter-container button.active {
+  border: 1px solid #6981d9;
+  background-color: #fff;
+  color: #6981d9;
+}
+
+.filter-container button:hover {
+  background-color: #e0e0e0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.store-name {
+  font-size: 1.2rem;
   font-weight: bold;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.price-section {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.price {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.edit-icon {
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.price-input {
+  font-size: 1.8rem;
+  font-weight: bold;
+  border: none;
+  border-bottom: 2px solid #ccc;
+  outline: none;
+}
+
+.description {
+  text-align: left;
+  font-size: 0.8rem;
+  color: #888;
+}
+
+/* 분류와 버튼이 일렬로 나타나도록 설정 */
+.category-container {
+  display: flex;
+  justify-content: space-between; /* 텍스트와 버튼을 양 끝으로 배치 */
+  align-items: center;
+  margin-top: 20px;
+}
+
+.category-label {
+  font-size: 1rem;
+  color: #888888;
+  line-height: 36px; /* 버튼과 같은 높이로 수평 정렬 */
+}
+
+.category-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.category-buttons button {
+  padding: 5px 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+  color: #888;
+  cursor: pointer;
+}
+
+.category-buttons button.active {
+  border: 1px solid #6981d9;
+  color: #6981d9;
+  background-color: #ffffff;
+}
+
+.category-buttons button:hover {
+  background-color: #e0e0e0;
+}
+
+/* 가계부 추가_상세거래 내역 */
+.details-container {
+  padding: 20px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.label {
+  font-weight: bold;
+  color: #888;
+  flex-basis: 30%;
+  text-align: left;
+}
+
+.content {
+  flex-basis: 100%;
+  text-align: left;
+  color: #333;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+/* 입력 필드의 테두리를 없애는 스타일 */
+.no-border {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  width: 100%;
+}
+
+.price-input {
+  font-size: 1.8rem;
+  font-weight: bold;
+  border: none; /* 테두리 없애기 */
+  border-bottom: 2px solid #ccc; /* 하단에만 선 표시 */
+  outline: none;
+}
+
+/* memo-input도 테두리 제거 */
+.memo-input {
+  width: 100%;
+  height: 80px;
+  border: none;
+  background-color: transparent;
+  padding: 10px;
+  font-size: 1rem;
+  resize: none;
+  outline: none;
+}
+
+.memo-input {
+  width: 167.5px;
+  height: 80px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 1rem;
+  resize: none;
+}
+
+.details-container {
+  padding: 20px;
+}
+
+.button-row {
+  display: flex;
+  justify-content: center; /* 중앙 정렬 */
+  align-items: center;
+  gap: 20px; /* 버튼 간격 추가 */
+  margin-top: 20px;
+}
+
+/* 삭제 버튼 */
+.delete-btn {
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.delete-btn:hover {
+  background-color: #f0f0f0;
+}
+
+.delete-btn i {
+  color: #888;
+}
+
+/* 다음 버튼 */
+.next-btn {
+  background-color: #6981d9;
+  border: none;
+  color: white;
+  width: 200px; /* 너비를 더 넓게 설정 */
+  padding: 10px 0; /* 패딩을 수직으로만 설정 */
+  border-radius: 5px;
+  font-size: 18px;
+  text-align: center; /* 텍스트 중앙 정렬 */
+  cursor: pointer;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.next-btn:hover {
+  background-color: #6981d9;
+}
+
+.customBottomsheet .content {
+  padding: 0 30px 30px;
+  border: none;
+  height: 100%;
+  overflow-y: auto;
+  font-size: 14px;
+}
+.customBottomsheet._modal .sheet__wrapper {
+  width: 360px;
+  /* max-width: 500px; */
+  /* min-width: 400px; */
+  border-radius: 30px;
 }
 </style>
