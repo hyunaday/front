@@ -1,3 +1,5 @@
+businessCardForm.vue
+
 <template>
   <div>
     <h3>{{ title }}</h3>
@@ -5,14 +7,14 @@
       <div class="upload-box">
         <!-- 입력 내용 실시간 미리보기 -->
         <div class="preview-box">
-          <h3>{{ formData.company }}</h3>
-          <p>{{ formData.address }}</p>
-          <p>{{ formData.name }}</p>
-          <p>{{ formData.position }}</p>
-          <p>{{ formData.department }}</p>
-          <p>{{ formData.phone }}</p>
-          <p>{{ formData.phoneLandline }}</p>
-          <p>{{ formData.email }}</p>
+          <h3>{{ formData.company || "회사 정보 없음" }}</h3>
+          <p>{{ formData.address || "주소 없음" }}</p>
+          <p>{{ formData.name || "이름 없음" }}</p>
+          <p>{{ formData.position || "직책 없음" }}</p>
+          <p>{{ formData.department || "부서 없음" }}</p>
+          <p>{{ formData.phone || "전화번호 없음" }}</p>
+          <p>{{ formData.phoneLandline || "유선전화 없음" }}</p>
+          <p>{{ formData.email || "이메일 없음" }}</p>
         </div>
       </div>
 
@@ -77,7 +79,9 @@
         </div>
       </div> -->
 
-      <button type="submit">등록</button>
+      <router-link to="/businesscard">
+        <button class="button">등록</button>
+      </router-link>
     </form>
   </div>
 </template>
@@ -107,13 +111,6 @@ export default {
     };
   },
   methods: {
-    // handleImageUpload(event) {
-    //   const file = event.target.files[0];
-    //   if (file) {
-    //     this.imageFile = file;
-    //     console.log("이미지 파일이 업로드되었습니다:", file.name);
-    //   }
-    // },
     submitForm() {
       const formData = new FormData();
       formData.append("image", this.imageFile);
@@ -184,35 +181,40 @@ textarea {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 200px;
+  height: 150px;
   width: 300px;
   border: 1px solid black;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
 }
 
+/* 내 명함 */
 .preview-box {
   text-align: center; /* 가운데 정렬 */
-  padding: 20px; /* 내부 패딩 */
-  height: 200px;
+  padding: 8px 20px; /* 내부 패딩 */
+  height: 150px;
   width: 300px; /* 고정된 너비 */
+  background-color: white;
+  border: 1px solid black;
 }
 
 .preview-box h3 {
-  font-size: 20px; /* 회사명 폰트 크기 */
+  font-size: 18px; /* 회사명 폰트 크기 */
   font-weight: bold; /* 굵게 */
   text-align: left;
+  margin: 0px;
 }
 
 /* 이름 */
 .preview-box p {
   margin: 0px 0; /* 각 문장 간의 간격 */
-  font-size: 18px; /* 일반 텍스트 크기 */
+  font-size: 15px; /* 일반 텍스트 크기 */
   text-align: left;
 }
 
 .preview-box p:nth-child(2) {
   font-size: 10px; /* 주소 폰트 크기 */
   text-align: left;
+  margin: 0px 0px 3px;
 }
 
 .preview-box p:nth-child(4),
@@ -230,26 +232,47 @@ textarea {
 }
 
 .preview-box p:nth-child(4)::before {
-  content: "Position "; /* 직책 앞에 텍스트 추가 */
-}
-
-.preview-box p:nth-child(4)::before {
-  content: "Position "; /* 직책 앞에 텍스트 추가 */
+  content: "Position: "; /* 직책 앞에 텍스트 추가 */
 }
 
 .preview-box p:nth-child(5)::before {
-  content: "Dept "; /* 부서 앞에 텍스트 추가 */
+  content: "Dept: "; /* 부서 앞에 텍스트 추가 */
 }
 
 .preview-box p:nth-child(6)::before {
-  content: "H.P "; /* 전화번호 앞에 텍스트 추가 */
+  content: "H.P: "; /* 전화번호 앞에 텍스트 추가 */
 }
 
 .preview-box p:nth-child(7)::before {
-  content: "TEL "; /* 유선전화번호 앞에 텍스트 추가 */
+  content: "TEL: "; /* 유선전화번호 앞에 텍스트 추가 */
 }
 
 .preview-box p:nth-child(8)::before {
+}
+
+button {
+  background-color: #6981d6; /* 녹색 배경 */
+  color: white; /* 글자색을 흰색으로 설정 */
+  border: none; /* 테두리 없음 */
+  padding: 5px 15px; /* 여백 추가 */
+  font-size: 16px; /* 글자 크기 설정 */
+  font-weight: bold; /* 글자 굵게 */
+  border-radius: 5px; /* 모서리를 둥글게 */
+  cursor: pointer; /* 마우스를 올렸을 때 포인터 커서 표시 */
+  transition: background-color 0.3s ease; /* 부드러운 배경색 전환 */
+}
+
+button:hover {
+  background-color: #ccc; /* 호버 시 더 어두운 녹색으로 변경 */
+}
+
+button:active {
+  background-color: #e0e0e0; /* 클릭 시 더 어두운 색 */
+}
+
+button:disabled {
+  background-color: #ccc; /* 비활성화 상태일 때 회색 배경 */
+  cursor: not-allowed; /* 클릭할 수 없다는 커서 표시 */
 }
 
 .divider {

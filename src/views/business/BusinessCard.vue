@@ -6,21 +6,24 @@
         <span>나의 명함</span>
       </div>
       <div class="card">
-        <img src="https://via.placeholder.com/300x150" alt="명함 이미지" />
+        <!-- preview-box 안에 실시간으로 formData 내용을 반영 -->
+        <div class="preview-box">
+          <h3>{{ formData.company }}</h3>
+          <p>{{ formData.address }}</p>
+          <p>{{ formData.name }}</p>
+          <p>{{ formData.position }}</p>
+          <p>{{ formData.department }}</p>
+          <p>{{ formData.phone }}</p>
+          <p>{{ formData.phoneLandline }}</p>
+          <p>{{ formData.email }}</p>
+        </div>
+
         <div class="card-details-container">
           <div class="card-details">
-            <p><strong>이름:</strong> {{ selectedCard.name }}</p>
-            <p><strong>연락처:</strong> {{ selectedCard.phone }}</p>
-            <p><strong>이메일:</strong> {{ selectedCard.email }}</p>
-            <p><strong>주소:</strong> {{ selectedCard.address }}</p>
-            <!-- 메모 -->
-            <!-- <div class="memo-container">
-              <strong>메모:</strong>
-              <textarea
-                v-model="selectedCard.memo"
-                class="memo-textarea"
-              ></textarea>
-            </div> -->
+            <p><strong>이름:</strong> {{ formData.name }}</p>
+            <p><strong>연락처:</strong> {{ formData.phone }}</p>
+            <p><strong>이메일:</strong> {{ formData.email }}</p>
+            <p><strong>주소:</strong> {{ formData.address }}</p>
           </div>
           <qrcode-vue
             :value="qrValue"
@@ -70,10 +73,8 @@
           <qrcode-vue :value="qrValue" :size="200" />
         </div>
         <!-- 확대된 QR 코드 -->
-        <!-- <button class="close-button" @click="closeModal">닫기</button> -->
       </div>
       <p class="additional-text">QR코드를 스캔하세요</p>
-      <!-- 추가된 텍스트 -->
     </div>
   </div>
 </template>
@@ -90,11 +91,15 @@ export default {
   },
   data() {
     return {
-      selectedCard: {
+      formData: {
         name: "John Smith",
         phone: "010-2315-6941",
         email: "email@gmail.com",
-        address: "서울 광진구 능동로 195-16 6층 ",
+        position: "Developer",
+        department: "Engineering",
+        company: "Tech Corp",
+        address: "서울 광진구 능동로 195-16 6층",
+        phoneLandline: "02-1234-5678",
         memo: "",
       },
       cardList: [
@@ -138,17 +143,17 @@ export default {
     qrValue() {
       // QR 코드에 사용할 문자열을 생성
       return `
-        이름: ${this.selectedCard.name}
-        연락처: ${this.selectedCard.phone}
-        이메일: ${this.selectedCard.email}
-        주소: ${this.selectedCard.address}
-        메모: ${this.selectedCard.memo}
-      `.trim();
+      이름: ${this.formData?.name || "이름 없음"}
+      연락처: ${this.formData?.phone || "연락처 없음"}
+      이메일: ${this.formData?.email || "이메일 없음"}
+      주소: ${this.formData?.address || "주소 없음"}
+      메모: ${this.formData?.memo || ""}
+    `.trim();
     },
   },
   methods: {
     selectCard(card) {
-      this.selectedCard = card;
+      this.formData = { ...card }; // 선택한 카드를 formData에 복사
     },
     goToaddBusinessCard() {
       // '/addbusinesscard' 페이지로 라우팅
@@ -162,6 +167,68 @@ export default {
 </script>
 
 <style scoped>
+/* 내 명함 */
+.preview-box {
+  text-align: center; /* 가운데 정렬 */
+  padding: 8px 20px; /* 내부 패딩 */
+  height: 150px;
+  width: 300px; /* 고정된 너비 */
+  background-color: white;
+}
+
+.preview-box h3 {
+  font-size: 18px; /* 회사명 폰트 크기 */
+  font-weight: bold; /* 굵게 */
+  text-align: left;
+  margin: 0px;
+}
+
+/* 이름 */
+.preview-box p {
+  margin: 0px 0; /* 각 문장 간의 간격 */
+  font-size: 15px; /* 일반 텍스트 크기 */
+  text-align: left;
+}
+
+.preview-box p:nth-child(2) {
+  font-size: 10px; /* 주소 폰트 크기 */
+  text-align: left;
+  margin: 0px 0px 3px;
+}
+
+.preview-box p:nth-child(4),
+.preview-box p:nth-child(5) {
+  font-size: 10px; /* 직책과 부서 폰트 크기 */
+  font-weight: bold; /* 직책과 부서 텍스트 굵게 */
+  text-align: left;
+}
+
+.preview-box p:nth-child(6),
+.preview-box p:nth-child(7),
+.preview-box p:nth-child(8) {
+  font-size: 10px; /*  전화번호, 유선전화번호, 이메일 크기 */
+  text-align: right;
+}
+
+.preview-box p:nth-child(4)::before {
+  content: "Position: "; /* 직책 앞에 텍스트 추가 */
+}
+
+.preview-box p:nth-child(5)::before {
+  content: "Dept: "; /* 부서 앞에 텍스트 추가 */
+}
+
+.preview-box p:nth-child(6)::before {
+  content: "H.P: "; /* 전화번호 앞에 텍스트 추가 */
+}
+
+.preview-box p:nth-child(7)::before {
+  content: "TEL: "; /* 유선전화번호 앞에 텍스트 추가 */
+}
+
+.preview-box p:nth-child(8)::before {
+}
+
 .modal {
   position: fixed;
   top: 0;
@@ -232,7 +299,7 @@ export default {
 .card-item {
   border-bottom: 1px solid #ccc;
   padding: 10px 0;
-  display: flex;
+  /* display: flex; */
   justify-content: space-between;
 }
 
@@ -318,7 +385,7 @@ card-details-container {
   line-height: 1.2;
   overflow-y: overlay; /* auto에서 overlay로 변경 */
   max-height: 150px;
-  padding-right: 70px; /* QR 코드 공간 확보 */
+  padding-right: 150px; /* QR 코드 공간 확보 */
 }
 
 /* 스크롤바 스타일 */
@@ -344,7 +411,7 @@ card-details-container {
 .qr-code {
   position: absolute; /* 절대 위치 설정 */
   right: 15px; /* 오른쪽에서 10px 떨어짐 */
-  bottom: 85px; /* 아래에서 10px 떨어짐 */
+  bottom: 70px; /* 아래에서 10px 떨어짐 */
   width: 60px; /* QR 코드의 너비 설정 */
   height: 60px; /* QR 코드의 높이 설정 */
 }
