@@ -68,10 +68,9 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/businesscard",
-    name: "businesscard",
-    component: BusinessCard, // 컴포넌트 경로
-    props: (route) => ({ cardData: route.params.cardData }), // params를 props로 전달
+    path: "/businesscardlist",
+    name: "BusinessCardList",
+    component: BusinessCardList,
     meta: { requiresAuth: true },
   },
   {
