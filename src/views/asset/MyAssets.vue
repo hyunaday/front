@@ -1,7 +1,7 @@
 <template>
   <div class="main-container d-flex flex-column justify-content-center align-items-center">
     <div class="my-assets">
-      <h1>{{ userName }}님의 총 자산</h1>
+      <h1><strong>{{ userName }}</strong>님의 총 자산</h1>
 
       <div class="total-assets">
         <span class="amount">{{ formatNumber(transactionAmount) }}원</span>
@@ -9,7 +9,7 @@
       </div>
       <div class="advertisement-banner">
         <div class="banner-content">
-          <img src="../assets/images/kbpay.png" alt="광고 배너" class="banner-image" />
+          <img src="../../assets/images/kbpay.png" alt="광고 배너" class="banner-image" />
           <div class="banner-text">
             <p class="banner-title">KB Pay</p>
             <p class="banner-subtitle">편리한 국민 생활 파트너</p>
@@ -29,8 +29,9 @@
 
         <div class="account-list">
           <div v-for="(account, index) in accounts" :key="index" class="account-card">
+            <img :src="account.image" alt="입출금통장 아이콘" class="account-icon" />
             <div class="account-info">
-              <span class="transactions-title">입출금통장 {{ index + 1 }}</span>
+              <span class="transactions-title">{{ account.name }}</span>
               <span class="account-balance">{{ formatNumber(account.balance) }}원</span>
             </div>
             <div class="transfer-button-container">
@@ -71,9 +72,7 @@
 
         <div class="account-list">
           <div v-for="(card, index) in creditCards" :key="index" class="account-card">
-            <!-- <img
-            src="../assets/images/KB카드알파원.png" alt=" 배너" class="banner-image" /> -->
-
+            <img :src="card.image" alt="신용카드 아이콘" class="account-icon" />
             <div class="account-info">
               <span class="transactions-title">{{ card.name }}</span>
               <span class="account-balance credit-card-balance">{{ formatNumber(card.balance) }}원</span>
@@ -113,17 +112,17 @@ export default {
     return {
       userName: '조현아',
       accounts: [
-        { balance: 1960112 },
-        { balance: 5800 },
-        { balance: 82400 },
+        { name: 'KB국민은행', balance: 1960112, image: '../src/assets/images/kbbank.png' },
+        { name: '카카오뱅크', balance: 5800, image: '../src/assets/images/kakaobank.png' },
+        { name: '우리은행', balance: 82400, image: '../src/assets/images/wooribank.png' },
       ],
       savingsAccount: {
         balance: 6000000,
       },
       creditCards: [
-        { name: 'KB알파원', balance: 150000 },
-        { name: 'KB청춘대로 톡톡', balance: 100000000 },
-        { name: '현대 네이버페이', balance: 1385290000 },
+        { name: 'KB알파원', balance: 150000, image: '../src/assets/images/KB카드알파원.png' },
+        { name: 'KB청춘대로 톡톡', balance: 100000000, image: '../src/assets/images/KB카드청춘대로톡톡.png' },
+        { name: '현대 네이버페이', balance: 1385290000, image: '../src/assets/images/현대카드네이버페이.png' },
       ],
       loanAmount: 480000000,
     };
@@ -161,6 +160,14 @@ export default {
   max-height: 80vh; /* 최대 높이 설정 */
   position: absolute; /* 페이지 안에서의 위치 설정 */
   top: 0; /* 페이지 상단에 고정 */
+
+   /* 스크롤바 숨기기 */
+   scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.my-assets::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 h1 {
@@ -205,6 +212,7 @@ h1 {
   font-size: 20px;
   text-align: right;
 }
+
 .transactions {
   font-size: 12px;
   color: #b0b0b0;
@@ -229,13 +237,16 @@ h1 {
 
 .account-card {
   display: flex;
-  justify-content: space-between;
+  align-items: center; /* 수직 중앙 정렬 */
+  justify-content: space-between; /* 좌우 정렬 */
   margin-top: 10px;
 }
 
 .account-info {
   display: flex;
   flex-direction: column;
+  text-align: left; /* 좌측 정렬 */
+  margin-left: 10px; /* 이미지와 텍스트 사이 여백 추가 */
 }
 
 .account-balance {
@@ -249,6 +260,7 @@ h1 {
 .transfer-button-container {
   display: flex;
   align-items: center;
+  margin-left: auto; /* 버튼을 오른쪽으로 정렬 */
 }
 
 .transfer-button {
@@ -301,5 +313,11 @@ h1 {
 
 .loan-section {
   margin-top: 20px;
+}
+
+.account-icon {
+  width: 40px; /* 가로 크기 설정 */
+  height: 40px; /* 세로 크기 설정 */
+  object-fit: contain; /* 비율을 유지하며 크기 조정 */
 }
 </style>

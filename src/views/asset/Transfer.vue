@@ -10,7 +10,7 @@
             type="text"
             id="recipient"
             v-model="recipient"
-            placeholder="계좌번호 입력"
+            placeholder="이름, 계좌번호 입력"
             @input="validateInput"
             maxlength="13"
           />
