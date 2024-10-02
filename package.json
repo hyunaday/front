@@ -23,11 +23,13 @@
     "vue-cal": "^4.9.0",
     "vue-qr-reader": "^1.6.2",
     "vue-qrcode-reader": "^5.5.10",
-    "vue-router": "^4.4.5"
+    "vue-router": "^4.4.5",
+    "vue3-radial-progress": "^1.1.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.2",
     "autoprefixer": "^10.4.20",
+    "html5-qrcode": "^2.3.8",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.12",
     "vite": "^5.4.1"

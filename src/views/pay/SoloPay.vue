@@ -63,7 +63,6 @@
           placeholder="6자리 비밀번호"
           class="password-input"
           @input="updateCircles"
-          @keydown="handleKeyDown"
         />
 
         <button @click="confirmPayment" class="confirm-button">결제하기</button>
@@ -111,7 +110,7 @@ export default {
         },
       ],
       currentCardIndex: 0,
-      isModalOpen: false, // 초기값을 false로 설정
+      isModalOpen: false,
       paymentPassword: '',
     };
   },
@@ -136,33 +135,35 @@ export default {
       }
     },
     closeModal() {
-      this.isModalOpen = false; // 모달을 닫는 기능
-      this.paymentPassword = ''; // 비밀번호 초기화
+      this.isModalOpen = false;
+      this.paymentPassword = '';
     },
     updateCircles() {
-      const circles = document.querySelectorAll('.password-circle');
-      circles.forEach((circle, index) => {
-        if (index < this.paymentPassword.length) {
-          circle.classList.add('filled');
-        } else {
-          circle.classList.remove('filled');
-        }
-      });
+      // 원 채우기 로직은 템플릿의 바인딩으로 처리하므로 이 메소드는 필요 없습니다.
     },
     confirmPayment() {
       if (this.paymentPassword.length === 6) {
-        this.paymentResult = `선택한 카드: ${this.currentCard.name}로 결제 진행!`;
+        // 비밀번호 확인 로직 추가
+        if (this.paymentPassword === '123456') {
+          this.$router.push('/success');
+        } else {
+          this.$router.push('/failure');
+        }
         this.closeModal();
       } else {
         alert('비밀번호는 6자리여야 합니다.');
       }
     },
     goBack() {
-      // 뒤로 가기 기능 구현
+      this.$router.go(-1); // 이전 페이지로 이동
     },
   },
 };
 </script>
+
+<style scoped>
+/* 기존 스타일 그대로 유지 */
+</style>
 
 <style scoped>
 .main-container {
