@@ -31,6 +31,7 @@ import Verification from "../views/signup/Verification.vue";
 import Email from "../views/signup/Email.vue";
 import Password from "../views/signup/Password.vue";
 import MemberPay from "../views/pay/MemberPay.vue";
+import Agreement from "../views/asset/Agreement.vue";
 
 const routes = [
   {
@@ -206,6 +207,11 @@ const routes = [
     path: "/password",
     name: "Password",
     component: Password,
+  },
+  {
+    path: "/agreement",
+    name: "Agreement",
+    component: Agreement,
   },
 ];
 
