@@ -144,7 +144,7 @@ export default {
     confirmPayment() {
       if (this.paymentPassword.length === 6) {
         // 비밀번호 확인 로직 추가
-        if (this.paymentPassword === '데이터베이스에서 가져온 비밀번호') {
+        if (this.paymentPassword === '123456') {
           this.$router.push('/success');
         } else {
           this.$router.push('/failure');

@@ -24,7 +24,9 @@
 
       <h4 class="payment-amount">
         <span class="total-label">총합</span>
-        <span style="color: #6981d9">{{ paymentAmount.toLocaleString() }}</span
+        <span style="color: #6981d9; margin-left: auto">{{
+          paymentAmount.toLocaleString()
+        }}</span
         >원
       </h4>
 
@@ -32,24 +34,37 @@
         <div
           v-for="(item, index) in paymentItems"
           :key="index"
-          class="payment-item"
+          :class="['payment-item', { selected: item.selected }]"
         >
-          <img :src="item.image" alt="메뉴 이미지" class="item-image" />
-          <div class="item-info">
-            <span class="item-name">{{ item.name }}</span>
-            <span class="item-price">{{ item.price.toLocaleString() }}원</span>
-          </div>
+          <label class="item-label">
+            <input
+              type="checkbox"
+              v-model="item.selected"
+              @change="updateSelectedAmount(item)"
+              class="checkbox"
+            />
+            <div class="item-content">
+              <img :src="item.image" alt="메뉴 이미지" class="item-image" />
+              <div class="item-info">
+                <span class="item-name">{{ item.name }}</span>
+                <span class="item-price"
+                  >{{ item.price.toLocaleString() }}원</span
+                >
+              </div>
+            </div>
+          </label>
         </div>
       </div>
+
       <hr class="divider" />
       <h4 class="payment-secamount">
-        <span class="total-label">총</span>
+        <span class="total-label">총&nbsp;</span>
         <span style="color: #6981d9">{{
-          (paymentAmount / participantCount).toLocaleString()
+          selectedPaymentAmount.toLocaleString()
         }}</span
         >원
       </h4>
-      <button @click="splitByAmount" class="split-button">선택완료</button>
+      <button @click="saveSelections" class="split-button">선택완료</button>
 
       <div class="spacer"></div>
     </div>
@@ -66,32 +81,75 @@ export default {
       paymentCardImage: '',
       merchantName: 'KFC 군자능동점',
       paymentAmount: 95600,
-      participantCount: 5, // 참여자 수 추가
+      participantCount: 5,
       paymentItems: [
-        { name: '정크버거 세트', price: 12000, image: hamburgerImage },
-        { name: '스파이시 치킨 버거', price: 9900, image: hamburgerImage },
-        { name: '타워 버거 세트', price: 20000, image: hamburgerImage },
-        { name: '정크버거', price: 8200, image: hamburgerImage },
-        { name: '텟지버거 3개', price: 27000, image: hamburgerImage },
-        { name: '제로 콜라 5개', price: 10000, image: sodaImage },
+        {
+          name: '정크버거 세트',
+          price: 12000,
+          image: hamburgerImage,
+          selected: false,
+        },
+        {
+          name: '스파이시 치킨 버거',
+          price: 9900,
+          image: hamburgerImage,
+          selected: false,
+        },
+        {
+          name: '타워 버거 세트',
+          price: 20000,
+          image: hamburgerImage,
+          selected: false,
+        },
+        {
+          name: '정크버거',
+          price: 8200,
+          image: hamburgerImage,
+          selected: false,
+        },
+        {
+          name: '텟지버거 3개',
+          price: 27000,
+          image: hamburgerImage,
+          selected: false,
+        },
+        {
+          name: '제로 콜라 5개',
+          price: 10000,
+          image: sodaImage,
+          selected: false,
+        },
       ],
+      selectedPaymentAmount: 0,
     };
   },
   methods: {
     goBack() {
       this.$router.go(-1);
     },
-    splitByAmount() {
-      this.$router.push('/requestpay'); // 결제 요청하기 클릭 시 RequestPay.vue로 이동
+    saveSelections() {
+      // 선택된 메뉴 항목을 로컬 스토리지에 저장
+      const selectedItems = this.paymentItems.filter((item) => item.selected);
+      localStorage.setItem(
+        'selectedPaymentItems',
+        JSON.stringify(selectedItems)
+      );
+      this.$router.push('/menucheck'); // MenuCheck.vue로 이동
     },
-    splitByMenu() {
-      this.$router.push('/paymenu');
+    updateSelectedAmount(item) {
+      // 가격을 업데이트하는 메서드
+      if (item.selected) {
+        this.selectedPaymentAmount += item.price;
+      } else {
+        this.selectedPaymentAmount -= item.price;
+      }
     },
   },
 };
 </script>
 
 <style scoped>
+/* 스타일은 그대로 유지 */
 .main-container {
   height: 100vh;
   display: flex;
@@ -99,7 +157,7 @@ export default {
   justify-content: flex-start;
   align-items: center;
   padding: 20px;
-  overflow: hidden; /* 전체 스크롤 숨김 */
+  overflow: hidden;
 }
 
 .header {
@@ -128,19 +186,19 @@ export default {
 }
 
 .merchant-info {
-  display: flex; /* 플렉스 박스를 사용하여 수평 정렬 */
-  align-items: center; /* 수직 중앙 정렬 */
-  text-align: left; /* 텍스트 왼쪽 정렬 */
-  margin-top: 50px; /* 여백 추가 */
+  display: flex;
+  align-items: center;
+  text-align: left;
+  margin-top: 50px;
   margin-left: -10px;
   margin-bottom: -25px;
 }
 
 .profile-icon {
-  width: 60px; /* 아이콘 크기 조정 */
-  height: 60px; /* 아이콘 크기 조정 */
-  margin-left: 80px; /* 아이콘을 오른쪽에 붙이기 위해 자동 여백 설정 */
-  margin-right: 0px; /* 오른쪽 여백 제거 */
+  width: 60px;
+  height: 60px;
+  margin-left: 80px;
+  margin-right: 0px;
   margin-bottom: 20px;
 }
 
@@ -157,29 +215,56 @@ export default {
 
 .payment-details {
   width: 100%;
-  padding: 0 10px; /* 좌우 여백 추가 */
-  height: 300px; /* 고정 높이 설정 */
-  overflow-y: auto; /* 세로 스크롤 가능하도록 설정 */
-  margin-bottom: 0px; /* 여백을 줄여서 split 버튼과의 거리 좁히기 */
+  padding: 0 10px;
+  height: 300px;
+  overflow-y: auto;
+  margin-bottom: 0px;
 }
 
 .payment-item {
   display: flex;
-  justify-content: space-between; /* 아이템 간격 조정 */
-  align-items: center; /* 수직 정렬 */
+  justify-content: flex-start;
+  align-items: center;
   margin: 10px 0;
+  transition: background-color 0.3s;
+  width: 100%;
+}
+
+.payment-item.selected {
+  background-color: #f0f0f0;
+}
+
+.item-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  width: 100%;
+}
+
+.item-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.checkbox {
+  display: none;
 }
 
 .item-image {
-  width: 40px; /* 이미지 크기 조정 */
-  height: 40px; /* 이미지 크기 조정 */
-  margin-right: 10px; /* 이미지와 텍스트 간격 */
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
 }
 
 .item-info {
   display: flex;
-  flex-direction: column; /* 수직 정렬 */
-  align-items: flex-end; /* 오른쪽 정렬 */
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  white-space: normal;
+  flex-grow: 1;
 }
 
 .item-name {
@@ -189,6 +274,20 @@ export default {
 
 .item-price {
   font-size: 18px;
+  color: #333;
+  margin-top: 5px;
+}
+
+.payment-amount {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  font-size: 20px;
+  margin-top: 10px;
+}
+
+.total-label {
+  color: #777;
 }
 
 .split-button {
@@ -205,33 +304,25 @@ export default {
 }
 
 .split-button:hover {
-  background-color: #6981d9; /* 마우스 오버 시 색상 변경 */
+  background-color: #6981d9;
   color: white;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 .spacer {
-  flex-grow: 1; /* 스페이서 추가하여 공간 확보 */
+  flex-grow: 1;
 }
 
 .payment-amount {
   display: flex;
-  justify-content: space-between; /* 양 끝에 붙이기 위해 변경 */
-  width: 100%; /* 전체 너비 사용 */
+  justify-content: space-between;
+  width: 100%;
   font-size: 18px;
 }
 
 .payment-secamount {
   display: flex;
-  margin-left: auto; /* 오른쪽 벽에 붙이기 위해 추가 */
+  margin-left: auto;
   font-size: 23px;
-}
-
-.total-label {
-  margin-right: auto; /* 왼쪽 벽에 붙이기 위해 추가 */
-}
-
-.total-amount {
-  margin-left: auto; /* 오른쪽 벽에 붙이기 위해 추가 */
 }
 </style>

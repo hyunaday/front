@@ -36,7 +36,7 @@ import PaySplit from '../views/pay/PaySplit.vue';
 import PayMenu from '../views/pay/PayMenu.vue';
 import RequestPay from '../views/pay/RequestPay.vue';
 import PaymentWaiting from '../components/PaymentWaiting.vue'; // 경로를 맞게 수정
-
+import MenuCheck from '../views/pay/MenuCheck.vue';
 const routes = [
   {
     path: '/',
@@ -233,6 +233,11 @@ const routes = [
     path: '/payment-waiting',
     name: 'PaymentWaiting',
     component: PaymentWaiting,
+  },
+  {
+    path: '/menucheck',
+    name: 'MenuCheck',
+    component: MenuCheck,
   },
 ];
 

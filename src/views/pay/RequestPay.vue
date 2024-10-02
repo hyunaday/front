@@ -117,7 +117,7 @@ export default {
         this.showErrorMessage('결제 금액이 맞지 않습니다. 다시 확인해주세요');
       } else {
         // 결제 요청하기 버튼 클릭 시 대기 화면으로 이동
-        this.$router.push('/payment-waiting');
+        this.$router.push('/solopay');
       }
     },
     splitByAmount() {
