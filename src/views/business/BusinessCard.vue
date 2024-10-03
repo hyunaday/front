@@ -1,5 +1,9 @@
 <template>
   <div class="main-container">
+    <!-- 나의 명함으로 돌아가기 버튼 추가 -->
+    <button @click="goBackToMyCard" class="back-to-my-card-button">
+      나의 명함
+    </button>
     <!-- 선택된 명함 표시 -->
     <div class="selected-card">
       <div class="name-tag">
@@ -134,14 +138,14 @@ export default {
   data() {
     return {
       formData: {
-        name: "John Smith",
-        phone: "010-2315-6941",
-        email: "email@gmail.com",
-        position: "Developer",
-        department: "Engineering",
-        company: "Tech Corp",
-        address: "서울 광진구 능동로 195-16 6층",
-        phoneLandline: "02-1234-5678",
+        name: "",
+        phone: "",
+        email: "",
+        position: "",
+        department: "",
+        company: "",
+        address: "",
+        phoneLandline: "",
         memo: "",
       },
       cardList: [
@@ -182,21 +186,30 @@ export default {
       showEditModal: false, // 수정 모달 표시 상태
     };
   },
+  mounted() {
+    // 로컬 스토리지에서 데이터를 불러오기
+    const storedData = localStorage.getItem("businessCardData");
+    if (storedData) {
+      this.formData = JSON.parse(storedData); // JSON 데이터를 객체로 변환하여 formData에 할당
+    }
+  },
   computed: {
     qrValue() {
-      // QR 코드에 사용할 문자열을 생성
       return `
-      이름: ${this.formData?.name || "이름 없음"}
-      연락처: ${this.formData?.phone || "연락처 없음"}
-      이메일: ${this.formData?.email || "이메일 없음"}
-      주소: ${this.formData?.address || "주소 없음"}
-      메모: ${this.formData?.memo || ""}
-    `.trim();
+  이름: ${this.formData?.name || "이름 없음"}
+  연락처: ${this.formData?.phone || "연락처 없음"}
+  이메일: ${this.formData?.email || "이메일 없음"}
+  주소: ${this.formData?.address || "주소 없음"}
+  메모: ${this.formData?.memo || ""}
+  `.trim();
     },
   },
   methods: {
+    // 나의 명함으로 돌아가는 메서드
+    goBackToMyCard() {
+      this.formData = { ...this.myCard }; // 나의 명함 데이터를 formData에 복사
+    },
     isChanged(field) {
-      // formData 또는 originalFormData가 undefined가 아닐 때만 비교
       return (
         this.formData &&
         this.originalFormData &&
@@ -207,7 +220,6 @@ export default {
       this.formData = { ...card }; // 선택한 카드를 formData에 복사
       this.originalFormData = { ...card }; // 선택한 카드를 originalFormData에 복사
     },
-
     openEditModal() {
       this.showEditModal = true; // 수정 모달 열기
     },
@@ -216,11 +228,10 @@ export default {
     },
     saveChanges() {
       // 수정된 내용을 저장하는 로직 추가 가능
+      localStorage.setItem("businessCardData", JSON.stringify(this.formData)); // 저장된 내용을 로컬 스토리지에 반영
       this.closeEditModal(); // 저장 후 모달 닫기
     },
-
     goToaddBusinessCard() {
-      // '/addbusinesscard' 페이지로 라우팅
       this.$router.push("/addbusinesscard");
     },
     closeModal() {
