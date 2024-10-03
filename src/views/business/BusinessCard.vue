@@ -5,6 +5,7 @@
       <div class="name-tag">
         <span>나의 명함</span>
       </div>
+
       <div class="card">
         <!-- preview-box 안에 실시간으로 formData 내용을 반영 -->
         <div class="preview-box">
@@ -18,6 +19,7 @@
           <p>{{ formData.email }}</p>
         </div>
 
+        <!-- QR 코드 및 명함 상세 정보 -->
         <div class="card-details-container">
           <div class="card-details">
             <p><strong>이름:</strong> {{ formData.name }}</p>
@@ -33,8 +35,11 @@
           />
         </div>
       </div>
+      <!-- 명함 수정 -->
+      <button @click="openEditModal">수정</button>
     </div>
 
+    <!-- 명함 목록 -->
     <div class="name-tag-sec">
       <span>명함목록</span>
     </div>
@@ -62,17 +67,54 @@
 
     <div class="divider"></div>
 
-    <!-- FooterNav 컴포넌트 사용 -->
+    <!-- FooterNav 컴포넌트 -->
     <FooterNav :buttonType="'plus'" :buttonAction="goToaddBusinessCard" />
+
+    <!-- 수정 모달 -->
+    <div v-if="showEditModal" class="modal" @click="closeEditModal">
+      <div class="modal-content" @click.stop>
+        <h3>명함 수정</h3>
+
+        <!-- 명함 정보 수정 입력 폼 -->
+        <div class="edit-form">
+          <label>회사명:</label>
+          <input v-model="formData.company" type="text" />
+
+          <label>주소:</label>
+          <input v-model="formData.address" type="text" />
+
+          <label>이름:</label>
+          <input v-model="formData.name" type="text" />
+
+          <label>직책:</label>
+          <input v-model="formData.position" type="text" />
+
+          <label>부서:</label>
+          <input v-model="formData.department" type="text" />
+
+          <label>휴대전화:</label>
+          <input v-model="formData.phone" type="text" />
+
+          <label>유선전화:</label>
+          <input v-model="formData.phoneLandline" type="text" />
+
+          <label>이메일:</label>
+          <input v-model="formData.email" type="text" />
+        </div>
+
+        <div class="modal-buttons">
+          <button @click="saveChanges">저장</button>
+          <button @click="closeEditModal">취소</button>
+        </div>
+      </div>
+    </div>
+
     <!-- QR 코드 모달 -->
     <div v-if="showModal" class="modal" @click="closeModal">
       <div class="modal-content" @click.stop>
-        <!-- 추가된 텍스트 -->
-        <!-- QR 코드 감싸는 추가 div -->
         <div class="qr-code-container">
           <qrcode-vue :value="qrValue" :size="200" />
         </div>
-        <!-- 확대된 QR 코드 -->
       </div>
       <p class="additional-text">QR코드를 스캔하세요</p>
     </div>
@@ -137,6 +179,7 @@ export default {
         },
       ],
       showModal: false, // 모달 표시 상태
+      showEditModal: false, // 수정 모달 표시 상태
     };
   },
   computed: {
@@ -152,9 +195,30 @@ export default {
     },
   },
   methods: {
+    isChanged(field) {
+      // formData 또는 originalFormData가 undefined가 아닐 때만 비교
+      return (
+        this.formData &&
+        this.originalFormData &&
+        this.formData[field] !== this.originalFormData[field]
+      );
+    },
     selectCard(card) {
       this.formData = { ...card }; // 선택한 카드를 formData에 복사
+      this.originalFormData = { ...card }; // 선택한 카드를 originalFormData에 복사
     },
+
+    openEditModal() {
+      this.showEditModal = true; // 수정 모달 열기
+    },
+    closeEditModal() {
+      this.showEditModal = false; // 수정 모달 닫기
+    },
+    saveChanges() {
+      // 수정된 내용을 저장하는 로직 추가 가능
+      this.closeEditModal(); // 저장 후 모달 닫기
+    },
+
     goToaddBusinessCard() {
       // '/addbusinesscard' 페이지로 라우팅
       this.$router.push("/addbusinesscard");
@@ -229,6 +293,33 @@ export default {
 .preview-box p:nth-child(8)::before {
 }
 
+/* 명함수정 */
+button,
+select {
+  text-transform: none;
+  border: none;
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+
+.edit-form label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.edit-form input {
+  margin-bottom: 15px;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* 모달 */
 .modal {
   position: fixed;
   top: 0;
@@ -420,10 +511,10 @@ card-details-container {
 .card-list {
   background-color: #efeded; /* 기존 배경색을 사용 */
   padding: 20px;
-  border-radius: 10px;
+  border-top-right-radius: 10px;
   width: 350px; /* 명함 목록의 너비 조정 */
   height: 350px;
-  margin-top: 40px;
+  margin-top: 35px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
 }
