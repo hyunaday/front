@@ -7,6 +7,7 @@
         <span class="amount">{{ formatNumber(transactionAmount) }}원</span>
         <button class="analyze-button">분석</button>
       </div>
+
       <div class="advertisement-banner">
         <div class="banner-content">
           <img src="../../assets/images/kbpay.png" alt="광고 배너" class="banner-image" />
@@ -21,6 +22,7 @@
         <span class="account-title">계좌</span>
         <span class="account-amount">{{ formatNumber(totalAccountBalance) }}원</span>
       </div>
+
       <div class="withdraw-deposit-section">
         <div class="transactions">
           <span class="transactions-title">입출금</span>
@@ -51,6 +53,7 @@
 
         <div class="account-list">
           <div class="account-card">
+            <img src="../../assets/images/kbbank.png" alt="적금 아이콘" class="account-icon" />
             <div class="account-info">
               <span class="transactions-title">KB국민프리미엄적금</span>
               <span class="account-balance">{{ formatNumber(savingsAccount.balance) }}원</span>
@@ -87,6 +90,7 @@
         <span class="account-title">대출</span>
         <div class="account-list">
           <div class="account-card">
+            <img src="../../assets/images/kbbank.png" alt="주택담보대출 아이콘" class="account-icon" />
             <div class="account-info">
               <span class="transactions-title">주택담보대출</span>
               <span class="account-balance credit-card-balance">{{ `${formatNumber(loanAmount)}` }}원</span>
@@ -94,15 +98,15 @@
           </div>
         </div>
       </div>
-
     </div>
+
     <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
   </div>
 </template>
 
 <script>
 import FooterNav from '../../components/FooterNav.vue';
-import apiClient from '../../api/axios.js'; 
+import apiClient from '../../api/axios.js';
 
 export default {
   name: 'MyAssets',
@@ -128,7 +132,6 @@ export default {
       loanAmount: 480000000,
     };
   },
-
   computed: {
     totalAccountBalance() {
       return this.accounts.reduce((total, account) => total + account.balance, 0) + this.savingsAccount.balance;
@@ -224,6 +227,7 @@ h1 {
 
 .transactions-title {
   font-size: 12px;
+  text-align: right; 
 }
 
 .transactions-amount {
@@ -252,6 +256,8 @@ h1 {
 
 .account-balance {
   font-size: 12px;
+  text-align: right;
+
 }
 
 .credit-card-balance::before {
@@ -277,48 +283,41 @@ h1 {
   margin-bottom: 40px;
 }
 
-.advertisement-banner {
-  background-color: #f3f3f3;
-  border-radius: 10px;
-  padding: 5px;
-  margin-top: 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+.banner-image {
+  width: 50px;
+  height: 50px;
 }
 
 .banner-content {
+  margin-top: 20px;
   display: flex;
   align-items: center;
 }
 
-.banner-image {
-  width: 45px;
-  height: auto;
-  margin-right: 10px;
-}
-
 .banner-text {
-  text-align: left;
+  margin-left: 10px;
 }
 
 .banner-title {
-  margin: 0;
   font-size: 16px;
   font-weight: bold;
+  margin-bottom: 0; /* margin-bottom 제거 */
 }
 
 .banner-subtitle {
-  margin: 0;
   font-size: 12px;
-  font-weight: 300;
+  color: #777;
 }
 
-.loan-section {
-  margin-top: 20px;
+hr {
+  margin: 20px 0;
 }
 
 .account-icon {
-  width: 40px; /* 가로 크기 설정 */
-  height: 40px; /* 세로 크기 설정 */
-  object-fit: contain; /* 비율을 유지하며 크기 조정 */
+  width: 40px;
+  height: 40px;
+  object-fit: cover; /* 이미지를 비율에 맞춰서 자름 */
+  border-radius: 50%; /* 이미지를 동그랗게 만듦 */
+  margin-right: 10px; /* 이미지와 텍스트 사이 간격 추가 */
 }
 </style>
