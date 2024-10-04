@@ -37,6 +37,13 @@
       </template>
       <!-- =================================== -->
 
+      <template v-else-if="buttonType === 'next'">
+        <div class="icon-container">
+          <i class="fa-solid fa-chevron-right"></i>
+          <span>다음</span>
+        </div>
+      </template>
+
     </button>
 
     <router-link to="/accountbook" class="nav-item account-book" exact-active-class="active">

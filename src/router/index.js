@@ -44,6 +44,7 @@ import PayMenu from '../views/pay/PayMenu.vue';
 import RequestPay from '../views/pay/RequestPay.vue';
 import PaymentWaiting from '../components/PaymentWaiting.vue'; // 경로를 맞게 수정
 import MenuCheck from '../views/pay/MenuCheck.vue';
+import Agree1 from '../views/agreement/Agree1.vue';
 
 const routes = [
   {
@@ -275,6 +276,11 @@ const routes = [
     name: "Agreement",
     component: Agreement,
   },
+  {
+    path: "/agree1",
+    name: "Agree1",
+    component: Agree1,
+  }
 ];
 
 const router = createRouter({

@@ -199,11 +199,7 @@ export default {
   font-style: normal;
 }
 
-body,
-h2,
-label,
-button,
-input {
+* {
   font-family: "Pretendard", sans-serif;
 }
 
