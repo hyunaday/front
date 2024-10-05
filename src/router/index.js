@@ -47,6 +47,9 @@ import MenuCheck from '../views/pay/MenuCheck.vue';
 import Agree1 from '../views/agreement/Agree1.vue';
 import Agree2 from '../views/agreement/Agree2.vue';
 import Agree3 from '../views/agreement/Agree3.vue';
+import Agree4 from '../views/agreement/Agree4.vue';
+import Agree5 from '../views/agreement/Agree5.vue';
+import Agree6 from '../views/agreement/Agree6.vue';
 
 const routes = [
   {
@@ -292,6 +295,21 @@ const routes = [
     path: "/agree3",
     name: "Agree3",
     component: Agree3,
+  },
+  {
+    path: "/agree4",
+    name: "Agree4",
+    component: Agree4,
+  },
+  {
+    path: "/agree5",
+    name: "Agree5",
+    component: Agree5,
+  },
+  {
+    path: "/agree6",
+    name: "Agree6",
+    component: Agree6,
   }
 ];
 

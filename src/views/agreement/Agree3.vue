@@ -18,8 +18,7 @@
           <tr>
             <td class="table-title">제공 목적</td>
             <td class="bold">
-              마이데이터 서비스<br />가입협약내역 및 전송요구<br />내역 통합조회
-              서비스 제공
+              마이데이터 서비스<br />가입협약내역 및 전송요구<br />내역 통합조회 서비스 제공
             </td>
             <td class="bold">본인확인 및<br />개인(신용)정보의 전송</td>
           </tr>
@@ -41,26 +40,25 @@
 
       <!-- Additional text -->
       <p class="transfer-info">
-        <strong>전송받는자:</strong> 개인(신용)정보 제공에 관한 동의를 거부하실
-        수 있습니다.
-        다만, 개인(신용)정보의 제공에 관한 동의를 거부하실 경우
-        통합조회, 데이터분석 서비스, 마이데이터 서비스가 제한될 수 있습니다.
+        <strong>전송받는자:</strong> 개인(신용)정보 제공에 관한 동의를 거부하실 수 있습니다.
+        다만, 개인(신용)정보의 제공에 관한 동의를 거부하실 경우 통합조회, 데이터분석 서비스,
+        마이데이터 서비스가 제한될 수 있습니다.
       </p>
 
       <!-- Checkboxes for agreement -->
       <div class="checkboxes">
         <label>
-          <input type="checkbox" class="custom-checkbox" />
+          <input type="checkbox" class="custom-checkbox" v-model="isRequiredChecked1" />
           <span>[필수] 개인(신용)정보 수집·이용동의</span>
         </label>
         <label>
-          <input type="checkbox" class="custom-checkbox" />
+          <input type="checkbox" class="custom-checkbox" v-model="isRequiredChecked2" />
           <span>[필수] 개인(신용)정보 제공 동의</span>
         </label>
       </div>
     </div>
 
-    <FooterNav :buttonType="'next'" :buttonAction="goToNextStep" />
+    <FooterNav :buttonType="'next'" :buttonAction="goToNextStep" :disabled="!isAnyCheckboxChecked" />
   </div>
 </template>
 
@@ -76,9 +74,21 @@ export default {
     Header,
     ProgressBar, // Register ProgressBar component
   },
+  data() {
+    return {
+      isRequiredChecked1: false,
+      isRequiredChecked2: false,
+    };
+  },
+  computed: {
+    // Check if at least one checkbox is selected
+    isAnyCheckboxChecked() {
+      return this.isRequiredChecked1 || this.isRequiredChecked2;
+    },
+  },
   methods: {
     goToNextStep() {
-      this.$router.push("/next-step"); // Change to the next page route
+      this.$router.push("/agree4"); // Change to the next page route
     },
   },
 };
@@ -98,12 +108,13 @@ export default {
 }
 
 .table-title {
-    background-color: #eeeff3;
+  background-color: #eeeff3;
 }
 
 .bold {
-    font-weight: bold;
+  font-weight: bold;
 }
+
 .agreement-content {
   margin-left: 50px;
   margin-top: 20px;
