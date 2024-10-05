@@ -2,6 +2,9 @@
   <div class="main-container">
     <Header />
 
+    <!-- Reusable ProgressBar Component -->
+    <ProgressBar :currentStep="1" :totalSteps="4" />
+
     <div class="title">
       <h5>연결할 <span class="text">금융사</span>를 <br />선택해 주세요</h5>
       <p class="sub-title">선택한 금융사에서 모든 계좌를 모아 볼 수 있어요.</p>
@@ -93,22 +96,24 @@
       </div>
     </div>
 
-    <FooterNav :buttonType="'next'" :buttonAction="goToAgree2" />
+    <FooterNav :buttonType="'next'" :buttonAction="goToNextStep" />
   </div>
 </template>
 
 <script>
 import Header from "../../components/Header.vue";
 import FooterNav from "../../components/FooterNav.vue";
+import ProgressBar from "../../components/ProgressBar.vue"; // Import the ProgressBar component
 
 export default {
   name: "Agree1",
   components: {
     FooterNav,
     Header,
+    ProgressBar, // Register ProgressBar component
   },
   methods: {
-    goToAgree2() {
+    goToNextStep() {
       this.$router.push("/agree2");
     },
   },
@@ -130,7 +135,7 @@ export default {
 
 .title {
   margin-left: -70px;
-  margin-top: 60px;
+  margin-top: 30px;
 }
 h5 {
   text-align: left;

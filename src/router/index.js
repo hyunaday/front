@@ -46,6 +46,7 @@ import PaymentWaiting from '../components/PaymentWaiting.vue'; // 경로를 맞�
 import MenuCheck from '../views/pay/MenuCheck.vue';
 import Agree1 from '../views/agreement/Agree1.vue';
 import Agree2 from '../views/agreement/Agree2.vue';
+import Agree3 from '../views/agreement/Agree3.vue';
 
 const routes = [
   {
@@ -286,6 +287,11 @@ const routes = [
     path: "/agree2",
     name: "Agree2",
     component: Agree2,
+  },
+  {
+    path: "/agree3",
+    name: "Agree3",
+    component: Agree3,
   }
 ];
 
