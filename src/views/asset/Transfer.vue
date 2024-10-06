@@ -9,7 +9,7 @@
           type="text"
           id="recipient"
           v-model="recipient"
-          placeholder="이름, 계좌번호 입력"
+          placeholder="계좌번호 입력"
           @input="validateInput"
           @keyup.enter="sendMoney"
           maxlength="13"
@@ -74,21 +74,35 @@ export default {
       this.recipient = this.recipient.replace(/[^0-9]/g, '').slice(0, 13);
     },
     async sendMoney() {
-      if (this.recipient.length === 13) {
-        try {
-          const response = await axios.post('/account/sendAccount', {
-            accountNumber: this.recipient,
-          });
-          console.log(`송금 성공: ${response.data}`);
-          alert("송금이 완료되었습니다.");
-        } catch (error) {
-          console.error('송금 실패:', error);
+  if (this.recipient.length === 13) {
+    try {
+      const response = await axios.post('/account/sendAccount', {
+        accountNumber: this.recipient,
+      });
+      console.log(`송금 성공: ${response.data}`);
+      alert("송금이 완료되었습니다.");
+    } catch (error) {
+      console.error('송금 실패:', error);
+
+      if (error.response && error.response.data && error.response.data.errorCode) {
+        const errorCode = error.response.data.errorCode;
+
+        if (errorCode === 'ACCOUNT4001') {
+          alert("해당 계좌가 존재하지 않습니다.");
+        } else if (errorCode === 'ACCOUNT4003') {
+          alert("계좌 잔액이 부족합니다.");
+        } else {
           alert("송금에 실패했습니다. 다시 시도해주세요.");
         }
       } else {
-        alert("송금할 계좌번호를 확인해주세요.");
+        alert("송금에 실패했습니다. 다시 시도해주세요.");
       }
-    },
+    }
+  } else {
+    alert("송금할 계좌번호를 확인해주세요.");
+  }
+},
+
     formatAccountNumber(accountNumber) {
       return `${accountNumber.slice(0, 3)}-${accountNumber.slice(3, 7)}-${accountNumber.slice(7, 11)}-${accountNumber.slice(11)}`;
     },

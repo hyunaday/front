@@ -2,6 +2,7 @@
   <div class="main-container">
     <div class="settings-container">
       <h1 class="title">
+        <i class="fa-solid fa-bars icon"></i>
         환경설정
         <button class="close-button" @click="goHome">X</button>
       </h1>
@@ -112,15 +113,10 @@ export default {
 </script>
 
 <style scoped>
-.main-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
+
 
 .settings-container {
-  padding: 20px;
+  padding: 100px;
 }
 
 .title {
@@ -128,6 +124,13 @@ export default {
   font-weight: bold;
   margin-bottom: 30px;
   position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  font-size: 24px; /* 기존 폰트 크기에 맞춰 설정 */
+  margin-right: 8px; /* 아이콘과 텍스트 간격 */
 }
 
 .close-button {
