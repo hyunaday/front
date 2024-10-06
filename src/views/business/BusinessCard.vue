@@ -47,7 +47,7 @@
 
       <!-- 수정 및 삭제 버튼 -->
       <div class="button-container">
-        <button @click="openEditModal">수정</button>
+        <button type="button" @click="openBottomSheet">수정</button>
         <button @click="deleteCard">삭제</button>
       </div>
     </div>
@@ -91,11 +91,9 @@
     <!-- FooterNav 컴포넌트 -->
     <FooterNav :buttonType="'plus'" :buttonAction="goToaddBusinessCard" />
 
-    <!-- 수정 모달 -->
-    <div v-if="showEditModal" class="modal" @click="closeEditModal">
-      <div class="modal-content" @click.stop>
-        <h3>명함 수정</h3>
-
+    <!-- 수정 bottom-sheet -->
+    <bottom-sheet id="editBottomSheet" title="명함 수정">
+      <main>
         <!-- 명함 정보 수정 입력 폼 -->
         <div class="edit-form">
           <label>회사명:</label>
@@ -135,10 +133,10 @@
 
         <div class="modal-buttons">
           <button @click="saveChanges">저장</button>
-          <button @click="closeEditModal">취소</button>
+          <button @click="closeBottomSheet">취소</button>
         </div>
-      </div>
-    </div>
+      </main>
+    </bottom-sheet>
 
     <!-- QR 코드 모달 -->
     <div v-if="showModal" class="modal" @click="closeModal">
@@ -210,7 +208,6 @@ export default {
         },
       ],
       showModal: false, // 모달 표시 상태
-      showEditModal: false, // 수정 모달 표시 상태
       isFriendCard: false, // 친구 명함 여부 상태 추가
     };
   },
@@ -270,12 +267,21 @@ export default {
       }
     },
 
-    openEditModal() {
-      this.showEditModal = true; // 수정 모달 열기
+    openBottomSheet() {
+      const bottomSheet = document.getElementById("editBottomSheet");
+      if (bottomSheet) {
+        bottomSheet.openSheet();
+      } else {
+        console.error("Bottom sheet element not found");
+      }
     },
-    closeEditModal() {
-      this.showEditModal = false; // 수정 모달 닫기
+    closeBottomSheet() {
+      const bottomSheet = document.getElementById("editBottomSheet");
+      if (bottomSheet) {
+        bottomSheet.closeSheet();
+      }
     },
+
     saveChanges() {
       // 수정된 내용을 저장하는 로직 추가 가능
       localStorage.setItem("businessCardData", JSON.stringify(this.formData)); // 저장된 내용을 로컬 스토리지에 반영
@@ -285,7 +291,7 @@ export default {
       if (cardIndex !== -1) {
         this.cardList[cardIndex] = { ...this.formData }; // 선택된 카드 데이터 업데이트
       }
-      this.closeEditModal(); // 저장 후 모달 닫기
+      this.closeBottomSheet(); // 저장 후 bottom-sheet 닫기
     },
 
     deleteCard() {
@@ -411,6 +417,23 @@ select {
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 5px;
+}
+
+edit-form input,
+.memo-textarea {
+  margin-bottom: 15px;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%; /* input 필드와 동일한 너비 */
+  box-sizing: border-box; /* padding 포함한 너비 계산 */
+}
+
+/* 필요하다면 추가적인 수정 */
+.memo-textarea {
+  resize: none; /* 크기 조절 불가 */
+  height: 100px; /* 적당한 높이 설정 */
 }
 
 /* 모달 */
@@ -676,14 +699,11 @@ card-details-container {
 }
 
 .memo-textarea {
-  background-color: #efeded; /* 배경색 설정 */
-  border: none; /* 테두리 제거 */
-  padding: 5px; /* 내부 여백 추가 */
-  width: 170px; /* textarea가 남은 공간을 모두 차지하도록 설정 */
-  resize: none; /* 크기 조절 불가 */
-  height: 60px; /* 기본 높이 설정 */
-  font-size: 13px; /* 글꼴 크기 설정 */
-  font-family: inherit; /* 부모 요소의 폰트 상속 */
+  margin-bottom: 15px;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 /* 수정/삭제버튼 */
@@ -708,6 +728,32 @@ card-details-container {
 }
 
 .button-container button:active {
+  background-color: #fff; /* 클릭 시 색상 변경 */
+}
+
+/* 취소/저장버튼 */
+.modal-buttons {
+  display: flex;
+  justify-content: center; /* 중앙 정렬 */
+  gap: 10px; /* 버튼 간격 */
+  margin-top: 20px; /* 위쪽 간격 추가 */
+}
+
+.modal-buttons button {
+  font-size: 12px;
+  border: 1.5px solid #ccc;
+  border-radius: 5px;
+  background-color: #ffffff;
+  color: black;
+  cursor: pointer;
+  padding: 8px 16px; /* 적당한 padding 설정 */
+}
+
+.modal-buttons button:hover {
+  background-color: #e0e0e0; /* hover 시 색상 변경 */
+}
+
+.modal-buttons button:active {
   background-color: #fff; /* 클릭 시 색상 변경 */
 }
 </style>
