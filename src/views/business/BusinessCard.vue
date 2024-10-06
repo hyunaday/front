@@ -62,8 +62,16 @@
             <p>{{ card.position }} / {{ card.department }}</p>
             <p>{{ card.company }}</p>
           </div>
-          <div class="card-image">
-            <img :src="card.imageUrl" alt="명함 이미지" />
+
+          <div class="preview-box-small">
+            <h3>{{ card.company }}</h3>
+            <p>{{ card.address }}</p>
+            <p>{{ card.name }}</p>
+            <p>{{ card.position }}</p>
+            <p>{{ card.department }}</p>
+            <p>{{ card.phone }}</p>
+            <p>{{ card.phoneLandline }}</p>
+            <p>{{ card.email }}</p>
           </div>
         </div>
       </div>
@@ -207,8 +215,15 @@ export default {
   methods: {
     // 나의 명함으로 돌아가는 메서드
     goBackToMyCard() {
-      this.formData = { ...this.myCard }; // 나의 명함 데이터를 formData에 복사
+      const storedData = localStorage.getItem("businessCardData");
+      if (storedData) {
+        this.formData = JSON.parse(storedData); // 로컬 스토리지의 값을 formData에 할당
+        alert("로컬 스토리지에서 명함 정보를 불러왔습니다!"); // 알림 표시
+      } else {
+        alert("로컬 스토리지에 명함 정보가 없습니다.");
+      }
     },
+
     isChanged(field) {
       return (
         this.formData &&
@@ -395,6 +410,64 @@ select {
   height: 40px;
   object-fit: cover; /* 이미지 비율 유지 */
   border-radius: 5px;
+}
+
+.preview-box-small {
+  text-align: center; /* 가운데 정렬 */
+  padding: 3px 8px; /* 내부 패딩을 줄임 */
+  height: 40px; /* 고정된 높이 */
+  width: 80px; /* 고정된 너비 */
+  background-color: white;
+}
+
+.preview-box-small h3 {
+  font-size: 5px; /* 회사명 폰트 크기 축소 */
+  font-weight: bold; /* 굵게 */
+  text-align: left;
+  margin: 0px;
+}
+
+/* 이름 */
+.preview-box-small p {
+  margin: 0px 0; /* 각 문장 간의 간격 */
+  font-size: 4px; /* 일반 텍스트 크기 축소 */
+  text-align: left;
+}
+
+.preview-box-small p:nth-child(2) {
+  font-size: 3px; /* 주소 폰트 크기 축소 */
+  text-align: left;
+  margin: 0px 0px 1px; /* 간격 축소 */
+}
+
+.preview-box-small p:nth-child(4),
+.preview-box-small p:nth-child(5) {
+  font-size: 3px; /* 직책과 부서 폰트 크기 축소 */
+  font-weight: bold; /* 직책과 부서 텍스트 굵게 */
+  text-align: left;
+}
+
+.preview-box-small p:nth-child(6),
+.preview-box-small p:nth-child(7),
+.preview-box-small p:nth-child(8) {
+  font-size: 3px; /* 전화번호, 유선전화번호, 이메일 크기 축소 */
+  text-align: right;
+}
+
+.preview-box-small p:nth-child(4)::before {
+  content: "Position: "; /* 직책 앞에 텍스트 추가 */
+}
+
+.preview-box-small p:nth-child(5)::before {
+  content: "Dept: "; /* 부서 앞에 텍스트 추가 */
+}
+
+.preview-box-small p:nth-child(6)::before {
+  content: "H.P: "; /* 전화번호 앞에 텍스트 추가 */
+}
+
+.preview-box-small p:nth-child(7)::before {
+  content: "TEL: "; /* 유선전화번호 앞에 텍스트 추가 */
 }
 
 /* 카드 아이템 스타일 */
