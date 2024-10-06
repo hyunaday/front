@@ -1,6 +1,5 @@
 <template>
   <div class="main-container d-flex flex-column justify-content-center align-items-center">
-    <!-- <Header /> -->
     <div class="transfer-page">
       <div class="transfer-form">
         <label for="recipient">
@@ -12,19 +11,36 @@
           v-model="recipient"
           placeholder="이름, 계좌번호 입력"
           @input="validateInput"
+          @keyup.enter="sendMoney"
           maxlength="13"
         />
-        <!-- <button type="button" class="stroke-button" @click="sendMoney">송금하기</button> -->
+        <button 
+          type="button" 
+          class="stroke-button" 
+          @click="sendMoney" 
+          v-if="recipient.length === 13"
+        >
+          송금하기
+        </button>
       </div>
 
       <div class="recent-transactions">
         <h3 class="recent-title">최근 거래</h3>
         <div v-if="recentTransactions.length > 0">
-          <div v-for="transaction in recentTransactions" :key="transaction.id" class="transaction-item">
+          <div 
+            v-for="transaction in recentTransactions" 
+            :key="transaction.id" 
+            class="transaction-item"
+          >
             <img class="transaction-image" src="../../assets/images/kbbank.png" alt="KB Bank" />
             <div class="transaction-details">
               <p class="transaction-name">{{ transaction.name }}</p>
-              <p class="transaction-account">{{ formatAccountNumber(transaction.accountNumber) }}</p>
+              <p 
+                class="transaction-account" 
+                @click="copyToClipboard(transaction.accountNumber)"
+              >
+                {{ formatAccountNumber(transaction.accountNumber) }}
+              </p>
             </div>
             <hr class="transaction-divider" />
           </div>
@@ -37,6 +53,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import FooterNav from '../../components/FooterNav.vue';
 import Header from '../../components/Header.vue';
 
@@ -49,35 +66,51 @@ export default {
   data() {
     return {
       recipient: '',
-      recentTransactions: [], // 거래 내역을 저장할 배열
+      recentTransactions: [],
     };
   },
   methods: {
     validateInput() {
       this.recipient = this.recipient.replace(/[^0-9]/g, '').slice(0, 13);
     },
-    sendMoney() {
+    async sendMoney() {
       if (this.recipient.length === 13) {
-        console.log(`송금할 계좌번호: ${this.recipient}`);
+        try {
+          const response = await axios.post('/account/sendAccount', {
+            accountNumber: this.recipient,
+          });
+          console.log(`송금 성공: ${response.data}`);
+          alert("송금이 완료되었습니다.");
+        } catch (error) {
+          console.error('송금 실패:', error);
+          alert("송금에 실패했습니다. 다시 시도해주세요.");
+        }
       } else {
         alert("송금할 계좌번호를 확인해주세요.");
       }
     },
     formatAccountNumber(accountNumber) {
-      // 계좌번호 포맷팅 함수
       return `${accountNumber.slice(0, 3)}-${accountNumber.slice(3, 7)}-${accountNumber.slice(7, 11)}-${accountNumber.slice(11)}`;
     },
     fetchTransactions() {
-      // 여기에 DB에서 거래 내역을 불러오는 로직 추가
-      // 예시 데이터
       this.recentTransactions = [
         { id: 1, name: '홍길동', accountNumber: '3604562599743', image: '/path/to/image1.jpg' },
         { id: 2, name: '김철수', accountNumber: '1234567890123', image: '/path/to/image2.jpg' },
       ];
     },
+    copyToClipboard(accountNumber) {
+      const formattedAccount = this.formatAccountNumber(accountNumber);
+      navigator.clipboard.writeText(accountNumber)
+        .then(() => {
+          alert(`계좌번호 ${formattedAccount}가 복사되었습니다.`);
+        })
+        .catch(err => {
+          console.error('복사 실패:', err);
+        });
+    },
   },
   mounted() {
-    this.fetchTransactions(); // 컴포넌트가 마운트될 때 거래 내역 가져오기
+    this.fetchTransactions();
   },
 };
 </script>
@@ -154,16 +187,17 @@ input[type="text"]::placeholder {
 }
 
 .transaction-name {
-  font-size: 12px; /* 이름 폰트 크기 작게 설정 */
+  font-size: 12px; 
   font-weight: bold;
   margin-bottom: 0;
   margin-top: 6px;
 }
 
 .transaction-account {
-  font-size: 12px; /* 계좌번호 폰트 크기 */
-  color: #6981d9; /* 계좌번호 색상 변경 */
+  font-size: 12px; 
+  color: #6981d9; 
   margin-bottom: 6px;
+  cursor: pointer;
 }
 
 .no-transactions {
@@ -173,7 +207,23 @@ input[type="text"]::placeholder {
 
 .transaction-divider {
   border: none;
-  border-top: 1px solid #ccc; /* 수평선 색상 */
-  margin: 5px 0; /* 수평선 위아래 간격 */
+  border-top: 1px solid #ccc; 
+  margin: 5px 0; 
+}
+
+.stroke-button {
+  background-color: #6981d9;
+  color: white;
+  border: 2px solid #6981d9;
+  padding: 8px 13px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.stroke-button:hover {
+  background-color: white;
+  color: #6981d9;
 }
 </style>
