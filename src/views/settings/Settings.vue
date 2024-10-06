@@ -10,6 +10,10 @@
           <h2>함께결제</h2>
           <p>함께 결제 내역 조회</p>
         </div>
+        <div class="setting-item item-3" @click="goToChangePassword">
+          <h2>비밀번호</h2>
+          <p>비밀번호 변경</p>
+        </div>
         <div class="setting-item item-2">
           <h2>앱 알림</h2>
           <div class="toggle-container">
@@ -31,11 +35,10 @@
             </span>
           </div>
         </div>
-        <div class="setting-item item-3" @click="goToChangePassword">
-          <h2>비밀번호</h2>
-          <p>비밀번호 변경</p>
+        <div class="setting-item item-4" @click="confirmLogout">
+          <h2>로그아웃</h2>
         </div>
-        <div class="setting-item item-4" @click="withdrawMembership">
+        <div class="setting-item item-5" @click="withdrawMembership">
           <h2>회원탈퇴</h2>
         </div>
       </div>
@@ -70,7 +73,7 @@ export default {
       this.$router.push('/cancel');
     },
     goHome() {
-      this.$router.push('/'); // 홈 페이지로 이동
+      this.$router.push('/');
     },
     async updateAppPushNotifications() {
       try {
@@ -92,6 +95,18 @@ export default {
         console.error('Error updating event benefits notifications:', error);
       }
     },
+    confirmLogout() {
+      if (confirm('로그아웃하시겠습니까?')) {
+        this.logout();
+      }
+    },
+    async logout() {
+      console.log('로그아웃 중...');
+      localStorage.removeItem('accessToken');
+      this.$router.push('/login').catch(err => {
+        console.error('Navigation error:', err);
+      });
+    },
   },
 };
 </script>
@@ -112,25 +127,28 @@ export default {
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 30px;
-  position: relative; /* 추가 */
+  position: relative;
 }
 
 .close-button {
-  position: absolute; /* 버튼을 제목 오른쪽에 위치시키기 위해 절대 위치 설정 */
-  right: 0; /* 오른쪽 끝에 위치 */
-  top: 0; /* 제목과 같은 수직 위치 */
-  background: none; /* 배경 없애기 */
-  border: none; /* 테두리 없애기 */
-  color: #000; /* 검은색으로 버튼 텍스트 색상 설정 */
-  font-size: 20px; /* 버튼 크기 조정 */
-  width: 30px; /* 버튼 너비 조정 */
-  height: 30px; /* 버튼 높이 조정 */
-  cursor: pointer; /* 마우스 커서 포인터로 변경 */
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: none;
+  border: none;
+  color: #000;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  line-height: 30px;
+  text-align: center;
 }
 
 .settings-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, auto);
   gap: 20px;
 }
 
@@ -156,6 +174,10 @@ export default {
 .item-2,
 .item-3 {
   background-color: #98b6ef;
+}
+
+.item-5 {
+  background-color: #d97c6c;
 }
 
 .setting-item:hover {
