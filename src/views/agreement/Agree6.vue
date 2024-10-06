@@ -80,7 +80,7 @@
     methods: {
       goToNextStep() {
         if (this.isRequiredChecked) {
-          this.$router.push("/next-step"); // Change to the next page route
+          this.$router.push("/agree_loading"); // Change to the next page route
         }
       },
     },

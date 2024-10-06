@@ -50,6 +50,7 @@ import Agree3 from '../views/agreement/Agree3.vue';
 import Agree4 from '../views/agreement/Agree4.vue';
 import Agree5 from '../views/agreement/Agree5.vue';
 import Agree6 from '../views/agreement/Agree6.vue';
+import Agree_Loading from '../views/agreement/Agree_Loading.vue';
 
 const routes = [
   {
@@ -310,6 +311,11 @@ const routes = [
     path: "/agree6",
     name: "Agree6",
     component: Agree6,
+  },
+  {
+    path: "/agree_loading",
+    name: "Agree_Loading",
+    component: Agree_Loading,
   }
 ];
 
