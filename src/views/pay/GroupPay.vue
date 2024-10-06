@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { QrcodeStream } from 'vue-qrcode-reader';
+import { QrcodeStream } from 'vue3-qrcode-reader';
 import SoloPay from '../pay/SoloPay.vue';
 import MainPay from '../pay/MainPay.vue';
 import { Html5Qrcode } from 'html5-qrcode';
@@ -62,20 +62,22 @@ export default {
     showScanner(paymentType) {
       this.currentPaymentComponent = paymentType;
       this.showScannerModal = true;
-      this.initializeScanner(); // QR 코드 스캐너 초기화 호출
+      this.initializeScanner();
     },
     async initializeScanner() {
       const html5QrCode = new Html5Qrcode('reader');
       const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-        this.decodedData = decodedText;
+        this.decodedData = decodedText; // 스캔된 데이터를 여기에 할당합니다.
         this.errorMessage = '';
+        // 여기서 결제 페이지로 리디렉션할 수 있습니다.
+        // 예: this.redirectToPayment(decodedText);
       };
       const config = { fps: 10, qrbox: { width: 250, height: 250 } };
 
       try {
         const devices = await Html5Qrcode.getCameras();
         if (devices.length) {
-          const cameraId = devices[0].id; // 첫 번째 카메라 선택
+          const cameraId = devices[0].id;
           html5QrCode
             .start(
               { deviceId: { exact: cameraId } },
@@ -94,16 +96,6 @@ export default {
         console.error('카메라 접근 오류:', error);
         this.errorMessage = '카메라에 접근할 수 없습니다. 권한을 확인하세요.';
       }
-    },
-    onDecode(data) {
-      console.log('스캔된 데이터:', data);
-      this.decodedData = data;
-      this.errorMessage = '';
-
-      console.log('Decoded data:', data);
-      this.decodedData = data; // 스캔된 데이터 저장
-      this.errorMessage = ''; // 오류 메시지 초기화
-      this.redirectToPayment(data); // 결제 페이지로 리디렉션
     },
     async onInit(success, error) {
       if (error) {

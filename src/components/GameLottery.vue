@@ -57,8 +57,8 @@ export default {
       participants: [],
       participantInput: '',
       winner: null,
-      rotationAngle: 0,
-      spinning: false,
+      rotationAngle: 0, // 현재 회전 각도
+      spinning: false, // 회전 중 여부
       showModal: false, // 모달 표시 여부
     };
   },
@@ -75,22 +75,39 @@ export default {
       this.$router.go(-1);
     },
     addParticipant() {
-      if (this.participantInput) {
-        this.participants.push(this.participantInput);
+      const trimmedInput = this.participantInput.trim();
+      if (trimmedInput && !this.participants.includes(trimmedInput)) {
+        this.participants.push(trimmedInput);
         this.participantInput = ''; // 입력 필드 초기화
+        this.drawRoulette(); // 참가자 추가 시 룰렛 다시 그리기
+      } else {
+        // 중복 또는 빈 입력에 대한 피드백을 추가할 수 있습니다.
+        if (!trimmedInput) {
+          alert('참여자 이름을 입력해주세요.');
+        } else {
+          alert('이미 추가된 참여자입니다.');
+        }
       }
     },
     drawRoulette() {
       const canvas = this.$refs.canvas;
+      if (!canvas) return;
       const ctx = canvas.getContext('2d');
       const totalSegments = this.participants.length;
+
+      if (totalSegments === 0) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        return;
+      }
+
+      // 각 세그먼트의 각도 계산 (참여자가 1명일 때도 정상적으로 표시)
       const arc = (2 * Math.PI) / totalSegments;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       for (let i = 0; i < totalSegments; i++) {
-        const angleStart = i * arc;
-        const angleEnd = (i + 1) * arc;
+        const angleStart = i * arc + this.rotationAngle;
+        const angleEnd = (i + 1) * arc + this.rotationAngle;
 
         // 룰렛 칸 그리기
         ctx.beginPath();
@@ -110,69 +127,70 @@ export default {
         ctx.fillText(this.participants[i], 130, 10); // 텍스트 위치
         ctx.restore();
       }
+
+      // 참여자가 1명일 때는 텍스트가 중앙에 위치하도록 추가 조정
+      if (totalSegments === 1) {
+        ctx.save();
+        ctx.translate(150, 150);
+        ctx.rotate(this.rotationAngle);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font = '20px Pretendard';
+        ctx.fillStyle = '#000';
+        ctx.fillText(this.participants[0], 0, 0);
+        ctx.restore();
+      }
+
+      // 중앙 원 그리기 (선택 사항)
+      ctx.beginPath();
+      ctx.arc(150, 150, 10, 0, 2 * Math.PI);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.closePath();
     },
     startLottery() {
-      if (this.spinning) return; // 이미 회전 중이면 무시
+      if (this.spinning || this.participants.length === 0) return; // 이미 회전 중이거나 참가자가 없으면 무시
       this.spinning = true;
-      const randomIndex = Math.floor(Math.random() * this.participants.length);
-      this.animateRoulette(randomIndex);
-    },
-    animateRoulette(winnerIndex) {
-      const canvas = this.$refs.canvas;
-      const ctx = canvas.getContext('2d');
+
       const totalSegments = this.participants.length;
       const arc = (2 * Math.PI) / totalSegments;
-      const baseRotationSpeed = 0.3; // 회전 시작 속도
-      const totalAnimationTime = 5000; // 총 애니메이션 시간 (밀리초)
+
+      // 랜덤하게 당첨자 인덱스 선택
+      const randomSegment = Math.floor(Math.random() * totalSegments);
+
+      // 화살표가 12시 방향을 가리키도록 회전 각도 계산
+      const targetAngle =
+        5 * 2 * Math.PI + // 최소 5바퀴 회전
+        randomSegment * arc + // 목표 세그먼트
+        Math.PI / 2; // 12시 방향으로 조정
+
       const startTime = performance.now();
-      const targetRotation = 5; // 총 몇 바퀴를 돌 것인지
+      const duration = 5000; // 5초 동안 회전
 
       const animate = (currentTime) => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
 
-        // 현재 시간 계산
-        const elapsedTime = currentTime - startTime;
-        const progress = Math.min(elapsedTime / totalAnimationTime, 1);
+        // Ease out 효과 (속도 감소)
+        const easeOutProgress = 1 - Math.pow(1 - progress, 3);
 
-        // 회전 속도를 점점 줄이기 위한 계산 (Easing)
-        const easingFactor = 1 - progress; // 시간이 지남에 따라 점점 줄어듦
-        const currentSpeed = baseRotationSpeed * easingFactor;
+        // 회전 각도 업데이트
+        this.rotationAngle = easeOutProgress * targetAngle;
 
-        // 회전 각도 계산
-        this.rotationAngle += currentSpeed; // 현재 속도에 따라 각도 증가
-        const finalAngle = this.rotationAngle + winnerIndex * arc;
+        this.drawRoulette();
 
-        // 룰렛 그리기
-        for (let i = 0; i < totalSegments; i++) {
-          const angleStart = finalAngle + i * arc;
-          const angleEnd = finalAngle + (i + 1) * arc;
-
-          // 룰렛 칸 그리기
-          ctx.beginPath();
-          ctx.moveTo(150, 150); // 중심점
-          ctx.arc(150, 150, 150, angleStart, angleEnd);
-          ctx.fillStyle = this.getColor(i); // 색상 적용
-          ctx.fill();
-          ctx.closePath();
-
-          // 텍스트 그리기
-          ctx.save();
-          ctx.translate(150, 150); // 중심으로 이동
-          ctx.rotate(angleStart + arc / 2); // 텍스트가 중간에 위치하게 회전
-          ctx.textAlign = 'right'; // 텍스트 오른쪽 정렬
-          ctx.font = '20px Pretendard';
-          ctx.fillStyle = '#000';
-          ctx.fillText(this.participants[i], 130, 10); // 텍스트 위치
-          ctx.restore();
-        }
-
-        // 애니메이션 종료 조건
         if (progress < 1) {
           requestAnimationFrame(animate);
         } else {
-          this.winner = this.participants[winnerIndex]; // 당첨자 설정
-          this.spinning = false; // 회전 종료
-          this.showModal = true; // 모달 표시
+          // 최종 회전 각도에서 당첨자 계산
+          const normalizedAngle = this.rotationAngle % (2 * Math.PI);
+          // 12시 방향을 기준으로 당첨자 인덱스 계산
+          const winnerIndex =
+            Math.floor((normalizedAngle + Math.PI / 2) / arc) % totalSegments;
+
+          this.winner = this.participants[winnerIndex];
+          this.spinning = false;
+          this.showModal = true;
         }
       };
 
@@ -193,9 +211,10 @@ export default {
     },
     closeModal() {
       this.showModal = false;
+      window.location.href = '/lottery-game';
     },
     goToPayInfo() {
-      window.location.href = '/payinfo'; // 페이지 이동
+      this.$router.push('/payinfo'); // Vue 라우터를 사용하여 페이지 이동
     },
   },
 };
