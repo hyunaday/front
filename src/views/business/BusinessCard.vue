@@ -599,18 +599,18 @@ edit-form input,
   font-weight: bold;
   font-size: 14px;
 }
-/* 명함목록 네임택 */
+/* 명함 목록 네임택 */
 .name-tag-sec {
-  position: absolute;
-  top: 410px; /* 서류에서 튀어나온 듯한 느낌 */
-  left: 5px;
-  background-color: #efeded; /* 네임택 색상 */
-  padding: 5px 15px;
-  border-radius: 5px;
+  position: relative; /* 명함 목록 상단에 고정 */
+  top: 35px; /* 상단에서 살짝 떨어지도록 설정 */
+  left: -135.8px; /* 왼쪽으로 살짝 떨어지도록 설정 */
+  background-color: #efeded;
+  padding: 5px 15px; /* 패딩을 조정해 텍스트에 맞춤 */
+  border-radius: 5px 5px 0 0; /* 상단 모서리 둥글게 설정 */
   color: rgb(0, 0, 0);
   font-weight: bold;
   font-size: 14px;
-  z-index: 0;
+  z-index: 10; /* 다른 요소들 위로 오도록 설정 */
 }
 
 /* 명함 내용 스타일 */
@@ -672,14 +672,17 @@ card-details-container {
 
 /* 명함 목록 스타일 */
 .card-list {
-  background-color: #efeded; /* 기존 배경색을 사용 */
+  background-color: #efeded;
   padding: 20px;
-  border-top-right-radius: 10px;
-  width: 350px; /* 명함 목록의 너비 조정 */
+  border-top-right-radius: 0; /* 상단 우측 모서리 둥글기 제거 */
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  width: 350px;
   height: 350px;
-  margin-top: 35px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
+  margin-top: 30px; /* 네임택이 들어갈 수 있도록 간격 추가 */
+  position: relative;
 }
 
 .divider {
