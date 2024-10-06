@@ -4,15 +4,6 @@
       <button class="close-button" @click="goToMainPage">
         <i class="fa-solid fa-xmark"></i>
       </button>
-
-      <div class="section">
-        <h2>친구 목록</h2>
-        <ul>
-          <li @click="navigateTo('/searchfriends')">목록 검색</li>
-          <li @click="navigateTo('/invitefriends')">친구 초대</li>
-        </ul>
-      </div>
-      <hr>
       <div class="section">
         <h2>함께 결제</h2>
         <ul>
@@ -26,44 +17,44 @@
         <h2>환경설정</h2>
         <ul>
           <li @click="navigateTo('/currentpassword')">비밀번호 변경</li>
+          <hr>
           <div class="section">
-            <hr>
-        <h2>알림 설정</h2>
-        <div class="form-check form-switch">
-          <label class="form-check-label me-2" for="notificationToggle">앱 푸시 알림</label>
-          <input
-            class="form-check-input"
-            type="checkbox"
-            id="notificationToggle"
-            v-model="notificationsEnabled"
-            @change="updateNotificationSettings"
-          />
-        </div>
-        <div class="form-check form-switch">
-          <label class="form-check-label me-2" for="eventToggle">이벤트 혜택 알림</label>
-          <input
-            class="form-check-input"
-            type="checkbox"
-            id="eventToggle"
-            v-model="eventEnabled"
-             @change="updateNotificationSettings"
-          />
-        </div>
-        <hr>
-      </div>
+            <h2>알림 설정</h2>
+            <div class="form-check form-switch">
+              <label class="form-check-label me-2" for="notificationToggle">앱 푸시 알림</label>
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="notificationToggle"
+                v-model="notificationsEnabled"
+                @change="updateNotificationSettings"
+              />
+            </div>
+            <div class="form-check form-switch">
+              <label class="form-check-label me-2" for="eventToggle">이벤트 혜택 알림</label>
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="eventToggle"
+                v-model="eventEnabled"
+                @change="updateNotificationSettings"
+              />
+            </div>
+          </div>
           <li @click="logout">로그아웃</li>
         </ul>
       </div>
-      <!-- ============================== -->
   
       <hr>
-      <div class="section">
-        <button @click="deleteAccount">회원탈퇴</button>
+      <!-- 회원탈퇴 버튼이 잘 보이도록 위치 조정 -->
+      <div class="section text-center">
+        <button @click="deleteAccount" class="delete-button">회원탈퇴</button>
       </div>
     </div>
     <FooterNav />
   </div>
 </template>
+
 
 <script>
 import FooterNav from '../../components/FooterNav.vue';
@@ -87,11 +78,11 @@ export default {
       });
     },
     goToMainPage() {
-      console.log('메인페이지 이동 중...');
+      console.log('메인페이지 이동 중!');
       this.$router.push({ path: '/' });
     },
     logout() {
-      console.log('로그아웃 중...');
+      console.log('로그아웃 중!');
       
       // 토큰 삭제
       localStorage.removeItem('accessToken');
@@ -131,7 +122,6 @@ export default {
 </script>
 
 <style scoped>
-/* 기존 스타일 유지 */
 .settings {
   margin: 20px;
   padding: 20px;
@@ -143,37 +133,22 @@ export default {
   position: absolute;
   top: 20px;
   right: 20px;
-  background-color: #6981D9;
-  border: none; 
-  border-radius: 50%; 
-  width: 20px; 
-  height: 30px; 
-  font-size: px; 
-  color: white; 
-  cursor: pointer; 
+  border: none;
+  color: black; /* 아이콘 색상만 검정으로 설정 */
+  cursor: pointer;
   display: flex;
-  align-items: center; 
+  align-items: center;
   justify-content: center;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.close-button:hover {
-  background-color: #98B6EF; 
-  transform: scale(1.1); 
-}
-
-.close-button:focus {
-  outline: none; 
-  box-shadow: 0 0 0 4px rgba(255, 77, 79, 0.5); 
-}
-
-
-h1 {
-  font-size: 24px;
+  font-size: 16px;
+  background-color: transparent; /* 배경색 제거 */
 }
 
 .section {
   margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 24px;
 }
 
 h2 {
@@ -191,21 +166,23 @@ li {
   cursor: pointer;
 }
 
-li:hover {
-  background-color: #f0f0f0;
-}
-
 button {
   padding: 10px 15px;
-  background-color: #ff4d4f;
   color: white;
   border: none;
   cursor: pointer;
-  border-radius: 9px; 
-
+  border-radius: 9px;
+  background-color: transparent; /* 버튼 배경색 제거 */
 }
 
-button:hover {
-  background-color: #ff7875;
+.delete-button {
+
+color: #ff4d4f; /* 빨간색 버튼 */
+  border: none;
+  cursor: pointer;
+  border-radius: 9px;
 }
+
+
 </style>
+
