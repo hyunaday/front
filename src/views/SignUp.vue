@@ -160,7 +160,8 @@
       aria-labelledby="agreementModalLabel"
       aria-hidden="true"
     >
-      <div class="modal-dialog modal-dialog-bottom"> <!-- 이 부분을 수정 -->
+      <div class="modal-dialog modal-dialog-bottom">
+        <!-- 이 부분을 수정 -->
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="agreementModalLabel">
@@ -177,7 +178,9 @@
                     id="terms1"
                     v-model="agreement.terms1"
                   />
-                  <label for="terms1">모두의결제 회원 약관 및 동의사항(필수)</label>
+                  <label for="terms1"
+                    >모두의결제 회원 약관 및 동의사항(필수)</label
+                  >
                 </div>
               </div>
               <div class="list-group-item">
@@ -187,7 +190,9 @@
                     id="terms2"
                     v-model="agreement.terms2"
                   />
-                  <label for="terms2">본인 확인 서비스 약관 및 동의사항(필수)</label>
+                  <label for="terms2"
+                    >본인 확인 서비스 약관 및 동의사항(필수)</label
+                  >
                 </div>
               </div>
               <div class="list-group-item">
@@ -207,7 +212,9 @@
                     id="terms4"
                     v-model="agreement.terms4"
                   />
-                  <label for="terms4">마케팅 목적 약관 및 수신 동의 사항(선택)</label>
+                  <label for="terms4"
+                    >마케팅 목적 약관 및 수신 동의 사항(선택)</label
+                  >
                 </div>
               </div>
             </div>
@@ -270,7 +277,11 @@ export default {
       modal.show();
     },
     agreeAndSubmit() {
-      if (!this.agreement.terms1 || !this.agreement.terms2 || !this.agreement.terms3) {
+      if (
+        !this.agreement.terms1 ||
+        !this.agreement.terms2 ||
+        !this.agreement.terms3
+      ) {
         alert("필수 약관에 동의하셔야 가입이 가능합니다.");
         return;
       }
@@ -306,7 +317,7 @@ export default {
           verificationData
         );
 
-        if (response.data.isSuccess) {
+        if (response.data.isSuccess && response.data.result.isSuccess) {
           alert("인증번호가 확인되었습니다.");
         } else {
           alert("인증번호가 일치하지 않습니다.");
@@ -338,19 +349,33 @@ export default {
         );
         if (response.data.isSuccess) {
           alert("회원가입이 성공적으로 완료되었습니다.");
+          const modalElement = document.getElementById("agreementModal");
+          if (modalElement) {
+            const modalInstance = Modal.getInstance(modalElement);
+            if (modalInstance) {
+              modalInstance.hide();
+            }
+          }
           this.$router.push("/login");
         } else {
-          alert(`회원가입에 실패했습니다: ${response.data.message || "알 수 없는 오류"}`);
+          alert(
+            `회원가입에 실패했습니다: ${
+              response.data.message || "알 수 없는 오류"
+            }`
+          );
         }
       } catch (error) {
         console.error("회원가입 오류:", error);
         let errorMessage = "회원가입 중 오류가 발생했습니다.";
         if (error.response) {
           // 서버에서 응답을 받았지만 2xx 범위를 벗어난 상태 코드인 경우
-          errorMessage = `회원가입 오류: ${error.response.data.message || error.response.statusText}`;
+          errorMessage = `회원가입 오류: ${
+            error.response.data.message || error.response.statusText
+          }`;
         } else if (error.request) {
           // 요청이 전송되었지만 응답을 받지 못한 경우
-          errorMessage = "서버에 연결할 수 없습니다. 네트워크 연결을 확인해 주세요.";
+          errorMessage =
+            "서버에 연결할 수 없습니다. 네트워크 연결을 확인해 주세요.";
         } else {
           // 요청 설정 중에 오류가 발생한 경우
           errorMessage = `회원가입 요청 중 오류 발생: ${error.message}`;
@@ -377,15 +402,15 @@ export default {
     },
     isFormValid() {
       return (
-        this.name.trim() !== '' &&
-        this.phone.trim() !== '' &&
-        this.emailPrefix.trim() !== '' &&
-        this.emailDomain !== '' &&
-        this.password.trim() !== '' &&
-        this.confirmPassword.trim() !== '' &&
+        this.name.trim() !== "" &&
+        this.phone.trim() !== "" &&
+        this.emailPrefix.trim() !== "" &&
+        this.emailDomain !== "" &&
+        this.password.trim() !== "" &&
+        this.confirmPassword.trim() !== "" &&
         this.password === this.confirmPassword
       );
-    }
+    },
   },
 };
 </script>

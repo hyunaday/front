@@ -11,7 +11,9 @@
           <div
             class="form-check form-switch d-flex justify-content-end align-items-center"
           >
-            <label class="form-check-label me-2" for="amountSwitch">잔액 보기</label>
+            <label class="form-check-label me-2" for="amountSwitch"
+              >잔액 보기</label
+            >
             <input
               class="form-check-input"
               type="checkbox"
@@ -23,7 +25,10 @@
       </div>
 
       <!-- 계좌 정보 섹션 (Swiper 적용) -->
-      <div class="account-section d-flex justify-content-center">
+      <div
+        v-if="accounts.length > 0"
+        class="account-section d-flex justify-content-center"
+      >
         <swiper
           :slides-per-view="1.2"
           :centered-slides="true"
@@ -47,7 +52,9 @@
                 <img :src="bankLogos[account.bankName]" class="bank-icon" />
                 <label class="bank-name">{{ account.bankName }}</label>
                 <div class="amount-container" v-if="showamount">
-                  <label class="amount">₩ {{ formatNumber(account.amount) }}</label>
+                  <label class="amount"
+                    >₩ {{ formatNumber(account.amount) }}</label
+                  >
                 </div>
                 <div class="amount-container" v-else>
                   <label class="amount-hidden">잔액 숨김</label>
@@ -55,14 +62,15 @@
               </div>
               <div class="account-button">
                 <div class="d-flex justify-content-between gap-4">
-                  <!-- '조회' 버튼, 내자산 페이지로 이동 -->
                   <router-link to="/transactionhistory">
-                    <button class="btn btn-light check" type="button">조회</button>
+                    <button class="btn btn-light check" type="button">
+                      조회
+                    </button>
                   </router-link>
-
-                  <!-- '이체' 버튼, 송금 페이지로 이동 -->
                   <router-link to="/transfer">
-                    <button class="btn btn-light transfer" type="button">이체</button>
+                    <button class="btn btn-light transfer" type="button">
+                      이체
+                    </button>
                   </router-link>
                 </div>
               </div>
@@ -70,19 +78,28 @@
           </swiper-slide>
         </swiper>
       </div>
+      <div v-else>
+        <p>계좌 정보가 없습니다.</p>
+      </div>
 
       <!-- 함께 결제 섹션 -->
       <div class="together-pay">
-        <label><h6>정산은 그만! <strong>함께 결제</strong>해봐요</h6></label>
+        <label
+          ><h6>정산은 그만! <strong>함께 결제</strong>해봐요</h6></label
+        >
       </div>
       <div class="together-section d-flex justify-content-center">
-        <div class="together-card d-flex justify-content-between align-items-center p-3">
+        <div
+          class="together-card d-flex justify-content-between align-items-center p-3"
+        >
           <div class="text-content">
             <h6>결제 할때, 한번에 다같이</h6>
             <p>함께 결제</p>
             <button class="btn btn-light">사용방법 보러가기</button>
           </div>
-          <div class="image-content d-flex justify-content-center align-items-center">
+          <div
+            class="image-content d-flex justify-content-center align-items-center"
+          >
             <img
               src="../assets/images/humans.png"
               class="human-image img-fluid"
@@ -139,14 +156,14 @@ export default {
       showamount: false,
       accounts: [],
       bankLogos: {
-        "국민은행": kbbankLogo,
-        "신한은행": shinhanLogo,
-        "카카오뱅크": kakaobankLogo,
-        "하나은행": hanabankLogo,
-        "우리은행": wooriLogo,
-        "IBK기업은행": ibkbankLogo,
-        "토스은행": tossLogo,
-        "농협은행": nhLogo,
+        국민은행: kbbankLogo,
+        신한은행: shinhanLogo,
+        카카오뱅크: kakaobankLogo,
+        하나은행: hanabankLogo,
+        우리은행: wooriLogo,
+        IBK기업은행: ibkbankLogo,
+        토스은행: tossLogo,
+        농협은행: nhLogo,
       },
       copyIcon: copyIcon,
     };
