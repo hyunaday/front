@@ -115,11 +115,7 @@ export default {
   data() {
     return {
       userName: '조현아',
-      accounts: [
-        { name: 'KB국민은행', balance: 1960112, image: '../src/assets/images/kbbank.png' },
-        { name: '카카오뱅크', balance: 5800, image: '../src/assets/images/kakaobank.png' },
-        { name: '우리은행', balance: 82400, image: '../src/assets/images/wooribank.png' },
-      ],
+      accounts: [], // 빈 배열로 초기화
       savingsAccount: {
         balance: 6000000,
       },
@@ -138,34 +134,56 @@ export default {
       return this.accounts.reduce((total, account) => total + account.balance, 0);
     }
   },
+  
   methods: {
-  formatNumber(num) {
-    return num.toLocaleString();
-  },
-  async fetchCreditCards() {
-    try {
-      const idx = 1;  // 예시 idx 값 (필요한 값으로 대체 가능)
-      const response = await apiClient.get(`/api/cards?idx=${idx}`);
-      
-      // 응답 데이터 확인
-      console.log('Response data:', response.data); // 응답 데이터 로깅
-      
-      if (response.data.cards) {
-        this.creditCards = response.data.cards;  // 받아온 데이터를 creditCards에 저장
-      } else {
-        console.error('No cards found in the response data.');
+    formatNumber(num) {
+      return num.toLocaleString();
+    },
+    async fetchAccounts() {
+      try {
+        const response = await apiClient.get('/account/all');
+        
+        if (response.data.isSuccess && response.data.result && response.data.result.accountList) {
+          // 받아온 데이터를 accounts에 저장
+          this.accounts = response.data.result.accountList.map(account => ({
+            name: account.bankName,
+            balance: account.amount,
+            image: '../src/assets/images/default-account.png', // 이미지가 없을 때 기본 이미지 설정
+          }));
+        } else {
+          console.error('응답 데이터에서 계좌 정보를 찾을 수 없습니다.');
+        }
+      } catch (error) {
+        console.error('계좌 데이터를 불러오는 중 오류가 발생했습니다:', error);
       }
-    } catch (error) {
-      console.error('Error fetching credit cards:', error);
+    },
+    async fetchCreditCards() {
+      try {
+        const response = await apiClient.get(`/credit/all`);
+        
+        if (response.data.isSuccess && response.data.result && response.data.result.creditList) {
+          // 받아온 데이터를 creditCards에 저장
+          this.creditCards = response.data.result.creditList.map(card => ({
+            name: card.creditName,
+            amount_sum: card.amountSum,
+            image: card.imgUrl || '../src/assets/images/default-card.png', // 이미지가 없을 때 기본 이미지 설정
+          }));
+        } else {
+          console.error('응답 데이터에서 신용카드 정보를 찾을 수 없습니다.');
+        }
+      } catch (error) {
+        console.error('신용카드 데이터를 불러오는 중 오류가 발생했습니다:', error);
+      }
     }
   },
-}
-,
+
   created() {
-    this.fetchCreditCards();  // 컴포넌트가 생성될 때 API 호출
+    this.fetchAccounts();  // 계좌 데이터 호출
+    this.fetchCreditCards();  // 신용카드 데이터 호출
   }
 };
 </script>
+
 
 
 <style scoped>
@@ -309,6 +327,7 @@ h1 {
   margin-top: 20px;
   display: flex;
   align-items: center;
+  /* background-color: #ececec; */
 }
 
 .banner-text {

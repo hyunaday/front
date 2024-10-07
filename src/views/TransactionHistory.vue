@@ -3,7 +3,7 @@
     class="main-container d-flex flex-column justify-content-center align-items-center"
   >
     <div>
-      <h1 class="title">거래 내역 조회</h1>
+      <h1 class="title">계좌 조회</h1>
       <div class="container">
         <div class="transaction-details">
           <img :src="imageSrc" alt="Bank Logo" class="bank-logo" />
@@ -40,7 +40,7 @@
         />
         <button class="filter-icon" @click="performSearch">
           <i class="fa-solid fa-magnifying-glass"></i>
-        </button>
+                </button>
         <div class="filter-icon">
           <i class="fa-solid fa-filter"></i>
         </div>
@@ -235,7 +235,13 @@ export default {
 .filter-icon {
   margin-left: 10px;
   cursor: pointer;
+  background-color: transparent; /* 배경색 없음 */
+  border: none; /* 테두리 없음 */
+  padding: 0; /* 패딩 없음 */
+  display: flex; /* 아이콘이 중앙에 위치하도록 */
+  align-items: center; /* 수직 정렬 */
 }
+
 
 .transaction-list {
   padding: 15px;

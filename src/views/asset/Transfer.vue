@@ -116,7 +116,7 @@ export default {
       const formattedAccount = this.formatAccountNumber(accountNumber);
       navigator.clipboard.writeText(accountNumber)
         .then(() => {
-          alert(`계좌번호 ${formattedAccount}가 복사되었습니다.`);
+          alert(`계좌번호가 복사되었습니다.`);
         })
         .catch(err => {
           console.error('복사 실패:', err);
