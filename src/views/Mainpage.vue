@@ -11,14 +11,12 @@
           <div
             class="form-check form-switch d-flex justify-content-end align-items-center"
           >
-            <label class="form-check-label me-2" for="balanceSwitch"
-              >잔액 보기</label
-            >
+            <label class="form-check-label me-2" for="amountSwitch">잔액 보기</label>
             <input
               class="form-check-input"
               type="checkbox"
-              id="balanceSwitch"
-              v-model="showBalance"
+              id="amountSwitch"
+              v-model="showamount"
             />
           </div>
         </div>
@@ -35,23 +33,21 @@
           @swiper="onSwiper"
           @slideChange="onSlideChange"
         >
-          <!-- 계좌 카드 1 -->
-          <swiper-slide v-for="account in accounts" :key="account.number">
+          <!-- 계좌 카드 -->
+          <swiper-slide v-for="account in accounts" :key="account.idx">
             <div class="account-card">
               <label>입출금통장</label>
-              <label class="account-number">{{ account.number }}</label>
+              <label class="account-number">{{ account.accountNumber }}</label>
               <img
-                :src="account.copyIcon"
+                :src="copyIcon"
                 class="copy-icon"
-                @click="copyAccountNumber(account.number)"
+                @click="copyAccountNumber(account.accountNumber)"
               />
               <div class="account-name">
-                <img :src="account.bankLogo" class="bank-icon" />
+                <img :src="bankLogos[account.bankName]" class="bank-icon" />
                 <label class="bank-name">{{ account.bankName }}</label>
-                <div class="amount-container" v-if="showBalance">
-                  <label class="amount"
-                    >&#8361; {{ formatNumber(account.balance) }}</label
-                  >
+                <div class="amount-container" v-if="showamount">
+                  <label class="amount">₩ {{ formatNumber(account.amount) }}</label>
                 </div>
                 <div class="amount-container" v-else>
                   <label class="amount-hidden">잔액 숨김</label>
@@ -61,16 +57,12 @@
                 <div class="d-flex justify-content-between gap-4">
                   <!-- '조회' 버튼, 내자산 페이지로 이동 -->
                   <router-link to="/transactionhistory">
-                    <button class="btn btn-light check" type="button">
-                      조회
-                    </button>
+                    <button class="btn btn-light check" type="button">조회</button>
                   </router-link>
 
                   <!-- '이체' 버튼, 송금 페이지로 이동 -->
                   <router-link to="/transfer">
-                    <button class="btn btn-light transfer" type="button">
-                      이체
-                    </button>
+                    <button class="btn btn-light transfer" type="button">이체</button>
                   </router-link>
                 </div>
               </div>
@@ -81,22 +73,16 @@
 
       <!-- 함께 결제 섹션 -->
       <div class="together-pay">
-        <label
-          ><h6>정산은 그만! <strong>함께 결제</strong>해봐요</h6></label
-        >
+        <label><h6>정산은 그만! <strong>함께 결제</strong>해봐요</h6></label>
       </div>
       <div class="together-section d-flex justify-content-center">
-        <div
-          class="together-card d-flex justify-content-between align-items-center p-3"
-        >
+        <div class="together-card d-flex justify-content-between align-items-center p-3">
           <div class="text-content">
             <h6>결제 할때, 한번에 다같이</h6>
             <p>함께 결제</p>
             <button class="btn btn-light">사용방법 보러가기</button>
           </div>
-          <div
-            class="image-content d-flex justify-content-center align-items-center"
-          >
+          <div class="image-content d-flex justify-content-center align-items-center">
             <img
               src="../assets/images/humans.png"
               class="human-image img-fluid"
@@ -116,7 +102,15 @@ import { Swiper, SwiperSlide } from "swiper/vue";
 import { Pagination } from "swiper/modules";
 import FooterNav from "../components/FooterNav.vue";
 import Header from "../components/Header.vue";
-import bankLogo from "../assets/images/kbbank.png";
+import apiClient from "../api/axios";
+import kbbankLogo from "../assets/images/kbbank.png";
+import shinhanLogo from "../assets/images/shinhan.png";
+import kakaobankLogo from "../assets/images/kakaobank.png";
+import hanabankLogo from "../assets/images/hanabank.png";
+import ibkbankLogo from "../assets/images/IBKbank.png";
+import wooriLogo from "../assets/images/wooribank.png";
+import tossLogo from "../assets/images/toss.png";
+import nhLogo from "../assets/images/NHbank.png";
 import copyIcon from "../assets/images/copy.png";
 
 export default {
@@ -142,33 +136,37 @@ export default {
   },
   data() {
     return {
-      showBalance: false,
-      accounts: [
-        {
-          number: "941602-00-1605113",
-          balance: 1565,
-          bankName: "국민은행",
-          bankLogo: bankLogo,
-          copyIcon: copyIcon,
-        },
-        {
-          number: "503120-36-9568712",
-          balance: 1700000,
-          bankName: "국민은행",
-          bankLogo: bankLogo,
-          copyIcon: copyIcon,
-        },
-        {
-          number: "621591-92-1567813",
-          balance: 516000,
-          bankName: "국민은행",
-          bankLogo: bankLogo,
-          copyIcon: copyIcon,
-        },
-      ],
+      showamount: false,
+      accounts: [],
+      bankLogos: {
+        "국민은행": kbbankLogo,
+        "신한은행": shinhanLogo,
+        "카카오뱅크": kakaobankLogo,
+        "하나은행": hanabankLogo,
+        "우리은행": wooriLogo,
+        "IBK기업은행": ibkbankLogo,
+        "토스은행": tossLogo,
+        "농협은행": nhLogo,
+      },
+      copyIcon: copyIcon,
     };
   },
+  created() {
+    this.fetchAccounts();
+  },
   methods: {
+    fetchAccounts() {
+      apiClient
+        .get("/account/all")
+        .then((response) => {
+          if (response.data.isSuccess) {
+            this.accounts = response.data.result.accountList;
+          }
+        })
+        .catch((error) => {
+          console.error("계좌 정보를 가져오는 중 오류 발생:", error);
+        });
+    },
     copyAccountNumber(accountNumber) {
       navigator.clipboard
         .writeText(accountNumber)
@@ -184,7 +182,7 @@ export default {
       return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
     goToGroupPayPage() {
-      this.$router.push("/grouppay"); // 그룹 결제 페이지로 이동
+      this.$router.push("/grouppay");
     },
   },
 };
@@ -243,8 +241,9 @@ h4 {
 
 .bank-icon {
   margin-left: 0px;
+  margin-right: 5px;
   height: 20px;
-  margin-top: 5px;
+  margin-top: 1.5px;
 }
 
 .bank-name {
@@ -260,7 +259,7 @@ h4 {
 }
 
 .amount {
-  font-size: 27px !important;
+  font-size: 28px !important;
   font-weight: bold;
   color: #ffffff;
   display: inline-block;
@@ -295,14 +294,13 @@ h4 {
   height: 43px;
   color: #505050;
   border-radius: 10px;
-  box-shadow: 2px 2px 5px rgba(86, 86, 86, 0.773); /* 그림자 추가 */
+  box-shadow: 2px 2px 5px rgba(86, 86, 86, 0.773);
 }
 
 .account-button .check {
   margin-left: -13px;
 }
 
-/* 함께 결제 섹션 */
 .together-pay label {
   margin-top: 60px;
   margin-left: 10px;
@@ -385,12 +383,12 @@ h4 {
 .account-section {
   width: 100%;
   margin-top: 30px;
-  padding: 0 20px; /* 좌우 여백 추가 */
+  padding: 0 20px;
 }
 
 .swiper {
   width: 100%;
-  overflow: visible; /* 슬라이더 밖으로 내용이 보이도록 설정 */
+  overflow: visible;
 }
 
 .swiper-slide {
@@ -398,16 +396,13 @@ h4 {
 }
 
 .swiper-slide:not(.swiper-slide-active) {
-  transform: scale(0.9); /* 활성화되지 않은 슬라이드를 약간 축소 */
-  opacity: 0.6; /* 활성화되지 않은 슬라이드의 투명도 조정 */
+  transform: scale(0.9);
+  opacity: 0.6;
 }
 
 .account-card {
-  /* 기존 스타일 유지 */
-  width: 100%; /* 너비를 100%로 설정하여 부모 요소에 맞춤 */
-  max-width: 250px; /* 최대 너비 설정 */
-  margin: 0 auto; /* 가운데 정렬 */
+  width: 100%;
+  max-width: 250px;
+  margin: 0 auto;
 }
-
-/* ... 나머지 스타일 ... */
 </style>

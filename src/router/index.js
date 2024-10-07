@@ -13,8 +13,6 @@ import BusinessCardList from "../views/business/BusinessCardList.vue";
 import MyCardRegistration from "../views/business/MyCardRegistration.vue";
 import FriendCardRegistration from "../views/business/FriendCardRegistration.vue";
 import Settings from "../views/settings/Settings.vue";
-import InviteFriends from "../views/settings/InviteFriends.vue";
-import SearchFriends from "../views/settings/SearchFriends.vue";
 import PayList from "../views/settings/PayList.vue";
 import Cancel from "../views/settings/Cancel.vue";
 import Logout from "../views/settings/Logout.vue";
@@ -30,7 +28,6 @@ import Verification from "../views/signup/Verification.vue";
 import Email from "../views/signup/Email.vue";
 import Password from "../views/signup/Password.vue";
 import MemberPay from "../views/pay/MemberPay.vue";
-import Agreement from "../views/asset/Agreement.vue";
 import PaymentSuccess from '../views/pay/PaymentSuccess.vue';
 import PaymentFailure from '../views/pay/PaymentFailure.vue';
 import GameList from '../views/pay/GameList.vue';
@@ -128,18 +125,6 @@ const routes = [
     path: '/settings',
     name: 'Settings',
     component: Settings,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/searchfriends",
-    name: "SearchFriends",
-    component: SearchFriends,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/invitefriends",
-    name: "InviteFriends",
-    component: InviteFriends,
     meta: { requiresAuth: true },
   },
   {
@@ -276,11 +261,6 @@ const routes = [
     path: '/password',
     name: 'Password',
     component: Password,
-  },
-  {
-    path: "/agreement",
-    name: "Agreement",
-    component: Agreement,
   },
   {
     path: '/sharelink/:targetPage',
