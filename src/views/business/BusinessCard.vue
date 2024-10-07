@@ -1,30 +1,43 @@
+businessCard.vue css완료
+
 <template>
   <div class="main-container">
+    <!-- 나의 명함으로 돌아가기 버튼 추가 -->
+
     <!-- 선택된 명함 표시 -->
     <div class="selected-card">
       <div class="name-tag">
-        <span>나의 명함</span>
+        <button @click="goBackToMyCard" class="back-to-my-card-button">
+          {{ nameTagLabel }}
+        </button>
       </div>
+
       <div class="card">
         <!-- preview-box 안에 실시간으로 formData 내용을 반영 -->
         <div class="preview-box">
-          <h3>{{ formData.company }}</h3>
-          <p>{{ formData.address }}</p>
-          <p>{{ formData.name }}</p>
-          <p>{{ formData.position }}</p>
-          <p>{{ formData.department }}</p>
-          <p>{{ formData.phone }}</p>
-          <p>{{ formData.phoneLandline }}</p>
-          <p>{{ formData.email }}</p>
+          <h3>{{ formData.company || "회사 정보 없음" }}</h3>
+          <p>{{ formData.address || "주소 없음" }}</p>
+          <p>{{ formData.name || "이름 없음" }}</p>
+          <p>{{ formData.position || "직책 없음" }}</p>
+          <p>{{ formData.department || "부서 없음" }}</p>
+          <p>{{ formData.phone || "전화번호 없음" }}</p>
+          <p>{{ formData.phoneLandline || "유선전화 없음" }}</p>
+          <p>{{ formData.email || "이메일 없음" }}</p>
         </div>
 
+        <!-- QR 코드 및 명함 상세 정보 -->
         <div class="card-details-container">
           <div class="card-details">
             <p><strong>이름:</strong> {{ formData.name }}</p>
             <p><strong>연락처:</strong> {{ formData.phone }}</p>
             <p><strong>이메일:</strong> {{ formData.email }}</p>
             <p><strong>주소:</strong> {{ formData.address }}</p>
+            <!-- 친구 명함일 때만 메모 표시 -->
+            <p v-if="isFriendCard">
+              <strong>메모:</strong> {{ formData.memo }}
+            </p>
           </div>
+
           <qrcode-vue
             :value="qrValue"
             :size="60"
@@ -33,8 +46,15 @@
           />
         </div>
       </div>
+
+      <!-- 수정 및 삭제 버튼 -->
+      <div class="button-container">
+        <button type="button" @click="openBottomSheet">수정</button>
+        <button @click="deleteCard">삭제</button>
+      </div>
     </div>
 
+    <!-- 명함 목록 -->
     <div class="name-tag-sec">
       <span>명함목록</span>
     </div>
@@ -53,8 +73,16 @@
             <p>{{ card.position }} / {{ card.department }}</p>
             <p>{{ card.company }}</p>
           </div>
-          <div class="card-image">
-            <img :src="card.imageUrl" alt="명함 이미지" />
+
+          <div class="preview-box-small">
+            <h3>{{ card.company }}</h3>
+            <p>{{ card.address }}</p>
+            <p>{{ card.name }}</p>
+            <p>{{ card.position }}</p>
+            <p>{{ card.department }}</p>
+            <p>{{ card.phone }}</p>
+            <p>{{ card.phoneLandline }}</p>
+            <p>{{ card.email }}</p>
           </div>
         </div>
       </div>
@@ -62,17 +90,62 @@
 
     <div class="divider"></div>
 
-    <!-- FooterNav 컴포넌트 사용 -->
+    <!-- FooterNav 컴포넌트 -->
     <FooterNav :buttonType="'plus'" :buttonAction="goToaddBusinessCard" />
+
+    <!-- 수정 bottom-sheet -->
+    <bottom-sheet id="editBottomSheet" title="명함 수정">
+      <main>
+        <!-- 명함 정보 수정 입력 폼 -->
+        <div class="edit-form">
+          <label>회사명:</label>
+          <input v-model="formData.company" type="text" />
+
+          <label>주소:</label>
+          <input v-model="formData.address" type="text" />
+
+          <label>이름:</label>
+          <input v-model="formData.name" type="text" />
+
+          <label>직책:</label>
+          <input v-model="formData.position" type="text" />
+
+          <label>부서:</label>
+          <input v-model="formData.department" type="text" />
+
+          <label>휴대전화:</label>
+          <input v-model="formData.phone" type="text" />
+
+          <label>유선전화:</label>
+          <input v-model="formData.phoneLandline" type="text" />
+
+          <label>이메일:</label>
+          <input v-model="formData.email" type="text" />
+
+          <!-- 친구 명함일 때만 메모 수정 가능 -->
+          <div v-if="isFriendCard">
+            <label>메모:</label>
+            <textarea
+              v-model="formData.memo"
+              class="memo-textarea"
+              placeholder="메모를 입력하세요..."
+            ></textarea>
+          </div>
+        </div>
+
+        <div class="modal-buttons">
+          <button @click="saveChanges">저장</button>
+          <button @click="closeBottomSheet">취소</button>
+        </div>
+      </main>
+    </bottom-sheet>
+
     <!-- QR 코드 모달 -->
     <div v-if="showModal" class="modal" @click="closeModal">
       <div class="modal-content" @click.stop>
-        <!-- 추가된 텍스트 -->
-        <!-- QR 코드 감싸는 추가 div -->
         <div class="qr-code-container">
           <qrcode-vue :value="qrValue" :size="200" />
         </div>
-        <!-- 확대된 QR 코드 -->
       </div>
       <p class="additional-text">QR코드를 스캔하세요</p>
     </div>
@@ -92,14 +165,14 @@ export default {
   data() {
     return {
       formData: {
-        name: "John Smith",
-        phone: "010-2315-6941",
-        email: "email@gmail.com",
-        position: "Developer",
-        department: "Engineering",
-        company: "Tech Corp",
-        address: "서울 광진구 능동로 195-16 6층",
-        phoneLandline: "02-1234-5678",
+        name: "",
+        phone: "",
+        email: "",
+        position: "",
+        department: "",
+        company: "",
+        address: "",
+        phoneLandline: "",
         memo: "",
       },
       cardList: [
@@ -109,7 +182,7 @@ export default {
           position: "Developer",
           department: "Engineering",
           company: "Tech Corp",
-          imageUrl: "https://via.placeholder.com/100x50", // 이미지 URL
+          memo: "", // 메모 추가
         },
         {
           id: 2,
@@ -117,7 +190,7 @@ export default {
           position: "Designer",
           department: "Creative",
           company: "Creative Agency",
-          imageUrl: "https://via.placeholder.com/100x50", // 이미지 URL
+          memo: "", // 메모 추가
         },
         {
           id: 3,
@@ -125,7 +198,7 @@ export default {
           position: "Project Manager",
           department: "Operations",
           company: "Business Solutions",
-          imageUrl: "https://via.placeholder.com/100x50", // 이미지 URL
+          memo: "", // 메모 추가
         },
         {
           id: 4,
@@ -133,30 +206,121 @@ export default {
           position: "Marketing Specialist",
           department: "Marketing",
           company: "Marketing Group",
-          imageUrl: "https://via.placeholder.com/100x50", // 이미지 URL
+          memo: "", // 메모 추가
         },
       ],
       showModal: false, // 모달 표시 상태
+      isFriendCard: false, // 친구 명함 여부 상태 추가
     };
   },
+  mounted() {
+    // 로컬 스토리지에서 데이터를 불러오기
+    const storedData = localStorage.getItem("businessCardData");
+    if (storedData) {
+      this.formData = JSON.parse(storedData); // JSON 데이터를 객체로 변환하여 formData에 할당
+    }
+  },
   computed: {
+    nameTagLabel() {
+      return this.isFriendCard ? "친구 명함" : "나의 명함";
+    },
     qrValue() {
-      // QR 코드에 사용할 문자열을 생성
       return `
-      이름: ${this.formData?.name || "이름 없음"}
-      연락처: ${this.formData?.phone || "연락처 없음"}
-      이메일: ${this.formData?.email || "이메일 없음"}
-      주소: ${this.formData?.address || "주소 없음"}
-      메모: ${this.formData?.memo || ""}
-    `.trim();
+  이름: ${this.formData?.name || "이름 없음"}
+  연락처: ${this.formData?.phone || "연락처 없음"}
+  이메일: ${this.formData?.email || "이메일 없음"}
+  주소: ${this.formData?.address || "주소 없음"}
+  메모: ${this.formData?.memo || ""}
+  `.trim();
     },
   },
   methods: {
-    selectCard(card) {
-      this.formData = { ...card }; // 선택한 카드를 formData에 복사
+    // 나의 명함으로 돌아가는 메서드
+    goBackToMyCard() {
+      this.isFriendCard = false; // '나의 명함'으로 돌아올 때 원래 상태로 변경
+      const storedData = localStorage.getItem("businessCardData");
+      if (storedData) {
+        this.formData = JSON.parse(storedData); // 로컬 스토리지의 값을 formData에 할당
+        alert("로컬 스토리지에서 명함 정보를 불러왔습니다!");
+      } else {
+        alert("로컬 스토리지에 명함 정보가 없습니다.");
+      }
     },
+
+    isChanged(field) {
+      return (
+        this.formData &&
+        this.originalFormData &&
+        this.formData[field] !== this.originalFormData[field]
+      );
+    },
+    selectCard(card) {
+      this.formData = { ...card }; // 선택한 카드 데이터를 formData에 복사
+      this.isFriendCard = true; // 명함을 선택하면 '친구 명함'으로 변경
+    },
+
+    saveMemo() {
+      const cardIndex = this.cardList.findIndex(
+        (card) => card.id === this.formData.id
+      );
+      if (cardIndex !== -1) {
+        this.cardList[cardIndex].memo = this.formData.memo; // 메모 업데이트
+        alert("메모가 저장되었습니다.");
+      }
+    },
+
+    openBottomSheet() {
+      const bottomSheet = document.getElementById("editBottomSheet");
+      if (bottomSheet) {
+        bottomSheet.openSheet();
+      } else {
+        console.error("Bottom sheet element not found");
+      }
+    },
+    closeBottomSheet() {
+      const bottomSheet = document.getElementById("editBottomSheet");
+      if (bottomSheet) {
+        bottomSheet.closeSheet();
+      }
+    },
+
+    saveChanges() {
+      // 수정된 내용을 저장하는 로직 추가 가능
+      localStorage.setItem("businessCardData", JSON.stringify(this.formData)); // 저장된 내용을 로컬 스토리지에 반영
+      const cardIndex = this.cardList.findIndex(
+        (card) => card.id === this.formData.id
+      );
+      if (cardIndex !== -1) {
+        this.cardList[cardIndex] = { ...this.formData }; // 선택된 카드 데이터 업데이트
+      }
+      this.closeBottomSheet(); // 저장 후 bottom-sheet 닫기
+    },
+
+    deleteCard() {
+      if (confirm("정말로 이 명함을 삭제하시겠습니까?")) {
+        // 친구 명함이면 cardList에서 삭제
+        if (this.isFriendCard) {
+          const index = this.cardList.findIndex(
+            (card) => card.id === this.formData.id
+          );
+          if (index !== -1) {
+            this.cardList.splice(index, 1);
+            alert("명함이 삭제되었습니다.");
+          }
+        } else {
+          // 나의 명함이면 formData 초기화
+          this.resetMyCard();
+          alert("나의 명함 정보가 초기화되었습니다.");
+        }
+      }
+    },
+    resetMyCard() {
+      // 나의 명함 정보를 초기화
+      this.formData = { ...this.originalFormData };
+      localStorage.removeItem("businessCardData"); // 로컬 스토리지에서도 삭제
+    },
+
     goToaddBusinessCard() {
-      // '/addbusinesscard' 페이지로 라우팅
       this.$router.push("/addbusinesscard");
     },
     closeModal() {
@@ -229,6 +393,52 @@ export default {
 .preview-box p:nth-child(8)::before {
 }
 
+/* 명함수정 */
+button,
+select {
+  text-transform: none;
+  border: none;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+
+.edit-form label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.edit-form input {
+  margin-bottom: 15px;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+edit-form input,
+.memo-textarea {
+  margin-bottom: 15px;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%; /* input 필드와 동일한 너비 */
+  box-sizing: border-box; /* padding 포함한 너비 계산 */
+}
+
+/* 필요하다면 추가적인 수정 */
+.memo-textarea {
+  resize: none; /* 크기 조절 불가 */
+  height: 100px; /* 적당한 높이 설정 */
+}
+
+/* 모달 */
 .modal {
   position: fixed;
   top: 0;
@@ -283,16 +493,62 @@ export default {
   word-wrap: break-word; /* 텍스트가 너무 길 경우 줄바꿈 처리 */
 }
 
-.card-image {
-  min-width: 80px; /* 이미지가 고정된 너비를 가지도록 설정 */
-  margin-left: 10px; /* 이미지와 텍스트 간격 확보 */
+.preview-box-small {
+  text-align: center; /* 가운데 정렬 */
+  padding: 3px 8px; /* 내부 패딩을 줄임 */
+  height: 40px; /* 고정된 높이 */
+  width: 80px; /* 고정된 너비 */
+  background-color: white;
 }
 
-.card-image img {
-  width: 80px;
-  height: 40px;
-  object-fit: cover; /* 이미지 비율 유지 */
-  border-radius: 5px;
+.preview-box-small h3 {
+  font-size: 5px; /* 회사명 폰트 크기 축소 */
+  font-weight: bold; /* 굵게 */
+  text-align: left;
+  margin: 0px;
+}
+
+/* 이름 */
+.preview-box-small p {
+  margin: 0px 0; /* 각 문장 간의 간격 */
+  font-size: 4px; /* 일반 텍스트 크기 축소 */
+  text-align: left;
+}
+
+.preview-box-small p:nth-child(2) {
+  font-size: 3px; /* 주소 폰트 크기 축소 */
+  text-align: left;
+  margin: 0px 0px 1px; /* 간격 축소 */
+}
+
+.preview-box-small p:nth-child(4),
+.preview-box-small p:nth-child(5) {
+  font-size: 3px; /* 직책과 부서 폰트 크기 축소 */
+  font-weight: bold; /* 직책과 부서 텍스트 굵게 */
+  text-align: left;
+}
+
+.preview-box-small p:nth-child(6),
+.preview-box-small p:nth-child(7),
+.preview-box-small p:nth-child(8) {
+  font-size: 3px; /* 전화번호, 유선전화번호, 이메일 크기 축소 */
+  text-align: right;
+}
+
+.preview-box-small p:nth-child(4)::before {
+  content: "Position: "; /* 직책 앞에 텍스트 추가 */
+}
+
+.preview-box-small p:nth-child(5)::before {
+  content: "Dept: "; /* 부서 앞에 텍스트 추가 */
+}
+
+.preview-box-small p:nth-child(6)::before {
+  content: "H.P: "; /* 전화번호 앞에 텍스트 추가 */
+}
+
+.preview-box-small p:nth-child(7)::before {
+  content: "TEL: "; /* 유선전화번호 앞에 텍스트 추가 */
 }
 
 /* 카드 아이템 스타일 */
@@ -345,18 +601,18 @@ export default {
   font-weight: bold;
   font-size: 14px;
 }
-/* 명함목록 네임택 */
+/* 명함 목록 네임택 */
 .name-tag-sec {
-  position: absolute;
-  top: 410px; /* 서류에서 튀어나온 듯한 느낌 */
-  left: 5px;
-  background-color: #efeded; /* 네임택 색상 */
-  padding: 5px 15px;
-  border-radius: 5px;
+  position: relative; /* 명함 목록 상단에 고정 */
+  top: 35px; /* 상단에서 살짝 떨어지도록 설정 */
+  left: -135.8px; /* 왼쪽으로 살짝 떨어지도록 설정 */
+  background-color: #efeded;
+  padding: 5px 15px; /* 패딩을 조정해 텍스트에 맞춤 */
+  border-radius: 5px 5px 0 0; /* 상단 모서리 둥글게 설정 */
   color: rgb(0, 0, 0);
   font-weight: bold;
   font-size: 14px;
-  z-index: 0;
+  z-index: 10; /* 다른 요소들 위로 오도록 설정 */
 }
 
 /* 명함 내용 스타일 */
@@ -418,14 +674,17 @@ card-details-container {
 
 /* 명함 목록 스타일 */
 .card-list {
-  background-color: #efeded; /* 기존 배경색을 사용 */
+  background-color: #efeded;
   padding: 20px;
-  border-radius: 10px;
-  width: 350px; /* 명함 목록의 너비 조정 */
+  border-top-right-radius: 0; /* 상단 우측 모서리 둥글기 제거 */
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
+  width: 350px;
   height: 350px;
-  margin-top: 40px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
+  margin-top: 30px; /* 네임택이 들어갈 수 있도록 간격 추가 */
+  position: relative;
 }
 
 .divider {
@@ -445,13 +704,61 @@ card-details-container {
 }
 
 .memo-textarea {
-  background-color: #efeded; /* 배경색 설정 */
-  border: none; /* 테두리 제거 */
-  padding: 5px; /* 내부 여백 추가 */
-  width: 170px; /* textarea가 남은 공간을 모두 차지하도록 설정 */
-  resize: none; /* 크기 조절 불가 */
-  height: 60px; /* 기본 높이 설정 */
-  font-size: 13px; /* 글꼴 크기 설정 */
-  font-family: inherit; /* 부모 요소의 폰트 상속 */
+  margin-bottom: 15px;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* 수정/삭제버튼 */
+.button-container {
+  display: flex;
+  justify-content: flex-end; /* 버튼을 오른쪽에 정렬 */
+  gap: 10px; /* 버튼 간의 간격 설정 */
+  margin-top: 10px;
+}
+
+.button-container button {
+  font-size: 12px;
+  border: 1.5px solid #ccc;
+  border-radius: 5px;
+  background-color: #efeded;
+  color: black;
+  cursor: pointer;
+}
+
+.button-container button:hover {
+  background-color: #e0e0e0; /* 호버 시 색상 변경 */
+}
+
+.button-container button:active {
+  background-color: #fff; /* 클릭 시 색상 변경 */
+}
+
+/* 취소/저장버튼 */
+.modal-buttons {
+  display: flex;
+  justify-content: center; /* 중앙 정렬 */
+  gap: 10px; /* 버튼 간격 */
+  margin-top: 20px; /* 위쪽 간격 추가 */
+}
+
+.modal-buttons button {
+  font-size: 12px;
+  border: 1.5px solid #ccc;
+  border-radius: 5px;
+  background-color: #ffffff;
+  color: black;
+  cursor: pointer;
+  padding: 8px 16px; /* 적당한 padding 설정 */
+}
+
+.modal-buttons button:hover {
+  background-color: #e0e0e0; /* hover 시 색상 변경 */
+}
+
+.modal-buttons button:active {
+  background-color: #fff; /* 클릭 시 색상 변경 */
 }
 </style>
