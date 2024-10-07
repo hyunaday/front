@@ -7,6 +7,7 @@
         <span class="amount">{{ formatNumber(transactionAmount) }}원</span>
         <button class="analyze-button">분석</button>
       </div>
+
       <div class="advertisement-banner">
         <div class="banner-content">
           <img src="../../assets/images/kbpay.png" alt="광고 배너" class="banner-image" />
@@ -21,6 +22,7 @@
         <span class="account-title">계좌</span>
         <span class="account-amount">{{ formatNumber(totalAccountBalance) }}원</span>
       </div>
+
       <div class="withdraw-deposit-section">
         <div class="transactions">
           <span class="transactions-title">입출금</span>
@@ -51,6 +53,7 @@
 
         <div class="account-list">
           <div class="account-card">
+            <img src="../../assets/images/kbbank.png" alt="적금 아이콘" class="account-icon" />
             <div class="account-info">
               <span class="transactions-title">KB국민프리미엄적금</span>
               <span class="account-balance">{{ formatNumber(savingsAccount.balance) }}원</span>
@@ -69,13 +72,12 @@
         <div class="transactions">
           <span class="transactions-title">신용카드</span>
         </div>
-
         <div class="account-list">
-          <div v-for="(card, index) in creditCards" :key="index" class="account-card">
-            <img :src="card.image" alt="신용카드 아이콘" class="account-icon" />
+          <div v-for="(creditCard, index) in creditCards" :key="index" class="account-card">
+            <img :src="creditCard.image" alt="신용카드 아이콘" class="account-icon" />
             <div class="account-info">
-              <span class="transactions-title">{{ card.name }}</span>
-              <span class="account-balance credit-card-balance">{{ formatNumber(card.balance) }}원</span>
+              <span class="transactions-title">{{ creditCard.creditIdx }}</span>
+              <span class="account-balance credit-card-balance">{{ formatNumber(creditCard.amount_sum) }}원</span>
             </div>
           </div>
         </div>
@@ -87,6 +89,7 @@
         <span class="account-title">대출</span>
         <div class="account-list">
           <div class="account-card">
+            <img src="../../assets/images/kbbank.png" alt="주택담보대출 아이콘" class="account-icon" />
             <div class="account-info">
               <span class="transactions-title">주택담보대출</span>
               <span class="account-balance credit-card-balance">{{ `${formatNumber(loanAmount)}` }}원</span>
@@ -94,15 +97,15 @@
           </div>
         </div>
       </div>
-
     </div>
+
     <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
   </div>
 </template>
 
 <script>
 import FooterNav from '../../components/FooterNav.vue';
-import apiClient from '../../api/axios.js'; 
+import apiClient from '../../api/axios.js';  // axios 클라이언트 불러오기
 
 export default {
   name: 'MyAssets',
@@ -120,15 +123,10 @@ export default {
       savingsAccount: {
         balance: 6000000,
       },
-      creditCards: [
-        { name: 'KB알파원', balance: 150000, image: '../src/assets/images/KB카드알파원.png' },
-        { name: 'KB청춘대로 톡톡', balance: 100000000, image: '../src/assets/images/KB카드청춘대로톡톡.png' },
-        { name: '현대 네이버페이', balance: 1385290000, image: '../src/assets/images/현대카드네이버페이.png' },
-      ],
+      creditCards: [],  // 초기값을 빈 배열로 설정
       loanAmount: 480000000,
     };
   },
-
   computed: {
     totalAccountBalance() {
       return this.accounts.reduce((total, account) => total + account.balance, 0) + this.savingsAccount.balance;
@@ -141,12 +139,34 @@ export default {
     }
   },
   methods: {
-    formatNumber(num) {
-      return num.toLocaleString();
-    },
+  formatNumber(num) {
+    return num.toLocaleString();
+  },
+  async fetchCreditCards() {
+    try {
+      const idx = 1;  // 예시 idx 값 (필요한 값으로 대체 가능)
+      const response = await apiClient.get(`/api/cards?idx=${idx}`);
+      
+      // 응답 데이터 확인
+      console.log('Response data:', response.data); // 응답 데이터 로깅
+      
+      if (response.data.cards) {
+        this.creditCards = response.data.cards;  // 받아온 데이터를 creditCards에 저장
+      } else {
+        console.error('No cards found in the response data.');
+      }
+    } catch (error) {
+      console.error('Error fetching credit cards:', error);
+    }
   },
 }
+,
+  created() {
+    this.fetchCreditCards();  // 컴포넌트가 생성될 때 API 호출
+  }
+};
 </script>
+
 
 <style scoped>
 .main-container {
@@ -224,6 +244,7 @@ h1 {
 
 .transactions-title {
   font-size: 12px;
+  text-align: right; 
 }
 
 .transactions-amount {
@@ -252,6 +273,8 @@ h1 {
 
 .account-balance {
   font-size: 12px;
+  text-align: right;
+
 }
 
 .credit-card-balance::before {
@@ -277,48 +300,41 @@ h1 {
   margin-bottom: 40px;
 }
 
-.advertisement-banner {
-  background-color: #f3f3f3;
-  border-radius: 10px;
-  padding: 5px;
-  margin-top: 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+.banner-image {
+  width: 50px;
+  height: 50px;
 }
 
 .banner-content {
+  margin-top: 20px;
   display: flex;
   align-items: center;
 }
 
-.banner-image {
-  width: 45px;
-  height: auto;
-  margin-right: 10px;
-}
-
 .banner-text {
-  text-align: left;
+  margin-left: 10px;
 }
 
 .banner-title {
-  margin: 0;
   font-size: 16px;
   font-weight: bold;
+  margin-bottom: 0; /* margin-bottom 제거 */
 }
 
 .banner-subtitle {
-  margin: 0;
   font-size: 12px;
-  font-weight: 300;
+  color: #777;
 }
 
-.loan-section {
-  margin-top: 20px;
+hr {
+  margin: 20px 0;
 }
 
 .account-icon {
-  width: 40px; /* 가로 크기 설정 */
-  height: 40px; /* 세로 크기 설정 */
-  object-fit: contain; /* 비율을 유지하며 크기 조정 */
+  width: 40px;
+  height: 40px;
+  object-fit: cover; /* 이미지를 비율에 맞춰서 자름 */
+  border-radius: 50%; /* 이미지를 동그랗게 만듦 */
+  margin-right: 10px; /* 이미지와 텍스트 사이 간격 추가 */
 }
 </style>

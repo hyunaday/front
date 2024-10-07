@@ -108,6 +108,8 @@ export default {
           this.transactions = response.data.result.accountList; // 계좌 리스트에서 거래 내역을 가져오기
           this.bankName = this.transactions[0].bankName; // 은행 이름 설정
           this.accountNumber = this.transactions[0].accountNumber; // 계좌 번호 설정
+          this.Name = this.transactions[0].Name; // 계좌 번호 설정
+
         } else {
           console.error("계좌 정보를 가져오지 못했습니다.");
         }
