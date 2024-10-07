@@ -1,5 +1,5 @@
 <template>
-  <div class="main-container d-flex flex-column justify-content-center align-items-center">
+  <div class="main-container">
     <Header />
     <div class="transfer-page">
       <div class="transfer-form">
@@ -131,11 +131,6 @@ export default {
 </script>
 
 <style scoped>
-.main-container {
-  height: 100vh;
-  padding: 20px;
-}
-
 .transfer-page {
   max-width: 400px;
   border-radius: 10px;

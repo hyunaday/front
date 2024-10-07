@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="main-container d-flex flex-column justify-content-center align-items-center"
-  >
+  <div class="main-container">
   <Header />
 
     <div>
