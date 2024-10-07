@@ -1,3 +1,5 @@
+businessCard.vue css완료
+
 <template>
   <div class="main-container">
     <!-- 나의 명함으로 돌아가기 버튼 추가 -->
@@ -153,7 +155,6 @@
 <script>
 import FooterNav from "../../components/FooterNav.vue"; // 경로를 올바르게 수정
 import QrcodeVue from "qrcode.vue"; // QR 코드 라이브러리 임포트
-import axios from "../../api/axios.js"; // Axios 설정 파일을 임포트
 
 export default {
   name: "BusinessCard",
@@ -174,13 +175,50 @@ export default {
         phoneLandline: "",
         memo: "",
       },
-      cardList: [],
+      cardList: [
+        {
+          id: 1,
+          name: "Alice Johnson",
+          position: "Developer",
+          department: "Engineering",
+          company: "Tech Corp",
+          memo: "", // 메모 추가
+        },
+        {
+          id: 2,
+          name: "Bob Lee",
+          position: "Designer",
+          department: "Creative",
+          company: "Creative Agency",
+          memo: "", // 메모 추가
+        },
+        {
+          id: 3,
+          name: "Charlie Kim",
+          position: "Project Manager",
+          department: "Operations",
+          company: "Business Solutions",
+          memo: "", // 메모 추가
+        },
+        {
+          id: 4,
+          name: "David Park",
+          position: "Marketing Specialist",
+          department: "Marketing",
+          company: "Marketing Group",
+          memo: "", // 메모 추가
+        },
+      ],
       showModal: false, // 모달 표시 상태
       isFriendCard: false, // 친구 명함 여부 상태 추가
     };
   },
   mounted() {
-    this.fetchBusinessCards(); // 명함 목록을 불러옴
+    // 로컬 스토리지에서 데이터를 불러오기
+    const storedData = localStorage.getItem("businessCardData");
+    if (storedData) {
+      this.formData = JSON.parse(storedData); // JSON 데이터를 객체로 변환하여 formData에 할당
+    }
   },
   computed: {
     nameTagLabel() {
@@ -188,26 +226,15 @@ export default {
     },
     qrValue() {
       return `
-        이름: ${this.formData?.name || "이름 없음"}
-        연락처: ${this.formData?.phone || "연락처 없음"}
-        이메일: ${this.formData?.email || "이메일 없음"}
-        주소: ${this.formData?.address || "주소 없음"}
-        메모: ${this.formData?.memo || ""}
-      `.trim();
+  이름: ${this.formData?.name || "이름 없음"}
+  연락처: ${this.formData?.phone || "연락처 없음"}
+  이메일: ${this.formData?.email || "이메일 없음"}
+  주소: ${this.formData?.address || "주소 없음"}
+  메모: ${this.formData?.memo || ""}
+  `.trim();
     },
   },
   methods: {
-    // 명함 목록을 서버에서 불러오는 메서드
-    fetchBusinessCards() {
-      axios
-        .get("/businessCard/all") // 실제 API 주소로 변경
-        .then((response) => {
-          this.cardList = response.data; // 서버에서 받은 명함 데이터를 cardList에 저장
-        })
-        .catch((error) => {
-          console.error("명함 목록을 불러오는 중 오류 발생:", error);
-        });
-    },
     // 나의 명함으로 돌아가는 메서드
     goBackToMyCard() {
       this.isFriendCard = false; // '나의 명함'으로 돌아올 때 원래 상태로 변경
@@ -219,10 +246,29 @@ export default {
         alert("로컬 스토리지에 명함 정보가 없습니다.");
       }
     },
+
+    isChanged(field) {
+      return (
+        this.formData &&
+        this.originalFormData &&
+        this.formData[field] !== this.originalFormData[field]
+      );
+    },
     selectCard(card) {
       this.formData = { ...card }; // 선택한 카드 데이터를 formData에 복사
       this.isFriendCard = true; // 명함을 선택하면 '친구 명함'으로 변경
     },
+
+    saveMemo() {
+      const cardIndex = this.cardList.findIndex(
+        (card) => card.id === this.formData.id
+      );
+      if (cardIndex !== -1) {
+        this.cardList[cardIndex].memo = this.formData.memo; // 메모 업데이트
+        alert("메모가 저장되었습니다.");
+      }
+    },
+
     openBottomSheet() {
       const bottomSheet = document.getElementById("editBottomSheet");
       if (bottomSheet) {
@@ -237,33 +283,43 @@ export default {
         bottomSheet.closeSheet();
       }
     },
-    // 명함 수정 후 저장하는 메서드
+
     saveChanges() {
-      axios
-        .put("/businessCard?idx={idx}", this.formData) // 실제 API 주소로 변경
-        .then(() => {
-          alert("명함이 성공적으로 저장되었습니다!");
-          this.fetchBusinessCards(); // 수정 후 목록을 다시 불러옴
-          this.closeBottomSheet(); // bottom-sheet 닫기
-        })
-        .catch((error) => {
-          console.error("명함 저장 중 오류 발생:", error);
-        });
+      // 수정된 내용을 저장하는 로직 추가 가능
+      localStorage.setItem("businessCardData", JSON.stringify(this.formData)); // 저장된 내용을 로컬 스토리지에 반영
+      const cardIndex = this.cardList.findIndex(
+        (card) => card.id === this.formData.id
+      );
+      if (cardIndex !== -1) {
+        this.cardList[cardIndex] = { ...this.formData }; // 선택된 카드 데이터 업데이트
+      }
+      this.closeBottomSheet(); // 저장 후 bottom-sheet 닫기
     },
-    // 명함을 삭제하는 메서드
+
     deleteCard() {
       if (confirm("정말로 이 명함을 삭제하시겠습니까?")) {
-        axios
-          .delete(`/businessCard?idx={idx}${this.formData.id}`) // 실제 API 주소로 변경
-          .then(() => {
+        // 친구 명함이면 cardList에서 삭제
+        if (this.isFriendCard) {
+          const index = this.cardList.findIndex(
+            (card) => card.id === this.formData.id
+          );
+          if (index !== -1) {
+            this.cardList.splice(index, 1);
             alert("명함이 삭제되었습니다.");
-            this.fetchBusinessCards(); // 삭제 후 목록을 다시 불러옴
-          })
-          .catch((error) => {
-            console.error("명함 삭제 중 오류 발생:", error);
-          });
+          }
+        } else {
+          // 나의 명함이면 formData 초기화
+          this.resetMyCard();
+          alert("나의 명함 정보가 초기화되었습니다.");
+        }
       }
     },
+    resetMyCard() {
+      // 나의 명함 정보를 초기화
+      this.formData = { ...this.originalFormData };
+      localStorage.removeItem("businessCardData"); // 로컬 스토리지에서도 삭제
+    },
+
     goToaddBusinessCard() {
       this.$router.push("/addbusinesscard");
     },
@@ -525,6 +581,7 @@ edit-form input,
   background-color: #efeded;
   padding: 20px;
   margin-top: 38px;
+  margin-bottom: 20px;
   border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 서류 모양의 그림자 */
   position: relative;

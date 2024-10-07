@@ -523,7 +523,7 @@ export default {
 <style scoped>
 .calendar-container {
   text-align: center;
-  font-family: "Poppins", sans-serif;
+  font-family: "Poppins", sans-serif; /* Poppins 폰트 적용 */
 }
 
 .calendar-header {
@@ -540,9 +540,12 @@ export default {
   padding: 0.5rem;
   margin-right: 0.5rem;
   border-radius: 5px;
-  border: none;
-  background: transparent;
-  font-family: "Poppins", sans-serif;
+  border: none; /* 테두리 제거 */
+  appearance: none; /* 기본 드롭다운 화살표 제거 */
+  background: transparent; /* 배경을 투명으로 설정 */
+  font-family: "Poppins", sans-serif; /* Poppins 폰트 적용 */
+  font-size: 24px;
+  color: #000000;
 }
 
 .monthly-summary {
