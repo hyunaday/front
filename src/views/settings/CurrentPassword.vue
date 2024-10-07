@@ -46,7 +46,7 @@
       async checkCurrentPassword() {
         try {
           // API call to validate current password
-          const response = await axios.post('/api/member/login', {
+          const response = await axios.post('/member/login', {
             password: this.currentPassword
           });
   
