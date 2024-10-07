@@ -38,7 +38,7 @@
               <p class="transaction-name">{{ transaction.name }}</p>
               <p 
                 class="transaction-account" 
-                @click="copyToClipboard(transaction.accountNumber)"
+                @click="copyAccountNumber(transaction.accountNumber)"
               >
                 {{ formatAccountNumber(transaction.accountNumber) }}
               </p>
@@ -75,35 +75,37 @@ export default {
       this.recipient = this.recipient.replace(/[^0-9]/g, '').slice(0, 13);
     },
     async sendMoney() {
-  if (this.recipient.length === 13) {
-    try {
-      const response = await axios.post('/account/sendAccount', {
-        accountNumber: this.recipient,
-      });
-      console.log(`송금 성공: ${response.data}`);
-      alert("송금이 완료되었습니다.");
-    } catch (error) {
-      console.error('송금 실패:', error);
-
-      if (error.response && error.response.data && error.response.data.errorCode) {
-        const errorCode = error.response.data.errorCode;
-
-        if (errorCode === 'ACCOUNT4001') {
-          alert("해당 계좌가 존재하지 않습니다.");
-        } else if (errorCode === 'ACCOUNT4003') {
-          alert("계좌 잔액이 부족합니다.");
-        } else {
-          alert("송금에 실패했습니다. 다시 시도해주세요.");
+      if (this.recipient.length === 13) {
+        try {
+          const response = await axios.post('/account/{accountIdx}/history', {
+            fromAccountNumber: '333-3333-3333',  // 사용자의 계좌 번호로 설정
+            toAccountNumber: this.recipient,
+            amount: 1000000,  // 예시 금액 (필요시 수정)
+            name: '이체',
+          });
+          if (response.data.isSuccess) {
+            console.log(`송금 성공: ${response.data}`);
+            alert("송금이 완료되었습니다.");
+          }
+        } catch (error) {
+          console.error('송금 실패:', error);
+          if (error.response && error.response.data && error.response.data.errorCode) {
+            const errorCode = error.response.data.errorCode;
+            if (errorCode === 'ACCOUNT4001') {
+              alert("해당 계좌가 존재하지 않습니다.");
+            } else if (errorCode === 'ACCOUNT4003') {
+              alert("계좌 잔액이 부족합니다.");
+            } else {
+              alert("송금에 실패했습니다. 다시 시도해주세요.");
+            }
+          } else {
+            alert("송금에 실패했습니다. 다시 시도해주세요.");
+          }
         }
       } else {
-        alert("송금에 실패했습니다. 다시 시도해주세요.");
+        alert("송금할 계좌번호를 확인해주세요.");
       }
-    }
-  } else {
-    alert("송금할 계좌번호를 확인해주세요.");
-  }
-},
-
+    },
     formatAccountNumber(accountNumber) {
       return `${accountNumber.slice(0, 3)}-${accountNumber.slice(3, 7)}-${accountNumber.slice(7, 11)}-${accountNumber.slice(11)}`;
     },
@@ -113,11 +115,11 @@ export default {
         { id: 2, name: '김철수', accountNumber: '1234567890123', image: '/path/to/image2.jpg' },
       ];
     },
-    copyToClipboard(accountNumber) {
-      const formattedAccount = this.formatAccountNumber(accountNumber);
-      navigator.clipboard.writeText(accountNumber)
+    copyAccountNumber(accountNumber) {
+      this.recipient = accountNumber;
+      navigator.clipboard.writeText(this.formatAccountNumber(accountNumber))
         .then(() => {
-          alert(`계좌번호가 복사되었습니다.`);
+          alert("계좌번호가 복사되었습니다.");
         })
         .catch(err => {
           console.error('복사 실패:', err);

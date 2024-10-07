@@ -1,5 +1,5 @@
 <template>
-  <div class="main-container d-flex flex-column justify-content-center align-items-center">
+  <div class="main-container">
     <Header />
     <div class="my-assets">
       <h1><strong>{{ userName }}</strong>님의 총 자산</h1>
@@ -187,14 +187,9 @@ export default {
 };
 </script>
 
-
-
 <style scoped>
-.main-container {
-  position: relative; /* 전체 컨테이너 */
-}
-
 .my-assets {
+  margin-top: 70px;
   padding: 20px;
   width: 100%;
   max-width: 320px;
