@@ -10,7 +10,7 @@
     </router-link>
 
     <!-- 버튼 타입에 따라 다르게 렌더링 -->
-    <button @click="handleButtonClick" class="pay-btn">
+    <button @click="handleButtonClick" class="pay-btn" :disabled="disabled">
       <template v-if="buttonType === 'pay'">
         <div class="icon-container">
           <i class="fas fa-credit-card"></i>
@@ -36,6 +36,13 @@
         </div>
       </template>
       <!-- =================================== -->
+
+      <template v-else-if="buttonType === 'next'">
+        <div class="icon-container">
+          <i class="fa-solid fa-chevron-right"></i>
+          <span>다음</span>
+        </div>
+      </template>
 
     </button>
 
@@ -75,6 +82,10 @@ export default {
       type: String,
       default: "/grouppay",
     },
+    disabled: {
+      type: Boolean,
+      default: false
+    }
   },
   methods: {
     handleButtonClick() {
@@ -204,4 +215,9 @@ span {
 }
 
 /* 필요에 따라 추가 스타일 조정 */
+
+.pay-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
 </style>
