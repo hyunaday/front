@@ -288,6 +288,7 @@ const routes = [
     name: 'ShareLink',
     component: ShareLink,
   },
+  {
     path: "/agree1",
     name: "Agree1",
     component: Agree1,
