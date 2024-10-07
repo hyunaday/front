@@ -621,7 +621,7 @@ edit-form input,
   z-index: 2;
 }
 
-card-details-container {
+.card-details-container {
   display: flex;
   align-items: flex-start;
   max-width: 100%;
@@ -641,6 +641,15 @@ card-details-container {
   padding-right: 150px; /* QR 코드 공간 확보 */
 }
 
+/* QR 코드 스타일 수정 */
+.qr-code {
+  position: absolute; /* 절대 위치 설정 */
+  right: 15px; /* 오른쪽에서 10px 떨어짐 */
+  bottom: 70px; /* 아래에서 10px 떨어짐 */
+  width: 60px; /* QR 코드의 너비 설정 */
+  height: 60px; /* QR 코드의 높이 설정 */
+}
+
 /* 스크롤바 스타일 */
 .card-details::-webkit-scrollbar {
   width: 6px;
@@ -658,15 +667,6 @@ card-details-container {
 /* 호버 시에만 스크롤바 표시 */
 .card-details:not(:hover)::-webkit-scrollbar-thumb {
   background-color: transparent;
-}
-
-/* QR 코드 스타일 수정 */
-.qr-code {
-  position: absolute; /* 절대 위치 설정 */
-  right: 15px; /* 오른쪽에서 10px 떨어짐 */
-  bottom: 70px; /* 아래에서 10px 떨어짐 */
-  width: 60px; /* QR 코드의 너비 설정 */
-  height: 60px; /* QR 코드의 높이 설정 */
 }
 
 /* 명함 목록 스타일 */
