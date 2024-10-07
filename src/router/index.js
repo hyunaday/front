@@ -13,8 +13,6 @@ import BusinessCardList from "../views/business/BusinessCardList.vue";
 import MyCardRegistration from "../views/business/MyCardRegistration.vue";
 import FriendCardRegistration from "../views/business/FriendCardRegistration.vue";
 import Settings from "../views/settings/Settings.vue";
-import InviteFriends from "../views/settings/InviteFriends.vue";
-import SearchFriends from "../views/settings/SearchFriends.vue";
 import PayList from "../views/settings/PayList.vue";
 import Cancel from "../views/settings/Cancel.vue";
 import Logout from "../views/settings/Logout.vue";
@@ -30,7 +28,6 @@ import Verification from "../views/signup/Verification.vue";
 import Email from "../views/signup/Email.vue";
 import Password from "../views/signup/Password.vue";
 import MemberPay from "../views/pay/MemberPay.vue";
-import Agreement from "../views/asset/Agreement.vue";
 import PaymentSuccess from '../views/pay/PaymentSuccess.vue';
 import PaymentFailure from '../views/pay/PaymentFailure.vue';
 import GameList from '../views/pay/GameList.vue';
@@ -128,18 +125,6 @@ const routes = [
     path: '/settings',
     name: 'Settings',
     component: Settings,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/searchfriends",
-    name: "SearchFriends",
-    component: SearchFriends,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/invitefriends",
-    name: "InviteFriends",
-    component: InviteFriends,
     meta: { requiresAuth: true },
   },
   {
@@ -278,10 +263,45 @@ const routes = [
     component: Password,
   },
   {
-    path: "/agreement",
-    name: "Agreement",
-    component: Agreement,
+    path: '/sharelink/:targetPage',
+    name: 'ShareLink',
+    component: ShareLink,
   },
+  {
+    path: "/agree1",
+    name: "Agree1",
+    component: Agree1,
+  },
+  {
+    path: "/agree2",
+    name: "Agree2",
+    component: Agree2,
+  },
+  {
+    path: "/agree3",
+    name: "Agree3",
+    component: Agree3,
+  },
+  {
+    path: "/agree4",
+    name: "Agree4",
+    component: Agree4,
+  },
+  {
+    path: "/agree5",
+    name: "Agree5",
+    component: Agree5,
+  },
+  {
+    path: "/agree6",
+    name: "Agree6",
+    component: Agree6,
+  },
+  {
+    path: "/agree_loading",
+    name: "Agree_Loading",
+    component: Agree_Loading,
+  }
 ];
 
 const router = createRouter({
