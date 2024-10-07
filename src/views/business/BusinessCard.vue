@@ -1,7 +1,7 @@
 <template>
   <div class="main-container">
     <!-- 나의 명함으로 돌아가기 버튼 추가 -->
-
+    <Header />
     <!-- 선택된 명함 표시 -->
     <div class="selected-card">
       <div class="name-tag">
@@ -152,12 +152,14 @@
 <script>
 import FooterNav from "../../components/FooterNav.vue"; // 경로를 올바르게 수정
 import QrcodeVue from "qrcode.vue"; // QR 코드 라이브러리 임포트
+import Header from "../../components/Header.vue";
 
 export default {
   name: "BusinessCard",
   components: {
     FooterNav, // FooterNav 컴포넌트 등록
     QrcodeVue, // QR 코드 컴포넌트 등록
+    Header,
   },
   data() {
     return {
@@ -335,6 +337,7 @@ export default {
   height: 150px;
   width: 300px; /* 고정된 너비 */
   background-color: white;
+  border: #ccc;
 }
 
 .preview-box h3 {
@@ -397,6 +400,8 @@ select {
   border: none;
   font-weight: bold;
   font-size: 14px;
+  background-color: #6981d9;
+  color: #ffffff;
 }
 
 .edit-form {
@@ -418,7 +423,7 @@ select {
   border-radius: 5px;
 }
 
-edit-form input,
+.edit-form input,
 .memo-textarea {
   margin-bottom: 15px;
   padding: 8px;
@@ -575,14 +580,14 @@ edit-form input,
 
 /* 명함 카드 스타일 */
 .selected-card {
-  background-color: #efeded;
+  background-color: #6981d9;
   padding: 20px;
   margin-top: 38px;
   margin-bottom: 20px;
   border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 서류 모양의 그림자 */
   position: relative;
-  border: 1px solid #ffffff; /* 서류 경계선 */
+  border: 1px solid #efeded; /* 서류 경계선 */
   width: 350px; /* 카드 너비 */
 }
 
@@ -590,11 +595,11 @@ edit-form input,
 .name-tag {
   position: absolute;
   top: -20px; /* 서류에서 튀어나온 듯한 느낌 */
-  left: 1px;
-  background-color: #efeded; /* 네임택 색상 */
+  left: 0px;
+  background-color: #6981d9; /* 네임택 색상 */
   padding: 5px 15px;
   border-radius: 5px;
-  color: rgb(0, 0, 0);
+  color: #ffffff;
   font-weight: bold;
   font-size: 14px;
 }
@@ -603,10 +608,10 @@ edit-form input,
   position: relative; /* 명함 목록 상단에 고정 */
   top: 35px; /* 상단에서 살짝 떨어지도록 설정 */
   left: -135.8px; /* 왼쪽으로 살짝 떨어지도록 설정 */
-  background-color: #efeded;
+  background-color: #6981d9;
   padding: 5px 15px; /* 패딩을 조정해 텍스트에 맞춤 */
   border-radius: 5px 5px 0 0; /* 상단 모서리 둥글게 설정 */
-  color: rgb(0, 0, 0);
+  color: #ffffff;
   font-weight: bold;
   font-size: 14px;
   z-index: 10; /* 다른 요소들 위로 오도록 설정 */
@@ -617,7 +622,7 @@ edit-form input,
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #efeded;
+  background-color: #ffffff;
   z-index: 2;
 }
 
@@ -671,7 +676,7 @@ edit-form input,
 
 /* 명함 목록 스타일 */
 .card-list {
-  background-color: #efeded;
+  background-color: #6981d9;
   padding: 20px;
   border-top-right-radius: 0; /* 상단 우측 모서리 둥글기 제거 */
   border-bottom-right-radius: 10px;
@@ -718,10 +723,10 @@ edit-form input,
 
 .button-container button {
   font-size: 12px;
-  border: 1.5px solid #ccc;
+  border: 1.5px solid #efeded;
   border-radius: 5px;
-  background-color: #efeded;
-  color: black;
+  background-color: #6981d9;
+  color: #ffffff;
   cursor: pointer;
 }
 
