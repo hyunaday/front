@@ -184,10 +184,6 @@ export default {
 };
 </script>
 
-<style scoped>
-/* 여기에 스타일 추가 */
-</style>
-
 
 
 <style scoped>

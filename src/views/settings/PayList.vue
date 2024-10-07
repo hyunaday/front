@@ -1,7 +1,7 @@
 <template>
   <div class="main-container d-flex flex-column justify-content-center align-items-center">
     <div>
-      <h1 class="title">거래 내역 조회</h1>
+      <h1 class="title">함께 결제 내역 조회</h1>
       <div class="container">
         <div class="transaction-details">
           <img :src="imageSrc" alt="Bank Logo" class="bank-logo" />
@@ -19,15 +19,15 @@
         <div class="account-description">{{ accountDescription }}</div>
         <div class="amount-div" v-if="totalAmount !== null">{{ formattedAmount }}</div>
         
-        <router-link to="/transfer">
+        <!-- <router-link to="/transfer">
           <div class="button-container">
             <button class="transfer-button">이체</button>
           </div>
-        </router-link>
+        </router-link> -->
       </div>
   
       <div class="search-filter">
-        <input type="text" class="search-input" @keyup.enter="performSearch" v-model="searchQuery" placeholder="거래 내역 검색" />
+        <input type="text" class="search-input" @keyup.enter="performSearch" v-model="searchQuery" placeholder="검색" />
         <button class="filter-icon" @click="performSearch">
           <i class="fa-solid fa-magnifying-glass"></i>
         </button>
@@ -82,7 +82,7 @@ export default {
   methods: {
     async fetchTransactions() {
       try {
-        const response = await apiClient.get('/account/all'); // API에서 계좌 데이터 가져오기
+        const response = await apiClient.get('/pay/together'); // API에서 계좌 데이터 가져오기
         if (response.data.isSuccess) {
           this.transactions = response.data.result.accountList; // 계좌 리스트에서 거래 내역을 가져오기
           this.bankName = this.transactions[0].bankName; // 은행 이름 설정
@@ -121,6 +121,10 @@ export default {
       const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
       return new Date(dateString).toLocaleDateString(undefined, options);
     },
+    goToGroupPayPage() {
+      // '함께결제내역조회'로 이동하는 메소드 구현
+      this.$router.push('/pay/together');
+    }
   },
   mounted() {
     this.fetchTransactions(); // 컴포넌트가 마운트될 때 거래 내역 가져오기
