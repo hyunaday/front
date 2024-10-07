@@ -62,7 +62,6 @@ export default {
 </script>
 
 <style scoped>
-/* 기존 스타일 코드 유지 */
 .main-container {
   height: 100vh;
   display: flex;
