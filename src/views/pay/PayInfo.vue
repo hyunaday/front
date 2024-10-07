@@ -8,7 +8,6 @@
         <h2 class="title">결제확인</h2>
       </div>
 
-      <!-- 상단 가맹점명, 총 결제 금액 및 안내 문구 -->
       <div class="merchant-info">
         <h3 class="merchant-name">{{ merchantName }} 에서</h3>
         <h4 class="payment-amount">
@@ -18,7 +17,6 @@
           }}</span
           >원
         </h4>
-
         <p class="payment-question">
           <span style="color: #6981d9">어떻게</span> 결제할까요?
         </p>
@@ -26,7 +24,6 @@
 
       <hr class="divider" />
 
-      <!-- 실제 결제 내역 -->
       <div class="payment-details">
         <div
           v-for="(item, index) in paymentItems"
@@ -41,16 +38,14 @@
         </div>
       </div>
 
-      <!-- 금액으로 나누기 버튼 -->
-      <button @click="splitByAmount" class="split-button">
+      <button @click="goToShareLink('PaySplit')" class="split-button">
         금액으로 나누기
       </button>
-
-      <!-- 메뉴별로 나누기 버튼 -->
-      <button @click="splitByMenu" class="split-button">메뉴별로 나누기</button>
+      <button @click="goToShareLink('PayMenu')" class="split-button">
+        메뉴별로 나누기
+      </button>
 
       <div class="spacer"></div>
-      <!-- 스페이서 추가 -->
     </div>
   </div>
 </template>
@@ -62,7 +57,6 @@ import sodaImage from '../../assets/images/soda.png';
 export default {
   data() {
     return {
-      paymentCardImage: '',
       merchantName: 'KFC 군자능동점',
       paymentAmount: 95600,
       paymentItems: [
@@ -79,11 +73,11 @@ export default {
     goBack() {
       this.$router.go(-1);
     },
-    splitByAmount() {
-      this.$router.push('/paysplit'); // 금액으로 나누기 버튼 클릭 시 PaySplit.vue로 이동
-    },
-    splitByMenu() {
-      this.$router.push('/paymenu'); // 메뉴별로 나누기 버튼 클릭 시 PayMenu.vue로 이동
+    goToShareLink(targetPage) {
+      this.$router.push({
+        name: 'ShareLink',
+        params: { targetPage },
+      });
     },
   },
 };

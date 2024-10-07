@@ -1,37 +1,37 @@
-import { createRouter, createWebHistory } from "vue-router";
-import Login from "../views/Login.vue";
-import MainPage from "../views/Mainpage.vue";
-import MyAssets from "../views/asset/MyAssets.vue";
-import AccountBook from "../views/book/AccountBook.vue";
-import BusinessCard from "../views/business/BusinessCard.vue";
-import GroupPay from "../views/pay/GroupPay.vue";
-import SoloPay from "../views/pay/SoloPay.vue";
-import SignUp from "../views/SignUp.vue";
-import AddList from "../views/book/AddList.vue";
-import Cards from "../views/asset/Cards.vue";
-import BusinessCardList from "../views/business/BusinessCardList.vue";
-import MyCardRegistration from "../views/business/MyCardRegistration.vue";
-import FriendCardRegistration from "../views/business/FriendCardRegistration.vue";
-import Settings from "../views/settings/Settings.vue";
-import InviteFriends from "../views/settings/InviteFriends.vue";
-import SearchFriends from "../views/settings/SearchFriends.vue";
-import PayList from "../views/settings/PayList.vue";
-import Cancel from "../views/settings/Cancel.vue";
-import Logout from "../views/settings/Logout.vue";
-import ChangePassword from "../views/settings/ChangePassword.vue";
-import AddBusinessCard from "../views/business/AddBusinessCard.vue";
-import MainPay from "../views/pay/MainPay.vue";
-import CurrentPassword from "../views/settings/CurrentPassword.vue";
-import Transfer from "../views/asset/Transfer.vue";
-import TransactionHistory from "../views/TransactionHistory.vue";
-import Loading from "../views/Loading.vue";
-import Name from "../views/signup/Name.vue";
-import Phone from "../views/Phone.vue";
-import Verification from "../views/signup/Verification.vue";
-import Email from "../views/signup/Email.vue";
-import Password from "../views/signup/Password.vue";
-import MemberPay from "../views/pay/MemberPay.vue";
-import Agreement from "../views/asset/Agreement.vue";
+import { createRouter, createWebHistory } from 'vue-router';
+import Login from '../views/Login.vue';
+import MainPage from '../views/Mainpage.vue';
+import MyAssets from '../views/asset/MyAssets.vue';
+import AccountBook from '../views/book/AccountBook.vue';
+import BusinessCard from '../views/business/BusinessCard.vue';
+import GroupPay from '../views/pay/GroupPay.vue';
+import SoloPay from '../views/pay/SoloPay.vue';
+import SignUp from '../views/SignUp.vue';
+import AddList from '../views/book/AddList.vue';
+import Cards from '../views/asset/Cards.vue';
+import BusinessCardList from '../views/business/BusinessCardList.vue';
+import MyCardRegistration from '../views/business/MyCardRegistration.vue';
+import FriendCardRegistration from '../views/business/FriendCardRegistration.vue';
+import Settings from '../views/settings/Settings.vue';
+import InviteFriends from '../views/settings/InviteFriends.vue';
+import SearchFriends from '../views/settings/SearchFriends.vue';
+import PayList from '../views/settings/PayList.vue';
+import Cancel from '../views/settings/Cancel.vue';
+import Logout from '../views/settings/Logout.vue';
+import ChangePassword from '../views/settings/ChangePassword.vue';
+import AddBusinessCard from '../views/business/AddBusinessCard.vue';
+import MainPay from '../views/pay/MainPay.vue';
+import CurrentPassword from '../views/settings/CurrentPassword.vue';
+import Transfer from '../views/asset/Transfer.vue';
+import TransactionHistory from '../views/TransactionHistory.vue';
+import Loading from '../views/Loading.vue';
+import Name from '../views/signup/Name.vue';
+import Phone from '../views/Phone.vue';
+import Verification from '../views/signup/Verification.vue';
+import Email from '../views/signup/Email.vue';
+import Password from '../views/signup/Password.vue';
+import MemberPay from '../views/pay/MemberPay.vue';
+import Agreement from '../views/asset/Agreement.vue';
 import PaymentSuccess from '../views/pay/PaymentSuccess.vue';
 import PaymentFailure from '../views/pay/PaymentFailure.vue';
 import GameList from '../views/pay/GameList.vue';
@@ -44,6 +44,7 @@ import PayMenu from '../views/pay/PayMenu.vue';
 import RequestPay from '../views/pay/RequestPay.vue';
 import PaymentWaiting from '../components/PaymentWaiting.vue'; // 경로를 맞게 수정
 import MenuCheck from '../views/pay/MenuCheck.vue';
+import ShareLink from '../components/ShareLink.vue';
 import Agree1 from '../views/agreement/Agree1.vue';
 import Agree2 from '../views/agreement/Agree2.vue';
 import Agree3 from '../views/agreement/Agree3.vue';
@@ -54,142 +55,142 @@ import Agree_Loading from '../views/agreement/Agree_Loading.vue';
 
 const routes = [
   {
-    path: "/",
-    name: "MainPage",
+    path: '/',
+    name: 'MainPage',
     component: MainPage,
     meta: { requiresAuth: true },
   },
   {
-    path: "/login",
-    name: "Login",
+    path: '/login',
+    name: 'Login',
     component: Login,
   },
   {
-    path: "/signup",
-    name: "SignUp",
+    path: '/signup',
+    name: 'SignUp',
     component: SignUp,
   },
   {
-    path: "/myassets",
-    name: "MyAssets",
+    path: '/myassets',
+    name: 'MyAssets',
     component: MyAssets,
     meta: { requiresAuth: true },
   },
   {
-    path: "/accountbook",
-    name: "AccountBook",
+    path: '/accountbook',
+    name: 'AccountBook',
     component: AccountBook,
     meta: { requiresAuth: true },
   },
   {
-    path: "/businesscard",
-    name: "BusinessCard",
+    path: '/businesscard',
+    name: 'BusinessCard',
     component: BusinessCard,
     meta: { requiresAuth: true },
   },
   {
-    path: "/businesscardlist",
-    name: "BusinessCardList",
+    path: '/businesscardlist',
+    name: 'BusinessCardList',
     component: BusinessCardList,
     meta: { requiresAuth: true },
   },
   {
-    path: "/grouppay",
-    name: "GroupPay",
+    path: '/grouppay',
+    name: 'GroupPay',
     component: GroupPay,
     meta: { requiresAuth: true },
   },
   {
-    path: "/addlist",
-    name: "AddList",
+    path: '/addlist',
+    name: 'AddList',
     component: AddList,
     meta: { requiresAuth: true },
   },
   {
-    path: "/cards",
-    name: "Cards",
+    path: '/cards',
+    name: 'Cards',
     component: Cards,
     meta: { requiresAuth: true },
   },
   {
-    path: "/friend-card-registration",
-    name: "FriendCardRegistration",
+    path: '/friend-card-registration',
+    name: 'FriendCardRegistration',
     component: FriendCardRegistration,
     meta: { requiresAuth: true },
   },
   {
-    path: "/my-card-registration",
-    name: "MyCardRegistration",
+    path: '/my-card-registration',
+    name: 'MyCardRegistration',
     component: MyCardRegistration,
     meta: { requiresAuth: true },
   },
   {
     // Settings path 설정 - 2024.09.26
-    path: "/settings",
-    name: "Settings",
+    path: '/settings',
+    name: 'Settings',
     component: Settings,
     meta: { requiresAuth: true },
   },
   {
-    path: "/searchfriends",
-    name: "SearchFriends",
+    path: '/searchfriends',
+    name: 'SearchFriends',
     component: SearchFriends,
     meta: { requiresAuth: true },
   },
   {
-    path: "/invitefriends",
-    name: "InviteFriends",
+    path: '/invitefriends',
+    name: 'InviteFriends',
     component: InviteFriends,
     meta: { requiresAuth: true },
   },
   {
-    path: "/paylist",
-    name: "PayList",
+    path: '/paylist',
+    name: 'PayList',
     component: PayList,
     meta: { requiresAuth: true },
   },
   {
-    path: "/changepassword",
-    name: "ChangePassword",
+    path: '/changepassword',
+    name: 'ChangePassword',
     component: ChangePassword,
     meta: { requiresAuth: true },
   },
   {
-    path: "/currentpassword",
-    name: "CurrentPassword",
+    path: '/currentpassword',
+    name: 'CurrentPassword',
     component: CurrentPassword,
   },
   {
-    path: "/logout",
-    name: "Logout",
+    path: '/logout',
+    name: 'Logout',
     component: Logout,
     meta: { requiresAuth: true },
   },
   {
-    path: "/cancel",
-    name: "Cancel",
+    path: '/cancel',
+    name: 'Cancel',
     component: Cancel,
     meta: { requiresAuth: true },
   },
   {
-    path: "/addbusinesscard",
-    name: "AddBusinessCard",
+    path: '/addbusinesscard',
+    name: 'AddBusinessCard',
     component: AddBusinessCard,
     meta: { requiresAuth: true },
   },
   {
-    path: "/solopay", //  개인 결제 페이지
-    name: "SoloPay",
+    path: '/solopay', //  개인 결제 페이지
+    name: 'SoloPay',
     component: SoloPay,
   },
   {
-    path: "/mainpay", //  대표 결제 추가
-    name: "MainPay",
+    path: '/mainpay', //  대표 결제 추가
+    name: 'MainPay',
     component: MainPay,
   },
   {
-    path: "/memberpay", // 팀원 결제 추가
-    name: "MemberPay",
+    path: '/memberpay', // 팀원 결제 추가
+    name: 'MemberPay',
     component: MemberPay,
   },
   {
@@ -243,46 +244,50 @@ const routes = [
     component: MenuCheck,
   },
   {
-    path: "/transfer", // 송금 페이지
-    name: "Transfer",
+    path: '/transfer', // 송금 페이지
+    name: 'Transfer',
     component: Transfer,
   },
   {
-    path: "/transactionhistory", // 거래내역조회 페이지
-    name: "TransactionHistory",
+    path: '/transactionhistory', // 거래내역조회 페이지
+    name: 'TransactionHistory',
     component: TransactionHistory,
   },
   {
-    path: "/loading", // 로딩 페이지
-    name: "Loading",
+    path: '/loading', // 로딩 페이지
+    name: 'Loading',
     component: Loading,
   },
   {
-    path: "/phone",
-    name: "Phone",
+    path: '/phone',
+    name: 'Phone',
     component: Phone,
   },
   {
-    path: "/verification",
-    name: "Verification",
+    path: '/verification',
+    name: 'Verification',
     component: Verification,
   },
   {
-    path: "/email",
-    name: "Email",
+    path: '/email',
+    name: 'Email',
     component: Email,
   },
   {
-    path: "/password",
-    name: "Password",
+    path: '/password',
+    name: 'Password',
     component: Password,
   },
   {
-    path: "/agreement",
-    name: "Agreement",
+    path: '/agreement',
+    name: 'Agreement',
     component: Agreement,
   },
   {
+    path: '/sharelink/:targetPage',
+    name: 'ShareLink',
+    component: ShareLink,
+  },
     path: "/agree1",
     name: "Agree1",
     component: Agree1,
@@ -336,21 +341,21 @@ const router = createRouter({
 
 // 네비게이션 가드 설정
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = localStorage.getItem("accessToken"); // 토큰을 로컬스토리지에서 확인
+  const isAuthenticated = localStorage.getItem('accessToken'); // 토큰을 로컬스토리지에서 확인
 
   // 로그인이 필요한 페이지에 접근할 때
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!isAuthenticated) {
       // 로그인이 되어 있지 않으면 로그인 페이지로 리다이렉트
-      next("/login");
+      next('/login');
     } else {
       // 토큰이 유효하면 그대로 진행
       next();
     }
   } else {
     // 로그인 페이지나 회원가입 페이지에 있을 때, 로그인 상태라면 메인 페이지로 이동
-    if (isAuthenticated && (to.path === "/login" || to.path === "/signup")) {
-      next("/");
+    if (isAuthenticated && (to.path === '/login' || to.path === '/signup')) {
+      next('/');
     } else {
       next(); // 그 외의 경우는 그냥 진행
     }

@@ -15,7 +15,7 @@
       게임 건너뛰기
     </button>
     <button class="custom-button" @click="navigateTo('LotteryGame')">
-      제비 뽑기
+      룰렛 돌리기
     </button>
   </div>
 </template>
