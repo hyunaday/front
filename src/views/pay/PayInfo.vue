@@ -51,6 +51,7 @@
 </template>
 
 <script>
+import { useNavigationStore } from '../../stores/navigation';
 import hamburgerImage from '../../assets/images/hamburger.png';
 import sodaImage from '../../assets/images/soda.png';
 
@@ -74,10 +75,11 @@ export default {
       this.$router.go(-1);
     },
     goToShareLink(targetPage) {
-      this.$router.push({
-        name: 'ShareLink',
-        params: { targetPage },
-      });
+      const navigationStore = useNavigationStore();
+      const router = this.$router; // 현재 라우터 인스턴스 가져오기
+
+      // ShareLink 페이지로 이동하며 경로 저장
+      navigationStore.setSelectedPage(targetPage, router);
     },
   },
 };

@@ -21,15 +21,18 @@
 </template>
 
 <script>
+import { useNavigationStore } from '../../stores/navigation'; // navigation.js를 import 합니다.
+
 export default {
   name: 'GameList',
   methods: {
     goBack() {
       this.$router.go(-1);
     },
-    // 기존 navigateTo 메서드 수정
+    // 게임 선택 시 페이지 저장 후 이동
     navigateTo(routeName) {
-      this.$router.push({ name: routeName });
+      const navigationStore = useNavigationStore();
+      navigationStore.setSelectedPage(routeName, this.$router); // 선택한 페이지를 저장합니다.
     },
   },
 };

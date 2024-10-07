@@ -13,8 +13,6 @@ import BusinessCardList from "../views/business/BusinessCardList.vue";
 import MyCardRegistration from "../views/business/MyCardRegistration.vue";
 import FriendCardRegistration from "../views/business/FriendCardRegistration.vue";
 import Settings from "../views/settings/Settings.vue";
-import InviteFriends from "../views/settings/InviteFriends.vue";
-import SearchFriends from "../views/settings/SearchFriends.vue";
 import PayList from "../views/settings/PayList.vue";
 import Cancel from "../views/settings/Cancel.vue";
 import Logout from "../views/settings/Logout.vue";
@@ -25,33 +23,31 @@ import CurrentPassword from "../views/settings/CurrentPassword.vue";
 import Transfer from "../views/asset/Transfer.vue";
 import TransactionHistory from "../views/TransactionHistory.vue";
 import Loading from "../views/Loading.vue";
-import Name from "../views/signup/Name.vue";
 import Phone from "../views/Phone.vue";
 import Verification from "../views/signup/Verification.vue";
 import Email from "../views/signup/Email.vue";
 import Password from "../views/signup/Password.vue";
 import MemberPay from "../views/pay/MemberPay.vue";
-import Agreement from "../views/asset/Agreement.vue";
-import PaymentSuccess from "../views/pay/PaymentSuccess.vue";
-import PaymentFailure from "../views/pay/PaymentFailure.vue";
-import GameList from "../views/pay/GameList.vue";
-import GameLottery from "../components/GameLottery.vue"; // 상대 경로로 수정
-import "@solb/bottom-sheet";
-import "@solb/bottom-sheet/style/style.css";
-import PayInfo from "../views/pay/PayInfo.vue";
-import PaySplit from "../views/pay/PaySplit.vue";
-import PayMenu from "../views/pay/PayMenu.vue";
-import RequestPay from "../views/pay/RequestPay.vue";
-import PaymentWaiting from "../components/PaymentWaiting.vue"; // 경로를 맞게 수정
-import MenuCheck from "../views/pay/MenuCheck.vue";
-import ShareLink from "../components/ShareLink.vue";
-import Agree1 from "../views/agreement/Agree1.vue";
-import Agree2 from "../views/agreement/Agree2.vue";
-import Agree3 from "../views/agreement/Agree3.vue";
-import Agree4 from "../views/agreement/Agree4.vue";
-import Agree5 from "../views/agreement/Agree5.vue";
-import Agree6 from "../views/agreement/Agree6.vue";
-import Agree_Loading from "../views/agreement/Agree_Loading.vue";
+import PaymentSuccess from '../views/pay/PaymentSuccess.vue';
+import PaymentFailure from '../views/pay/PaymentFailure.vue';
+import GameList from '../views/pay/GameList.vue';
+import GameLottery from '../components/GameLottery.vue'; // 상대 경로로 수정
+import '@solb/bottom-sheet';
+import '@solb/bottom-sheet/style/style.css';
+import PayInfo from '../views/pay/PayInfo.vue';
+import PaySplit from '../views/pay/PaySplit.vue';
+import PayMenu from '../views/pay/PayMenu.vue';
+import RequestPay from '../views/pay/RequestPay.vue';
+import PaymentWaiting from '../components/PaymentWaiting.vue'; // 경로를 맞게 수정
+import MenuCheck from '../views/pay/MenuCheck.vue';
+import ShareLink from '../components/ShareLink.vue';
+import Agree1 from '../views/agreement/Agree1.vue';
+import Agree2 from '../views/agreement/Agree2.vue';
+import Agree3 from '../views/agreement/Agree3.vue';
+import Agree4 from '../views/agreement/Agree4.vue';
+import Agree5 from '../views/agreement/Agree5.vue';
+import Agree6 from '../views/agreement/Agree6.vue';
+import Agree_Loading from '../views/agreement/Agree_Loading.vue';
 
 const routes = [
   {
@@ -132,20 +128,8 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: "/searchfriends",
-    name: "SearchFriends",
-    component: SearchFriends,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/invitefriends",
-    name: "InviteFriends",
-    component: InviteFriends,
-    meta: { requiresAuth: true },
-  },
-  {
-    path: "/paylist",
-    name: "PayList",
+    path: '/paylist',
+    name: 'PayList',
     component: PayList,
     meta: { requiresAuth: true },
   },
@@ -279,13 +263,8 @@ const routes = [
     component: Password,
   },
   {
-    path: "/agreement",
-    name: "Agreement",
-    component: Agreement,
-  },
-  {
-    path: "/sharelink/:targetPage",
-    name: "ShareLink",
+    path: '/sharelink/:targetPage',
+    name: 'ShareLink',
     component: ShareLink,
   },
   {
@@ -294,33 +273,33 @@ const routes = [
     component: Agree1,
   },
   {
-    path: "/agree2",
-    name: "Agree2",
+    path: '/agree2',
+    name: 'Agree2',
     component: Agree2,
   },
   {
-    path: "/agree3",
-    name: "Agree3",
+    path: '/agree3',
+    name: 'Agree3',
     component: Agree3,
   },
   {
-    path: "/agree4",
-    name: "Agree4",
+    path: '/agree4',
+    name: 'Agree4',
     component: Agree4,
   },
   {
-    path: "/agree5",
-    name: "Agree5",
+    path: '/agree5',
+    name: 'Agree5',
     component: Agree5,
   },
   {
-    path: "/agree6",
-    name: "Agree6",
+    path: '/agree6',
+    name: 'Agree6',
     component: Agree6,
   },
   {
-    path: "/agree_loading",
-    name: "Agree_Loading",
+    path: '/agree_loading',
+    name: 'Agree_Loading',
     component: Agree_Loading,
   },
 ];
