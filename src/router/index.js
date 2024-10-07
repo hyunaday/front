@@ -282,6 +282,46 @@ const routes = [
     name: "Agreement",
     component: Agreement,
   },
+  {
+    path: '/sharelink/:targetPage',
+    name: 'ShareLink',
+    component: ShareLink,
+  },
+  {
+    path: "/agree1",
+    name: "Agree1",
+    component: Agree1,
+  },
+  {
+    path: "/agree2",
+    name: "Agree2",
+    component: Agree2,
+  },
+  {
+    path: "/agree3",
+    name: "Agree3",
+    component: Agree3,
+  },
+  {
+    path: "/agree4",
+    name: "Agree4",
+    component: Agree4,
+  },
+  {
+    path: "/agree5",
+    name: "Agree5",
+    component: Agree5,
+  },
+  {
+    path: "/agree6",
+    name: "Agree6",
+    component: Agree6,
+  },
+  {
+    path: "/agree_loading",
+    name: "Agree_Loading",
+    component: Agree_Loading,
+  }
 ];
 
 const router = createRouter({
