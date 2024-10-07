@@ -322,6 +322,16 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+  // Add scrollBehavior to reset scroll position
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      // If there is a saved scroll position, like when using browser back/forward, return to that position
+      return savedPosition;
+    } else {
+      // Otherwise, always scroll to the top of the page
+      return { top: 0 };
+    }
+  },
 });
 
 // 네비게이션 가드 설정
