@@ -1,5 +1,6 @@
 <template>
   <div class="main-container d-flex flex-column justify-content-center align-items-center">
+    <Header />
     <div class="my-assets">
       <h1><strong>{{ userName }}</strong>님의 총 자산</h1>
 
@@ -106,11 +107,13 @@
 <script>
 import FooterNav from '../../components/FooterNav.vue';
 import apiClient from '../../api/axios.js';  // axios 클라이언트 불러오기
+import Header from '../../components/Header.vue';
 
 export default {
   name: 'MyAssets',
   components: {
     FooterNav,
+    Header,
   },
   data() {
     return {

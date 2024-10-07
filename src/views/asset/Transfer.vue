@@ -1,5 +1,6 @@
 <template>
   <div class="main-container d-flex flex-column justify-content-center align-items-center">
+    <Header />
     <div class="transfer-page">
       <div class="transfer-form">
         <label for="recipient">

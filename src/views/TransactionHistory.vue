@@ -2,6 +2,8 @@
   <div
     class="main-container d-flex flex-column justify-content-center align-items-center"
   >
+  <Header />
+
     <div>
       <h1 class="title">계좌 조회</h1>
       <div class="container">
@@ -70,11 +72,13 @@
 <script>
 import apiClient from "../api/axios.js";
 import FooterNav from "../components/FooterNav.vue";
+import Header from "../components/Header.vue";
 
 export default {
   name: "TransactionHistory",
   components: {
     FooterNav,
+    Header,
   },
   data() {
     return {
