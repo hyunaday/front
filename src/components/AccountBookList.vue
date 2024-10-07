@@ -70,22 +70,26 @@
         </template>
 
         <!-- 수입 카테고리 (수입 필터가 설정된 경우) -->
-        <option
-          v-for="category in incomeCategories"
-          :key="category"
-          :value="category"
-        >
-          {{ category }}
-        </option>
+        <template v-if="selectedFilter === 'income'">
+          <option
+            v-for="category in incomeCategories"
+            :key="category"
+            :value="category"
+          >
+            {{ category }}
+          </option>
+        </template>
 
-        <!-- 지출 카테고리 (지출 필터가 설정된 경우) -->
-        <option
-          v-for="category in expenseCategories"
-          :key="category"
-          :value="category"
-        >
-          {{ category }}
-        </option>
+        <<!-- 지출 카테고리 (지출 필터가 설정된 경우) -->
+        <template v-if="selectedFilter === 'expense'">
+          <option
+            v-for="category in expenseCategories"
+            :key="category"
+            :value="category"
+          >
+            {{ category }}
+          </option>
+        </template>
       </select>
     </div>
 

@@ -1,5 +1,3 @@
-businessCard.vue css완료
-
 <template>
   <div class="main-container">
     <!-- 나의 명함으로 돌아가기 버튼 추가 -->
@@ -36,14 +34,13 @@ businessCard.vue css완료
             <p v-if="isFriendCard">
               <strong>메모:</strong> {{ formData.memo }}
             </p>
+            <qrcode-vue
+              :value="qrValue"
+              :size="60"
+              class="qr-code"
+              @click="showModal = true"
+            />
           </div>
-
-          <qrcode-vue
-            :value="qrValue"
-            :size="60"
-            class="qr-code"
-            @click="showModal = true"
-          />
         </div>
       </div>
 
