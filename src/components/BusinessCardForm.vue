@@ -1,5 +1,3 @@
-businessCardForm.vue
-
 <template>
   <div>
     <h3>{{ title }}</h3>
@@ -71,17 +69,8 @@ businessCardForm.vue
           />
         </div>
       </div>
-      <!-- 메모 -->
-      <!-- <div class="form-group">
-        <label for="memo">메모:</label>
-        <div class="input-container">
-          <textarea id="memo" v-model="formData.memo"></textarea>
-        </div>
-      </div> -->
 
-      <router-link to="/businesscard">
-        <button class="button">등록</button>
-      </router-link>
+      <button class="button" type="submit">등록</button>
     </form>
   </div>
 </template>
@@ -112,21 +101,20 @@ export default {
   },
   methods: {
     submitForm() {
-      const formData = new FormData();
-      formData.append("image", this.imageFile);
-      formData.append("name", this.formData.name);
-      formData.append("phone", this.formData.phone);
-      formData.append("email", this.formData.email);
-      formData.append("position", this.formData.position);
-      formData.append("department", this.formData.department);
-      formData.append("company", this.formData.company);
-      formData.append("address", this.formData.address);
-      formData.append("phoneLandline", this.formData.phoneLandline);
-      formData.append("memo", this.formData.memo);
+      // 로컬 스토리지에 formData 저장
+      localStorage.setItem("businessCardData", JSON.stringify(this.formData));
+      console.log("폼이 제출되었습니다.", this.formData);
 
-      console.log("폼이 제출되었습니다.", formData);
-      // API 요청을 실제로 보내는 코드는 여기에 추가
+      // 페이지 이동
+      this.$router.push("/businesscard"); // form을 제출한 후 페이지 이동
     },
+  },
+  mounted() {
+    // 페이지 로드 시 로컬 스토리지에서 formData를 가져와서 설정
+    const storedData = localStorage.getItem("businessCardData");
+    if (storedData) {
+      this.formData = JSON.parse(storedData); // JSON 문자열을 객체로 변환
+    }
   },
 };
 </script>

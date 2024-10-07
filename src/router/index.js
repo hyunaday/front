@@ -45,6 +45,13 @@ import RequestPay from '../views/pay/RequestPay.vue';
 import PaymentWaiting from '../components/PaymentWaiting.vue'; // 경로를 맞게 수정
 import MenuCheck from '../views/pay/MenuCheck.vue';
 import ShareLink from '../components/ShareLink.vue';
+import Agree1 from '../views/agreement/Agree1.vue';
+import Agree2 from '../views/agreement/Agree2.vue';
+import Agree3 from '../views/agreement/Agree3.vue';
+import Agree4 from '../views/agreement/Agree4.vue';
+import Agree5 from '../views/agreement/Agree5.vue';
+import Agree6 from '../views/agreement/Agree6.vue';
+import Agree_Loading from '../views/agreement/Agree_Loading.vue';
 
 const routes = [
   {
@@ -281,11 +288,55 @@ const routes = [
     name: 'ShareLink',
     component: ShareLink,
   },
+    path: "/agree1",
+    name: "Agree1",
+    component: Agree1,
+  },
+  {
+    path: "/agree2",
+    name: "Agree2",
+    component: Agree2,
+  },
+  {
+    path: "/agree3",
+    name: "Agree3",
+    component: Agree3,
+  },
+  {
+    path: "/agree4",
+    name: "Agree4",
+    component: Agree4,
+  },
+  {
+    path: "/agree5",
+    name: "Agree5",
+    component: Agree5,
+  },
+  {
+    path: "/agree6",
+    name: "Agree6",
+    component: Agree6,
+  },
+  {
+    path: "/agree_loading",
+    name: "Agree_Loading",
+    component: Agree_Loading,
+  }
 ];
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
+  // Add scrollBehavior to reset scroll position
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      // If there is a saved scroll position, like when using browser back/forward, return to that position
+      return savedPosition;
+    } else {
+      // Otherwise, always scroll to the top of the page
+      return { top: 0 };
+    }
+  },
 });
 
 // 네비게이션 가드 설정

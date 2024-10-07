@@ -1,5 +1,7 @@
 <template>
-  <div class="main-container d-flex flex-column justify-content-center align-items-center">
+  <div
+    class="main-container d-flex flex-column justify-content-center align-items-center"
+  >
     <div>
       <h1 class="title">거래 내역 조회</h1>
       <div class="container">
@@ -17,17 +19,25 @@
           </div>
         </div>
         <div class="account-description">{{ accountDescription }}</div>
-        <div class="amount-div" v-if="totalAmount !== null">{{ formattedAmount }}</div>
-        
+        <div class="amount-div" v-if="totalAmount !== null">
+          {{ formattedAmount }}
+        </div>
+
         <router-link to="/transfer">
           <div class="button-container">
             <button class="transfer-button">이체</button>
           </div>
         </router-link>
       </div>
-  
+
       <div class="search-filter">
-        <input type="text" class="search-input" @keyup.enter="performSearch" v-model="searchQuery" placeholder="거래 내역 검색" />
+        <input
+          type="text"
+          class="search-input"
+          @keyup.enter="performSearch"
+          v-model="searchQuery"
+          placeholder="거래 내역 검색"
+        />
         <button class="filter-icon" @click="performSearch">
           <i class="fa-solid fa-magnifying-glass"></i>
         </button>
@@ -38,10 +48,18 @@
 
       <!-- 거래 내역 목록 -->
       <div class="transaction-list">
-        <div class="transaction-item" v-for="transaction in transactions" :key="transaction.idx">
-          <span class="date-label">{{ formatDate(transaction.createdAt) }}</span>
+        <div
+          class="transaction-item"
+          v-for="transaction in transactions"
+          :key="transaction.idx"
+        >
+          <span class="date-label">{{
+            formatDate(transaction.createdAt)
+          }}</span>
           <span class="name">{{ transaction.accountHolderName }}</span>
-          <span class="amount">{{ formatTransactionAmount(transaction.amount) }}</span>
+          <span class="amount">{{
+            formatTransactionAmount(transaction.amount)
+          }}</span>
         </div>
       </div>
     </div>
@@ -50,21 +68,21 @@
 </template>
 
 <script>
-import apiClient from '../api/axios.js';
-import FooterNav from '../components/FooterNav.vue';
+import apiClient from "../api/axios.js";
+import FooterNav from "../components/FooterNav.vue";
 
 export default {
-  name: 'TransactionHistory',
+  name: "TransactionHistory",
   components: {
     FooterNav,
   },
   data() {
     return {
-      imageSrc: 'src/assets/images/kbbank.png',
-      bankName: '국민은행',
-      accountNumber: '1234567890', // 예시 계좌 번호, 실제 데이터로 업데이트 필요
-      accountDescription: '국민은행 입출금 통장',
-      searchQuery: '',
+      imageSrc: "src/assets/images/kbbank.png",
+      bankName: "국민은행",
+      accountNumber: "1234567890", // 예시 계좌 번호, 실제 데이터로 업데이트 필요
+      accountDescription: "국민은행 입출금 통장",
+      searchQuery: "",
       transactions: [],
     };
   },
@@ -73,34 +91,38 @@ export default {
       return this.accountNumber.toLocaleString();
     },
     totalAmount() {
-      return this.transactions.reduce((sum, transaction) => sum + transaction.amount, 0);
+      return this.transactions.reduce(
+        (sum, transaction) => sum + transaction.amount,
+        0
+      );
     },
     formattedAmount() {
-      return this.totalAmount.toLocaleString() + '원';
+      return this.totalAmount.toLocaleString() + "원";
     },
   },
   methods: {
     async fetchTransactions() {
       try {
-        const response = await apiClient.get('/account/all'); // API에서 계좌 데이터 가져오기
+        const response = await apiClient.get("/account/all"); // API에서 계좌 데이터 가져오기
         if (response.data.isSuccess) {
           this.transactions = response.data.result.accountList; // 계좌 리스트에서 거래 내역을 가져오기
           this.bankName = this.transactions[0].bankName; // 은행 이름 설정
           this.accountNumber = this.transactions[0].accountNumber; // 계좌 번호 설정
         } else {
-          console.error('계좌 정보를 가져오지 못했습니다.');
+          console.error("계좌 정보를 가져오지 못했습니다.");
         }
       } catch (error) {
-        console.error('API 호출 중 오류 발생:', error);
+        console.error("API 호출 중 오류 발생:", error);
       }
     },
     copyAccountNumber() {
-      navigator.clipboard.writeText(this.accountNumber)
+      navigator.clipboard
+        .writeText(this.accountNumber)
         .then(() => {
-          alert('계좌번호가 복사되었습니다.');
+          alert("계좌번호가 복사되었습니다.");
         })
-        .catch(err => {
-          console.error('복사 실패:', err);
+        .catch((err) => {
+          console.error("복사 실패:", err);
         });
     },
     performSearch() {
@@ -108,15 +130,15 @@ export default {
         console.log(`검색어: ${this.searchQuery}`);
         // 여기서 검색 기능을 구현할 수 있어
       } else {
-        console.log('검색어가 비어 있습니다.');
+        console.log("검색어가 비어 있습니다.");
       }
     },
     formatTransactionAmount(amount) {
       const formattedAmount = Math.abs(amount).toLocaleString();
-      return (amount < 0 ? '-' : '+') + formattedAmount + '원';
+      return (amount < 0 ? "-" : "+") + formattedAmount + "원";
     },
     formatDate(dateString) {
-      const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
+      const options = { year: "numeric", month: "numeric", day: "numeric" };
       return new Date(dateString).toLocaleDateString(undefined, options);
     },
   },
@@ -135,7 +157,7 @@ export default {
 }
 
 .container {
-  background-color: #6981D9;
+  background-color: #6981d9;
   padding: 20px;
   width: 360px;
   color: white;
