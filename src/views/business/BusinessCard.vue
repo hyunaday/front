@@ -1,3 +1,4 @@
+명함페이지 css완
 <template>
   <div class="main-container">
     <!-- 헤더 -->
@@ -227,6 +228,7 @@ export default {
     },
     goBackToMyCard() {
       this.isFriendCard = false;
+      this.isCardListVisible = false; // 명함 목록을 닫음
       const storedData = localStorage.getItem("businessCardData");
       if (storedData) {
         this.formData = JSON.parse(storedData);
@@ -568,7 +570,7 @@ select {
   display: flex;
   align-items: center;
   top: -20px;
-  gap: 5px;
+  gap: 0px;
   left: 0px;
   transition: transform 0.2s ease, box-shadow 0.2s ease; /* 애니메이션 추가 */
 }
@@ -581,7 +583,12 @@ select {
   font-weight: bold;
   cursor: pointer;
   font-size: 16px;
+  box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.1),
+    /* 위쪽 그림자 */ 4px 0px 10px rgba(0, 0, 0, 0.1); /* 오른쪽 그림자 */
+  transform: translateY(0px); /* 위치 조정 */
+  z-index: 2; /* 더 위에 오도록 설정 */
 }
+
 .back-to-my-card-button:hover {
   background-color: #5a6cbf;
   transform: translateY(-5px); /* 살짝 위로 이동 */
@@ -603,6 +610,7 @@ select {
   cursor: pointer;
   border: none;
   font-size: 16px;
+  margin-left: -15px;
 }
 
 /* 버튼 호버 및 클릭 시 스타일 추가 */
