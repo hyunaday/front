@@ -24,7 +24,7 @@
             v-model="message"
             placeholder="받는 분에게 표시될 내용"
           />
-          
+          <router-link to="/transfer2">
           <button 
             type="button" 
             class="stroke-button" 
@@ -33,6 +33,8 @@
           >
             송금하기
           </button>
+        </router-link>
+
         </div>
       </div>
 
@@ -68,7 +70,6 @@
 import axios from 'axios';
 import FooterNav from '../../components/FooterNav.vue';
 import Header from '../../components/Header.vue';
-// import { useRouter } from 'vue-router';
 
 export default {
   name: 'Transfer',
@@ -90,11 +91,7 @@ export default {
     },
     async sendMoney() {
       if (this.recipient.length >= 11) {
-        // 송금 요청과 함께 메시지를 다음 페이지로 전달
-        this.$router.push({ 
-          path: '/send-complete',
-          query: { recipient: this.recipient, message: this.message } // 쿼리 파라미터로 전달
-        });
+        // 여기서 다른 페이지로 이동하는 로직을 추가하세요
       } else {
         alert("송금할 계좌번호를 확인해주세요.");
       }

@@ -48,6 +48,7 @@ import Agree4 from '../views/agreement/Agree4.vue';
 import Agree5 from '../views/agreement/Agree5.vue';
 import Agree6 from '../views/agreement/Agree6.vue';
 import Agree_Loading from '../views/agreement/Agree_Loading.vue';
+import Transfer2 from "../views/asset/Transfer2.vue";
 
 const routes = [
   {
@@ -231,6 +232,11 @@ const routes = [
     path: "/transfer", // 송금 페이지
     name: "Transfer",
     component: Transfer,
+  },
+  {
+    path: "/transfer2", // 송금 페이지2
+    name: "Transfer2",
+    component: Transfer2,
   },
   {
     path: "/transactionhistory", // 거래내역조회 페이지
