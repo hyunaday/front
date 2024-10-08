@@ -56,7 +56,8 @@
 
       <!-- 전체 카테고리 선택 -->
       <select v-model="selectedCategory">
-        <option disabled value="">카테고리를 선택하세요</option>
+        <option value="">전체</option>
+        <!-- 전체 카테고리 옵션 -->
 
         <!-- 전체 카테고리 (필터가 설정되지 않았을 때) -->
         <template v-if="!selectedFilter">
@@ -333,16 +334,16 @@ export default {
       totalExpense: 90000,
       totalIncome: 1000000,
 
-      storeName: "컴포즈커피세종대학교점",
+      storeName: "",
       fixedAmount: 0,
-      editablePrice: 2500,
+      editablePrice: 0,
       isEditingPrice: false,
       selectedCategory: null,
       selectedFilter: null,
-      transactionDate: "2024-10-28",
-      paymentMethod: "KB 국민카드",
+      transactionDate: "",
+      paymentMethod: "",
       memo: "",
-      category: "식비",
+      category: "",
       entries: [
         {
           date: "19",
@@ -395,6 +396,41 @@ export default {
   },
 
   computed: {
+    // 선택한 연도와 월의 총 지출과 수입을 계산
+    totalExpense() {
+      return this.filteredEntries.reduce((total, entryGroup) => {
+        return (
+          total +
+          entryGroup.entries
+            .filter((entry) => entry.amount < 0) // 지출 필터링
+            .reduce((sum, entry) => sum + entry.amount, 0)
+        );
+      }, 0);
+    },
+    totalIncome() {
+      return this.filteredEntries.reduce((total, entryGroup) => {
+        return (
+          total +
+          entryGroup.entries
+            .filter((entry) => entry.amount > 0) // 수입 필터링
+            .reduce((sum, entry) => sum + entry.amount, 0)
+        );
+      }, 0);
+    },
+    // 선택한 연도와 월에 맞는 엔트리 필터링
+    filteredEntries() {
+      return this.entries.filter((entry) => {
+        const entryDate = new Date();
+        entryDate.setFullYear(this.selectedYear);
+        entryDate.setMonth(this.selectedMonth);
+        entryDate.setDate(entry.date);
+        return (
+          entryDate.getFullYear() === this.selectedYear &&
+          entryDate.getMonth() === this.selectedMonth
+        );
+      });
+    },
+
     filteredEntries() {
       let filteredByCategory = this.entries.map((entryGroup) => {
         let filteredGroup = { ...entryGroup };
@@ -459,13 +495,8 @@ export default {
       document.getElementById("testBottomSheet").closeSheet();
     },
     toggleFilter(filter) {
-      // 같은 필터를 한 번 더 누르면 필터 해제 (전체 카테고리)
-      if (this.selectedFilter === filter) {
-        this.selectedFilter = null;
-      } else {
-        this.selectedFilter = filter;
-      }
-      this.selectedCategory = ""; // 필터 변경 시 카테고리 초기화
+      this.selectedFilter = this.selectedFilter === filter ? null : filter;
+      this.selectedCategory = ""; // 필터 변경 시 "전체"로 초기화
     },
     // 카테고리 타입 설정
     setFilter(filter) {
@@ -571,7 +602,7 @@ export default {
 
 .expense .amount {
   font-size: 1rem;
-  color: #000000;
+  color: red;
 }
 
 .income .amount {
