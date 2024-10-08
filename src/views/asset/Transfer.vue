@@ -124,11 +124,13 @@ export default {
 
 <style scoped>
 .transfer-page {
-  max-width: 400px;
+  width: 330px; /* 고정된 너비를 설정 */
+  max-width: 100%; /* 반응형을 유지하기 위한 설정 */
   border-radius: 10px;
   padding: 30px;
   text-align: left;
 }
+
 
 .point {
   color: #6981d9;
@@ -146,7 +148,8 @@ label {
 }
 
 input[type="text"] {
-  width: 100%;
+  max-width: 400px; /* 고정된 최대 너비를 설정 */
+  width: 100%; /* 너비는 부모 요소에 따라 확장 */
   padding: 10px 90px 3px 2px;
   border: none;
   border-bottom: 2px solid #6981d9;
@@ -155,6 +158,7 @@ input[type="text"] {
   outline: none;
   background-color: transparent;
 }
+
 
 input[type="text"]::placeholder {
   color: #aaa;

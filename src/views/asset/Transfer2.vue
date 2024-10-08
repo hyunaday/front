@@ -15,7 +15,6 @@
           @keyup.enter="sendMoney"
         />
         
-        <!-- amount-info를 recipient와 붙여놓음 -->
         <div class="amount-info">
           <span class="available-amount">이체 가능 금액</span>
           <span class="currency">원</span>
@@ -28,7 +27,7 @@
         >
           송금하기
         </button>
-        
+
       </div>
     </div>
     <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
@@ -40,7 +39,7 @@ import FooterNav from '../../components/FooterNav.vue';
 import Header from '../../components/Header.vue';
 
 export default {
-  name: 'Transfer',
+  name: 'Transfer2',
   components: {
     FooterNav,
     Header,
@@ -52,18 +51,17 @@ export default {
   },
   methods: {
     validateInput() {
-      // 숫자만 입력하도록 설정
       this.recipient = this.recipient.replace(/[^0-9]/g, '');
     },
     async sendMoney() {
-      if (this.recipient) {
+      const amount = parseInt(this.recipient);
+      if (amount >= 1) {
         // 송금 요청을 다음 페이지로 전달
         this.$router.push({ 
-          path: '/send-complete',
-          query: { recipient: this.recipient } // 쿼리 파라미터로 전달
+          path: '/transfer3',
         });
       } else {
-        alert("보낼 금액을 입력해주세요.");
+        alert("보낼 금액은 1원 이상이어야 합니다."); // 조건에 맞지 않을 때 alert 추가
       }
     },
   },
