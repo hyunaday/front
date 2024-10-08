@@ -25,16 +25,15 @@
             placeholder="받는 분에게 표시될 내용"
           />
           <router-link to="/transfer2">
-          <button 
-            type="button" 
-            class="stroke-button" 
-            @click="sendMoney" 
-            v-if="recipient.length >= 11"
-          >
-            송금하기
-          </button>
-        </router-link>
-
+            <button 
+              type="button" 
+              class="stroke-button" 
+              @click="sendMoney" 
+              v-if="recipient.length >= 11"
+            >
+              송금하기
+            </button>
+          </router-link>
         </div>
       </div>
 
@@ -43,18 +42,13 @@
         <div v-if="recentTransactions.length > 0">
           <div 
             v-for="transaction in recentTransactions" 
-            :key="transaction.id" 
+            :key="transaction.idx" 
             class="transaction-item"
           >
             <img class="transaction-image" src="../../assets/images/kbbank.png" alt="KB Bank" />
             <div class="transaction-details">
               <p class="transaction-name">{{ transaction.name }}</p>
-              <p 
-                class="transaction-account" 
-                @click="copyAccountNumber(transaction.accountNumber)"
-              >
-                {{ formatAccountNumber(transaction.accountNumber) }}
-              </p>
+              <p class="transaction-date">{{ new Date(transaction.createdAt).toLocaleString() }}</p>
             </div>
             <hr class="transaction-divider" />
           </div>
@@ -67,9 +61,9 @@
 </template>
 
 <script>
-import axios from 'axios';
 import FooterNav from '../../components/FooterNav.vue';
 import Header from '../../components/Header.vue';
+import apiClient from '../../api/axios';
 
 export default {
   name: 'Transfer',
@@ -82,6 +76,7 @@ export default {
       recipient: '',
       message: '', // 메모 내용 추가
       recentTransactions: [],
+      accountIdx:1, // 예시로 설정한 accountIdx, 필요에 따라 동적으로 변경 가능
     };
   },
   methods: {
@@ -91,7 +86,7 @@ export default {
     },
     async sendMoney() {
       if (this.recipient.length >= 11) {
-        // 여기서 다른 페이지로 이동하는 로직을 추가하세요
+        // 여기서 다른 페이지로 이동하는 로직 추가
       } else {
         alert("송금할 계좌번호를 확인해주세요.");
       }
@@ -99,11 +94,23 @@ export default {
     formatAccountNumber(accountNumber) {
       return `${accountNumber.slice(0, 3)}-${accountNumber.slice(3, 7)}-${accountNumber.slice(7, 11)}-${accountNumber.slice(11)}`;
     },
-    fetchTransactions() {
-      this.recentTransactions = [
-        { id: 1, name: '홍길동', accountNumber: '3604562599743', image: '/path/to/image1.jpg' },
-        { id: 2, name: '김철수', accountNumber: '1234567890123', image: '/path/to/image2.jpg' },
-      ];
+    async fetchTransactions() {
+      try {
+        const response = await apiClient.get(`/account/history?accountIdx=${this.accountIdx}`);
+        
+        if (response.data.isSuccess && response.data.result.success) {
+          this.recentTransactions = response.data.result.accountHistoryList.map(transaction => ({
+            name: transaction.name,
+            createdAt: transaction.createdAt,
+          }));
+        } else {
+          console.error("거래 내역을 불러오지 못했습니다:", response.data.message);
+          this.recentTransactions = [];
+        }
+      } catch (error) {
+        console.error("거래 내역을 불러오는 중 오류가 발생했습니다:", error);
+        this.recentTransactions = [];
+      }
     },
     copyAccountNumber(accountNumber) {
       this.recipient = accountNumber;
@@ -131,7 +138,6 @@ export default {
   text-align: left;
 }
 
-
 .point {
   color: #6981d9;
 }
@@ -158,7 +164,6 @@ input[type="text"] {
   outline: none;
   background-color: transparent;
 }
-
 
 input[type="text"]::placeholder {
   color: #aaa;
@@ -197,6 +202,12 @@ input[type="text"]::placeholder {
   font-weight: bold;
   margin-bottom: 0;
   margin-top: 6px;
+}
+
+.transaction-date {
+  font-size: 10px;
+  color: #888;
+  margin-top: 2px;
 }
 
 .transaction-account {
