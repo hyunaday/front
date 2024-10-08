@@ -7,7 +7,6 @@
 
 <script>
 import { QrcodeStream } from 'vue3-qrcode-reader';
-import axios from 'axios'; // Axios 임포트
 
 export default {
   name: 'QrScanner',
@@ -15,19 +14,23 @@ export default {
     QrcodeStream,
   },
   methods: {
-    async onDecode(decodedString) {
+    onDecode(decodedString) {
       try {
         console.log('스캔된 데이터:', decodedString);
 
-        // 백엔드에 스캔된 데이터 전송
-        await this.sendDataToBackend(decodedString);
-
-        // 스캔된 문자열이 URL인지 확인하고 자동으로 이동
+        // 백엔드로 데이터를 보내지 않고 바로 페이지 이동
         if (this.isValidUrl(decodedString)) {
           console.log('링크로 이동:', decodedString);
           window.location.href = decodedString; // 현재 탭에서 링크 열기
         } else {
-          console.error('유효하지 않은 URL:', decodedString);
+          // 페이지 이동 로직 (결제 방식에 따라 이동)
+          if (this.$route.query.paymentType === 'SoloPay') {
+            this.$router.push('/solopay');
+          } else if (this.$route.query.paymentType === 'MainPay') {
+            this.$router.push('/payinfo');
+          } else {
+            console.error('유효하지 않은 URL 또는 결제 방식:', decodedString);
+          }
         }
       } catch (error) {
         console.error('onDecode 처리 중 오류 발생:', error);
@@ -63,19 +66,6 @@ export default {
         'i' // 포트 및 경로
       );
       return pattern.test(string);
-    },
-    async sendDataToBackend(data) {
-      try {
-        const response = await axios.post(
-          'https://your-backend-url/api/endpoint',
-          {
-            scannedData: data,
-          }
-        );
-        console.log('백엔드로 데이터 전송 성공:', response.data);
-      } catch (error) {
-        console.error('백엔드로 데이터 전송 중 오류 발생:', error);
-      }
     },
   },
 };

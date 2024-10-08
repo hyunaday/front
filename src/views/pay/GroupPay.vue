@@ -23,7 +23,6 @@
       <div class="modal-content" @click.stop>
         <button class="close-button" @click="closeModal">X</button>
         <QrScanner @decode="onDecode" @close="closeScanner" />
-
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         <p v-if="decodedData" class="decoded-data">
           스캔된 데이터: <strong>{{ decodedData }}</strong>
@@ -46,7 +45,6 @@ export default {
       decodedData: '',
       errorMessage: '',
       showScannerModal: false,
-      currentPaymentComponent: null,
     };
   },
   methods: {
@@ -54,14 +52,14 @@ export default {
       this.$router.go(-1);
     },
     showScanner(paymentType) {
-      this.currentPaymentComponent = paymentType;
+      this.$router.push({ query: { paymentType } });
       this.showScannerModal = true;
     },
     onDecode(decodedString) {
       this.decodedData = decodedString;
       this.errorMessage = '';
-      // 스캔한 데이터에 따라 결제 방식 처리
-      console.log(`Scanned data: ${decodedString}`);
+      // 스캔된 데이터 처리 후 모달 닫기
+      this.showScannerModal = false;
     },
     closeScanner() {
       this.showScannerModal = false;
