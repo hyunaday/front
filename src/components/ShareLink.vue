@@ -25,7 +25,7 @@
 
 <script>
 import QRCode from 'qrcode.vue';
-import { useNavigationStore } from '../stores/navigation'; // navigation.js로 수정
+import { useNavigationStore } from '../stores/navigation';
 
 export default {
   components: {
@@ -45,7 +45,15 @@ export default {
       const router = this.$router;
 
       // 선택된 페이지에 따라 이동
-      navigationStore.navigateToNextPage(router);
+      const selectedPage = navigationStore.selectedPage;
+      if (selectedPage === 'PaySplit') {
+        router.push('/gamelist'); // 금액으로 나누기 선택 시
+      } else if (selectedPage === 'PayMenu') {
+        router.push('/gamelist'); // 메뉴별로 나누기 선택 시
+      } else {
+        // 기본적으로 게임 리스트로 이동
+        router.push('/gamelist');
+      }
     },
     shareLink() {
       navigator.clipboard
@@ -62,6 +70,7 @@ export default {
 </script>
 
 <style scoped>
+/* 기존 스타일 유지 */
 .main-container {
   height: 100vh;
   display: flex;
