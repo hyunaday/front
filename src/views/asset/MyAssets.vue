@@ -11,12 +11,13 @@
 
       <div class="advertisement-banner">
         <div class="banner-content">
-          <img src="../../assets/images/kbpay.png" alt="광고 배너" class="banner-image" />
-          <div class="banner-text">
-            <p class="banner-title">KB Pay</p>
-            <p class="banner-subtitle">편리한 국민 생활 파트너</p>
-          </div>
-        </div>
+  <img src="../../assets/images/kbpay.png" alt="광고 배너" class="banner-image" />
+  <div class="banner-text">
+    <p class="banner-title">KB Pay</p>
+    <p class="banner-subtitle">편리한 국민 생활 파트너</p>
+  </div>
+</div>
+
       </div>
 
       <div class="account">
@@ -318,16 +319,20 @@ h1 {
   width: 50px;
   height: 50px;
 }
-
 .banner-content {
   margin-top: 20px;
   display: flex;
   align-items: center;
-  /* background-color: #ececec; */
+  background-color: #e3e3e39f;
+  border-radius: 10px; /* 둥근 테두리 추가 */
+  padding: 10px; /* 내용물에 여백 추가 */
 }
+
 
 .banner-text {
   margin-left: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
 .banner-title {
@@ -339,6 +344,7 @@ h1 {
 .banner-subtitle {
   font-size: 12px;
   color: #777;
+  margin: 0;
 }
 
 hr {
