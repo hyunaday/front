@@ -109,7 +109,7 @@
         </div>
       </div>
     </div>
-
+    
     <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
   </div>
 </template>

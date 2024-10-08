@@ -27,7 +27,6 @@ import Phone from "../views/Phone.vue";
 import Verification from "../views/signup/Verification.vue";
 import Email from "../views/signup/Email.vue";
 import Password from "../views/signup/Password.vue";
-import MemberPay from "../views/pay/MemberPay.vue";
 import PaymentSuccess from '../views/pay/PaymentSuccess.vue';
 import PaymentFailure from '../views/pay/PaymentFailure.vue';
 import GameList from '../views/pay/GameList.vue';
@@ -171,11 +170,6 @@ const routes = [
     path: "/mainpay", //  대표 결제 추가
     name: "MainPay",
     component: MainPay,
-  },
-  {
-    path: "/memberpay", // 팀원 결제 추가
-    name: "MemberPay",
-    component: MemberPay,
   },
   {
     path: "/success", //  결제 성공
