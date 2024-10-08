@@ -10,7 +10,6 @@
       선택해주세요
     </h3>
 
-    <!-- 게임 건너뛰기 버튼 클릭 시 /payinfo로 이동 -->
     <button class="custom-button" @click="navigateTo('PayInfo')">
       게임 건너뛰기
     </button>
@@ -21,7 +20,7 @@
 </template>
 
 <script>
-import { useNavigationStore } from '../../stores/navigation'; // navigation.js를 import 합니다.
+import { useNavigationStore } from '../../stores/navigation';
 
 export default {
   name: 'GameList',
@@ -29,10 +28,16 @@ export default {
     goBack() {
       this.$router.go(-1);
     },
-    // 게임 선택 시 페이지 저장 후 이동
     navigateTo(routeName) {
       const navigationStore = useNavigationStore();
       navigationStore.setSelectedPage(routeName, this.$router); // 선택한 페이지를 저장합니다.
+
+      // 페이지에 따라 이동
+      if (routeName === 'PayInfo') {
+        this.$router.push('/payinfo');
+      } else if (routeName === 'LotteryGame') {
+        this.$router.push('/lottery-game'); // 룰렛 돌리기 페이지로 수정
+      }
     },
   },
 };
