@@ -47,6 +47,8 @@ import Agree4 from '../views/agreement/Agree4.vue';
 import Agree5 from '../views/agreement/Agree5.vue';
 import Agree6 from '../views/agreement/Agree6.vue';
 import Agree_Loading from '../views/agreement/Agree_Loading.vue';
+import Transfer2 from "../views/asset/Transfer2.vue";
+import Transfer3 from "../views/asset/Transfer3.vue";
 
 const routes = [
   {
@@ -227,8 +229,18 @@ const routes = [
     component: Transfer,
   },
   {
-    path: '/transactionhistory', // 거래내역조회 페이지
-    name: 'TransactionHistory',
+    path: "/transfer2", // 송금 페이지2
+    name: "Transfer2",
+    component: Transfer2,
+  },
+  {
+    path: "/transfer3", // 송금 페이지3
+    name: "Transfer3",
+    component: Transfer3,
+  },
+  {
+    path: "/transactionhistory", // 거래내역조회 페이지
+    name: "TransactionHistory",
     component: TransactionHistory,
   },
   {
