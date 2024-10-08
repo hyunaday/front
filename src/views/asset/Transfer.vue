@@ -15,14 +15,25 @@
           @keyup.enter="sendMoney"
           maxlength="13"
         />
-        <button 
-          type="button" 
-          class="stroke-button" 
-          @click="sendMoney" 
-          v-if="recipient.length === 13"
-        >
-          송금하기
-        </button>
+
+        <!-- 11자리 이상 입력되면 받는 분에게 표시될 내용 입력란과 송금하기 버튼 표시 -->
+        <div v-if="recipient.length >= 11">
+          <input
+            type="text"
+            id="message"
+            v-model="message"
+            placeholder="받는 분에게 표시될 내용"
+          />
+          
+          <button 
+            type="button" 
+            class="stroke-button" 
+            @click="sendMoney" 
+            v-if="recipient.length >= 11"
+          >
+            송금하기
+          </button>
+        </div>
       </div>
 
       <div class="recent-transactions">
@@ -57,6 +68,7 @@
 import axios from 'axios';
 import FooterNav from '../../components/FooterNav.vue';
 import Header from '../../components/Header.vue';
+// import { useRouter } from 'vue-router';
 
 export default {
   name: 'Transfer',
@@ -67,41 +79,22 @@ export default {
   data() {
     return {
       recipient: '',
+      message: '', // 메모 내용 추가
       recentTransactions: [],
     };
   },
   methods: {
     validateInput() {
+      // 숫자만 입력하고 최대 13자리로 제한
       this.recipient = this.recipient.replace(/[^0-9]/g, '').slice(0, 13);
     },
     async sendMoney() {
-      if (this.recipient.length === 13) {
-        try {
-          const response = await axios.post('/account/{accountIdx}/history', {
-            fromAccountNumber: '333-3333-3333',  // 사용자의 계좌 번호로 설정
-            toAccountNumber: this.recipient,
-            amount: 1000000,  // 예시 금액 (필요시 수정)
-            name: '이체',
-          });
-          if (response.data.isSuccess) {
-            console.log(`송금 성공: ${response.data}`);
-            alert("송금이 완료되었습니다.");
-          }
-        } catch (error) {
-          console.error('송금 실패:', error);
-          if (error.response && error.response.data && error.response.data.errorCode) {
-            const errorCode = error.response.data.errorCode;
-            if (errorCode === 'ACCOUNT4001') {
-              alert("해당 계좌가 존재하지 않습니다.");
-            } else if (errorCode === 'ACCOUNT4003') {
-              alert("계좌 잔액이 부족합니다.");
-            } else {
-              alert("송금에 실패했습니다. 다시 시도해주세요.");
-            }
-          } else {
-            alert("송금에 실패했습니다. 다시 시도해주세요.");
-          }
-        }
+      if (this.recipient.length >= 11) {
+        // 송금 요청과 함께 메시지를 다음 페이지로 전달
+        this.$router.push({ 
+          path: '/send-complete',
+          query: { recipient: this.recipient, message: this.message } // 쿼리 파라미터로 전달
+        });
       } else {
         alert("송금할 계좌번호를 확인해주세요.");
       }

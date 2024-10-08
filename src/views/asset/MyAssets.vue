@@ -77,7 +77,7 @@
           <div v-for="(creditCard, index) in creditCards" :key="index" class="account-card">
             <img :src="creditCard.image" alt="신용카드 아이콘" class="account-icon" />
             <div class="account-info">
-              <span class="transactions-title">{{ creditCard.creditIdx }}</span>
+              <span class="transactions-title">{{ creditCard.name }}</span>
               <span class="account-balance credit-card-balance">{{ formatNumber(creditCard.amount_sum) }}원</span>
             </div>
           </div>
@@ -118,11 +118,11 @@ export default {
   data() {
     return {
       userName: '조현아',
-      accounts: [], // 빈 배열로 초기화
+      accounts: [],
       savingsAccount: {
         balance: 6000000,
       },
-      creditCards: [],  // 초기값을 빈 배열로 설정
+      creditCards: [],
       loanAmount: 480000000,
     };
   },
@@ -147,11 +147,10 @@ export default {
         const response = await apiClient.get('/account/all');
         
         if (response.data.isSuccess && response.data.result && response.data.result.accountList) {
-          // 받아온 데이터를 accounts에 저장
           this.accounts = response.data.result.accountList.map(account => ({
             name: account.bankName,
             balance: account.amount,
-            image: '../src/assets/images/default-account.png', // 이미지가 없을 때 기본 이미지 설정
+            image: '../src/assets/images/default-account.png',
           }));
         } else {
           console.error('응답 데이터에서 계좌 정보를 찾을 수 없습니다.');
@@ -165,11 +164,10 @@ export default {
         const response = await apiClient.get(`/credit/all`);
         
         if (response.data.isSuccess && response.data.result && response.data.result.creditList) {
-          // 받아온 데이터를 creditCards에 저장
           this.creditCards = response.data.result.creditList.map(card => ({
             name: card.creditName,
             amount_sum: card.amountSum,
-            image: card.imgUrl || '../src/assets/images/default-card.png', // 이미지가 없을 때 기본 이미지 설정
+            image: card.imgUrl || '../src/assets/images/default-card.png',
           }));
         } else {
           console.error('응답 데이터에서 신용카드 정보를 찾을 수 없습니다.');
@@ -181,8 +179,8 @@ export default {
   },
 
   created() {
-    this.fetchAccounts();  // 계좌 데이터 호출
-    this.fetchCreditCards();  // 신용카드 데이터 호출
+    this.fetchAccounts();
+    this.fetchCreditCards();
   }
 };
 </script>
