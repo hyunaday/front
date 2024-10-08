@@ -18,6 +18,7 @@
           <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
         </div>
         <button type="submit" class="submit-button">탈퇴하기</button>
+        <button type="button" @click="goBack" class="back-button">돌아가기</button>
       </form>
     </div>
     <!-- <FooterNav /> -->
@@ -61,6 +62,9 @@ export default {
       } catch (error) {
         this.errorMessage = '서버 오류가 발생했습니다. 다시 시도해주세요.';
       }
+    },
+    goBack() {
+      this.$router.back();
     }
   },
 };
@@ -101,7 +105,7 @@ label {
 .submit-button {
   width: 100%;
   padding: 10px;
-  margin-top: 340px;
+  margin-top: 300px;
   background-color: #d97c6c;
   color: white;
   border: none;
@@ -110,6 +114,16 @@ label {
   cursor: pointer;
 }
 
+.back-button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background-color: #EEEFF3;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
 
 .error {
   color: red;
