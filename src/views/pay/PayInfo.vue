@@ -14,8 +14,8 @@
           총
           <span style="color: #6981d9">{{
             paymentAmount.toLocaleString()
-          }}</span
-          >원
+          }}</span>
+          원
         </h4>
         <p class="payment-question">
           <span style="color: #6981d9">어떻게</span> 결제할까요?
@@ -38,10 +38,10 @@
         </div>
       </div>
 
-      <button @click="goToShareLink('PaySplit')" class="split-button">
+      <button @click="goToShareLink('amount')" class="split-button">
         금액으로 나누기
       </button>
-      <button @click="goToShareLink('PayMenu')" class="split-button">
+      <button @click="goToShareLink('menu')" class="split-button">
         메뉴별로 나누기
       </button>
 
@@ -74,12 +74,25 @@ export default {
     goBack() {
       this.$router.go(-1);
     },
-    goToShareLink(targetPage) {
+    goToShareLink(type) {
       const navigationStore = useNavigationStore();
-      const router = this.$router; // 현재 라우터 인스턴스 가져오기
-
       // ShareLink 페이지로 이동하며 경로 저장
-      navigationStore.setSelectedPage(targetPage, router);
+      if (type === 'amount') {
+        navigationStore.setSelectedPage('PaySplit');
+        navigationStore.setNavigationPath([
+          '/sharelink',
+          '/gamelist',
+          '/paysplit',
+        ]);
+      } else if (type === 'menu') {
+        navigationStore.setSelectedPage('PayMenu');
+        navigationStore.setNavigationPath([
+          '/sharelink',
+          '/gamelist',
+          '/paymenu',
+        ]);
+      }
+      this.$router.push('/sharelink');
     },
   },
 };

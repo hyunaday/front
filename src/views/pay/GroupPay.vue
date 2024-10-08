@@ -18,13 +18,11 @@
       함께 결제
     </button>
 
-    <div id="reader" style="width: 600px; display: none"></div>
-
+    <!-- QR Scanner Modal -->
     <div v-if="showScannerModal" class="modal-overlay" @click="closeModal">
       <div class="modal-content" @click.stop>
         <button class="close-button" @click="closeModal">X</button>
-        <qrcode-stream @decode="onDecode" @init="onInit" style="width: 360px" />
-
+        <QrScanner @decode="onDecode" @close="closeScanner" />
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
         <p v-if="decodedData" class="decoded-data">
           스캔된 데이터: <strong>{{ decodedData }}</strong>
@@ -35,24 +33,18 @@
 </template>
 
 <script>
-import { QrcodeStream } from 'vue3-qrcode-reader';
-import SoloPay from '../pay/SoloPay.vue';
-import MainPay from '../pay/MainPay.vue';
-import { Html5Qrcode } from 'html5-qrcode';
+import QrScanner from '../../components/QrScanner.vue'; // QrScanner 컴포넌트 임포트
 
 export default {
-  name: 'PaymentSelection',
+  name: 'Grouppay',
   components: {
-    QrcodeStream,
-    SoloPay,
-    MainPay,
+    QrScanner, // QrScanner 컴포넌트 등록
   },
   data() {
     return {
       decodedData: '',
       errorMessage: '',
       showScannerModal: false,
-      currentPaymentComponent: null,
     };
   },
   methods: {
@@ -60,63 +52,22 @@ export default {
       this.$router.go(-1);
     },
     showScanner(paymentType) {
-      this.currentPaymentComponent = paymentType;
+      this.$router.push({ query: { paymentType } });
       this.showScannerModal = true;
-      this.initializeScanner();
     },
-    async initializeScanner() {
-      const html5QrCode = new Html5Qrcode('reader');
-      const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-        this.decodedData = decodedText; // 스캔된 데이터를 여기에 할당합니다.
-        this.errorMessage = '';
-        // 여기서 결제 페이지로 리디렉션할 수 있습니다.
-        // 예: this.redirectToPayment(decodedText);
-      };
-      const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-
-      try {
-        const devices = await Html5Qrcode.getCameras();
-        if (devices.length) {
-          const cameraId = devices[0].id;
-          html5QrCode
-            .start(
-              { deviceId: { exact: cameraId } },
-              config,
-              qrCodeSuccessCallback
-            )
-            .catch((err) => {
-              console.error('카메라 시작 오류:', err);
-              this.errorMessage =
-                '카메라를 시작할 수 없습니다. 권한을 확인하세요.';
-            });
-        } else {
-          this.errorMessage = '사용 가능한 카메라가 없습니다.';
-        }
-      } catch (error) {
-        console.error('카메라 접근 오류:', error);
-        this.errorMessage = '카메라에 접근할 수 없습니다. 권한을 확인하세요.';
-      }
+    onDecode(decodedString) {
+      this.decodedData = decodedString;
+      this.errorMessage = '';
+      // 스캔된 데이터 처리 후 모달 닫기
+      this.showScannerModal = false;
     },
-    async onInit(success, error) {
-      if (error) {
-        console.error('카메라 초기화 실패:', error);
-        this.errorMessage = '카메라에 접근할 수 없습니다. 권한을 확인하세요.';
-      } else if (success) {
-        console.log('카메라 초기화 성공');
-        this.errorMessage = '';
-        await this.requestCameraPermission();
-      }
+    closeScanner() {
+      this.showScannerModal = false;
+      this.decodedData = '';
     },
     closeModal() {
       this.showScannerModal = false;
       this.decodedData = '';
-    },
-    async requestCameraPermission() {
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        await navigator.mediaDevices.getUserMedia({ video: true });
-      } else {
-        throw new Error('이 브라우저는 getUserMedia를 지원하지 않습니다.');
-      }
     },
   },
 };
