@@ -1,33 +1,32 @@
-import { createRouter, createWebHistory } from 'vue-router';
-import Login from '../views/Login.vue';
-import MainPage from '../views/Mainpage.vue';
-import MyAssets from '../views/asset/MyAssets.vue';
-import AccountBook from '../views/book/AccountBook.vue';
-import BusinessCard from '../views/business/BusinessCard.vue';
-import GroupPay from '../views/pay/GroupPay.vue';
-import SoloPay from '../views/pay/SoloPay.vue';
-import SignUp from '../views/SignUp.vue';
-import AddList from '../views/book/AddList.vue';
-import Cards from '../views/asset/Cards.vue';
-import BusinessCardList from '../views/business/BusinessCardList.vue';
-import MyCardRegistration from '../views/business/MyCardRegistration.vue';
-import FriendCardRegistration from '../views/business/FriendCardRegistration.vue';
-import Settings from '../views/settings/Settings.vue';
-import PayList from '../views/settings/PayList.vue';
-import Cancel from '../views/settings/Cancel.vue';
-import Logout from '../views/settings/Logout.vue';
-import ChangePassword from '../views/settings/ChangePassword.vue';
-import AddBusinessCard from '../views/business/AddBusinessCard.vue';
-import MainPay from '../views/pay/MainPay.vue';
-import CurrentPassword from '../views/settings/CurrentPassword.vue';
-import Transfer from '../views/asset/Transfer.vue';
-import TransactionHistory from '../views/TransactionHistory.vue';
-import Loading from '../views/Loading.vue';
-import Phone from '../views/Phone.vue';
-import Verification from '../views/signup/Verification.vue';
-import Email from '../views/signup/Email.vue';
-import Password from '../views/signup/Password.vue';
-import MemberPay from '../views/pay/MemberPay.vue';
+import { createRouter, createWebHistory } from "vue-router";
+import Login from "../views/Login.vue";
+import MainPage from "../views/Mainpage.vue";
+import MyAssets from "../views/asset/MyAssets.vue";
+import AccountBook from "../views/book/AccountBook.vue";
+import BusinessCard from "../views/business/BusinessCard.vue";
+import GroupPay from "../views/pay/GroupPay.vue";
+import SoloPay from "../views/pay/SoloPay.vue";
+import SignUp from "../views/SignUp.vue";
+import AddList from "../views/book/AddList.vue";
+import Cards from "../views/asset/Cards.vue";
+import BusinessCardList from "../views/business/BusinessCardList.vue";
+import MyCardRegistration from "../views/business/MyCardRegistration.vue";
+import FriendCardRegistration from "../views/business/FriendCardRegistration.vue";
+import Settings from "../views/settings/Settings.vue";
+import PayList from "../views/settings/PayList.vue";
+import Cancel from "../views/settings/Cancel.vue";
+import Logout from "../views/settings/Logout.vue";
+import ChangePassword from "../views/settings/ChangePassword.vue";
+import AddBusinessCard from "../views/business/AddBusinessCard.vue";
+import MainPay from "../views/pay/MainPay.vue";
+import CurrentPassword from "../views/settings/CurrentPassword.vue";
+import Transfer from "../views/asset/Transfer.vue";
+import TransactionHistory from "../views/TransactionHistory.vue";
+import Loading from "../views/Loading.vue";
+import Phone from "../views/Phone.vue";
+import Verification from "../views/signup/Verification.vue";
+import Email from "../views/signup/Email.vue";
+import Password from "../views/signup/Password.vue";
 import PaymentSuccess from '../views/pay/PaymentSuccess.vue';
 import PaymentFailure from '../views/pay/PaymentFailure.vue';
 import GameList from '../views/pay/GameList.vue';
@@ -173,13 +172,8 @@ const routes = [
     component: MainPay,
   },
   {
-    path: '/memberpay', // 팀원 결제 추가
-    name: 'MemberPay',
-    component: MemberPay,
-  },
-  {
-    path: '/success', //  결제 성공
-    name: 'PaymentSuccess',
+    path: "/success", //  결제 성공
+    name: "PaymentSuccess",
     component: PaymentSuccess,
   },
   {
