@@ -16,7 +16,6 @@
           maxlength="13"
         />
 
-        <!-- 11자리 이상 입력되면 받는 분에게 표시될 내용 입력란과 송금하기 버튼 표시 -->
         <div v-if="recipient.length >= 11">
           <input
             type="text"
@@ -80,14 +79,13 @@ export default {
   data() {
     return {
       recipient: '',
-      message: '', // 메모 내용 추가
+      message: '',
       recentTransactions: [],
-      accountIdx: 1, // 예시로 설정한 accountIdx, 필요에 따라 동적으로 변경 가능
+      accountIdx: 1,
     };
   },
   methods: {
     validateInput() {
-      // 숫자만 입력하고 최대 13자리로 제한
       this.recipient = this.recipient.replace(/[^0-9]/g, '').slice(0, 13);
     },
 
@@ -134,7 +132,7 @@ export default {
   border-radius: 10px;
   padding: 30px;
   text-align: left;
-  overflow-y: auto; /* 세로 스크롤 추가 */
+  overflow-y: hidden; /* 세로 스크롤 제거 */
 }
 
 .point {
@@ -153,8 +151,8 @@ label {
 }
 
 input[type="text"] {
-  max-width: 400px; /* 고정된 최대 너비를 설정 */
-  width: 100%; /* 너비는 부모 요소에 따라 확장 */
+  max-width: 400px;
+  width: 100%;
   padding: 10px 90px 3px 2px;
   border: none;
   border-bottom: 2px solid #6981d9;
