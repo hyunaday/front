@@ -48,7 +48,13 @@
             <img class="transaction-image" src="../../assets/images/kbbank.png" alt="KB Bank" />
             <div class="transaction-details">
               <p class="transaction-name">{{ transaction.name }}</p>
-              <p class="transaction-date">{{ new Date(transaction.createdAt).toLocaleString() }}</p>
+              <p 
+                class="transaction-account" 
+                @click="copyAccountNumber(transaction.accountNumber)"
+              >
+                {{ transaction.accountNumber }}
+              </p>
+              <p class="transaction-date">{{ transaction.createdAt }}</p>
             </div>
             <hr class="transaction-divider" />
           </div>
@@ -76,7 +82,7 @@ export default {
       recipient: '',
       message: '', // 메모 내용 추가
       recentTransactions: [],
-      accountIdx:1, // 예시로 설정한 accountIdx, 필요에 따라 동적으로 변경 가능
+      accountIdx: 1, // 예시로 설정한 accountIdx, 필요에 따라 동적으로 변경 가능
     };
   },
   methods: {
@@ -84,16 +90,7 @@ export default {
       // 숫자만 입력하고 최대 13자리로 제한
       this.recipient = this.recipient.replace(/[^0-9]/g, '').slice(0, 13);
     },
-    async sendMoney() {
-      if (this.recipient.length >= 11) {
-        // 여기서 다른 페이지로 이동하는 로직 추가
-      } else {
-        alert("송금할 계좌번호를 확인해주세요.");
-      }
-    },
-    formatAccountNumber(accountNumber) {
-      return `${accountNumber.slice(0, 3)}-${accountNumber.slice(3, 7)}-${accountNumber.slice(7, 11)}-${accountNumber.slice(11)}`;
-    },
+
     async fetchTransactions() {
       try {
         const response = await apiClient.get(`/account/history?accountIdx=${this.accountIdx}`);
@@ -101,7 +98,8 @@ export default {
         if (response.data.isSuccess && response.data.result.success) {
           this.recentTransactions = response.data.result.accountHistoryList.map(transaction => ({
             name: transaction.name,
-            createdAt: transaction.createdAt,
+            accountNumber: transaction.accountNumber,
+            createdAt: new Date(transaction.createdAt).toLocaleString(),
           }));
         } else {
           console.error("거래 내역을 불러오지 못했습니다:", response.data.message);
@@ -114,7 +112,7 @@ export default {
     },
     copyAccountNumber(accountNumber) {
       this.recipient = accountNumber;
-      navigator.clipboard.writeText(this.formatAccountNumber(accountNumber))
+      navigator.clipboard.writeText(accountNumber)
         .then(() => {
           alert("계좌번호가 복사되었습니다.");
         })
@@ -136,6 +134,7 @@ export default {
   border-radius: 10px;
   padding: 30px;
   text-align: left;
+  overflow-y: auto; /* 세로 스크롤 추가 */
 }
 
 .point {
@@ -204,17 +203,17 @@ input[type="text"]::placeholder {
   margin-top: 6px;
 }
 
-.transaction-date {
-  font-size: 10px;
-  color: #888;
-  margin-top: 2px;
-}
-
 .transaction-account {
   font-size: 12px; 
   color: #6981d9; 
   margin-bottom: 6px;
   cursor: pointer;
+}
+
+.transaction-date {
+  font-size: 10px;
+  color: #888;
+  margin-top: 2px;
 }
 
 .no-transactions {

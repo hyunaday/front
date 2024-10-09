@@ -17,7 +17,7 @@
         
         <div class="amount-info">
           <span class="available-amount">이체 가능 금액</span>
-          <span class="currency">원</span>
+          <span class="currency">{{ formattedAmount }} 원</span> <!-- 잔액이 표시되는 부분 -->
         </div>
 
         <button 
@@ -27,7 +27,6 @@
         >
           송금하기
         </button>
-
       </div>
     </div>
     <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
@@ -37,6 +36,7 @@
 <script>
 import FooterNav from '../../components/FooterNav.vue';
 import Header from '../../components/Header.vue';
+import axios from 'axios';
 
 export default {
   name: 'Transfer2',
@@ -47,7 +47,13 @@ export default {
   data() {
     return {
       recipient: '',
+      amount: 0, // 계좌 잔액을 저장할 데이터
     };
+  },
+  computed: {
+    formattedAmount() {
+      return this.amount.toLocaleString(); // 천 단위로 콤마 표시
+    }
   },
   methods: {
     validateInput() {
@@ -56,15 +62,29 @@ export default {
     async sendMoney() {
       const amount = parseInt(this.recipient);
       if (amount >= 1) {
-        // 송금 요청을 다음 페이지로 전달
-        this.$router.push({ 
-          path: '/transfer3',
-        });
+        this.$router.push({ path: '/transfer3' });
       } else {
         alert("보낼 금액은 1원 이상이어야 합니다."); // 조건에 맞지 않을 때 alert 추가
       }
     },
+    async fetchAccountBalance() {
+      try {
+        const response = await axios.get('/account/all');
+        if (response.data.isSuccess) {
+          // idx가 1인 계좌의 잔액 설정
+          const account = response.data.result.accountList.find(acc => acc.idx === 1);
+          if (account) {
+            this.amount = account.amount; // 잔액 설정
+          }
+        }
+      } catch (error) {
+        console.error("잔액을 불러오는 중 오류가 발생했습니다.", error);
+      }
+    }
   },
+  mounted() {
+    this.fetchAccountBalance(); // 컴포넌트가 로드될 때 잔액 불러오기
+  }
 };
 </script>
 
