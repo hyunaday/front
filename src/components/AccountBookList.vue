@@ -255,18 +255,22 @@
           :key="entryIndex"
           class="entry-item"
         >
-          <div class="category">
-            <div>{{ entry.category }}</div>
-            <div>{{ entry.detail }}</div>
+          <!-- 거래처와 카테고리를 세로로 배치 -->
+          <div class="entry-info">
+            <div class="store-name">{{ entry.storeName }}</div>
+            <div class="category">{{ entry.category }}</div>
           </div>
-          <div class="payment">{{ entry.paymentMethod }}</div>
+
+          <!-- 세부 내용 및 금액 -->
+          <div>{{ entry.detail }}</div>
           <div
             class="amount"
             :class="entry.amount < 0 ? 'negative' : 'positive'"
           >
             {{ formatAmount(entry.amount) }}
           </div>
-          <!-- 삭제 버튼 추가 -->
+
+          <!-- 삭제 버튼 -->
           <button
             @click="deleteEntry(groupIndex, entryIndex)"
             class="delete-btn"
@@ -351,7 +355,7 @@ export default {
           totalAmount: -27000,
           entries: [
             {
-              category: "생활용품",
+              category: "주거/통신",
               detail: "주방/욕실",
               paymentMethod: "신한은행",
               amount: -30000,
@@ -359,7 +363,7 @@ export default {
               memo: "주방용품 구매",
             },
             {
-              category: "부수입",
+              category: "주거/통신",
               detail: "",
               paymentMethod: "현금",
               amount: 3000,
@@ -374,9 +378,8 @@ export default {
           totalAmount: -27000,
           entries: [
             {
-              category: "생활용품",
+              category: "주거/통신",
               detail: "주방/욕실",
-              paymentMethod: "신한은행",
               amount: -30000,
               storeName: "다이소",
               memo: "생활용품",
@@ -384,7 +387,6 @@ export default {
             {
               category: "부수입",
               detail: "",
-              paymentMethod: "현금",
               amount: 3000,
               storeName: "",
               memo: "",
@@ -418,63 +420,47 @@ export default {
       }, 0);
     },
     // 선택한 연도와 월에 맞는 엔트리 필터링
-    filteredEntries() {
-      return this.entries.filter((entry) => {
-        const entryDate = new Date();
-        entryDate.setFullYear(this.selectedYear);
-        entryDate.setMonth(this.selectedMonth);
-        entryDate.setDate(entry.date);
-        return (
-          entryDate.getFullYear() === this.selectedYear &&
-          entryDate.getMonth() === this.selectedMonth
-        );
-      });
-    },
+    // filteredEntries() {
+    //   return this.entries.filter((entry) => {
+    //     const entryDate = new Date();
+    //     entryDate.setFullYear(this.selectedYear);
+    //     entryDate.setMonth(this.selectedMonth);
+    //     entryDate.setDate(entry.date);
+    //     return (
+    //       entryDate.getFullYear() === this.selectedYear &&
+    //       entryDate.getMonth() === this.selectedMonth
+    //     );
+    //   });
+    // },
 
     filteredEntries() {
-      let filteredByCategory = this.entries.map((entryGroup) => {
-        let filteredGroup = { ...entryGroup };
-        filteredGroup.entries = entryGroup.entries.filter((entry) => {
+      return this.entries
+        .filter((entryGroup) => {
+          // 선택된 수입/지출 필터에 따라 엔트리 필터링
           if (this.selectedFilter === "income") {
-            return entry.amount > 0;
+            return entryGroup.entries.some((entry) => entry.amount > 0);
           } else if (this.selectedFilter === "expense") {
-            return entry.amount < 0;
+            return entryGroup.entries.some((entry) => entry.amount < 0);
           }
           return true;
-        });
-        return filteredGroup.entries.length ? filteredGroup : null;
-      });
-
-      filteredByCategory = filteredByCategory.filter(Boolean);
-
-      if (!this.finalQuery) {
-        return filteredByCategory;
-      }
-
-      return filteredByCategory
-        .map((entryGroup) => {
-          const filteredGroup = {
-            ...entryGroup,
-            entries: entryGroup.entries.filter((entry) =>
-              this.finalQuery
-                .toLowerCase()
-                .split(" ")
-                .every((query) =>
-                  [
-                    entry.category,
-                    entry.detail,
-                    entry.paymentMethod,
-                    entryGroup.date.toString(),
-                    entryGroup.day.toLowerCase(),
-                  ]
-                    .map((value) => value.toLowerCase())
-                    .some((field) => field.includes(query))
-                )
-            ),
-          };
-          return filteredGroup.entries.length ? filteredGroup : null;
         })
-        .filter(Boolean);
+        .map((entryGroup) => {
+          // 선택된 카테고리에 따라 엔트리의 항목 필터링
+          const filteredEntries = entryGroup.entries.filter((entry) => {
+            const matchesFilter =
+              this.selectedFilter === "income"
+                ? entry.amount > 0
+                : this.selectedFilter === "expense"
+                ? entry.amount < 0
+                : true;
+            const matchesCategory =
+              !this.selectedCategory ||
+              entry.category === this.selectedCategory;
+            return matchesFilter && matchesCategory;
+          });
+          return { ...entryGroup, entries: filteredEntries };
+        })
+        .filter((entryGroup) => entryGroup.entries.length > 0);
     },
     formattedPrice() {
       return `${this.editablePrice.toLocaleString()}원`;
@@ -496,7 +482,14 @@ export default {
     },
     toggleFilter(filter) {
       this.selectedFilter = this.selectedFilter === filter ? null : filter;
-      this.selectedCategory = ""; // 필터 변경 시 "전체"로 초기화
+      this.selectedCategory = ""; // 필터 변경 시 카테고리 초기화
+    },
+    setCategoryType(type) {
+      this.selectedFilter = type;
+    },
+
+    executeSearch() {
+      this.finalQuery = this.searchQuery;
     },
     // 카테고리 타입 설정
     setFilter(filter) {
@@ -510,46 +503,37 @@ export default {
     },
     submitDetails() {
       const newEntry = {
+        category: this.selectedCategory,
+        detail: this.memo,
+        amount:
+          this.selectedFilter === "expense"
+            ? -parseInt(this.editablePrice) || 0
+            : parseInt(this.editablePrice) || 0, // 지출이면 음수로 적용
         storeName: this.storeName,
-        price: this.editablePrice,
-        categoryType: this.selectedCategoryType, // 수입 or 지출
-        category: this.selectedCategory, // 세부 카테고리
-        paymentMethod: this.paymentMethod,
-        transactionDate: this.transactionDate,
-        memo: this.memo,
-      };
-
-      console.log("저장된 내용:", newEntry);
-
-      this.entries.push({
         date: new Date().getDate().toString(),
         day: new Date().toLocaleString("ko-KR", { weekday: "long" }),
-        totalAmount: this.editablePrice,
+        filter: this.selectedFilter, // 수입 또는 지출 필터 값 저장
+      };
+
+      // `entries` 배열에 새로운 내역을 추가
+      this.entries.push({
+        date: newEntry.date,
+        day: newEntry.day,
+        totalAmount: newEntry.amount,
         entries: [newEntry],
       });
 
+      // 바텀시트 닫고 폼 초기화
       this.closeBottomSheet();
-      this.resetForm();
+      this.resetForm(); // 폼 초기화
     },
     resetForm() {
-      this.selectedCategoryType = "income"; // 폼 초기화 시 카테고리 타입 기본값은 수입
-      this.selectedCategory = "";
-    },
-    deleteEntry(groupIndex, entryIndex) {
-      this.entries[groupIndex].entries.splice(entryIndex, 1);
-
-      if (this.entries[groupIndex].entries.length === 0) {
-        this.entries.splice(groupIndex, 1);
-      }
-    },
-    resetForm() {
-      this.storeName = "";
-      this.editablePrice = 0;
-      this.category = "";
-      this.paymentMethod = "";
-      this.transactionDate = new Date().toISOString().slice(0, 10);
-      this.memo = "";
       this.selectedCategory = null;
+      this.memo = "";
+      this.editablePrice = 0;
+      this.storeName = "";
+      this.transactionDate = "";
+      this.paymentMethod = "";
     },
   },
 };
@@ -671,16 +655,31 @@ export default {
   justify-content: space-between;
   padding: 10px 0;
 }
-
-.category {
-  flex: 1;
-  font-size: 0.8rem;
+.entry-item:hover {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+.entry-info {
+  display: flex;
+  flex-direction: column; /* 세로 정렬 */
 }
 
-.payment {
-  flex: 1;
-  text-align: center;
+.store-name {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: black;
+}
+
+.category {
   font-size: 0.8rem;
+  color: black;
+}
+
+.detail {
+  flex: 1;
+  text-align: center; /* detail 필드 중앙 정렬 */
+  font-size: 0.8rem;
+  color: #333;
 }
 
 .amount {
@@ -750,11 +749,6 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.store-name {
-  font-size: 1.2rem;
-  font-weight: bold;
 }
 
 .close-btn {
