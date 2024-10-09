@@ -21,7 +21,7 @@ import AddBusinessCard from "../views/business/AddBusinessCard.vue";
 import MainPay from "../views/pay/MainPay.vue";
 import CurrentPassword from "../views/settings/CurrentPassword.vue";
 import Transfer from "../views/asset/Transfer.vue";
-import TransactionHistory from "../views/TransactionHistory.vue";
+import TransactionHistory from "../views/asset/TransactionHistory.vue"; // asset 안으로 경로 변경(10.09)
 import Loading from "../views/Loading.vue";
 import Phone from "../views/Phone.vue";
 import Verification from "../views/signup/Verification.vue";
@@ -49,6 +49,7 @@ import Agree6 from '../views/agreement/Agree6.vue';
 import Agree_Loading from '../views/agreement/Agree_Loading.vue';
 import Transfer2 from "../views/asset/Transfer2.vue";
 import Transfer3 from "../views/asset/Transfer3.vue";
+import Y from "vue-cal/dist/i18n/el.es.js";
 
 const routes = [
   {
@@ -239,7 +240,7 @@ const routes = [
     component: Transfer3,
   },
   {
-    path: "/transactionhistory", // 거래내역조회 페이지
+    path: "/transactionhistory", // 거래내역조회 페이지페이지
     name: "TransactionHistory",
     component: TransactionHistory,
   },

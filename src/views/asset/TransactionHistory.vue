@@ -68,9 +68,9 @@
 </template>
 
 <script>
-import apiClient from "../api/axios.js";
-import FooterNav from "../components/FooterNav.vue";
-import Header from "../components/Header.vue";
+import apiClient from "../../api/axios.js";
+import FooterNav from "../../components/FooterNav.vue";
+import Header from "../../components/Header.vue";
 
 export default {
   name: "TransactionHistory",
