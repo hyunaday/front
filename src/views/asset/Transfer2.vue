@@ -14,7 +14,7 @@
           @input="updateAmount"
           @keyup.enter="sendMoney"
         />
-        
+
         <div class="amount-info">
           <span class="available-amount">이체 가능 금액</span>
           <span class="currency">{{ formattedAmount }} 원</span>
@@ -37,59 +37,73 @@
 import FooterNav from '../../components/FooterNav.vue';
 import Header from '../../components/Header.vue';
 import apiClient from '../../api/axios';
+import { useAccountStore } from '../../stores/accountStore';
+import { ref, computed, onMounted } from 'vue';
 
 export default {
-  name: 'Transfer2',
+  name: 'Transfer',
   components: {
     FooterNav,
     Header,
   },
-  data() {
-    return {
-      amount: '', // 원래는 숫자를 저장하는 변수
-      availableAmount: 0, // 계좌 잔액을 저장할 데이터
+  setup() {
+    const accountStore = useAccountStore();
+    const amount = ref(''); // 송금할 금액을 저장하는 반응형 변수
+
+    // 사용 가능한 금액을 포맷하여 반환
+    const formattedAmount = computed(() => {
+      return accountStore.availableAmount.toLocaleString();
+    });
+
+    // 입력 금액을 포맷하여 반환
+    const formattedInputAmount = computed(() => {
+      return amount.value ? amount.value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '';
+    });
+
+    // 금액을 업데이트하는 메서드
+    const updateAmount = (event) => {
+      amount.value = event.target.value.replace(/[^0-9]/g, ''); // 숫자만 남김
     };
-  },
-  computed: {
-    formattedAmount() {
-      return this.availableAmount.toLocaleString(); // 천 단위로 콤마 표시
-    },
-    formattedInputAmount() {
-      // 입력한 숫자를 천 단위로 포맷
-      return this.amount ? this.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '';
-    }
-  },
-  methods: {
-    updateAmount(event) {
-      // 입력값을 숫자로만 변환하고 저장
-      this.amount = event.target.value.replace(/[^0-9]/g, '');
-    },
-    async sendMoney() {
-      const amount = parseInt(this.amount);
-      if (amount >= 1 && amount <= this.availableAmount) {
-        // 여기에 송금 API 호출 로직을 추가하세요.
+
+    // 송금 메서드
+    const sendMoney = async () => {
+      const parsedAmount = parseInt(amount.value);
+      if (parsedAmount >= 1 && parsedAmount <= accountStore.availableAmount) {
+        // 송금 API 호출 로직 추가
+        await apiClient.post('/account/sendAccount', { toAccountNumber: accountStore.accountIdx, amount: parsedAmount }); // 예시 API 호출
         this.$router.push({ path: '/transfer3' });
       } else {
         alert("송금하실 금액을 확인해주세요.");
       }
-    },
-    async fetchAccountBalance() {
+    };
+
+    // 계좌 잔액을 가져오는 메서드
+    const fetchAccountBalance = async () => {
       try {
         const response = await apiClient.get('/account/all');
         if (response.data.isSuccess) {
-          // idx가 1인 계좌의 잔액 설정
-          const account = response.data.result.accountList.find(acc => acc.idx === 1); // 여기서 idx 값 조정
+          const account = response.data.result.accountList.find(acc => acc.idx === parseInt(this.$route.params.idx));
           if (account) {
-            this.availableAmount = account.amount; // 잔액 설정
+            accountStore.setAvailableAmount(account.amount); // 사용 가능한 금액 설정
+            accountStore.setAccountIdx(account.idx); // 계좌 인덱스 설정
           }
         }
       } catch (error) {
         console.error("계좌 잔액을 불러오는 중 오류가 발생했습니다:", error);
       }
-    },
-  },
-  mounted() {
-    this.fetchAccountBalance();
+    };
+
+    onMounted(() => {
+      fetchAccountBalance(); // 컴포넌트가 마운트될 때 계좌 잔액을 가져옴
+    });
+
+    return { 
+      amount,
+      formattedAmount, 
+      formattedInputAmount, 
+      updateAmount, 
+      sendMoney 
+    };
   },
 };
 </script>

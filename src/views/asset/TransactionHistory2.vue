@@ -154,6 +154,10 @@ export default {
 </script>
 
 <style scoped>
+a {
+  text-decoration: none; /* 링크의 밑줄 제거 */
+}
+
 .title {
   text-align: center;
   font-size: 16px;

@@ -55,6 +55,7 @@ import TransactionHistory3 from "../views/asset/TransactionHistory3.vue";
 import TransactionHistory4 from "../views/asset/TransactionHistory4.vue";
 import TransactionHistory5 from "../views/asset/TransactionHistory5.vue";
 import TransactionHistory6 from "../views/asset/TransactionHistory6.vue";
+import TransactionHistory from "../views/asset/TransactionHistory.vue";
 
 const routes = [
   {
@@ -243,6 +244,16 @@ const routes = [
     path: "/transfer3", // 송금 페이지3
     name: "Transfer3",
     component: Transfer3,
+  },
+  {
+    path: '/transfer2/:idx', // idx를 URL 매개변수로 설정
+    name: 'Transfer2',
+    component: () => import('../views/asset/Transfer2.vue')
+  },
+  {
+    path: "/transactionhistory", // 거래내역조회 페이지
+    name: "TransactionHistory",
+    component: TransactionHistory,
   },
   {
     path: "/transactionhistory1", // 거래내역조회 페이지1

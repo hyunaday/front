@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import apiClient from "../../api/axios.js";
+import { useAccountStore } from "../../stores/accountStore"; // 스토어 임포트
 import FooterNav from "../../components/FooterNav.vue";
 import Header from "../../components/Header.vue";
 
@@ -74,23 +74,28 @@ export default {
     FooterNav,
     Header,
   },
+  setup() {
+    const accountStore = useAccountStore(); // Pinia 스토어 사용
+
+    return { accountStore };
+  },
   data() {
     return {
       imageSrc: "src/assets/images/kbbank.png",
-      bankName: "국민은행",
-      accountNumber: "1234567890", // 예시 계좌 번호, 실제 데이터로 업데이트 필요
+      accountNumber: "", // API에서 받아온 계좌 번호
       accountDescription: "국민은행 입출금 통장",
       searchQuery: "",
-      transactions: [],
     };
   },
   computed: {
     formattedAccountNumber() {
-      return this.accountNumber.toLocaleString();
+      return this.accountStore.accounts.length > 0
+        ? this.accountStore.accounts[0].accountNumber.toLocaleString()
+        : '';
     },
     totalAmount() {
-      return this.transactions.reduce(
-        (sum, transaction) => sum + transaction.amount,
+      return this.accountStore.accounts.reduce(
+        (sum, account) => sum + account.amount,
         0
       );
     },
@@ -100,24 +105,13 @@ export default {
   },
   methods: {
     async fetchTransactions() {
-      try {
-        const response = await apiClient.get("/account/all"); // API에서 계좌 데이터 가져오기
-        if (response.data.isSuccess) {
-          // idx가 1인 데이터만 필터링
-          this.transactions = response.data.result.accountList.filter(transaction => transaction.idx === 6);
-          
-          if (this.transactions.length > 0) {
-            this.bankName = this.transactions[0].bankName; // 은행 이름 설정
-            this.accountNumber = this.transactions[0].accountNumber; // 계좌 번호 설정
-            this.accountDescription = this.transactions[0].accountDescription; // 계좌 설명 설정
-          } else {
-            console.error("idx가 6인 거래 내역이 없습니다.");
-          }
-        } else {
-          console.error("계좌 정보를 가져오지 못했습니다.");
-        }
-      } catch (error) {
-        console.error("API 호출 중 오류 발생:", error);
+      await this.accountStore.fetchAccounts(); // 스토어에서 계좌 데이터 가져오기
+      if (this.accountStore.accounts.length > 0) {
+        const firstAccount = this.accountStore.accounts[0];
+        this.accountNumber = firstAccount.accountNumber; // 계좌 번호 설정
+        this.accountDescription = firstAccount.accountDescription; // 계좌 설명 설정
+      } else {
+        console.error("계좌 정보가 없습니다.");
       }
     },
     copyAccountNumber() {
@@ -133,7 +127,7 @@ export default {
     performSearch() {
       if (this.searchQuery) {
         console.log(`검색어: ${this.searchQuery}`);
-        // 여기서 검색 기능을 구현할 수 있어
+        // 검색 기능 구현
       } else {
         console.log("검색어가 비어 있습니다.");
       }
@@ -152,6 +146,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 a {

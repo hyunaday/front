@@ -69,6 +69,7 @@
 import FooterNav from '../../components/FooterNav.vue';
 import Header from '../../components/Header.vue';
 import apiClient from '../../api/axios';
+import { useAccountStore } from '../../stores/accountStore';
 
 export default {
   name: 'Transfer',
