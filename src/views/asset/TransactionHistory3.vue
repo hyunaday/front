@@ -1,6 +1,6 @@
 <template>
   <div class="main-container">
-  <Header />
+    <Header />
 
     <div>
       <h1 class="title">계좌 조회</h1>
@@ -40,7 +40,7 @@
         />
         <button class="filter-icon" @click="performSearch">
           <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
+        </button>
         <div class="filter-icon">
           <i class="fa-solid fa-filter"></i>
         </div>
@@ -53,13 +53,9 @@
           v-for="transaction in transactions"
           :key="transaction.idx"
         >
-          <span class="date-label">{{
-            formatDate(transaction.createdAt)
-          }}</span>
+          <span class="date-label">{{ formatDate(transaction.createdAt) }}</span>
           <span class="name">{{ transaction.accountHolderName }}</span>
-          <span class="amount">{{
-            formatTransactionAmount(transaction.amount)
-          }}</span>
+          <span class="amount">{{ formatTransactionAmount(transaction.amount) }}</span>
         </div>
       </div>
     </div>
@@ -107,11 +103,16 @@ export default {
       try {
         const response = await apiClient.get("/account/all"); // API에서 계좌 데이터 가져오기
         if (response.data.isSuccess) {
-          this.transactions = response.data.result.accountList; // 계좌 리스트에서 거래 내역을 가져오기
-          this.bankName = this.transactions[0].bankName; // 은행 이름 설정
-          this.accountNumber = this.transactions[0].accountNumber; // 계좌 번호 설정
-          this.Name = this.transactions[0].Name; // 계좌 번호 설정
-
+          // idx가 3인 데이터만 필터링
+          this.transactions = response.data.result.accountList.filter(transaction => transaction.idx === 3);
+          
+          if (this.transactions.length > 0) {
+            this.bankName = this.transactions[0].bankName; // 은행 이름 설정
+            this.accountNumber = this.transactions[0].accountNumber; // 계좌 번호 설정
+            this.accountDescription = this.transactions[0].accountDescription; // 계좌 설명 설정
+          } else {
+            console.error("idx가 3인 거래 내역이 없습니다.");
+          }
         } else {
           console.error("계좌 정보를 가져오지 못했습니다.");
         }
@@ -237,13 +238,9 @@ export default {
 .filter-icon {
   margin-left: 10px;
   cursor: pointer;
-  background-color: transparent; /* 배경색 없음 */
-  border: none; /* 테두리 없음 */
-  padding: 0; /* 패딩 없음 */
   display: flex; /* 아이콘이 중앙에 위치하도록 */
   align-items: center; /* 수직 정렬 */
 }
-
 
 .transaction-list {
   padding: 15px;
