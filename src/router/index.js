@@ -52,6 +52,7 @@ import Agree_Loading from '../views/agreement/Agree_Loading.vue';
 import Transfer2 from "../views/asset/Transfer2.vue";
 import Transfer3 from "../views/asset/Transfer3.vue";
 import Y from "vue-cal/dist/i18n/el.es.js";
+import TransactionHistory6 from "../views/asset/TransactionHistory6.vue";
 
 const routes = [
   {
@@ -255,6 +256,11 @@ const routes = [
     path: "/transactionhistory3", // 거래내역조회 페이지3
     name: "TransactionHistory3",
     component: TransactionHistory3,
+  },
+  {
+    path: "/transactionhistory6", // 거래내역조회 페이지6
+    name: "TransactionHistory6",
+    component: TransactionHistory6,
   },
   {
     path: '/loading', // 로딩 페이지
