@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="main-container d-flex flex-column justify-content-center align-items-center"
-  >
+  <div class="main-container d-flex flex-column justify-content-center align-items-center">
     <button @click="goBack" class="back-button">
       <i class="fas fa-chevron-left"></i>
     </button>
@@ -34,11 +32,12 @@
 
 <script>
 import QrScanner from '../../components/QrScanner.vue'; // QrScanner 컴포넌트 임포트
+import { useOrderStore } from '../../stores/orderStore';
 
 export default {
   name: 'Grouppay',
   components: {
-    QrScanner, // QrScanner 컴포넌트 등록
+    QrScanner,
   },
   data() {
     return {
@@ -58,8 +57,10 @@ export default {
     onDecode(decodedString) {
       this.decodedData = decodedString;
       this.errorMessage = '';
-      // 스캔된 데이터 처리 후 모달 닫기
       this.showScannerModal = false;
+
+      const orderStore = useOrderStore();
+      orderStore.setOrderIdx(decodedString); // orderIdx를 Pinia에 저장
     },
     closeScanner() {
       this.showScannerModal = false;
@@ -74,6 +75,7 @@ export default {
 </script>
 
 <style scoped>
+/* 스타일 코드 유지 */
 body {
   margin: 0;
   display: flex;
@@ -83,7 +85,6 @@ body {
   min-height: 100vh;
   background-color: #c0c0c0;
 }
-
 .main-container {
   width: 360px;
   height: 800px;
@@ -96,7 +97,6 @@ body {
   align-items: center;
   position: relative;
 }
-
 h3 {
   font-size: 20px;
   font-weight: 530;
@@ -106,7 +106,6 @@ h3 {
   display: block;
   width: 100%;
 }
-
 .back-button {
   background: none;
   border: none;
@@ -120,11 +119,9 @@ h3 {
   margin-top: -300px;
   margin-bottom: 30px;
 }
-
 .back-button:hover {
   color: #7189ff;
 }
-
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -136,7 +133,6 @@ h3 {
   justify-content: center;
   align-items: center;
 }
-
 .modal-content {
   background: white;
   padding: 10px;
@@ -145,7 +141,6 @@ h3 {
   width: 380px;
   position: relative;
 }
-
 .close-button {
   position: absolute;
   top: 10px;
@@ -155,7 +150,6 @@ h3 {
   font-size: 20px;
   cursor: pointer;
 }
-
 .custom-button {
   width: 300px;
   height: 100px;
@@ -173,17 +167,14 @@ h3 {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   transition: background-color 0.3s, color 0.3s;
 }
-
 .custom-button:hover {
   background-color: #f3f8fe;
   color: #333;
 }
-
 .error-message {
   color: red;
   margin-top: 20px;
 }
-
 .decoded-data {
   margin-top: 20px;
 }

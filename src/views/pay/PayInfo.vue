@@ -12,9 +12,7 @@
         <h3 class="merchant-name">{{ merchantName }} 에서</h3>
         <h4 class="payment-amount">
           총
-          <span style="color: #6981d9">{{
-            paymentAmount.toLocaleString()
-          }}</span>
+          <span style="color: #6981d9">{{ paymentAmount.toLocaleString() }}</span>
           원
         </h4>
         <p class="payment-question">
@@ -25,11 +23,7 @@
       <hr class="divider" />
 
       <div class="payment-details">
-        <div
-          v-for="(item, index) in paymentItems"
-          :key="index"
-          class="payment-item"
-        >
+        <div v-for="(item, index) in paymentItems" :key="index" class="payment-item">
           <img :src="item.image" alt="메뉴 이미지" class="item-image" />
           <div class="item-info">
             <span class="item-name">{{ item.name }}</span>
@@ -38,12 +32,8 @@
         </div>
       </div>
 
-      <button @click="goToShareLink('amount')" class="split-button">
-        금액으로 나누기
-      </button>
-      <button @click="goToShareLink('menu')" class="split-button">
-        메뉴별로 나누기
-      </button>
+      <button @click="goToShareLink('amount')" class="split-button">금액으로 나누기</button>
+      <button @click="goToShareLink('menu')" class="split-button">메뉴별로 나누기</button>
 
       <div class="spacer"></div>
     </div>
@@ -51,7 +41,7 @@
 </template>
 
 <script>
-import { useNavigationStore } from '../../stores/navigation';
+import { useOrderStore } from '../../stores/orderStore';
 import hamburgerImage from '../../assets/images/hamburger.png';
 import sodaImage from '../../assets/images/soda.png';
 
@@ -75,23 +65,9 @@ export default {
       this.$router.go(-1);
     },
     goToShareLink(type) {
-      const navigationStore = useNavigationStore();
-      // ShareLink 페이지로 이동하며 경로 저장
-      if (type === 'amount') {
-        navigationStore.setSelectedPage('PaySplit');
-        navigationStore.setNavigationPath([
-          '/sharelink',
-          '/gamelist',
-          '/paysplit',
-        ]);
-      } else if (type === 'menu') {
-        navigationStore.setSelectedPage('PayMenu');
-        navigationStore.setNavigationPath([
-          '/sharelink',
-          '/gamelist',
-          '/paymenu',
-        ]);
-      }
+      const orderStore = useOrderStore();
+      orderStore.setType(type === 'amount' ? 'BY_PRICE' : 'BY_MENU'); // type 저장
+
       this.$router.push('/sharelink');
     },
   },

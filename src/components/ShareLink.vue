@@ -25,46 +25,92 @@
 
 <script>
 import QRCode from 'qrcode.vue';
-import { useNavigationStore } from '../stores/navigation';
+import { useOrderStore } from '../stores/orderStore.js';
+import apiClient from '../../src/api/axios.js';
+import { onMounted, ref, onUnmounted } from 'vue';
+import { Stomp } from '@stomp/stompjs';
 
 export default {
   components: {
     QRCode,
   },
-  data() {
-    return {
-      shareableLink: 'https://www.naver.com',
-    };
-  },
-  methods: {
-    goBack() {
-      this.$router.go(-1);
-    },
-    goToNext() {
-      const navigationStore = useNavigationStore();
-      const router = this.$router;
+  setup() {
+    const orderStore = useOrderStore();
+    const shareableLink = ref('');
+    const stompClient = ref(null);
 
-      // 선택된 페이지에 따라 이동
-      const selectedPage = navigationStore.selectedPage;
-      if (selectedPage === 'PaySplit') {
-        router.push('/gamelist'); // 금액으로 나누기 선택 시
-      } else if (selectedPage === 'PayMenu') {
-        router.push('/gamelist'); // 메뉴별로 나누기 선택 시
-      } else {
-        // 기본적으로 게임 리스트로 이동
-        router.push('/gamelist');
-      }
-    },
-    shareLink() {
-      navigator.clipboard
-        .writeText(this.shareableLink)
-        .then(() => {
-          alert('링크가 클립보드에 복사되었습니다!');
-        })
-        .catch((err) => {
-          console.error('링크 복사 실패:', err);
+    const createRoom = async () => {
+      try {
+        const response = await apiClient.post('/order/room/create', {
+          orderIdx: orderStore.orderIdx,
+          maxMemberCnt: orderStore.maxMemberCnt,
+          type: orderStore.type,
         });
-    },
+        shareableLink.value = `https://example.com/join/${response.data.result.idx}`;
+        console.log('방 생성 성공:', response.data);
+
+        // 방이 생성된 후 소켓 연결 시작
+        connectSocket();
+      } catch (error) {
+        console.error('방 생성 실패:', error);
+      }
+    };
+
+    const connectSocket = () => {
+      stompClient.value = Stomp.client('ws://34.64.141.174:8080/ws'); // 소켓 주소 설정
+
+      // 헤더 설정
+      const headers = {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+      };
+
+      stompClient.value.connect(headers, () => {
+        console.log('소켓 연결 성공');
+        
+        // 필요한 경로 구독 설정
+        stompClient.value.subscribe('/topic/your_topic_here', (message) => {
+          console.log('받은 메시지:', message.body);
+        });
+      }, (error) => {
+        console.error('소켓 연결 실패:', error);
+      });
+    };
+
+    const disconnectSocket = () => {
+      if (stompClient.value !== null && stompClient.value.connected) {
+        stompClient.value.disconnect(() => {
+          console.log('소켓 연결 해제');
+        });
+      }
+    };
+
+    onMounted(() => {
+      createRoom();
+    });
+
+    onUnmounted(() => {
+      disconnectSocket();
+    });
+
+    return {
+      shareableLink,
+      goBack() {
+        this.$router.go(-1);
+      },
+      goToNext() {
+        this.$router.push('/gamelist');
+      },
+      shareLink() {
+        navigator.clipboard
+          .writeText(shareableLink.value)
+          .then(() => {
+            alert('링크가 클립보드에 복사되었습니다!');
+          })
+          .catch((err) => {
+            console.error('링크 복사 실패:', err);
+          });
+      },
+    };
   },
 };
 </script>
