@@ -89,6 +89,9 @@ export default {
     validateInput() {
       this.recipient = this.recipient.replace(/[^0-9]/g, '').slice(0, 13);
     },
+    goToGroupPayPage() {
+      this.$router.push("/grouppay");
+    },
 
     async fetchTransactions() {
       try {

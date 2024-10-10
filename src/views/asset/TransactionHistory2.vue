@@ -142,6 +142,9 @@ export default {
       const formattedAmount = Math.abs(amount).toLocaleString();
       return (amount < 0 ? "-" : "+") + formattedAmount + "원";
     },
+    goToGroupPayPage() {
+      this.$router.push("/grouppay");
+    },
     formatDate(dateString) {
       const options = { year: "numeric", month: "numeric", day: "numeric" };
       return new Date(dateString).toLocaleDateString(undefined, options);

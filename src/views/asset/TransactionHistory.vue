@@ -114,6 +114,9 @@ export default {
         console.error("계좌 정보가 없습니다.");
       }
     },
+    goToGroupPayPage() {
+      this.$router.push("/grouppay");
+    },
     copyAccountNumber() {
       navigator.clipboard
         .writeText(this.accountNumber)

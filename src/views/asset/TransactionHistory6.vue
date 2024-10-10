@@ -130,6 +130,9 @@ export default {
           console.error("복사 실패:", err);
         });
     },
+    goToGroupPayPage() {
+      this.$router.push("/grouppay");
+    },
     performSearch() {
       if (this.searchQuery) {
         console.log(`검색어: ${this.searchQuery}`);

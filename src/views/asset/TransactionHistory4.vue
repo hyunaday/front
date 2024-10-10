@@ -138,6 +138,9 @@ export default {
         console.log("검색어가 비어 있습니다.");
       }
     },
+    goToGroupPayPage() {
+      this.$router.push("/grouppay");
+    },
     formatTransactionAmount(amount) {
       const formattedAmount = Math.abs(amount).toLocaleString();
       return (amount < 0 ? "-" : "+") + formattedAmount + "원";

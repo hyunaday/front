@@ -120,6 +120,9 @@ export default {
         console.error("API 호출 중 오류 발생:", error);
       }
     },
+    goToGroupPayPage() {
+      this.$router.push("/grouppay");
+    },
     copyAccountNumber() {
       navigator.clipboard
         .writeText(this.accountNumber)

@@ -43,6 +43,9 @@ export default {
     };
   },
   methods: {
+    goToGroupPayPage() {
+      this.$router.push("/grouppay");
+    },
     confirm() {
       const userConfirmed = confirm('계속 송금하시겠습니까?');
       if (userConfirmed) {
