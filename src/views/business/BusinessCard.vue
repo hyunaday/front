@@ -141,6 +141,8 @@
       </div>
       <p class="additional-text">QR코드를 스캔하세요</p>
     </div>
+    <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
+
   </div>
 </template>
 
@@ -223,6 +225,9 @@ export default {
     },
   },
   methods: {
+    goToGroupPayPage() {
+      this.$router.push("/grouppay");
+    },
     toggleCardList() {
       this.isCardListVisible = !this.isCardListVisible;
     },

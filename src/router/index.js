@@ -245,11 +245,11 @@ const routes = [
     name: "Transfer3",
     component: Transfer3,
   },
-  {
-    path: '/transfer2/:idx', // idx를 URL 매개변수로 설정
-    name: 'Transfer2',
-    component: () => import('../views/asset/Transfer2.vue')
-  },
+  // {
+  //   path: '/transfer2/:idx', // idx를 URL 매개변수로 설정
+  //   name: 'Transfer2',
+  //   component: () => import('../views/asset/Transfer2.vue')
+  // },
   {
     path: "/transactionhistory", // 거래내역조회 페이지
     name: "TransactionHistory",
