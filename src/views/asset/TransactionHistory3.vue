@@ -244,6 +244,8 @@ a {
   cursor: pointer;
   display: flex; /* 아이콘이 중앙에 위치하도록 */
   align-items: center; /* 수직 정렬 */
+  background-color: transparent; /* 배경색 제거 */
+  border: none; /* 테두리 제거 */
 }
 
 .transaction-list {
