@@ -1,7 +1,7 @@
 <template>
   <div class="qr-scanner">
     <qrcode-stream @decode="onDecode" @init="onInit" />
-    <button @click="closeScanner">닫기</button>
+    <button class="close-button" @click="closeScanner">닫기</button>
   </div>
 </template>
 
@@ -18,11 +18,15 @@ export default {
       try {
         console.log('스캔된 데이터:', decodedString);
 
-        // 백엔드로 데이터를 보내지 않고 바로 페이지 이동
+        // 스캔된 데이터가 URL인지 확인
         if (this.isValidUrl(decodedString)) {
           console.log('링크로 이동:', decodedString);
           window.location.href = decodedString; // 현재 탭에서 링크 열기
         } else {
+          // URL이 아닌 경우, 명함 정보로 간주하여 부모 컴포넌트로 전송
+          console.log('명함 정보 스캔됨:', decodedString);
+          this.$emit('scanned', decodedString); // 부모 컴포넌트로 전달
+
           // 페이지 이동 로직 (결제 방식에 따라 이동)
           if (this.$route.query.paymentType === 'SoloPay') {
             this.$router.push('/solopay');
@@ -63,7 +67,7 @@ export default {
           '\\[([0-9a-f]{1,4}:){1,7}[0-9a-f]{1,4}\\]|' + // IPv6
           '([a-f0-9]{1,4}:){1,7}:|:((:[a-f0-9]{1,4}){1,7}|:))' + // IPv6 대체
           '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*(\\?[;&a-z\\d%_.~+=-]*)?(\\#[-a-z\\d_]*)?$',
-        'i' // 포트 및 경로
+        'i'
       );
       return pattern.test(string);
     },
@@ -76,5 +80,17 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+.close-button {
+  padding: 10px 20px;
+  background-color: #6981d9;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+  width: 90px;
 }
 </style>

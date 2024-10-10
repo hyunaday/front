@@ -126,19 +126,7 @@ export default {
         ctx.textAlign = 'right';
         ctx.font = '20px Pretendard';
         ctx.fillStyle = '#000';
-        ctx.fillText(this.participants[i], 130, 10);
-        ctx.restore();
-      }
-
-      if (totalSegments === 1) {
-        ctx.save();
-        ctx.translate(150, 150);
-        ctx.rotate(this.rotationAngle);
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.font = '20px Pretendard';
-        ctx.fillStyle = '#000';
-        ctx.fillText(this.participants[0], 0, 0);
+        ctx.fillText(this.participants[i], 130, 10); // 12시 방향에 텍스트를 그립니다
         ctx.restore();
       }
 
