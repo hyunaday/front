@@ -282,7 +282,8 @@ h1 {
 
 .transactions-title {
   font-size: 12px;
-  text-align: right; 
+  text-align: left;
+  font-weight: bold; 
 }
 
 .transactions-amount {

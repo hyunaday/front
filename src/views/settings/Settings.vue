@@ -38,7 +38,7 @@
             </span>
           </div>
         </div>
-        <div class="setting-item item-4" @click="confirmLogout">
+        <div class="setting-item item-4" @click="showLogoutModal = true">
           <h2>로그아웃</h2>
         </div>
         <div class="setting-item item-5" @click="withdrawMembership">
@@ -46,6 +46,16 @@
         </div>
       </div>
     </div>
+
+    <!-- 로그아웃 모달 -->
+    <div v-if="showLogoutModal" class="modal-overlay">
+      <div class="modal-content">
+        <p>로그아웃하시겠습니까?</p>
+        <button @click="logout" class="confirm-button">확인</button>
+        <button @click="showLogoutModal = false" class="cancel-button">취소</button>
+      </div>
+    </div>
+
     <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
   </div>
 </template>
@@ -63,9 +73,13 @@ export default {
     return {
       appPushNotifications: false,
       eventBenefitsNotifications: false,
+      showLogoutModal: false, // 모달 표시 상태
     };
   },
   methods: {
+    goToGroupPayPage() {
+      this.$router.push("/grouppay");
+    },
     goToPaymentHistory() {
       this.$router.push('/paylist');
     },
@@ -98,14 +112,10 @@ export default {
         console.error('Error updating event benefits notifications:', error);
       }
     },
-    confirmLogout() {
-      if (confirm('로그아웃하시겠습니까?')) {
-        this.logout();
-      }
-    },
     async logout() {
       console.log('로그아웃 중...');
       localStorage.removeItem('accessToken');
+      this.showLogoutModal = false; // 모달 닫기
       this.$router.push('/login').catch(err => {
         console.error('Navigation error:', err);
       });
@@ -113,10 +123,49 @@ export default {
   },
 };
 </script>
-
 <style scoped>
+/* 모달 스타일 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
 
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  width: 300px;
+}
 
+.confirm-button,
+.cancel-button {
+  margin: 5px;
+  padding: 8px 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.confirm-button {
+  background-color: #98b6ef;
+  color: white;
+}
+
+.cancel-button {
+  background-color: #6981d9;
+  color: white;
+}
+
+/* 전체 스타일 */
 .settings-container {
   padding: 100px;
 }
