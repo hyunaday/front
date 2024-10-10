@@ -1,17 +1,16 @@
 <template>
   <div class="main-container">
-  <Header />
-
+    <Header />
     <div>
       <h1 class="title">계좌 조회</h1>
       <div class="container">
-        <div class="transaction-details">
+        <div class="transaction-details" v-if="selectedTransaction">
           <img :src="imageSrc" alt="Bank Logo" class="bank-logo" />
           <div class="account-info">
             <span class="bank-name">{{ bankName }}</span>
             <span class="account-number">{{ formattedAccountNumber }}</span>
             <img
-              src="../assets/images/copy.png"
+              src="../../assets/images/copy.png"
               class="copy-icon"
               @click="copyAccountNumber"
               alt="Copy Account Number"
@@ -40,7 +39,7 @@
         />
         <button class="filter-icon" @click="performSearch">
           <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
+        </button>
         <div class="filter-icon">
           <i class="fa-solid fa-filter"></i>
         </div>
@@ -48,20 +47,16 @@
 
       <!-- 거래 내역 목록 -->
       <div class="transaction-list">
-        <div
-          class="transaction-item"
-          v-for="transaction in transactions"
-          :key="transaction.idx"
-        >
-          <span class="date-label">{{
-            formatDate(transaction.createdAt)
-          }}</span>
-          <span class="name">{{ transaction.accountHolderName }}</span>
-          <span class="amount">{{
-            formatTransactionAmount(transaction.amount)
-          }}</span>
-        </div>
-      </div>
+    <div
+      class="transaction-item"
+      v-for="transaction in transactions"
+      :key="transaction.idx"
+    >
+      <span class="date-label">{{ formatDate(transaction.createdAt) }}</span>
+      <span class="name">{{ transaction.name }}</span>
+      <span class="amount">{{ formatTransactionAmount(transaction.amount) }}</span>
+    </div>
+  </div>
     </div>
     <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
   </div>
@@ -73,7 +68,7 @@ import FooterNav from "../../components/FooterNav.vue";
 import Header from "../../components/Header.vue";
 
 export default {
-  name: "TransactionHistor2",
+  name: "TransactionHistory",
   components: {
     FooterNav,
     Header,
@@ -82,10 +77,11 @@ export default {
     return {
       imageSrc: "src/assets/images/kbbank.png",
       bankName: "국민은행",
-      accountNumber: "1234567890", // 예시 계좌 번호, 실제 데이터로 업데이트 필요
+      accountNumber: "", // 예시 계좌 번호, 실제 데이터로 업데이트 필요
       accountDescription: "국민은행 입출금 통장",
       searchQuery: "",
       transactions: [],
+      selectedTransaction: null, // 선택된 거래를 저장할 변수
     };
   },
   computed: {
@@ -108,10 +104,15 @@ export default {
         const response = await apiClient.get("/account/all"); // API에서 계좌 데이터 가져오기
         if (response.data.isSuccess) {
           this.transactions = response.data.result.accountList; // 계좌 리스트에서 거래 내역을 가져오기
-          this.bankName = this.transactions[0].bankName; // 은행 이름 설정
-          this.accountNumber = this.transactions[0].accountNumber; // 계좌 번호 설정
-          this.Name = this.transactions[0].Name; // 계좌 번호 설정
 
+          // idx가 6인 거래만 선택
+          this.selectedTransaction = this.transactions.find(transaction => transaction.idx === 2);
+          
+          if (this.selectedTransaction) {
+            this.bankName = this.selectedTransaction.bankName; // 은행 이름 설정
+            this.accountNumber = this.selectedTransaction.accountNumber; // 계좌 번호 설정
+            this.accountDescription = this.selectedTransaction.accountDescription; // 계좌 설명 설정
+          }
         } else {
           console.error("계좌 정보를 가져오지 못했습니다.");
         }
@@ -243,7 +244,6 @@ export default {
   display: flex; /* 아이콘이 중앙에 위치하도록 */
   align-items: center; /* 수직 정렬 */
 }
-
 
 .transaction-list {
   padding: 15px;

@@ -47,16 +47,16 @@
   
         <!-- 거래 내역 목록 -->
         <div class="transaction-list">
-          <div
-            class="transaction-item"
-            v-for="transaction in transactions"
-            :key="transaction.idx"
-          >
-            <span class="date-label">{{ formatDate(transaction.createdAt) }}</span>
-            <span class="name">{{ transaction.name }}</span>
-            <span class="amount">{{ formatTransactionAmount(transaction.amount) }}</span>
-          </div>
-        </div>
+      <div
+        class="transaction-item"
+        v-for="transaction in transactions"
+        :key="transaction.idx"
+      >
+        <span class="date-label">{{ formatDate(transaction.createdAt) }}</span>
+        <span class="name">{{ transaction.name }}</span>
+        <span class="amount">{{ formatTransactionAmount(transaction.amount) }}</span>
+      </div>
+    </div>
       </div>
       <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
     </div>
@@ -77,11 +77,11 @@
       return {
         imageSrc: "src/assets/images/kbbank.png",
         bankName: "국민은행",
-        accountNumber: "",
+        accountNumber: "", // 예시 계좌 번호, 실제 데이터로 업데이트 필요
         accountDescription: "국민은행 입출금 통장",
         searchQuery: "",
         transactions: [],
-        selectedTransaction: null,
+        selectedTransaction: null, // 선택된 거래를 저장할 변수
       };
     },
     computed: {
@@ -101,24 +101,23 @@
     methods: {
       async fetchTransactions() {
         try {
-          const accountIdx = 1; // 계좌 인덱스 설정
-          const historyIdx = 1; // 거래 인덱스 설정
-          const response = await apiClient.get(`/account/history/detail?accountIdx=${accountIdx}&historyIdx=${historyIdx}`);
-          
+          const response = await apiClient.get("/account/all"); // API에서 계좌 데이터 가져오기
           if (response.data.isSuccess) {
-            const details = response.data.result.accountHistoryDetail;
-            this.transactions = [
-              {
-                createdAt: details.createdAt,
-                name: details.name,
-                amount: details.amount,
-              },
-            ];
+            this.transactions = response.data.result.accountList; // 계좌 리스트에서 거래 내역을 가져오기
+  
+            // idx가 6인 거래만 선택
+            this.selectedTransaction = this.transactions.find(transaction => transaction.idx === 6);
+            
+            if (this.selectedTransaction) {
+              this.bankName = this.selectedTransaction.bankName; // 은행 이름 설정
+              this.accountNumber = this.selectedTransaction.accountNumber; // 계좌 번호 설정
+              this.accountDescription = this.selectedTransaction.accountDescription; // 계좌 설명 설정
+            }
           } else {
-            console.error("계좌 내역을 가져오는 데 실패했습니다.");
+            console.error("계좌 정보를 가져오지 못했습니다.");
           }
         } catch (error) {
-          console.error("API 호출 오류:", error);
+          console.error("API 호출 중 오류 발생:", error);
         }
       },
       copyAccountNumber() {
@@ -134,6 +133,7 @@
       performSearch() {
         if (this.searchQuery) {
           console.log(`검색어: ${this.searchQuery}`);
+          // 여기서 검색 기능을 구현할 수 있어
         } else {
           console.log("검색어가 비어 있습니다.");
         }
@@ -148,7 +148,7 @@
       },
     },
     mounted() {
-      this.fetchTransactions();
+      this.fetchTransactions(); // 컴포넌트가 마운트될 때 거래 내역 가져오기
     },
   };
   </script>
@@ -238,11 +238,11 @@
   .filter-icon {
     margin-left: 10px;
     cursor: pointer;
-    background-color: transparent;
-    border: none;
-    padding: 0;
-    display: flex;
-    align-items: center;
+    background-color: transparent; /* 배경색 없음 */
+    border: none; /* 테두리 없음 */
+    padding: 0; /* 패딩 없음 */
+    display: flex; /* 아이콘이 중앙에 위치하도록 */
+    align-items: center; /* 수직 정렬 */
   }
   
   .transaction-list {
