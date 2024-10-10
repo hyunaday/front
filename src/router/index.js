@@ -22,6 +22,8 @@ import MainPay from "../views/pay/MainPay.vue";
 import CurrentPassword from "../views/settings/CurrentPassword.vue";
 import Transfer from "../views/asset/Transfer.vue";
 import TransactionHistory from "../views/asset/TransactionHistory.vue"; // asset 안으로 경로 변경(10.09)
+import TransactionHistory2 from "../views/asset/TransactionHistory2.vue"; // 계좌조회 페이지 추가2 (10.09)
+import TransactionHistory3 from "../views/asset/TransactionHistory3.vue"; // 계좌조회 페이지 추가3 (10.09)
 import Loading from "../views/Loading.vue";
 import Phone from "../views/Phone.vue";
 import Verification from "../views/signup/Verification.vue";
@@ -240,9 +242,19 @@ const routes = [
     component: Transfer3,
   },
   {
-    path: "/transactionhistory", // 거래내역조회 페이지페이지
+    path: "/transactionhistory", // 거래내역조회 페이지
     name: "TransactionHistory",
     component: TransactionHistory,
+  },
+  {
+    path: "/transactionhistory2", // 거래내역조회 페이지2
+    name: "TransactionHistory2",
+    component: TransactionHistory2,
+  },
+  {
+    path: "/transactionhistory3", // 거래내역조회 페이지3
+    name: "TransactionHistory3",
+    component: TransactionHistory3,
   },
   {
     path: '/loading', // 로딩 페이지

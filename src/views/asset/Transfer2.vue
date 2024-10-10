@@ -70,7 +70,7 @@ export default {
         // 여기에 송금 API 호출 로직을 추가하세요.
         this.$router.push({ path: '/transfer3' });
       } else {
-        alert("계좌 잔액 부족! 잔액을 확인해주세요.");
+        alert("송금하실 금액을 확인해주세요.");
       }
     },
     async fetchAccountBalance() {
