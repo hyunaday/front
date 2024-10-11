@@ -144,12 +144,13 @@ export default {
               this.data[dateKey] = { income: 0, expense: 0 };
             }
 
-            if (transaction.amount < 0) {
-              this.data[dateKey].income += Math.abs(transaction.amount); // 수입
-            } else {
+            if (transaction.payMethod === "ACCOUNT") {
+              this.data[dateKey].income += transaction.amount; // 수입
+            } else if (transaction.payMethod === "CARD") {
               this.data[dateKey].expense += transaction.amount; // 지출
             }
           });
+
           // 캘린더 업데이트
           this.updateCalendar();
         } else {
