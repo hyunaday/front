@@ -286,7 +286,6 @@ function generateYears() {
   }
   return years;
 }
-
 export default {
   data() {
     return {
@@ -340,6 +339,7 @@ export default {
   computed: {
     // 총 지출 계산 (filteredEntries가 정의되지 않았거나 빈 배열일 경우 기본값을 설정)
     totalExpense() {
+
       return (this.filteredEntries || []).reduce((total, entryGroup) => {
         return (
           total +
@@ -533,6 +533,7 @@ export default {
 };
 </script>
 
+
 <style scoped>
 .calendar-container {
   margin-top: 70px;
@@ -596,7 +597,7 @@ export default {
 }
 .income .amount {
   font-size: 1rem;
-  color: #6981d9;
+  color: #6981D9;
 }
 .search-bar {
   margin: 1rem 0;
@@ -635,12 +636,14 @@ export default {
   font-size: 1rem;
   padding: 5px;
   border-radius: 5px;
+  font-weight: bold;
 }
 div.total-amount {
   text-align: right;
+
 }
 .positive {
-  color: #6981d9;
+  color: #6981D9;
 }
 .negative {
   color: red;
@@ -653,10 +656,12 @@ div.total-amount {
   justify-content: space-between;
   padding: 10px 0;
 }
+
 /* .entry-item:hover {
   background-color: #f0f0f0;
   cursor: pointer;
 } */
+
 .entry-info {
   display: flex;
   flex-direction: column; /* 세로 정렬 */
@@ -689,7 +694,7 @@ div.total-amount {
 }
 /* bottom-sheet 활성화 버튼 */
 .plus-btn {
-  background-color: #ffffff;
+  background-color: #FFFFFF;
   border: none;
   border-radius: 5px;
   width: 25px;
@@ -701,10 +706,10 @@ div.total-amount {
   cursor: pointer;
 }
 .plus-btn:hover {
-  background-color: #f0f0f0;
+  background-color: #F0F0F0;
 }
 .plus-btn i {
-  color: #6981d9;
+  color: #6981D9;
 }
 .editable-sheet {
   padding: 20px;
@@ -717,18 +722,18 @@ div.total-amount {
 }
 .filter-container button {
   border: 1px solid #ccc;
-  background-color: #ffffff;
+  background-color: #FFFFFF;
   border-radius: 5px;
   cursor: pointer;
   color: #888;
 }
 .filter-container button.active {
-  border: 1px solid #6981d9;
+  border: 1px solid #6981D9;
   background-color: #fff;
-  color: #6981d9;
+  color: #6981D9;
 }
 .filter-container button:hover {
-  background-color: #e0e0e0;
+  background-color: #E0E0E0;
 }
 .header {
   display: flex;
@@ -769,17 +774,17 @@ div.total-amount {
 /* 카테고리 선택창 스타일 */
 select {
   word-wrap: normal;
-  background-color: #ffffff;
+  background-color: #FFFFFF;
   border-radius: 5px;
   color: #888;
   padding: 1px 6px;
 }
 .category-select:focus {
-  border: 1px solid #6981d9;
-  color: #6981d9;
+  border: 1px solid #6981D9;
+  color: #6981D9;
 }
 .category-select:hover {
-  background-color: #e0e0e0;
+  background-color: #E0E0E0;
 }
 /* 가계부 추가_상세거래 내역 */
 .details-container {
@@ -852,8 +857,8 @@ select {
 }
 /* 일반 삭제 버튼 스타일 */
 .delete-btn {
-  background-color: #ffffff;
-  border: 1px solid #ffffff;
+  background-color: #FFFFFF;
+  border: 1px solid #FFFFFF;
   border-radius: 10px;
   width: 20px;
   height: 20px;
@@ -868,11 +873,11 @@ select {
   color: #888;
 }
 .delete-btn:hover {
-  background-color: #f0f0f0;
+  background-color: #F0F0F0;
 }
 /* 바텀시트 안의 삭제 버튼 스타일 */
 .bottom-sheet-delete-btn {
-  background-color: #ffffff;
+  background-color: #FFFFFF;
   border: 1px solid #ccc;
   border-radius: 10px;
   width: 50px;
@@ -888,11 +893,11 @@ select {
   color: #888;
 }
 .bottom-sheet-delete-btn:hover {
-  background-color: #f0f0f0;
+  background-color: #F0F0F0;
 }
 /* 다음 버튼 */
 .next-btn {
-  background-color: #6981d9;
+  background-color: #6981D9;
   border: none;
   color: white;
   width: 200px; /* 너비를 더 넓게 설정 */
@@ -904,7 +909,7 @@ select {
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 .next-btn:hover {
-  background-color: #6981d9;
+  background-color: #6981D9;
 }
 .customBottomsheet .content {
   padding: 0 30px 30px;
@@ -931,16 +936,25 @@ select {
   padding: 5px 15px;
   border-radius: 8px;
   border: 1px solid #ccc;
-  background-color: #ffffff;
+  background-color: #FFFFFF;
   color: #888;
   cursor: pointer;
 }
 .category-buttons button.active {
-  border: 1px solid #6981d9;
+  border: 1px solid #6981D9;
   background-color: #fff;
-  color: #6981d9;
+  color: #6981D9;
 }
 .category-buttons button:hover {
-  background-color: #e0e0e0;
+  background-color: #E0E0E0;
 }
 </style>
+
+
+
+
+
+
+
+
+

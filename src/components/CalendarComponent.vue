@@ -263,6 +263,7 @@ h1 {
 
 .income-amount {
   color: #6981d9; /* 수입 색상 */
+  /* font-size: 10px; */
 }
 
 .expense-amount,

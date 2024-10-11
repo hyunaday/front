@@ -40,8 +40,8 @@
                   <router-link :to="`/transactionhistory${account.idx}`">
                     <button class="btn btn-light check" type="button">조회</button>
                   </router-link>
-                  <router-link :to="`/transfer${account.idx}`">
-                    <!-- <router-link :to="`/transfer`"> -->
+                  <!-- <router-link :to="`/transfer${account.idx}`"> -->
+                    <router-link :to="`/transfer`">
                     <button class="btn btn-light transfer" type="button">이체</button>
                   </router-link>
                 </div>
