@@ -12,7 +12,9 @@
         <h3 class="merchant-name">{{ merchantName }} 에서</h3>
         <h4 class="payment-amount">
           총
-          <span style="color: #6981d9">{{ paymentAmount.toLocaleString() }}</span>
+          <span style="color: #6981d9">{{
+            paymentAmount.toLocaleString()
+          }}</span>
           원
         </h4>
         <p class="payment-question">
@@ -23,7 +25,11 @@
       <hr class="divider" />
 
       <div class="payment-details">
-        <div v-for="(item, index) in paymentItems" :key="index" class="payment-item">
+        <div
+          v-for="(item, index) in paymentItems"
+          :key="index"
+          class="payment-item"
+        >
           <img :src="item.image" alt="메뉴 이미지" class="item-image" />
           <div class="item-info">
             <span class="item-name">{{ item.name }}</span>
@@ -32,8 +38,12 @@
         </div>
       </div>
 
-      <button @click="goToShareLink('amount')" class="split-button">금액으로 나누기</button>
-      <button @click="goToShareLink('menu')" class="split-button">메뉴별로 나누기</button>
+      <button @click="goToShareLink('amount')" class="split-button">
+        금액으로 나누기
+      </button>
+      <button @click="goToShareLink('menu')" class="split-button">
+        메뉴별로 나누기
+      </button>
 
       <div class="spacer"></div>
     </div>
@@ -41,22 +51,22 @@
 </template>
 
 <script>
-import { useOrderStore } from '../../stores/orderStore';
-import hamburgerImage from '../../assets/images/hamburger.png';
-import sodaImage from '../../assets/images/soda.png';
+import { useOrderStore } from "../../stores/orderStore";
+import hamburgerImage from "../../assets/images/hamburger.png";
+import sodaImage from "../../assets/images/soda.png";
 
 export default {
   data() {
     return {
-      merchantName: 'KFC 군자능동점',
+      merchantName: "KFC 군자능동점",
       paymentAmount: 95600,
       paymentItems: [
-        { name: '정크버거 세트', price: 12000, image: hamburgerImage },
-        { name: '스파이시 치킨 버거', price: 9900, image: hamburgerImage },
-        { name: '타워 버거 세트', price: 20000, image: hamburgerImage },
-        { name: '정크버거', price: 8200, image: hamburgerImage },
-        { name: '텟지버거 3개', price: 27000, image: hamburgerImage },
-        { name: '제로 콜라 5개', price: 10000, image: sodaImage },
+        { name: "정크버거 세트", price: 12000, image: hamburgerImage },
+        { name: "스파이시 치킨 버거", price: 9900, image: hamburgerImage },
+        { name: "타워 버거 세트", price: 20000, image: hamburgerImage },
+        { name: "정크버거", price: 8200, image: hamburgerImage },
+        { name: "텟지버거 3개", price: 27000, image: hamburgerImage },
+        { name: "제로 콜라 5개", price: 10000, image: sodaImage },
       ],
     };
   },
@@ -66,9 +76,9 @@ export default {
     },
     goToShareLink(type) {
       const orderStore = useOrderStore();
-      orderStore.setType(type === 'amount' ? 'BY_PRICE' : 'BY_MENU'); // type 저장
+      orderStore.setType(type === "amount" ? "BY_PRICE" : "BY_MENU");
 
-      this.$router.push('/sharelink');
+      this.$router.push("/sharelink");
     },
   },
 };
