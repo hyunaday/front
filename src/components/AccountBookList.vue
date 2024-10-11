@@ -265,18 +265,18 @@
 <script>
 import apiClient from "../api/axios.js";
 const months = [
-  "January",
-  "February",
+  "Jan",
+  "Feb",
   "March",
   "April",
   "May",
   "June",
   "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
 ];
 function generateYears() {
   const currentYear = new Date().getFullYear();
@@ -286,6 +286,7 @@ function generateYears() {
   }
   return years;
 }
+
 export default {
   data() {
     return {
@@ -311,6 +312,21 @@ export default {
       searchQuery: "",
       selectedYear: new Date().getFullYear(),
       selectedMonth: new Date().getMonth(),
+      years: this.generateYears(),
+      months: [
+        "Jan",
+        "Feb",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ],
       // 추가 데이터
       storeName: "",
       editablePrice: 0,
@@ -384,6 +400,18 @@ export default {
     this.fetchTransactionHistory();
   },
   methods: {
+    generateYears() {
+      const currentYear = new Date().getFullYear();
+      const years = [];
+      for (let year = currentYear - 10; year <= currentYear + 10; year++) {
+        years.push(year);
+      }
+      return years;
+    },
+    updateCalendar() {
+      // 필요한 경우 달력 업데이트 로직 추가
+    },
+
     async fetchTransactionHistory() {
       try {
         const response = await apiClient.get("/transaction/history/all");
@@ -625,10 +653,10 @@ div.total-amount {
   justify-content: space-between;
   padding: 10px 0;
 }
-.entry-item:hover {
+/* .entry-item:hover {
   background-color: #f0f0f0;
   cursor: pointer;
-}
+} */
 .entry-info {
   display: flex;
   flex-direction: column; /* 세로 정렬 */
