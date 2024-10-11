@@ -80,23 +80,24 @@ export default {
       selectedMonth: new Date().getMonth(),
       years: this.generateYears(),
       months: [
-        "January",
-        "February",
+        "Jan",
+        "Feb",
         "March",
         "April",
         "May",
         "June",
         "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
       ],
       calendar: [],
       data: {},
     };
   },
+
   computed: {
     totalIncome() {
       // 선택된 연도와 월에 맞는 데이터만 필터링하여 합산
@@ -116,10 +117,12 @@ export default {
         .reduce((acc, [_, day]) => acc + (day.expense || 0), 0);
     },
   },
+
   mounted() {
     this.updateCalendar();
     this.fetchTransactionHistory();
   },
+
   methods: {
     generateYears() {
       const currentYear = new Date().getFullYear();
@@ -235,7 +238,7 @@ h1 {
   margin-right: 0.5rem;
   border-radius: 5px;
   border: none; /* 테두리 제거 */
-  appearance: none; /* 기본 드롭다운 화살표 제거 */
+  /* appearance: none; 기본 드롭다운 화살표 제거 */
   background: transparent; /* 배경을 투명으로 설정 */
   font-family: "Poppins", sans-serif; /* Poppins 폰트 적용 */
 }
