@@ -4,8 +4,8 @@
     <div class="container mt-3">
       <!-- 내 자산 연결 버튼 섹션 -->
       <div v-if="!isConnected" class="connect-card-container d-flex flex-column align-items-center justify-content-center">
-        <img src="../assets/images/connect_logo.png" alt="Connect Logo" class="connect-logo" />
-        <p class="connect-message">편리한 전자 지갑을 위해<br>자산을 연결해주세요!</p>
+        <img src="../assets/images/connect_logo_rm.png" alt="Connect Logo" class="connect-logo" />
+        <p class="connect-message">편리한 전자 지갑을 위해<br />자산을 연결해주세요!</p>
         <button @click="goToAgreementPage" class="btn connect-button">내 자산 연결</button>
       </div>
 
@@ -39,7 +39,7 @@
                 </div>
                 <div class="amount-container" v-else>
                   <label class="amount-hidden">잔액 숨김</label>
-                </div>  
+                </div>
               </div>
               <div class="account-button">
                 <div class="d-flex justify-content-between gap-4">
@@ -72,15 +72,42 @@
           </div>
         </div>
       </div>
+
+      <!-- 카드 추천 슬라이드 - Autoplay progress -->
+      <div class="recommend-section mt-5">
+        <swiper
+          :spaceBetween="30"
+          :centeredSlides="true"
+          :autoplay="{ delay: 2500, disableOnInteraction: false }"
+          :pagination="{ clickable: true, type: 'progressbar' }"
+          :navigation="true"
+          :modules="modules"
+          @autoplayTimeLeft="onAutoplayTimeLeft"
+          class="swiper-autoplay"
+        >
+          <swiper-slide v-for="i in 6" :key="i">
+            <img :src="`../src/assets/images/국민카드${i}.png`" alt="Recommended Card" class="recommend-card" />
+          </swiper-slide>
+          <template #container-end>
+            <div class="autoplay-progress">
+              <svg viewBox="0 0 48 48" ref="progressCircle">
+                <circle cx="24" cy="24" r="20"></circle>
+              </svg>
+              <span ref="progressContent"></span>
+            </div>
+          </template>
+        </swiper>
+      </div>
+      
     </div>
     <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
   </div>
 </template>
 
-
 <script>
-import { Swiper, SwiperSlide } from "swiper/vue";
-import { Pagination } from "swiper/modules";
+import { ref } from 'vue';
+import { Swiper, SwiperSlide } from 'swiper/vue';
+import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import FooterNav from "../components/FooterNav.vue";
 import Header from "../components/Header.vue";
 import apiClient from "../api/axios";
@@ -103,16 +130,19 @@ export default {
     Header,
   },
   setup() {
-    const onSwiper = (swiper) => {
-      console.log(swiper);
+    const progressCircle = ref(null);
+    const progressContent = ref(null);
+
+    const onAutoplayTimeLeft = (s, time, progress) => {
+      progressCircle.value.style.setProperty('--progress', 1 - progress);
+      progressContent.value.textContent = `${Math.ceil(time / 1000)}s`;
     };
-    const onSlideChange = () => {
-      console.log("slide change");
-    };
+
     return {
-      onSwiper,
-      onSlideChange,
-      modules: [Pagination],
+      onAutoplayTimeLeft,
+      progressCircle,
+      progressContent,
+      modules: [Autoplay, Pagination, Navigation],
     };
   },
   data() {
@@ -191,6 +221,24 @@ export default {
 <style scoped>
 .main-container {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  overflow-y: auto; /* Enable vertical scrolling */
+  padding-bottom: 20px; /* Optional: adds space at the bottom */
+}
+
+.container {
+  max-width: 100%;
+  overflow-y: auto; /* 스크롤 가능하게 설정 */
+  padding-bottom: 80px; /* FooterNav와 겹치지 않도록 여유 공간 추가 */
+  scrollbar-width: none; /* Firefox용 */
+  -ms-overflow-style: none; /* IE와 Edge용 */
+}
+
+.container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera용 */
 }
 
 .form-check-input {
@@ -411,6 +459,8 @@ h4 {
   height: 200px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   margin: 30px auto;
+  margin-bottom: 5px;
+  margin-top: 3px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -423,8 +473,9 @@ h4 {
 }
 
 .connect-message {
-  font-size: 14px;
-  margin-bottom: 10px;
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 0px;
 }
 
 .connect-button {
@@ -436,6 +487,48 @@ h4 {
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
   border: none;
   transition: background-color 0.3s ease;
+  margin-bottom: 12px;
+  width: 230px;
 }
 
+.recommend-section {
+  margin-top: 20px;
+}
+
+.swiper-autoplay {
+  width: 100%;
+  max-width: 300px;
+  height: 300px;
+  margin: 0 auto;
+}
+
+.recommend-card {
+  width: 80%;
+  height: 50%;
+}
+
+.autoplay-progress {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+}
+.autoplay-progress svg {
+  width: 48px;
+  height: 48px;
+  transform: rotate(-90deg);
+}
+.autoplay-progress circle {
+  fill: none;
+  stroke: #007aff;
+  stroke-width: 4;
+  stroke-dasharray: 126;
+  stroke-dashoffset: calc(126 * var(--progress));
+  transition: stroke-dashoffset 0.25s;
+}
+.autoplay-progress span {
+  margin-left: 10px;
+  font-size: 14px;
+}
 </style>
