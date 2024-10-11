@@ -1,81 +1,57 @@
 <template>
   <div>
-    <h3>{{ title }}</h3>
+    <h1>{{ title }}</h1>
     <form @submit.prevent="submitForm">
-      <div class="upload-box">
-        <!-- 입력 내용 실시간 미리보기 -->
-        <div class="preview-box">
-          <h3>{{ formData.company || "회사 정보 없음" }}</h3>
-          <p>{{ formData.address || "주소 없음" }}</p>
-          <p>{{ formData.name || "이름 없음" }}</p>
-          <p>{{ formData.position || "직책 없음" }}</p>
-          <p>{{ formData.department || "부서 없음" }}</p>
-          <p>{{ formData.phone || "전화번호 없음" }}</p>
-          <p>{{ formData.phoneLandline || "유선전화 없음" }}</p>
-          <p>{{ formData.email || "이메일 없음" }}</p>
-        </div>
+      <div>
+        <label for="name">이름:</label>
+        <input type="text" v-model="formData.name" id="name" required />
       </div>
-
-      <div class="divider"></div>
-      <div class="form-group">
-        <label for="name">이름&nbsp;<span class="required">*</span></label>
-        <div class="input-container">
-          <input type="text" id="name" v-model="formData.name" required />
-        </div>
+      <div>
+        <label for="phone">휴대폰 번호:</label>
+        <input type="text" v-model="formData.phone" id="phone" required />
       </div>
-      <div class="form-group">
-        <label for="phone">연락처&nbsp;<span class="required">*</span></label>
-        <div class="input-container">
-          <input type="tel" id="phone" v-model="formData.phone" required />
-        </div>
+      <div>
+        <label for="phoneLandline">전화 번호(집 또는 사무실):</label>
+        <input
+          type="text"
+          v-model="formData.phoneLandline"
+          id="phoneLandline"
+        />
       </div>
-      <div class="form-group">
-        <label for="email">이메일&nbsp;<span class="required">*</span></label>
-        <div class="input-container">
-          <input type="email" id="email" v-model="formData.email" required />
-        </div>
+      <div>
+        <label for="email">이메일:</label>
+        <input type="email" v-model="formData.email" id="email" required />
       </div>
-      <div class="form-group">
-        <label for="position">직책</label>
-        <div class="input-container">
-          <input type="text" id="position" v-model="formData.position" />
-        </div>
+      <div>
+        <label for="position">직책:</label>
+        <input type="text" v-model="formData.position" id="position" />
       </div>
-      <div class="form-group">
-        <label for="department">부서/파트</label>
-        <div class="input-container">
-          <input type="text" id="department" v-model="formData.department" />
-        </div>
+      <div>
+        <label for="department">부서:</label>
+        <input type="text" v-model="formData.department" id="department" />
       </div>
-      <div class="form-group">
-        <label for="company">소속명</label>
-        <div class="input-container">
-          <input type="text" id="company" v-model="formData.company" />
-        </div>
+      <div>
+        <label for="company">회사명:</label>
+        <input type="text" v-model="formData.company" id="company" required />
       </div>
-      <div class="form-group">
-        <label for="address">주소</label>
-        <div class="input-container">
-          <input type="text" id="address" v-model="formData.address" />
-        </div>
+      <div>
+        <label for="address">주소:</label>
+        <input type="text" v-model="formData.address" id="address" />
       </div>
-      <div class="form-group">
-        <label for="phone-landline">유선번호</label>
-        <div class="input-container">
-          <input
-            type="tel"
-            id="phone-landline"
-            v-model="formData.phoneLandline"
-          />
-        </div>
-      </div>
-
-      <button class="button" type="submit">등록</button>
+      <button type="submit">제출</button>
     </form>
+
+    <!-- QR 코드 이미지 표시 -->
+    <div v-if="qrCodeData">
+      <h2>QR 코드</h2>
+      <img :src="qrCodeData" alt="QR 코드" />
+    </div>
   </div>
 </template>
 
 <script>
+import apiClient from '../api/axios.js'; // Axios 인스턴스 임포트
+
 export default {
   props: {
     title: {
@@ -86,35 +62,55 @@ export default {
   data() {
     return {
       formData: {
-        name: "",
-        phone: "",
-        email: "",
-        position: "",
-        department: "",
-        company: "",
-        address: "",
-        phoneLandline: "",
-        memo: "",
+        name: '',
+        phone: '',
+        email: '',
+        position: '',
+        department: '',
+        company: '',
+        address: '',
+        phoneLandline: '',
       },
-      imageFile: null,
+      qrCodeData: null, // QR 코드 데이터 추가
     };
   },
   methods: {
-    submitForm() {
-      // 로컬 스토리지에 formData 저장
-      localStorage.setItem("businessCardData", JSON.stringify(this.formData));
-      console.log("폼이 제출되었습니다.", this.formData);
+    async submitForm() {
+      // API 요청 데이터
+      const payload = {
+        name: this.formData.name,
+        phone_Num: this.formData.phone,
+        tel_num: this.formData.phoneLandline,
+        email: this.formData.email,
+        position: this.formData.position,
+        part: this.formData.department,
+        company: this.formData.company,
+        address: this.formData.address,
+      };
 
+      try {
+        // 명함 생성 API 호출
+        const response = await apiClient.post('/businessCard/qr-code', payload);
+
+        if (response.data.isSuccess) {
+          alert('명함이 성공적으로 생성되었습니다.');
+          // QR 코드 등 추가 처리 가능
+          console.log('QR 코드 데이터:', response.data.result);
+          // Base64 데이터를 이미지 URL로 변환
+          this.qrCodeData = `data:image/png;base64,${response.data.result}`;
+          this.$emit('qr-code-generated', this.qrCodeData); // 부모 컴포넌트로 QR 코드 데이터 전달
+        } else {
+          console.log(response.data);
+          console.log('Payload:', payload);
+          alert('명함 생성에 실패했습니다.');
+        }
+      } catch (error) {
+        console.error('명함 생성 중 오류가 발생했습니다.', error);
+        alert('명함 생성 중 오류가 발생했습니다.');
+      }
       // 페이지 이동
-      this.$router.push("/businesscard"); // form을 제출한 후 페이지 이동
+      // this.$router.push('/businesscard'); // form을 제출한 후 페이지 이동
     },
-  },
-  mounted() {
-    // 페이지 로드 시 로컬 스토리지에서 formData를 가져와서 설정
-    const storedData = localStorage.getItem("businessCardData");
-    if (storedData) {
-      this.formData = JSON.parse(storedData); // JSON 문자열을 객체로 변환
-    }
   },
 };
 </script>
@@ -220,19 +216,19 @@ textarea {
 }
 
 .preview-box p:nth-child(4)::before {
-  content: "Position: "; /* 직책 앞에 텍스트 추가 */
+  content: 'Position: '; /* 직책 앞에 텍스트 추가 */
 }
 
 .preview-box p:nth-child(5)::before {
-  content: "Dept: "; /* 부서 앞에 텍스트 추가 */
+  content: 'Dept: '; /* 부서 앞에 텍스트 추가 */
 }
 
 .preview-box p:nth-child(6)::before {
-  content: "H.P: "; /* 전화번호 앞에 텍스트 추가 */
+  content: 'H.P: '; /* 전화번호 앞에 텍스트 추가 */
 }
 
 .preview-box p:nth-child(7)::before {
-  content: "TEL: "; /* 유선전화번호 앞에 텍스트 추가 */
+  content: 'TEL: '; /* 유선전화번호 앞에 텍스트 추가 */
 }
 
 .preview-box p:nth-child(8)::before {
