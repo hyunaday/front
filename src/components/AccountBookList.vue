@@ -92,142 +92,141 @@
           </option>
         </template>
       </select>
-    </div>
-
-    <!-- bottom-sheet -->
-    <div class="button-container">
-      <button
-        type="button"
-        onclick="document.getElementById('testBottomSheet').openSheet()"
-        class="plus-btn"
-      >
-        <i class="fa-solid fa-plus"></i>
-      </button>
-      <bottom-sheet id="testBottomSheet" title="세부 내역">
-        <main class="editable-sheet">
-          <div class="header">
-            <div class="store-name">{{ storeName }}</div>
-            <button class="close-btn" @click="closeBottomSheet">
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-          </div>
-          <div class="price-section">
-            <input
-              v-if="isEditingPrice"
-              type="text"
-              v-model="editablePrice"
-              @blur="stopEditingPrice"
-              class="price-input"
-            />
-            <div v-else @click="startEditingPrice">
-              <span class="price">{{ formattedPrice }}</span>
-              <i class="fa-solid fa-pen edit-icon"></i>
-            </div>
-          </div>
-          <div class="description">인식 금액 {{ formattedFixedPrice }}</div>
-
-          <!-- 분류 버튼 (수입, 지출 등록) -->
-          <div class="category-container">
-            <span class="category-label">분류</span>
-            <div class="category-buttons">
-              <!-- 수입/지출 필터링 버튼 -->
-              <button
-                :class="{ active: selectedFilter === 'income' }"
-                @click="
-                  toggleFilter('income');
-                  setCategoryType('income');
-                "
-              >
-                수입
-              </button>
-              <button
-                :class="{ active: selectedFilter === 'expense' }"
-                @click="
-                  toggleFilter('expense');
-                  setCategoryType('expense');
-                "
-              >
-                지출
+      <!-- bottom-sheet -->
+      <div class="button-container">
+        <button
+          type="button"
+          onclick="document.getElementById('testBottomSheet').openSheet()"
+          class="plus-btn"
+        >
+          <i class="fa-solid fa-plus"></i>
+        </button>
+        <bottom-sheet id="testBottomSheet" title="세부 내역">
+          <main class="editable-sheet">
+            <div class="header">
+              <div class="store-name">{{ storeName }}</div>
+              <button class="close-btn" @click="closeBottomSheet">
+                <i class="fa-solid fa-xmark"></i>
               </button>
             </div>
-          </div>
+            <div class="price-section">
+              <input
+                v-if="isEditingPrice"
+                type="text"
+                v-model="editablePrice"
+                @blur="stopEditingPrice"
+                class="price-input"
+              />
+              <div v-else @click="startEditingPrice">
+                <span class="price">{{ formattedPrice }}</span>
+                <i class="fa-solid fa-pen edit-icon"></i>
+              </div>
+            </div>
+            <div class="description">인식 금액 {{ formattedFixedPrice }}</div>
 
-          <!-- 구분선 추가 -->
-          <hr class="divider" />
+            <!-- 분류 버튼 (수입, 지출 등록) -->
+            <div class="category-container">
+              <span class="category-label">분류</span>
+              <div class="category-buttons">
+                <!-- 수입/지출 필터링 버튼 -->
+                <button
+                  :class="{ active: selectedFilter === 'income' }"
+                  @click="
+                    toggleFilter('income');
+                    setCategoryType('income');
+                  "
+                >
+                  수입
+                </button>
+                <button
+                  :class="{ active: selectedFilter === 'expense' }"
+                  @click="
+                    toggleFilter('expense');
+                    setCategoryType('expense');
+                  "
+                >
+                  지출
+                </button>
+              </div>
+            </div>
 
-          <!-- 카테고리 -->
-          <div class="detail-row">
-            <span class="label">카테고리</span>
-            <!-- 수입 카테고리 선택 -->
-            <select
-              v-if="selectedFilter === 'income'"
-              v-model="selectedCategory"
-            >
-              <option disabled value="">카테고리를 선택하세요</option>
-              <option
-                v-for="category in incomeCategories"
-                :key="category"
-                :value="category"
+            <!-- 구분선 추가 -->
+            <hr class="divider" />
+
+            <!-- 카테고리 -->
+            <div class="detail-row">
+              <span class="label">카테고리</span>
+              <!-- 수입 카테고리 선택 -->
+              <select
+                v-if="selectedFilter === 'income'"
+                v-model="selectedCategory"
               >
-                {{ category }}
-              </option>
-            </select>
+                <option disabled value="">카테고리를 선택하세요</option>
+                <option
+                  v-for="category in incomeCategories"
+                  :key="category"
+                  :value="category"
+                >
+                  {{ category }}
+                </option>
+              </select>
 
-            <!-- 지출 카테고리 선택 -->
-            <select
-              v-if="selectedFilter === 'expense'"
-              v-model="selectedCategory"
-            >
-              <option disabled value="">카테고리를 선택하세요</option>
-              <option
-                v-for="category in expenseCategories"
-                :key="category"
-                :value="category"
+              <!-- 지출 카테고리 선택 -->
+              <select
+                v-if="selectedFilter === 'expense'"
+                v-model="selectedCategory"
               >
-                {{ category }}
-              </option>
-            </select>
-          </div>
+                <option disabled value="">카테고리를 선택하세요</option>
+                <option
+                  v-for="category in expenseCategories"
+                  :key="category"
+                  :value="category"
+                >
+                  {{ category }}
+                </option>
+              </select>
+            </div>
 
-          <!-- 거래처 -->
-          <div class="detail-row">
-            <span class="label">거래처</span>
-            <input type="text" v-model="storeName" class="content" />
-          </div>
+            <!-- 거래처 -->
+            <div class="detail-row">
+              <span class="label">거래처</span>
+              <input type="text" v-model="storeName" class="content" />
+            </div>
 
-          <!-- 결제 수단 -->
-          <div class="detail-row">
-            <span class="label">결제 수단</span>
-            <input type="text" v-model="paymentMethod" class="content" />
-          </div>
+            <!-- 결제 수단 -->
+            <div class="detail-row">
+              <span class="label">결제 수단</span>
+              <input type="text" v-model="paymentMethod" class="content" />
+            </div>
 
-          <!-- 날짜 -->
-          <div class="detail-row">
-            <span class="label">날짜</span>
-            <input type="date" v-model="transactionDate" class="content" />
-          </div>
+            <!-- 날짜 -->
+            <div class="detail-row">
+              <span class="label">날짜</span>
+              <input type="date" v-model="transactionDate" class="content" />
+            </div>
 
-          <!-- 메모 -->
-          <div class="detail-row">
-            <span class="label">메모 · 태그</span>
-            <span class="content">
-              <textarea
-                placeholder="입력하세요."
-                v-model="memo"
-                class="memo-input"
-              ></textarea>
-            </span>
-          </div>
+            <!-- 메모 -->
+            <div class="detail-row">
+              <span class="label">메모 · 태그</span>
+              <span class="content">
+                <textarea
+                  placeholder="입력하세요."
+                  v-model="memo"
+                  class="memo-input"
+                ></textarea>
+              </span>
+            </div>
 
-          <!-- 삭제 버튼과 다음 버튼 -->
-          <div class="button-row">
-            <button class="bottom-sheet-delete-btn">
-              <i class="fa-regular fa-trash-can"></i>
-            </button>
-            <button class="next-btn" @click="submitDetails">다음</button>
-          </div>
-        </main>
-      </bottom-sheet>
+            <!-- 삭제 버튼과 다음 버튼 -->
+            <div class="button-row">
+              <button class="bottom-sheet-delete-btn">
+                <i class="fa-regular fa-trash-can"></i>
+              </button>
+              <button class="next-btn" @click="submitDetails">다음</button>
+            </div>
+          </main>
+        </bottom-sheet>
+      </div>
     </div>
 
     <!-- 날짜별 가계부 내역 표시 시작 -->
@@ -420,19 +419,6 @@ export default {
       }, 0);
     },
     // 선택한 연도와 월에 맞는 엔트리 필터링
-    // filteredEntries() {
-    //   return this.entries.filter((entry) => {
-    //     const entryDate = new Date();
-    //     entryDate.setFullYear(this.selectedYear);
-    //     entryDate.setMonth(this.selectedMonth);
-    //     entryDate.setDate(entry.date);
-    //     return (
-    //       entryDate.getFullYear() === this.selectedYear &&
-    //       entryDate.getMonth() === this.selectedMonth
-    //     );
-    //   });
-    // },
-
     filteredEntries() {
       return this.entries
         .filter((entryGroup) => {
@@ -460,8 +446,14 @@ export default {
           });
           return { ...entryGroup, entries: filteredEntries };
         })
-        .filter((entryGroup) => entryGroup.entries.length > 0);
+        .filter((entryGroup) => entryGroup.entries.length > 0)
+        .sort(
+          (a, b) =>
+            new Date(this.selectedYear, this.selectedMonth, a.date) -
+            new Date(this.selectedYear, this.selectedMonth, b.date)
+        ); // 날짜순 정렬
     },
+
     formattedPrice() {
       return `${this.editablePrice.toLocaleString()}원`;
     },
@@ -510,12 +502,14 @@ export default {
             ? -parseInt(this.editablePrice) || 0
             : parseInt(this.editablePrice) || 0, // 지출이면 음수로 적용
         storeName: this.storeName,
-        date: new Date().getDate().toString(),
-        day: new Date().toLocaleString("ko-KR", { weekday: "long" }),
+        date: new Date(this.transactionDate).getDate().toString(),
+        day: new Date(this.transactionDate).toLocaleString("ko-KR", {
+          weekday: "long",
+        }),
         filter: this.selectedFilter, // 수입 또는 지출 필터 값 저장
       };
 
-      // `entries` 배열에 새로운 내역을 추가
+      // entries 배열에 새로운 내역을 추가
       this.entries.push({
         date: newEntry.date,
         day: newEntry.day,
