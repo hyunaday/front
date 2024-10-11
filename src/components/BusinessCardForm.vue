@@ -72,10 +72,10 @@
       <button class="button" type="submit">등록</button>
     </form>
 
-    QR 코드 이미지 표시
+    <!-- QR 코드 이미지 표시 -->
     <div v-if="qrCodeData" class="qr-code-container">
       <h2>QR 코드</h2>
-      <img :src="'data:image/png;base64,' + qrCodeData" alt="QR 코드" />
+      <img :src="qrCodeData" alt="QR 코드" />
     </div>
   </div>
 </template>
@@ -102,6 +102,7 @@ export default {
         address: '',
         phoneLandline: '',
       },
+      qrCodeData: null, // QR 코드 데이터 초기화
     };
   },
   methods: {
@@ -119,17 +120,16 @@ export default {
       };
 
       try {
-        // 명함 생성 API 호출
-        const response = await apiClient.post('/businessCard/qr-code', payload);
+        // 명함 생성 API 호출 (API 엔드포인트 수정)
+        const response = await apiClient.post('/businessCard', payload);
 
         if (response.data.isSuccess) {
           alert('명함이 성공적으로 생성되었습니다.');
           // QR 코드 등 추가 처리 가능
           console.log('서버 응답 데이터:', response.data); // 응답 데이터 출력
 
-          console.log('QR 코드 데이터:', response.data.result);
-          // Base64 데이터를 이미지 URL로 변환
-          this.qrCodeData = `data:image/png;base64,${response.data.result}`;
+          // QR 코드 데이터 처리
+          this.qrCodeData = response.data.result.imgUrl; // imgUrl 가져오기
           this.$emit('qr-code-generated', this.qrCodeData); // 부모 컴포넌트로 QR 코드 데이터 전달
         } else {
           console.log(response.data);
