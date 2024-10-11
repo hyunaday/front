@@ -31,6 +31,24 @@
         </div>
 
         <div class="account-list">
+  <div v-for="(account, index) in accounts" :key="index" class="account-card">
+    <img :src="bankLogos[account.name]" alt="입출금통장 아이콘" class="account-icon" />
+    <div class="account-info">
+      <span class="transactions-title">{{ account.name }}</span>
+      <span class="account-balance">{{ formatNumber(account.balance) }}원</span>
+    </div>
+    <div class="button-container">
+      <router-link :to="`/transactionhistory/${account.idx}`">
+        <button class="view-button">조회</button>
+      </router-link>
+      <router-link to="/transfer">
+        <button class="transfer-button">송금</button>
+      </router-link>
+    </div>
+  </div>
+</div>
+<!-- 
+        <div class="account-list">
           <div v-for="(account, index) in accounts" :key="index" class="account-card">
             <img :src="bankLogos[account.name]" alt="입출금통장 아이콘" class="account-icon" />
             <div class="account-info">
@@ -43,7 +61,7 @@
               </router-link>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
 
       <div class="savings-section">
@@ -52,15 +70,8 @@
           <span class="transactions-amount">{{ formatNumber(savingsAccount.balance) }}원</span>
         </div>
 
-        <div class="account-list">
-          <div class="account-card">
-            <img src="../../assets/images/kbbank.png" alt="적금 아이콘" class="account-icon" />
-            <div class="account-info">
-              <span class="transactions-title">KB국민프리미엄적금</span>
-              <span class="account-balance">{{ formatNumber(savingsAccount.balance) }}원</span>
-            </div>
-          </div>
-        </div>
+
+
       </div>
 
       <hr>
@@ -192,6 +203,7 @@ export default {
           this.accounts = response.data.result.accountList.map(account => ({
             name: account.bankName,
             balance: account.amount,
+            idx: account.idx, // idx 값 추가
             image: '../src/assets/images/default-account.png',
           }));
         } else {
@@ -229,6 +241,22 @@ export default {
 
 
 <style scoped>
+.button-container {
+  display: flex;
+  align-items: center;
+  margin-left: auto; /* 버튼을 오른쪽으로 정렬 */
+}
+
+.view-button {
+  background-color: #d9d9d9;
+  color: black;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  margin-right: 10px; /* 송금 버튼과의 간격 */
+}
+
 .card-icon {
   width: 70px; /* 카드 아이콘 너비 */
   height: 40px; /* 카드 아이콘 높이 */

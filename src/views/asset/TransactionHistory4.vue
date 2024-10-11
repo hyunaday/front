@@ -76,7 +76,7 @@ export default {
   },
   data() {
     return {
-      imageSrc: "src/assets/images/kbbank.png",
+      imageSrc: "src/assets/images/wooribank.png",
       bankName: "국민은행",
       accountNumber: "1234567890", // 예시 계좌 번호, 실제 데이터로 업데이트 필요
       accountDescription: "국민은행 입출금 통장",

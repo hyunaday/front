@@ -283,6 +283,8 @@
 </template>
 
 <script>
+import apiClient from "../api/axios";
+
 const months = [
   "January",
   "February",
@@ -310,100 +312,58 @@ function generateYears() {
 export default {
   data() {
     return {
-      // 카테고리 선택 상태
+      entries: [], // 초기값을 빈 배열로 설정
+
       selectedCategory: "",
-      selectedFilter: null, // 수입, 지출 필터링 상태
+      selectedFilter: null,
       incomeCategories: ["월급", "이자", "용돈"],
       expenseCategories: ["식비", "쇼핑", "교통", "문화", "주거/통신", "기타"],
-      // 모든 카테고리를 포함한 배열
       allCategories: [
-        "월급",
-        "이자",
-        "용돈",
-        "식비",
-        "쇼핑",
-        "교통",
-        "문화",
-        "주거/통신",
-        "기타",
+        "월급", "이자", "용돈", "식비", "쇼핑", "교통", "문화", "주거/통신", "기타"
       ],
-
       selectedYear: new Date().getFullYear(),
       selectedMonth: new Date().getMonth(),
       years: generateYears(),
       months,
       searchQuery: "",
-      finalQuery: "",
       totalExpense: 90000,
       totalIncome: 1000000,
-
       storeName: "",
       fixedAmount: 0,
       editablePrice: 0,
       isEditingPrice: false,
-      selectedCategory: null,
-      selectedFilter: null,
       transactionDate: "",
       paymentMethod: "",
       memo: "",
-      category: "",
-      entries: [
-        {
-          date: "19",
-          day: "화요일",
-          totalAmount: -27000,
-          entries: [
-            {
-              category: "주거/통신",
-              detail: "주방/욕실",
-              paymentMethod: "신한은행",
-              amount: -30000,
-              storeName: "마트",
-              memo: "주방용품 구매",
-            },
-            {
-              category: "주거/통신",
-              detail: "",
-              paymentMethod: "현금",
-              amount: 3000,
-              storeName: "",
-              memo: "",
-            },
-          ],
-        },
-        {
-          date: "20",
-          day: "수요일",
-          totalAmount: -27000,
-          entries: [
-            {
-              category: "주거/통신",
-              detail: "주방/욕실",
-              amount: -30000,
-              storeName: "다이소",
-              memo: "생활용품",
-            },
-            {
-              category: "부수입",
-              detail: "",
-              amount: 3000,
-              storeName: "",
-              memo: "",
-            },
-          ],
-        },
-      ],
     };
   },
 
   computed: {
-    // 선택한 연도와 월의 총 지출과 수입을 계산
+    filteredEntries() {
+      return this.entries
+        .filter((entryGroup) => {
+          return (
+            entryGroup.date.includes(this.selectedYear) &&
+            entryGroup.date.includes(this.selectedMonth + 1)
+          );
+        })
+        .map((entryGroup) => ({
+          ...entryGroup,
+          entries: entryGroup.entries.filter(
+            (entry) =>
+              (!this.selectedFilter ||
+                (this.selectedFilter === "income" && entry.amount > 0) ||
+                (this.selectedFilter === "expense" && entry.amount < 0)) &&
+              (!this.selectedCategory || entry.category === this.selectedCategory)
+          ),
+        }));
+    },
     totalExpense() {
       return this.filteredEntries.reduce((total, entryGroup) => {
         return (
           total +
           entryGroup.entries
-            .filter((entry) => entry.amount < 0) // 지출 필터링
+            .filter((entry) => entry.amount < 0)
             .reduce((sum, entry) => sum + entry.amount, 0)
         );
       }, 0);
@@ -413,53 +373,40 @@ export default {
         return (
           total +
           entryGroup.entries
-            .filter((entry) => entry.amount > 0) // 수입 필터링
+            .filter((entry) => entry.amount > 0)
             .reduce((sum, entry) => sum + entry.amount, 0)
         );
       }, 0);
     },
-    // 선택한 연도와 월에 맞는 엔트리 필터링
-    filteredEntries() {
-      return this.entries
-        .filter((entryGroup) => {
-          // 선택된 수입/지출 필터에 따라 엔트리 필터링
-          if (this.selectedFilter === "income") {
-            return entryGroup.entries.some((entry) => entry.amount > 0);
-          } else if (this.selectedFilter === "expense") {
-            return entryGroup.entries.some((entry) => entry.amount < 0);
-          }
-          return true;
-        })
-        .map((entryGroup) => {
-          // 선택된 카테고리에 따라 엔트리의 항목 필터링
-          const filteredEntries = entryGroup.entries.filter((entry) => {
-            const matchesFilter =
-              this.selectedFilter === "income"
-                ? entry.amount > 0
-                : this.selectedFilter === "expense"
-                ? entry.amount < 0
-                : true;
-            const matchesCategory =
-              !this.selectedCategory ||
-              entry.category === this.selectedCategory;
-            return matchesFilter && matchesCategory;
-          });
-          return { ...entryGroup, entries: filteredEntries };
-        })
-        .filter((entryGroup) => entryGroup.entries.length > 0)
-        .sort(
-          (a, b) =>
-            new Date(this.selectedYear, this.selectedMonth, a.date) -
-            new Date(this.selectedYear, this.selectedMonth, b.date)
-        ); // 날짜순 정렬
-    },
-
-    formattedPrice() {
-      return `${this.editablePrice.toLocaleString()}원`;
-    },
   },
 
   methods: {
+    async fetchTransactions(idx) {
+    try {
+      const response = await apiClient.get(`/transaction?idx=${idx}`);
+      // API 응답 구조를 안전하게 확인하고 entries 설정
+      const transactions = response.data.result ? response.data.result.transactions : [];
+      this.entries = transactions.map(transaction => ({
+        amount: transaction.amount, // 거래 금액
+        memo: transaction.memo, // 메모
+        category: transaction.category // 카테고리
+      }));
+    } catch (error) {
+      console.error("트랜잭션을 가져오는 데 실패했습니다: TypeError: 정의되지 않은 속성에서 'map'을 읽을 수 없습니다.", error);
+    }
+  },
+    formatAmount(amount) {
+      return new Intl.NumberFormat("ko-KR", {
+        style: "currency",
+        currency: "KRW",
+      }).format(amount);
+    },
+    toggleFilter(filter) {
+      this.selectedFilter = this.selectedFilter === filter ? null : filter;
+    },
+    updateCalendar() {
+      this.fetchTransactions();
+    },
     executeSearch() {
       this.finalQuery = this.searchQuery;
     },
@@ -469,66 +416,13 @@ export default {
     stopEditingPrice() {
       this.isEditingPrice = false;
     },
-    closeBottomSheet() {
-      document.getElementById("testBottomSheet").closeSheet();
+    deleteEntry(groupIndex, entryIndex) {
+      this.entries[groupIndex].entries.splice(entryIndex, 1);
     },
-    toggleFilter(filter) {
-      this.selectedFilter = this.selectedFilter === filter ? null : filter;
-      this.selectedCategory = ""; // 필터 변경 시 카테고리 초기화
-    },
-    setCategoryType(type) {
-      this.selectedFilter = type;
-    },
+  },
 
-    executeSearch() {
-      this.finalQuery = this.searchQuery;
-    },
-    // 카테고리 타입 설정
-    setFilter(filter) {
-      this.selectedFilter = filter;
-      this.selectedCategory = ""; // 필터 변경 시 카테고리 초기화
-    },
-    formatAmount(amount) {
-      return typeof amount === "number"
-        ? `${amount.toLocaleString("ko-KR")}원`
-        : "0원";
-    },
-    submitDetails() {
-      const newEntry = {
-        category: this.selectedCategory,
-        detail: this.memo,
-        amount:
-          this.selectedFilter === "expense"
-            ? -parseInt(this.editablePrice) || 0
-            : parseInt(this.editablePrice) || 0, // 지출이면 음수로 적용
-        storeName: this.storeName,
-        date: new Date(this.transactionDate).getDate().toString(),
-        day: new Date(this.transactionDate).toLocaleString("ko-KR", {
-          weekday: "long",
-        }),
-        filter: this.selectedFilter, // 수입 또는 지출 필터 값 저장
-      };
-
-      // entries 배열에 새로운 내역을 추가
-      this.entries.push({
-        date: newEntry.date,
-        day: newEntry.day,
-        totalAmount: newEntry.amount,
-        entries: [newEntry],
-      });
-
-      // 바텀시트 닫고 폼 초기화
-      this.closeBottomSheet();
-      this.resetForm(); // 폼 초기화
-    },
-    resetForm() {
-      this.selectedCategory = null;
-      this.memo = "";
-      this.editablePrice = 0;
-      this.storeName = "";
-      this.transactionDate = "";
-      this.paymentMethod = "";
-    },
+  mounted() {
+    this.fetchTransactions(1);
   },
 };
 </script>
