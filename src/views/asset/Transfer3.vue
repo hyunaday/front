@@ -49,7 +49,7 @@ export default {
     return {
       amount: 10000, // 송금 금액
       recipient: '박비바', // 받는 사람
-      date: '2020년 3월 12일 12:45', // 송금 날짜
+      date: '', // 송금 날짜
       showConfirmModal: false, // 모달 표시 상태
     };
   },
@@ -63,9 +63,25 @@ export default {
       this.showConfirmModal = false; // 모달 닫기
       this.$router.push('/transfer'); // 송금 완료 후 페이지 이동
     },
+    getCurrentDate() {
+      const now = new Date();
+      const options = {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      };
+      return now.toLocaleString('ko-KR', options).replace(',', '').replace(/\//g, '-');
+    }
+  },
+  mounted() {
+    this.date = this.getCurrentDate(); // 현재 날짜 설정
   },
 }
 </script>
+
 
 <style scoped>
 .complete-page {

@@ -59,15 +59,8 @@
         <p v-else class="no-transactions">최근 거래 내역이 없습니다.</p>
       </div>
     </div>
+
     <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
-    
-    <!-- 모달 -->
-    <div class="modal" v-if="showModal">
-      <div class="modal-content">
-        <span class="close" @click="closeModal">&times;</span>
-        <p>{{ modalMessage }}</p>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -86,8 +79,6 @@ export default {
       recipient: '',
       message: '',
       recentTransactions: [],
-      showModal: false,
-      modalMessage: '',
     };
   },
   methods: {
@@ -98,7 +89,9 @@ export default {
       this.$router.push("/grouppay");
     },
 
+    // 더미 거래 내역을 fetch하는 메서드
     fetchTransactions() {
+      // 더미 거래 내역
       const dummyTransactions = [
         {
           idx: 1,
@@ -120,27 +113,26 @@ export default {
         },
       ];
 
+      // 더미 데이터 설정
       this.recentTransactions = dummyTransactions;
     },
+    
     copyAccountNumber(accountNumber) {
       this.recipient = accountNumber;
       navigator.clipboard.writeText(accountNumber)
         .then(() => {
-          this.showModal = true;
-          this.modalMessage = "계좌번호가 복사되었습니다.";
+          // 계좌번호 복사 성공 시 알림 추가
+          console.log("계좌번호가 복사되었습니다.");
         })
         .catch(err => {
           console.error('복사 실패:', err);
         });
     },
-    closeModal() {
-      this.showModal = false;
-    },
+    
     sendMoney() {
-      // 송금 로직을 여기에 추가하세요
-      this.showModal = true;
-      this.modalMessage = "송금이 완료되었습니다."; // 예시 메시지
-    }
+      // 송금 로직 (여기에 필요한 송금 로직을 추가하세요)
+      this.$router.push('/transfer2'); // /transfer2로 이동
+    },
   },
   mounted() {
     this.fetchTransactions();
@@ -262,42 +254,5 @@ input[type="text"]::placeholder {
 .stroke-button:hover {
   background-color: white;
   color: #6981d9;
-}
-
-/* 모달 스타일 */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000; /* 모달의 z-index 설정 */
-}
-
-.modal-content {
-  background-color: white;
-  border-radius: 10px;
-  padding: 20px;
-  text-align: center;
-  width: 300px; /* 모달 너비 */
-}
-
-.close {
-  cursor: pointer;
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
 }
 </style>
