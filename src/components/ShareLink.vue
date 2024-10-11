@@ -67,7 +67,7 @@ export default {
     return {
       shareableLink,
       goBack() {
-        this.$router.go(-1);
+        window.history.back();
       },
       goToNext() {
         this.$router.push('/gamelist');

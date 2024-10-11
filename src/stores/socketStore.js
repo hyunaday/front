@@ -1,7 +1,7 @@
 // src/stores/socketStore.js
 import { defineStore } from 'pinia';
 import { Stomp } from '@stomp/stompjs';
-import { useOrderStore } from './orderStore'; // orderStore 가져오기
+import { useOrderStore } from '../stores/orderStore'; // orderStore 가져오기
 
 export const useSocketStore = defineStore('socket', {
   state: () => ({
