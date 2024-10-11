@@ -5,7 +5,7 @@
       <!-- 내 자산 연결 버튼 섹션 -->
       <div v-if="!isConnected" class="connect-card-container d-flex flex-column align-items-center justify-content-center">
         <img src="../assets/images/connect_logo.png" alt="Connect Logo" class="connect-logo" />
-        <p class="connect-message">편리한 전자 지갑을 위해 자산을 연결해주세요!</p>
+        <p class="connect-message">편리한 전자 지갑을 위해<br>자산을 연결해주세요!</p>
         <button @click="goToAgreementPage" class="btn connect-button">내 자산 연결</button>
       </div>
 
@@ -24,7 +24,7 @@
 
       <!-- 내 계좌 섹션 -->
       <div v-if="isConnected" class="account-section d-flex justify-content-center">
-        <swiper :slides-per-view="1.2" :centered-slides="true" :space-between="10" :pagination="{ clickable: true }" @swiper="onSwiper" @slideChange="onSlideChange">
+        <swiper :slides-per-view="1.2" :centered-slides="true" :space-between="10" :pagination="{ clickable: true }" :initial-slide="1" @swiper="onSwiper" @slideChange="onSlideChange">
           <!-- 계좌 카드 슬라이드 -->
           <swiper-slide v-for="account in accounts" :key="account.idx">
             <div class="account-card">
@@ -418,14 +418,13 @@ h4 {
 }
 
 .connect-logo {
-  width: 70px;
+  width: 160px;
   height: auto;
-  margin-bottom: 10px;
 }
 
 .connect-message {
   font-size: 14px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
 .connect-button {
@@ -437,10 +436,6 @@ h4 {
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
   border: none;
   transition: background-color 0.3s ease;
-}
-
-.connect-button:hover {
-  background-color: #f1f1f1;
 }
 
 </style>

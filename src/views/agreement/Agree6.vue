@@ -64,6 +64,7 @@
   import Header from "../../components/Header.vue";
   import FooterNav from "../../components/FooterNav.vue";
   import ProgressBar from "../../components/ProgressBar.vue"; // Import the ProgressBar component
+  import apiClient from "../../api/axios"; // Import the API client
   
   export default {
     name: "Agree6",
@@ -80,7 +81,21 @@
     methods: {
       goToNextStep() {
         if (this.isRequiredChecked) {
-          this.$router.push("/agree_loading"); // Change to the next page route
+          // Send PATCH request to update isConnected to true
+          apiClient
+            .patch("/member/connect")
+            .then((response) => {
+              if (response.data.isSuccess && response.data.result.isConnected) {
+                // Proceed to the next page if the connection was successful
+                this.$router.push("/agree_loading"); // Change to the next page route
+              } else {
+                alert("자산 연동에 실패했습니다. 다시 시도해주세요.");
+              }
+            })
+            .catch((error) => {
+              console.error("자산 연동 중 오류 발생:", error);
+              alert("연동 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+            });
         }
       },
     },
