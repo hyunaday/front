@@ -99,16 +99,21 @@ export default {
   },
   computed: {
     totalIncome() {
-      return Object.values(this.data).reduce(
-        (acc, day) => acc + (day.income || 0),
-        0
-      );
+      // 선택된 연도와 월에 맞는 데이터만 필터링하여 합산
+      const selectedYearMonth = `${this.selectedYear}-${String(
+        this.selectedMonth + 1
+      ).padStart(2, "0")}`;
+      return Object.entries(this.data)
+        .filter(([date]) => date.startsWith(selectedYearMonth)) // 해당 월 데이터만 필터링
+        .reduce((acc, [_, day]) => acc + (day.income || 0), 0);
     },
     totalExpense() {
-      return Object.values(this.data).reduce(
-        (acc, day) => acc + (day.expense || 0),
-        0
-      );
+      const selectedYearMonth = `${this.selectedYear}-${String(
+        this.selectedMonth + 1
+      ).padStart(2, "0")}`;
+      return Object.entries(this.data)
+        .filter(([date]) => date.startsWith(selectedYearMonth)) // 해당 월 데이터만 필터링
+        .reduce((acc, [_, day]) => acc + (day.expense || 0), 0);
     },
   },
   mounted() {
