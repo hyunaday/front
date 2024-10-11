@@ -46,6 +46,7 @@ import Agree4 from '../views/agreement/Agree4.vue';
 import Agree5 from '../views/agreement/Agree5.vue';
 import Agree6 from '../views/agreement/Agree6.vue';
 import Agree_Loading from '../views/agreement/Agree_Loading.vue';
+import HeadCount from "../views/pay/HeadCount.vue";
 import Transfer2 from "../views/asset/Transfer2.vue";
 import Transfer3 from "../views/asset/Transfer3.vue";
 import Y from "vue-cal/dist/i18n/el.es.js";
@@ -56,6 +57,7 @@ import TransactionHistory4 from "../views/asset/TransactionHistory4.vue";
 import TransactionHistory5 from "../views/asset/TransactionHistory5.vue";
 import TransactionHistory6 from "../views/asset/TransactionHistory6.vue";
 import TransactionHistory from "../views/asset/TransactionHistory.vue";
+
 
 const routes = [
   {
@@ -349,6 +351,11 @@ const routes = [
     path: '/agree_loading',
     name: 'Agree_Loading',
     component: Agree_Loading,
+  },
+  {
+    path: '/headcount',
+    name: 'HeadCount',
+    component: HeadCount,
   },
 ];
 

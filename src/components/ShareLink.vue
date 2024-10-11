@@ -25,46 +25,64 @@
 
 <script>
 import QRCode from 'qrcode.vue';
-import { useNavigationStore } from '../stores/navigation';
+import { useOrderStore } from '../stores/orderStore.js';
+import apiClient from '../../src/api/axios.js';
+import { onMounted, onUnmounted, ref } from 'vue';
+import { useSocketStore } from '../stores/socketStore.js';
 
 export default {
   components: {
     QRCode,
   },
-  data() {
-    return {
-      shareableLink: 'https://www.naver.com',
-    };
-  },
-  methods: {
-    goBack() {
-      this.$router.go(-1);
-    },
-    goToNext() {
-      const navigationStore = useNavigationStore();
-      const router = this.$router;
+  setup() {
+    const orderStore = useOrderStore();
+    const socketStore = useSocketStore();
+    const shareableLink = ref('');
 
-      // 선택된 페이지에 따라 이동
-      const selectedPage = navigationStore.selectedPage;
-      if (selectedPage === 'PaySplit') {
-        router.push('/gamelist'); // 금액으로 나누기 선택 시
-      } else if (selectedPage === 'PayMenu') {
-        router.push('/gamelist'); // 메뉴별로 나누기 선택 시
-      } else {
-        // 기본적으로 게임 리스트로 이동
-        router.push('/gamelist');
-      }
-    },
-    shareLink() {
-      navigator.clipboard
-        .writeText(this.shareableLink)
-        .then(() => {
-          alert('링크가 클립보드에 복사되었습니다!');
-        })
-        .catch((err) => {
-          console.error('링크 복사 실패:', err);
+    const createRoom = async () => {
+      try {
+        const response = await apiClient.post('/order/room/create', {
+          orderIdx: orderStore.orderIdx,
+          maxMemberCnt: orderStore.maxMemberCnt,
+          type: orderStore.type,
         });
-    },
+        shareableLink.value = `${response.data.result.idx}`;
+        console.log('방 생성 성공:', response.data);
+
+        // 방이 생성된 후 소켓 연결 시작
+        socketStore.connect();
+      } catch (error) {
+        console.error('방 생성 실패:', error);
+      }
+    };
+
+    onMounted(() => {
+      createRoom();
+    });
+
+    onUnmounted(() => {
+      socketStore.disconnect();
+    });
+
+    return {
+      shareableLink,
+      goBack() {
+        this.$router.go(-1);
+      },
+      goToNext() {
+        this.$router.push('/gamelist');
+      },
+      shareLink() {
+        navigator.clipboard
+          .writeText(shareableLink.value)
+          .then(() => {
+            alert('링크가 클립보드에 복사되었습니다!');
+          })
+          .catch((err) => {
+            console.error('링크 복사 실패:', err);
+          });
+      },
+    };
   },
 };
 </script>

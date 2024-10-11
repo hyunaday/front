@@ -36,7 +36,7 @@
   </div>
 
   <!-- FooterNav 컴포넌트 사용 -->
-  <FooterNav :buttonType="'plus'" :buttonAction="goToAddList" />
+  <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
 </template>
 
 <script>
@@ -45,6 +45,8 @@ import VueCal from "vue-cal";
 import CalendarComponent from "../../components/CalendarComponent.vue"; // CalendarComponent를 import
 import FooterNav from "../../components/FooterNav.vue";
 import AccountBookList from "../../components/AccountBookList.vue"; // AccountBookList 컴포넌트 import
+import axios from "../../api/axios";
+import apiClient from "../../api/axios";
 
 export default {
   name: "AccountBook",
@@ -77,11 +79,27 @@ export default {
     };
   },
   methods: {
+    goToGroupPayPage() {
+      this.$router.push("/grouppay");
+    },
     toggleView(isCalendar) {
       this.isCalendarView = isCalendar;
     },
     goToAddList() {
       this.$router.push("/addlist"); // AddList 페이지로 이동
+    },
+
+    async fetchListData() {
+      try {
+        const response = await apiClient.get(`transaction/all`);
+        if (response.data.isSuccess && response.data.result) {
+          this.listData = response.data.result.creditList;
+        } else {
+          console.error("거래 목록 조회 실패:", response.data.message);
+        }
+      } catch (error) {
+        console.error("리스트 데이터를 불러오는 중 오류 발생:", error);
+      }
     },
   },
 };

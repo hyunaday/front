@@ -51,22 +51,22 @@
 </template>
 
 <script>
-import { useNavigationStore } from '../../stores/navigation';
-import hamburgerImage from '../../assets/images/hamburger.png';
-import sodaImage from '../../assets/images/soda.png';
+import { useOrderStore } from "../../stores/orderStore";
+import hamburgerImage from "../../assets/images/hamburger.png";
+import sodaImage from "../../assets/images/soda.png";
 
 export default {
   data() {
     return {
-      merchantName: 'KFC 군자능동점',
+      merchantName: "KFC 군자능동점",
       paymentAmount: 95600,
       paymentItems: [
-        { name: '정크버거 세트', price: 12000, image: hamburgerImage },
-        { name: '스파이시 치킨 버거', price: 9900, image: hamburgerImage },
-        { name: '타워 버거 세트', price: 20000, image: hamburgerImage },
-        { name: '정크버거', price: 8200, image: hamburgerImage },
-        { name: '텟지버거 3개', price: 27000, image: hamburgerImage },
-        { name: '제로 콜라 5개', price: 10000, image: sodaImage },
+        { name: "정크버거 세트", price: 12000, image: hamburgerImage },
+        { name: "스파이시 치킨 버거", price: 9900, image: hamburgerImage },
+        { name: "타워 버거 세트", price: 20000, image: hamburgerImage },
+        { name: "정크버거", price: 8200, image: hamburgerImage },
+        { name: "텟지버거 3개", price: 27000, image: hamburgerImage },
+        { name: "제로 콜라 5개", price: 10000, image: sodaImage },
       ],
     };
   },
@@ -75,24 +75,10 @@ export default {
       this.$router.go(-1);
     },
     goToShareLink(type) {
-      const navigationStore = useNavigationStore();
-      // ShareLink 페이지로 이동하며 경로 저장
-      if (type === 'amount') {
-        navigationStore.setSelectedPage('PaySplit');
-        navigationStore.setNavigationPath([
-          '/sharelink',
-          '/gamelist',
-          '/paysplit',
-        ]);
-      } else if (type === 'menu') {
-        navigationStore.setSelectedPage('PayMenu');
-        navigationStore.setNavigationPath([
-          '/sharelink',
-          '/gamelist',
-          '/paymenu',
-        ]);
-      }
-      this.$router.push('/sharelink');
+      const orderStore = useOrderStore();
+      orderStore.setType(type === "amount" ? "BY_PRICE" : "BY_MENU");
+
+      this.$router.push("/sharelink");
     },
   },
 };
