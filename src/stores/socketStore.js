@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 import { Stomp } from '@stomp/stompjs';
 import { useOrderStore } from './orderStore'; // orderStore 가져오기
 import { useOrderInfoStore } from './orderStore';
-import { useMemberStore } from '../stores/memberStore.js'
+import { useMemberStore } from './MemberStore.js'
 
 export const useSocketStore = defineStore('socket', {
   state: () => ({

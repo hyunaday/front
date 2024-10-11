@@ -29,7 +29,7 @@ coverage
 
 *.tsbuildinfo
 
-package.json
+
 package-lock.json
 _metadata.json.json
 
