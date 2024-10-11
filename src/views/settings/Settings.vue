@@ -4,7 +4,9 @@
       <h1 class="title">
         <i class="fa-solid fa-bars icon"></i>
         환경설정
-        <button class="close-button" @click="goHome">X</button>
+        <button type="button" @click="goBack" class="back-button">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
       </h1>
       <div class="settings-grid">
         <div class="setting-item item-1" @click="goToPaymentHistory">
@@ -73,8 +75,8 @@ export default {
     withdrawMembership() {
       this.$router.push('/cancel');
     },
-    goHome() {
-      this.$router.push('/');
+    goBack() {
+      this.$router.back();
     },
     async updateAppPushNotifications() {
       try {
@@ -133,7 +135,7 @@ export default {
   margin-right: 8px; /* 아이콘과 텍스트 간격 */
 }
 
-.close-button {
+.back-button {
   position: absolute;
   right: 0;
   top: 0;

@@ -1,5 +1,6 @@
 <template>
-  <div class="main-container d-flex flex-column justify-content-center align-items-center">
+  <div class="main-container">
+    <Header />
     <div class="my-assets">
       <h1><strong>{{ userName }}</strong>님의 총 자산</h1>
 
@@ -10,12 +11,13 @@
 
       <div class="advertisement-banner">
         <div class="banner-content">
-          <img src="../../assets/images/kbpay.png" alt="광고 배너" class="banner-image" />
-          <div class="banner-text">
-            <p class="banner-title">KB Pay</p>
-            <p class="banner-subtitle">편리한 국민 생활 파트너</p>
-          </div>
-        </div>
+  <img src="../../assets/images/kbpay.png" alt="광고 배너" class="banner-image" />
+  <div class="banner-text">
+    <p class="banner-title">KB Pay</p>
+    <p class="banner-subtitle">편리한 국민 생활 파트너</p>
+  </div>
+</div>
+
       </div>
 
       <div class="account">
@@ -76,7 +78,7 @@
           <div v-for="(creditCard, index) in creditCards" :key="index" class="account-card">
             <img :src="creditCard.image" alt="신용카드 아이콘" class="account-icon" />
             <div class="account-info">
-              <span class="transactions-title">{{ creditCard.creditIdx }}</span>
+              <span class="transactions-title">{{ creditCard.name }}</span>
               <span class="account-balance credit-card-balance">{{ formatNumber(creditCard.amount_sum) }}원</span>
             </div>
           </div>
@@ -106,20 +108,22 @@
 <script>
 import FooterNav from '../../components/FooterNav.vue';
 import apiClient from '../../api/axios.js';  // axios 클라이언트 불러오기
+import Header from '../../components/Header.vue';
 
 export default {
   name: 'MyAssets',
   components: {
     FooterNav,
+    Header,
   },
   data() {
     return {
       userName: '조현아',
-      accounts: [], // 빈 배열로 초기화
+      accounts: [],
       savingsAccount: {
         balance: 6000000,
       },
-      creditCards: [],  // 초기값을 빈 배열로 설정
+      creditCards: [],
       loanAmount: 480000000,
     };
   },
@@ -144,11 +148,10 @@ export default {
         const response = await apiClient.get('/account/all');
         
         if (response.data.isSuccess && response.data.result && response.data.result.accountList) {
-          // 받아온 데이터를 accounts에 저장
           this.accounts = response.data.result.accountList.map(account => ({
             name: account.bankName,
             balance: account.amount,
-            image: '../src/assets/images/default-account.png', // 이미지가 없을 때 기본 이미지 설정
+            image: '../src/assets/images/default-account.png',
           }));
         } else {
           console.error('응답 데이터에서 계좌 정보를 찾을 수 없습니다.');
@@ -162,11 +165,10 @@ export default {
         const response = await apiClient.get(`/credit/all`);
         
         if (response.data.isSuccess && response.data.result && response.data.result.creditList) {
-          // 받아온 데이터를 creditCards에 저장
           this.creditCards = response.data.result.creditList.map(card => ({
             name: card.creditName,
             amount_sum: card.amountSum,
-            image: card.imgUrl || '../src/assets/images/default-card.png', // 이미지가 없을 때 기본 이미지 설정
+            image: card.imgUrl || '../src/assets/images/default-card.png',
           }));
         } else {
           console.error('응답 데이터에서 신용카드 정보를 찾을 수 없습니다.');
@@ -178,20 +180,15 @@ export default {
   },
 
   created() {
-    this.fetchAccounts();  // 계좌 데이터 호출
-    this.fetchCreditCards();  // 신용카드 데이터 호출
+    this.fetchAccounts();
+    this.fetchCreditCards();
   }
 };
 </script>
 
-
-
 <style scoped>
-.main-container {
-  position: relative; /* 전체 컨테이너 */
-}
-
 .my-assets {
+  margin-top: 70px;
   padding: 20px;
   width: 100%;
   max-width: 320px;
@@ -322,16 +319,20 @@ h1 {
   width: 50px;
   height: 50px;
 }
-
 .banner-content {
   margin-top: 20px;
   display: flex;
   align-items: center;
-  /* background-color: #ececec; */
+  background-color: #e3e3e39f;
+  border-radius: 10px; /* 둥근 테두리 추가 */
+  padding: 10px; /* 내용물에 여백 추가 */
 }
+
 
 .banner-text {
   margin-left: 10px;
+  display: flex;
+  flex-direction: column;
 }
 
 .banner-title {
@@ -343,6 +344,7 @@ h1 {
 .banner-subtitle {
   font-size: 12px;
   color: #777;
+  margin: 0;
 }
 
 hr {

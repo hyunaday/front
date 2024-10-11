@@ -242,6 +242,7 @@ button {
   background-color: #6981d6; /* 녹색 배경 */
   color: white; /* 글자색을 흰색으로 설정 */
   border: none; /* 테두리 없음 */
+  width: 100%;
   padding: 5px 15px; /* 여백 추가 */
   font-size: 16px; /* 글자 크기 설정 */
   font-weight: bold; /* 글자 굵게 */
