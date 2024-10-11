@@ -42,6 +42,7 @@ export default {
       code: this.$route.query.code,
     };
   },
+
   
   methods: {
     async checkCurrentPassword() {
