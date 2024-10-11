@@ -30,7 +30,7 @@ import axios from 'axios';
 import FooterNav from '../../components/FooterNav.vue';
 
 export default {
-  name: "ChangePassword",
+  name: "CurrentPassword",
   components: {
     FooterNav,
   },
@@ -42,11 +42,12 @@ export default {
       code: this.$route.query.code,
     };
   },
+
   
   methods: {
     async checkCurrentPassword() {
       try {
-        const response = await axios.post('/member/login', {
+        const response = await axios.post('/member/login', { // api 제작 시 수정
           password: this.currentPassword
         });
 

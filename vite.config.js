@@ -10,6 +10,9 @@ export default defineConfig({
         target: 'http://localhost:8080/api',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''), // 여기를 수정
+    //     alias: {
+    //       '@': fileURLToPath(new URL('./src', import.meta.url)),
+    // }
       },
     },
     open: {
@@ -18,4 +21,6 @@ export default defineConfig({
       },
     },
   },
+
+
 });

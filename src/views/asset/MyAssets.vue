@@ -33,7 +33,8 @@
 
         <div class="account-list">
           <div v-for="(account, index) in accounts" :key="index" class="account-card">
-            <img :src="account.image" alt="입출금통장 아이콘" class="account-icon" />
+            <!-- img 자동 출력 : api로 받아온 은행에 따라 동적으로 출력 -->
+            <img :src="bankLogos[account.name]" alt="입출금통장 아이콘" class="account-icon" />
             <div class="account-info">
               <span class="transactions-title">{{ account.name }}</span>
               <span class="account-balance">{{ formatNumber(account.balance) }}원</span>
@@ -109,6 +110,15 @@
 import FooterNav from '../../components/FooterNav.vue';
 import apiClient from '../../api/axios.js';  // axios 클라이언트 불러오기
 import Header from '../../components/Header.vue';
+import kbbankLogo from "../../assets/images/kbbank.png";
+import shinhanLogo from "../../assets/images/shinhan.png";
+import kakaobankLogo from "../../assets/images/kakaobank.png";
+import hanabankLogo from "../../assets/images/hanabank.png";
+import ibkbankLogo from "../../assets/images/IBKbank.png";
+import wooriLogo from "../../assets/images/wooribank.png";
+import tossLogo from "../../assets/images/toss.png";
+import nhLogo from "../../assets/images/NHbank.png";
+import copyIcon from "../../assets/images/copy.png";
 
 export default {
   name: 'MyAssets',
@@ -125,6 +135,16 @@ export default {
       },
       creditCards: [],
       loanAmount: 480000000,
+      bankLogos: {
+        국민은행: kbbankLogo,
+        신한은행: shinhanLogo,
+        카카오뱅크: kakaobankLogo,
+        하나은행: hanabankLogo,
+        우리은행: wooriLogo,
+        IBK기업은행: ibkbankLogo,
+        토스은행: tossLogo,
+        농협은행: nhLogo,
+      },
     };
   },
   computed: {
@@ -140,6 +160,9 @@ export default {
   },
   
   methods: {
+    goToGroupPayPage() {
+      this.$router.push("/grouppay");
+    },
     formatNumber(num) {
       return num.toLocaleString();
     },
@@ -259,7 +282,8 @@ h1 {
 
 .transactions-title {
   font-size: 12px;
-  text-align: right; 
+  text-align: left;
+  font-weight: bold; 
 }
 
 .transactions-amount {

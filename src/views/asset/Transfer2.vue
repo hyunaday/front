@@ -50,6 +50,9 @@ export default {
     };
   },
   methods: {
+    goToGroupPayPage() {
+      this.$router.push("/grouppay");
+    },
     validateInput() {
       this.recipient = this.recipient.replace(/[^0-9]/g, '');
     },

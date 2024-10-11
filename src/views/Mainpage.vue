@@ -8,69 +8,41 @@
           <h4 class="mb-0">내 계좌</h4>
         </div>
         <div class="col-6">
-          <div
-            class="form-check form-switch d-flex justify-content-end align-items-center"
-          >
-            <label class="form-check-label me-2" for="amountSwitch"
-              >잔액 보기</label
-            >
-            <input
-              class="form-check-input"
-              type="checkbox"
-              id="amountSwitch"
-              v-model="showamount"
-            />
+          <div class="form-check form-switch d-flex justify-content-end align-items-center">
+            <label class="form-check-label me-2" for="amountSwitch">잔액 보기</label>
+            <input class="form-check-input" type="checkbox" id="amountSwitch" v-model="showamount" />
           </div>
         </div>
       </div>
 
       <!-- 계좌 정보 섹션 (Swiper 적용) -->
-      <div
-        v-if="accounts.length > 0"
-        class="account-section d-flex justify-content-center"
-      >
-        <swiper
-          :slides-per-view="1.2"
-          :centered-slides="true"
-          :space-between="10"
-          :pagination="{ clickable: true }"
-          :initial-slide="1"
-          @swiper="onSwiper"
-          @slideChange="onSlideChange"
-        >
+      <div v-if="accounts.length > 0" class="account-section d-flex justify-content-center">
+        <swiper :slides-per-view="1.2" :centered-slides="true" :space-between="10" :pagination="{ clickable: true }" :initial-slide="1" @swiper="onSwiper" @slideChange="onSlideChange">
           <!-- 계좌 카드 -->
           <swiper-slide v-for="account in accounts" :key="account.idx">
             <div class="account-card">
               <label>입출금통장</label>
               <label class="account-number">{{ account.accountNumber }}</label>
-              <img
-                :src="copyIcon"
-                class="copy-icon"
-                @click="copyAccountNumber(account.accountNumber)"
-              />
+              <img :src="copyIcon" class="copy-icon" @click="copyAccountNumber(account.accountNumber)" />
               <div class="account-name">
                 <img :src="bankLogos[account.bankName]" class="bank-icon" />
                 <label class="bank-name">{{ account.bankName }}</label>
                 <div class="amount-container" v-if="showamount">
-                  <label class="amount"
-                    >₩ {{ formatNumber(account.amount) }}</label
-                  >
+                  <label class="amount">₩ {{ formatNumber(account.amount) }}</label>
                 </div>
                 <div class="amount-container" v-else>
                   <label class="amount-hidden">잔액 숨김</label>
-                </div>
+                </div>  
               </div>
               <div class="account-button">
                 <div class="d-flex justify-content-between gap-4">
-                  <router-link to="/transactionhistory">
-                    <button class="btn btn-light check" type="button">
-                      조회
-                    </button>
+                  <!-- 각 계좌의 idx를 동적으로 전달 (2024.10.10 추가)-->
+                  <router-link :to="`/transactionhistory${account.idx}`">
+                    <button class="btn btn-light check" type="button">조회</button>
                   </router-link>
-                  <router-link to="/transfer">
-                    <button class="btn btn-light transfer" type="button">
-                      이체
-                    </button>
+                  <router-link :to="`/transfer${account.idx}`">
+                    <!-- <router-link :to="`/transfer`"> -->
+                    <button class="btn btn-light transfer" type="button">이체</button>
                   </router-link>
                 </div>
               </div>
@@ -84,32 +56,22 @@
 
       <!-- 함께 결제 섹션 -->
       <div class="together-pay">
-        <label
-          ><h6>정산은 그만! <strong>함께 결제</strong>해봐요</h6></label
-        >
+        <label><h6>정산은 그만! <strong>함께 결제</strong>해봐요</h6></label>
       </div>
       <div class="together-section d-flex justify-content-center">
-        <div
-          class="together-card d-flex justify-content-between align-items-center p-3"
-        >
+        <div class="together-card d-flex justify-content-between align-items-center p-3">
           <div class="text-content">
             <h6>결제 할때, 한번에 다같이</h6>
             <p>함께 결제</p>
             <button class="btn btn-light">사용방법 보러가기</button>
           </div>
-          <div
-            class="image-content d-flex justify-content-center align-items-center"
-          >
-            <img
-              src="../assets/images/humans.png"
-              class="human-image img-fluid"
-              alt="humans"
-            />
+          <div class="image-content d-flex justify-content-center align-items-center">
+            <img src="../assets/images/humans.png" class="human-image img-fluid" alt="humans" />
           </div>
         </div>
       </div>
     </div>
-    
+
     <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
   </div>
 </template>

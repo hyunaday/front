@@ -21,7 +21,6 @@ import AddBusinessCard from "../views/business/AddBusinessCard.vue";
 import MainPay from "../views/pay/MainPay.vue";
 import CurrentPassword from "../views/settings/CurrentPassword.vue";
 import Transfer from "../views/asset/Transfer.vue";
-import TransactionHistory from "../views/TransactionHistory.vue";
 import Loading from "../views/Loading.vue";
 import Phone from "../views/Phone.vue";
 import Verification from "../views/signup/Verification.vue";
@@ -50,6 +49,14 @@ import Agree_Loading from '../views/agreement/Agree_Loading.vue';
 import HeadCount from "../views/pay/HeadCount.vue";
 import Transfer2 from "../views/asset/Transfer2.vue";
 import Transfer3 from "../views/asset/Transfer3.vue";
+import Y from "vue-cal/dist/i18n/el.es.js";
+import TransactionHistory1 from "../views/asset/TransactionHistory1.vue";
+import TransactionHistory2 from "../views/asset/TransactionHistory2.vue";
+import TransactionHistory3 from "../views/asset/TransactionHistory3.vue";
+import TransactionHistory4 from "../views/asset/TransactionHistory4.vue";
+import TransactionHistory5 from "../views/asset/TransactionHistory5.vue";
+import TransactionHistory6 from "../views/asset/TransactionHistory6.vue";
+import TransactionHistory from "../views/asset/TransactionHistory.vue";
 
 
 const routes = [
@@ -240,10 +247,45 @@ const routes = [
     name: "Transfer3",
     component: Transfer3,
   },
+  // {
+  //   path: '/transfer2/:idx', // idx를 URL 매개변수로 설정
+  //   name: 'Transfer2',
+  //   component: () => import('../views/asset/Transfer2.vue')
+  // },
   {
     path: "/transactionhistory", // 거래내역조회 페이지
     name: "TransactionHistory",
     component: TransactionHistory,
+  },
+  {
+    path: "/transactionhistory1", // 거래내역조회 페이지1
+    name: "TransactionHistory1",
+    component: TransactionHistory1,
+  },
+  {
+    path: "/transactionhistory2", // 거래내역조회 페이지2
+    name: "TransactionHistory2",
+    component: TransactionHistory2,
+  },
+  {
+    path: "/transactionhistory3", // 거래내역조회 페이지3
+    name: "TransactionHistory3",
+    component: TransactionHistory3,
+  },
+  {
+    path: "/transactionhistory4", // 거래내역조회 페이지4
+    name: "TransactionHistory4",
+    component: TransactionHistory4,
+  },
+  {
+    path: "/transactionhistory5", // 거래내역조회 페이지5
+    name: "TransactionHistory5",
+    component: TransactionHistory5,
+  },
+  {
+    path: "/transactionhistory6", // 거래내역조회 페이지6
+    name: "TransactionHistory6",
+    component: TransactionHistory6,
   },
   {
     path: '/loading', // 로딩 페이지
