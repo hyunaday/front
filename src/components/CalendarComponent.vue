@@ -50,14 +50,14 @@
               <div class="day-number">{{ day.day }}</div>
               <div class="day-data">
                 <div v-if="day.day && day.data.income">
-                  수입:
+                  <!-- 수입: -->
                   <span class="income-amount"
                     >{{ day.data.income
                     }}<span style="color: black">원</span></span
                   >
                 </div>
                 <div v-if="day.day && day.data.expense">
-                  지출:
+                  <!-- 지출: -->
                   <span class="expense-amount"
                     >{{ day.data.expense
                     }}<span style="color: black">원</span></span
@@ -73,6 +73,8 @@
 </template>
 
 <script>
+import apiClient from "../api/axios.js";
+
 export default {
   data() {
     return {
@@ -113,6 +115,7 @@ export default {
   },
   mounted() {
     this.updateCalendar();
+    this.fetchTransactionData();
   },
   methods: {
     generateYears() {
@@ -123,6 +126,49 @@ export default {
       }
       return years;
     },
+
+    async fetchTransactionData() {
+      try {
+        const response = await apiClient.get(`/transaction?idx=2`);
+
+        // 응답 검증: `isSuccess`가 true이고 `result`가 존재할 때만 처리
+        if (response.data.isSuccess && response.data.result) {
+          const transaction = response.data.result;
+
+          // `transaction.time`이 존재하는지 확인
+          if (transaction.time) {
+            const dateKey = `${transaction.time[0]}-${String(
+              transaction.time[1]
+            ).padStart(2, "0")}-${String(transaction.time[2]).padStart(
+              2,
+              "0"
+            )}`;
+
+            if (!this.data[dateKey]) {
+              this.data[dateKey] = { income: 0, expense: 0 };
+            }
+
+            if (transaction.amount > 0) {
+              this.data[dateKey].income += transaction.amount;
+            } else {
+              this.data[dateKey].expense += Math.abs(transaction.amount);
+            }
+
+            this.updateCalendar();
+          } else {
+            console.error("Transaction time data is missing.");
+          }
+        } else {
+          console.error(
+            "API 응답 오류:",
+            response.data.message || "Invalid response format"
+          );
+        }
+      } catch (error) {
+        console.error("API 요청 중 오류 발생:", error);
+      }
+    },
+
     updateCalendar() {
       const year = this.selectedYear;
       const month = this.selectedMonth;
@@ -215,6 +261,7 @@ h1 {
 
 .income-amount {
   color: #6981d9; /* 수입 색상 */
+  /* font-size: 10px; */
 }
 
 table {
