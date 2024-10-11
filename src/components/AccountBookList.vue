@@ -1,289 +1,5 @@
-<template>
-  <div class="calendar-container">
-    <div class="calendar-header">
-      <div class="custom-select">
-        <select v-model="selectedYear" @change="updateCalendar">
-          <option v-for="year in years" :key="year" :value="year">
-            {{ year }}
-          </option>
-        </select>
-      </div>
-      <div class="custom-select">
-        <select v-model="selectedMonth" @change="updateCalendar">
-          <option v-for="(month, index) in months" :key="index" :value="index">
-            {{ month }}
-          </option>
-        </select>
-      </div>
-    </div>
-
-    <!-- 월별 토탈 지출금액과 수입금액을 추가 -->
-    <div class="monthly-summary">
-      <div class="expense">
-        지출 <span class="amount">{{ formatAmount(totalExpense) }}</span>
-      </div>
-      <div class="income">
-        수입 <span class="amount">{{ formatAmount(totalIncome) }}</span>
-      </div>
-    </div>
-
-    <!-- 검색창 추가 -->
-    <div class="search-bar">
-      <input
-        type="text"
-        v-model="searchQuery"
-        @keydown.enter="executeSearch"
-        placeholder="검색어를 입력하세요"
-        class="search-input"
-      />
-    </div>
-
-    <!-- 필터링 및 카테고리 선택 버튼을 왼쪽 아래에 고정 -->
-    <div class="filter-container">
-      <!-- 수입/지출 필터링 버튼 -->
-      <button
-        :class="{ active: selectedFilter === 'income' }"
-        @click="toggleFilter('income')"
-      >
-        수입
-      </button>
-      <button
-        :class="{ active: selectedFilter === 'expense' }"
-        @click="toggleFilter('expense')"
-      >
-        지출
-      </button>
-
-      <!-- 전체 카테고리 선택 -->
-      <select v-model="selectedCategory">
-        <option value="">전체</option>
-        <!-- 전체 카테고리 옵션 -->
-
-        <!-- 전체 카테고리 (필터가 설정되지 않았을 때) -->
-        <template v-if="!selectedFilter">
-          <option
-            v-for="category in allCategories"
-            :key="category"
-            :value="category"
-          >
-            {{ category }}
-          </option>
-        </template>
-
-        <!-- 수입 카테고리 (수입 필터가 설정된 경우) -->
-        <template v-if="selectedFilter === 'income'">
-          <option
-            v-for="category in incomeCategories"
-            :key="category"
-            :value="category"
-          >
-            {{ category }}
-          </option>
-        </template>
-
-        <<!-- 지출 카테고리 (지출 필터가 설정된 경우) -->
-        <template v-if="selectedFilter === 'expense'">
-          <option
-            v-for="category in expenseCategories"
-            :key="category"
-            :value="category"
-          >
-            {{ category }}
-          </option>
-        </template>
-      </select>
-      <!-- bottom-sheet -->
-      <div class="button-container">
-        <button
-          type="button"
-          onclick="document.getElementById('testBottomSheet').openSheet()"
-          class="plus-btn"
-        >
-          <i class="fa-solid fa-plus"></i>
-        </button>
-        <bottom-sheet id="testBottomSheet" title="세부 내역">
-          <main class="editable-sheet">
-            <div class="header">
-              <div class="store-name">{{ storeName }}</div>
-              <button class="close-btn" @click="closeBottomSheet">
-                <i class="fa-solid fa-xmark"></i>
-              </button>
-            </div>
-            <div class="price-section">
-              <input
-                v-if="isEditingPrice"
-                type="text"
-                v-model="editablePrice"
-                @blur="stopEditingPrice"
-                class="price-input"
-              />
-              <div v-else @click="startEditingPrice">
-                <span class="price">{{ formattedPrice }}</span>
-                <i class="fa-solid fa-pen edit-icon"></i>
-              </div>
-            </div>
-            <div class="description">인식 금액 {{ formattedFixedPrice }}</div>
-
-            <!-- 분류 버튼 (수입, 지출 등록) -->
-            <div class="category-container">
-              <span class="category-label">분류</span>
-              <div class="category-buttons">
-                <!-- 수입/지출 필터링 버튼 -->
-                <button
-                  :class="{ active: selectedFilter === 'income' }"
-                  @click="
-                    toggleFilter('income');
-                    setCategoryType('income');
-                  "
-                >
-                  수입
-                </button>
-                <button
-                  :class="{ active: selectedFilter === 'expense' }"
-                  @click="
-                    toggleFilter('expense');
-                    setCategoryType('expense');
-                  "
-                >
-                  지출
-                </button>
-              </div>
-            </div>
-
-            <!-- 구분선 추가 -->
-            <hr class="divider" />
-
-            <!-- 카테고리 -->
-            <div class="detail-row">
-              <span class="label">카테고리</span>
-              <!-- 수입 카테고리 선택 -->
-              <select
-                v-if="selectedFilter === 'income'"
-                v-model="selectedCategory"
-              >
-                <option disabled value="">카테고리를 선택하세요</option>
-                <option
-                  v-for="category in incomeCategories"
-                  :key="category"
-                  :value="category"
-                >
-                  {{ category }}
-                </option>
-              </select>
-
-              <!-- 지출 카테고리 선택 -->
-              <select
-                v-if="selectedFilter === 'expense'"
-                v-model="selectedCategory"
-              >
-                <option disabled value="">카테고리를 선택하세요</option>
-                <option
-                  v-for="category in expenseCategories"
-                  :key="category"
-                  :value="category"
-                >
-                  {{ category }}
-                </option>
-              </select>
-            </div>
-
-            <!-- 거래처 -->
-            <div class="detail-row">
-              <span class="label">거래처</span>
-              <input type="text" v-model="storeName" class="content" />
-            </div>
-
-            <!-- 결제 수단 -->
-            <div class="detail-row">
-              <span class="label">결제 수단</span>
-              <input type="text" v-model="paymentMethod" class="content" />
-            </div>
-
-            <!-- 날짜 -->
-            <div class="detail-row">
-              <span class="label">날짜</span>
-              <input type="date" v-model="transactionDate" class="content" />
-            </div>
-
-            <!-- 메모 -->
-            <div class="detail-row">
-              <span class="label">메모 · 태그</span>
-              <span class="content">
-                <textarea
-                  placeholder="입력하세요."
-                  v-model="memo"
-                  class="memo-input"
-                ></textarea>
-              </span>
-            </div>
-
-            <!-- 삭제 버튼과 다음 버튼 -->
-            <div class="button-row">
-              <button class="bottom-sheet-delete-btn">
-                <i class="fa-regular fa-trash-can"></i>
-              </button>
-              <button class="next-btn" @click="submitDetails">다음</button>
-            </div>
-          </main>
-        </bottom-sheet>
-      </div>
-    </div>
-
-    <!-- 날짜별 가계부 내역 표시 시작 -->
-    <div
-      v-for="(entryGroup, groupIndex) in filteredEntries"
-      :key="groupIndex"
-      class="entry-group"
-    >
-      <div class="entry-header">
-        <div class="date-section">
-          <div class="date">{{ entryGroup.date }}</div>
-          <div class="day">{{ entryGroup.day }}</div>
-          <div
-            class="total-amount"
-            :class="entryGroup.totalAmount < 0 ? 'negative' : 'positive'"
-          >
-            {{ formatAmount(entryGroup.totalAmount) }}
-          </div>
-        </div>
-      </div>
-
-      <div class="entry-details">
-        <div
-          v-for="(entry, entryIndex) in entryGroup.entries"
-          :key="entryIndex"
-          class="entry-item"
-        >
-          <!-- 거래처와 카테고리를 세로로 배치 -->
-          <div class="entry-info">
-            <div class="store-name">{{ entry.storeName }}</div>
-            <div class="category">{{ entry.category }}</div>
-          </div>
-
-          <!-- 세부 내용 및 금액 -->
-          <div>{{ entry.detail }}</div>
-          <div
-            class="amount"
-            :class="entry.amount < 0 ? 'negative' : 'positive'"
-          >
-            {{ formatAmount(entry.amount) }}
-          </div>
-
-          <!-- 삭제 버튼 -->
-          <button
-            @click="deleteEntry(groupIndex, entryIndex)"
-            class="delete-btn"
-          >
-            <i class="fa-regular fa-trash-can"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script>
-import apiClient from "../api/axios";
+import apiClient from "../api/axios"; // Adjust the path as necessary
 
 const months = [
   "January",
@@ -312,52 +28,45 @@ function generateYears() {
 export default {
   data() {
     return {
-      entries: [], // 초기값을 빈 배열로 설정
-
       selectedCategory: "",
       selectedFilter: null,
       incomeCategories: ["월급", "이자", "용돈"],
       expenseCategories: ["식비", "쇼핑", "교통", "문화", "주거/통신", "기타"],
       allCategories: [
-        "월급", "이자", "용돈", "식비", "쇼핑", "교통", "문화", "주거/통신", "기타"
+        "월급",
+        "이자",
+        "용돈",
+        "식비",
+        "쇼핑",
+        "교통",
+        "문화",
+        "주거/통신",
+        "기타",
       ],
+
       selectedYear: new Date().getFullYear(),
       selectedMonth: new Date().getMonth(),
       years: generateYears(),
       months,
       searchQuery: "",
-      totalExpense: 90000,
-      totalIncome: 1000000,
+      finalQuery: "",
+      totalExpense: 0,
+      totalIncome: 0,
       storeName: "",
-      fixedAmount: 0,
       editablePrice: 0,
       isEditingPrice: false,
       transactionDate: "",
       paymentMethod: "",
       memo: "",
+      entries: [], // Initialize as an empty array
     };
   },
 
+  mounted() {
+    this.fetchEntries();
+  },
+
   computed: {
-    filteredEntries() {
-      return this.entries
-        .filter((entryGroup) => {
-          return (
-            entryGroup.date.includes(this.selectedYear) &&
-            entryGroup.date.includes(this.selectedMonth + 1)
-          );
-        })
-        .map((entryGroup) => ({
-          ...entryGroup,
-          entries: entryGroup.entries.filter(
-            (entry) =>
-              (!this.selectedFilter ||
-                (this.selectedFilter === "income" && entry.amount > 0) ||
-                (this.selectedFilter === "expense" && entry.amount < 0)) &&
-              (!this.selectedCategory || entry.category === this.selectedCategory)
-          ),
-        }));
-    },
     totalExpense() {
       return this.filteredEntries.reduce((total, entryGroup) => {
         return (
@@ -378,35 +87,76 @@ export default {
         );
       }, 0);
     },
+    filteredEntries() {
+      return this.entries
+        .filter((entryGroup) => {
+          if (this.selectedFilter === "income") {
+            return entryGroup.entries.some((entry) => entry.amount > 0);
+          } else if (this.selectedFilter === "expense") {
+            return entryGroup.entries.some((entry) => entry.amount < 0);
+          }
+          return true;
+        })
+        .map((entryGroup) => {
+          const filteredEntries = entryGroup.entries.filter((entry) => {
+            const matchesFilter =
+              this.selectedFilter === "income"
+                ? entry.amount > 0
+                : this.selectedFilter === "expense"
+                ? entry.amount < 0
+                : true;
+            const matchesCategory =
+              !this.selectedCategory ||
+              entry.category === this.selectedCategory;
+            return matchesFilter && matchesCategory;
+          });
+          return { ...entryGroup, entries: filteredEntries };
+        })
+        .filter((entryGroup) => entryGroup.entries.length > 0)
+        .sort(
+          (a, b) =>
+            new Date(this.selectedYear, this.selectedMonth, a.date) -
+            new Date(this.selectedYear, this.selectedMonth, b.date)
+        );
+    },
+
+    formattedPrice() {
+      return `${this.editablePrice.toLocaleString()}원`;
+    },
   },
 
   methods: {
-    async fetchTransactions(idx) {
-    try {
-      const response = await apiClient.get(`/transaction?idx=${idx}`);
-      // API 응답 구조를 안전하게 확인하고 entries 설정
-      const transactions = response.data.result ? response.data.result.transactions : [];
-      this.entries = transactions.map(transaction => ({
-        amount: transaction.amount, // 거래 금액
-        memo: transaction.memo, // 메모
-        category: transaction.category // 카테고리
-      }));
-    } catch (error) {
-      console.error("트랜잭션을 가져오는 데 실패했습니다: TypeError: 정의되지 않은 속성에서 'map'을 읽을 수 없습니다.", error);
-    }
-  },
-    formatAmount(amount) {
-      return new Intl.NumberFormat("ko-KR", {
-        style: "currency",
-        currency: "KRW",
-      }).format(amount);
+    fetchEntries() {
+      apiClient.get('/transaction/history/all')
+        .then(response => {
+          // Assuming the response is an array of transactions
+          this.entries = response.data.map(transaction => {
+            const dateObj = new Date(
+              transaction.time[0],
+              transaction.time[1] - 1, // Month is zero-based
+              transaction.time[2]
+            );
+
+            return {
+              date: dateObj.getDate().toString(),
+              day: dateObj.toLocaleString("ko-KR", { weekday: "long" }),
+              totalAmount: transaction.amount,
+              entries: [{
+                category: transaction.category,
+                detail: transaction.memo,
+                amount: transaction.amount,
+                storeName: transaction.storeName || "기타", // If storeName is not provided, use "기타"
+                memo: transaction.memo,
+                paymentMethod: transaction.payMethod,
+              }],
+            };
+          });
+        })
+        .catch(error => {
+          console.error("Error fetching entries:", error);
+        });
     },
-    toggleFilter(filter) {
-      this.selectedFilter = this.selectedFilter === filter ? null : filter;
-    },
-    updateCalendar() {
-      this.fetchTransactions();
-    },
+    
     executeSearch() {
       this.finalQuery = this.searchQuery;
     },
@@ -416,16 +166,59 @@ export default {
     stopEditingPrice() {
       this.isEditingPrice = false;
     },
-    deleteEntry(groupIndex, entryIndex) {
-      this.entries[groupIndex].entries.splice(entryIndex, 1);
+    closeBottomSheet() {
+      document.getElementById("testBottomSheet").closeSheet();
     },
-  },
+    toggleFilter(filter) {
+      this.selectedFilter = this.selectedFilter === filter ? null : filter;
+      this.selectedCategory = ""; // Reset category when filter changes
+    },
+    setCategoryType(type) {
+      this.selectedFilter = type;
+    },
+    formatAmount(amount) {
+      return typeof amount === "number"
+        ? `${amount.toLocaleString("ko-KR")}원`
+        : "0원";
+    },
+    submitDetails() {
+      const newEntry = {
+        category: this.selectedCategory,
+        detail: this.memo,
+        amount:
+          this.selectedFilter === "expense"
+            ? -parseInt(this.editablePrice) || 0
+            : parseInt(this.editablePrice) || 0,
+        storeName: this.storeName,
+        date: new Date(this.transactionDate).getDate().toString(),
+        day: new Date(this.transactionDate).toLocaleString("ko-KR", {
+          weekday: "long",
+        }),
+        filter: this.selectedFilter,
+      };
 
-  mounted() {
-    this.fetchTransactions(1);
+      this.entries.push({
+        date: newEntry.date,
+        day: newEntry.day,
+        totalAmount: newEntry.amount,
+        entries: [newEntry],
+      });
+
+      this.closeBottomSheet();
+      this.resetForm();
+    },
+    resetForm() {
+      this.selectedCategory = null;
+      this.memo = "";
+      this.editablePrice = 0;
+      this.storeName = "";
+      this.transactionDate = "";
+      this.paymentMethod = "";
+    },
   },
 };
 </script>
+
 
 <style scoped>
 .calendar-container {

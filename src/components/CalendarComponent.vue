@@ -49,18 +49,17 @@
             <td v-for="day in week" :key="day.day" class="day-cell">
               <div class="day-number">{{ day.day }}</div>
               <div class="day-data">
+                <!-- 수입지출 -->
                 <div v-if="day.day && day.data.income">
-                  수입:
+                  <!-- 수입: -->
                   <span class="income-amount"
-                    >{{ day.data.income
-                    }}<span style="color: black">원</span></span
+                    >+{{ day.data.income.toLocaleString() }}</span
                   >
                 </div>
                 <div v-if="day.day && day.data.expense">
-                  지출:
+                  <!-- 지출: -->
                   <span class="expense-amount"
-                    >{{ day.data.expense
-                    }}<span style="color: black">원</span></span
+                    >-{{ day.data.expense.toLocaleString() }}</span
                   >
                 </div>
               </div>
@@ -73,6 +72,8 @@
 </template>
 
 <script>
+import apiClient from "../api/axios.js";
+
 export default {
   data() {
     return {
@@ -113,6 +114,7 @@ export default {
   },
   mounted() {
     this.updateCalendar();
+    this.fetchTransactionHistory();
   },
   methods: {
     generateYears() {
@@ -123,6 +125,44 @@ export default {
       }
       return years;
     },
+
+    async fetchTransactionHistory() {
+      try {
+        const response = await apiClient.get("/transaction/history/all");
+
+        if (response.data.isSuccess && response.data.result.transactionList) {
+          const transactions = response.data.result.transactionList;
+
+          // 데이터 가공
+          transactions.forEach((transaction) => {
+            const [year, month, day] = transaction.time; // 시간 정보 추출
+            const dateKey = `${year}-${String(month).padStart(2, "0")}-${String(
+              day
+            ).padStart(2, "0")}`;
+
+            if (!this.data[dateKey]) {
+              this.data[dateKey] = { income: 0, expense: 0 };
+            }
+
+            if (transaction.amount < 0) {
+              this.data[dateKey].income += Math.abs(transaction.amount); // 수입
+            } else {
+              this.data[dateKey].expense += transaction.amount; // 지출
+            }
+          });
+          // 캘린더 업데이트
+          this.updateCalendar();
+        } else {
+          console.error(
+            "API 응답 오류:",
+            response.data.message || "Invalid response format"
+          );
+        }
+      } catch (error) {
+        console.error("API 요청 중 오류 발생:", error);
+      }
+    },
+
     updateCalendar() {
       const year = this.selectedYear;
       const month = this.selectedMonth;
@@ -215,6 +255,7 @@ h1 {
 
 .income-amount {
   color: #6981d9; /* 수입 색상 */
+  /* font-size: 10px; */
 }
 
 table {
