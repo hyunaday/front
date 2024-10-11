@@ -47,7 +47,7 @@ export default {
   },
   data() {
     return {
-      amount: '', // 송금 금액
+      amount: 10000, // 송금 금액
       recipient: '김국민', // 받는 사람
       date: '', // 송금 날짜
       showConfirmModal: false, // 모달 표시 상태
