@@ -21,15 +21,13 @@
       <div class="financial-summary">
         <div class="expense">
           지출:
-          <span class="expense-amount"
-            >{{ totalExpense }} <span style="color: black">원</span></span
-          >
+          <span class="expense-amount">{{ totalExpense }}</span
+          ><span style="color: black"> 원</span>
         </div>
         <div class="income">
           수입:
-          <span class="income-amount"
-            >{{ totalIncome }} <span style="color: black">원</span></span
-          >
+          <span class="income-amount">{{ totalIncome }}</span
+          ><span style="color: black"> 원</span>
         </div>
       </div>
       <table>
@@ -257,6 +255,11 @@ h1 {
 
 .income-amount {
   color: #6981d9; /* 수입 색상 */
+}
+
+.expense-amount,
+.income-amount {
+  font-weight: bold;
 }
 
 table {
