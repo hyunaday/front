@@ -38,7 +38,7 @@
       <span class="account-balance">{{ formatNumber(account.balance) }}원</span>
     </div>
     <div class="button-container">
-      <router-link :to="`/transactionhistory/${account.idx}`">
+      <router-link :to="`/transactionhistory${account.idx}`">
         <button class="view-button">조회</button>
       </router-link>
       <router-link to="/transfer">
