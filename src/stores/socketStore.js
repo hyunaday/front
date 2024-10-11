@@ -57,14 +57,20 @@ export const useSocketStore = defineStore('socket', {
             'content-type':`application/json`,
             'MemberId': memberStore.memberId,
           }
-          this.stompClient.send(
-            `/pub/order/room/expire`,
-            headers,
-            JSON.stringify({
-              "orderIdx": orderInfoStore.orderIdx,
-              "memberId": memberStore.memberId,
-            })
-          );
+          try {
+            this.stompClient.send(
+              `/pub/order/room/close`,
+              headers,
+              JSON.stringify({
+                "orderIdx": orderInfoStore.orderIdx,
+                "memberId": memberStore.memberId,
+              })
+            );
+          }
+          catch (error) {
+            console.error('메시지 전송 실패:', error);
+            alert('방을 닫는 중 오류가 발생했습니다.');
+          }
         }
         this.stompClient.disconnect(() => {
           console.log('소켓 연결 해제');
