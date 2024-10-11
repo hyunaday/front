@@ -230,26 +230,59 @@
     </div>
 
     <!-- 날짜별 가계부 내역 표시 시작 -->
-    <div class="transaction-history">
-      <div
-        v-for="(transaction, index) in transactions"
-        :key="index"
-        class="transaction-item"
-      >
-        <div class="transaction-time">{{ formatTime(transaction.time) }}</div>
-        <div class="transaction-amount">
-          {{ formatAmount(transaction.amount) }}
+    <div
+      v-for="(entryGroup, groupIndex) in filteredEntries"
+      :key="groupIndex"
+      class="entry-group"
+    >
+      <div class="entry-header">
+        <div class="date-section">
+          <div class="date">{{ entryGroup.date }}</div>
+          <div class="day">{{ entryGroup.day }}</div>
+          <div
+            class="total-amount"
+            :class="entryGroup.totalAmount < 0 ? 'negative' : 'positive'"
+          >
+            {{ formatAmount(entryGroup.totalAmount) }}
+          </div>
         </div>
-        <div class="transaction-memo">{{ transaction.memo }}</div>
-        <div class="transaction-category">{{ transaction.category }}</div>
+      </div>
+
+      <div class="entry-details">
+        <div
+          v-for="(entry, entryIndex) in entryGroup.entries"
+          :key="entryIndex"
+          class="entry-item"
+        >
+          <!-- 거래처와 카테고리를 세로로 배치 -->
+          <div class="entry-info">
+            <div class="store-name">{{ entry.storeName }}</div>
+            <div class="category">{{ entry.category }}</div>
+          </div>
+
+          <!-- 세부 내용 및 금액 -->
+          <div>{{ entry.detail }}</div>
+          <div
+            class="amount"
+            :class="entry.amount < 0 ? 'negative' : 'positive'"
+          >
+            {{ formatAmount(entry.amount) }}
+          </div>
+
+          <!-- 삭제 버튼 -->
+          <button
+            @click="deleteEntry(groupIndex, entryIndex)"
+            class="delete-btn"
+          >
+            <i class="fa-regular fa-trash-can"></i>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import apiClient from "../api/axios.js";
-
 const months = [
   "January",
   "February",
@@ -277,7 +310,6 @@ function generateYears() {
 export default {
   data() {
     return {
-      transactions: [],
       // 카테고리 선택 상태
       selectedCategory: "",
       selectedFilter: null, // 수입, 지출 필터링 상태
@@ -456,63 +488,47 @@ export default {
       this.selectedFilter = filter;
       this.selectedCategory = ""; // 필터 변경 시 카테고리 초기화
     },
-    async fetchTransactions() {
-      try {
-        const response = await apiClient.get("/transaction/history/all");
-        if (response.data.isSuccess) {
-          this.transactions = response.data.result.transactionList;
-        }
-      } catch (error) {
-        console.error("Failed to fetch transaction history:", error);
-      }
-    },
-    formatTime(time) {
-      // 시간 데이터를 형식에 맞게 변환 (예: YYYY-MM-DD HH:mm)
-      const [year, month, day, hour, minute, second] = time;
-      return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(
-        2,
-        "0"
-      )} ${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
-    },
     formatAmount(amount) {
-      return `${amount.toLocaleString()}원`;
+      return typeof amount === "number"
+        ? `${amount.toLocaleString("ko-KR")}원`
+        : "0원";
     },
-  },
-  submitDetails() {
-    const newEntry = {
-      category: this.selectedCategory,
-      detail: this.memo,
-      amount:
-        this.selectedFilter === "expense"
-          ? -parseInt(this.editablePrice) || 0
-          : parseInt(this.editablePrice) || 0, // 지출이면 음수로 적용
-      storeName: this.storeName,
-      date: new Date(this.transactionDate).getDate().toString(),
-      day: new Date(this.transactionDate).toLocaleString("ko-KR", {
-        weekday: "long",
-      }),
-      filter: this.selectedFilter, // 수입 또는 지출 필터 값 저장
-    };
+    submitDetails() {
+      const newEntry = {
+        category: this.selectedCategory,
+        detail: this.memo,
+        amount:
+          this.selectedFilter === "expense"
+            ? -parseInt(this.editablePrice) || 0
+            : parseInt(this.editablePrice) || 0, // 지출이면 음수로 적용
+        storeName: this.storeName,
+        date: new Date(this.transactionDate).getDate().toString(),
+        day: new Date(this.transactionDate).toLocaleString("ko-KR", {
+          weekday: "long",
+        }),
+        filter: this.selectedFilter, // 수입 또는 지출 필터 값 저장
+      };
 
-    // entries 배열에 새로운 내역을 추가
-    this.entries.push({
-      date: newEntry.date,
-      day: newEntry.day,
-      totalAmount: newEntry.amount,
-      entries: [newEntry],
-    });
+      // entries 배열에 새로운 내역을 추가
+      this.entries.push({
+        date: newEntry.date,
+        day: newEntry.day,
+        totalAmount: newEntry.amount,
+        entries: [newEntry],
+      });
 
-    // 바텀시트 닫고 폼 초기화
-    this.closeBottomSheet();
-    this.resetForm(); // 폼 초기화
-  },
-  resetForm() {
-    this.selectedCategory = null;
-    this.memo = "";
-    this.editablePrice = 0;
-    this.storeName = "";
-    this.transactionDate = "";
-    this.paymentMethod = "";
+      // 바텀시트 닫고 폼 초기화
+      this.closeBottomSheet();
+      this.resetForm(); // 폼 초기화
+    },
+    resetForm() {
+      this.selectedCategory = null;
+      this.memo = "";
+      this.editablePrice = 0;
+      this.storeName = "";
+      this.transactionDate = "";
+      this.paymentMethod = "";
+    },
   },
 };
 </script>
