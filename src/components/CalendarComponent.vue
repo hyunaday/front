@@ -46,21 +46,22 @@
         </thead>
         <tbody>
           <tr v-for="week in calendar" :key="week">
-            <td v-for="day in week" :key="day.day" class="day-cell">
-              <div class="day-number">{{ day.day }}</div>
-              <div class="day-data">
-                <!-- 수입지출 -->
-                <div v-if="day.day && day.data.income">
-                  <!-- 수입: -->
-                  <span class="income-amount"
-                    >+{{ day.data.income.toLocaleString() }}</span
-                  >
-                </div>
-                <div v-if="day.day && day.data.expense">
-                  <!-- 지출: -->
-                  <span class="expense-amount"
-                    >-{{ day.data.expense.toLocaleString() }}</span
-                  >
+            <td v-for="day in week" :key="day.day">
+              <div class="day-cell-wrapper">
+                <div class="day-cell">
+                  <div class="day-number">{{ day.day }}</div>
+                  <div class="day-data">
+                    <div v-if="day.day && day.data.income">
+                      <span class="income-amount"
+                        >+{{ day.data.income.toLocaleString() }}</span
+                      >
+                    </div>
+                    <div v-if="day.day && day.data.expense">
+                      <span class="expense-amount"
+                        >-{{ day.data.expense.toLocaleString() }}</span
+                      >
+                    </div>
+                  </div>
                 </div>
               </div>
             </td>
@@ -256,7 +257,6 @@ h1 {
 
 .income-amount {
   color: #6981d9; /* 수입 색상 */
-  /* font-size: 10px; */
 }
 
 table {
@@ -294,14 +294,22 @@ thead tr {
   height: 60px;
 }
 
+.day-cell-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .day-number {
   font-weight: bold;
   color: #444;
 }
 
 .day-data {
-  font-size: 0.8rem;
+  align-items: center;
+  font-size: 9px;
   margin-top: 5px;
   color: #666;
+  font-weight: bold;
 }
 </style>
