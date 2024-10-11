@@ -27,8 +27,8 @@
 import QRCode from 'qrcode.vue';
 import { useOrderStore } from '../stores/orderStore.js';
 import apiClient from '../../src/api/axios.js';
-import { onMounted, ref, onUnmounted } from 'vue';
-import { Stomp } from '@stomp/stompjs';
+import { onMounted, onUnmounted, ref } from 'vue';
+import { useSocketStore } from '../stores/socketStore.js';
 
 export default {
   components: {
@@ -36,8 +36,8 @@ export default {
   },
   setup() {
     const orderStore = useOrderStore();
+    const socketStore = useSocketStore();
     const shareableLink = ref('');
-    const stompClient = ref(null);
 
     const createRoom = async () => {
       try {
@@ -46,41 +46,13 @@ export default {
           maxMemberCnt: orderStore.maxMemberCnt,
           type: orderStore.type,
         });
-        shareableLink.value = `https://example.com/join/${response.data.result.idx}`;
+        shareableLink.value = `${response.data.result.idx}`;
         console.log('방 생성 성공:', response.data);
 
         // 방이 생성된 후 소켓 연결 시작
-        connectSocket();
+        socketStore.connect();
       } catch (error) {
         console.error('방 생성 실패:', error);
-      }
-    };
-
-    const connectSocket = () => {
-      stompClient.value = Stomp.client('ws://34.64.141.174:8080/ws'); // 소켓 주소 설정
-
-      // 헤더 설정
-      const headers = {
-        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-      };
-
-      stompClient.value.connect(headers, () => {
-        console.log('소켓 연결 성공');
-        
-        // 필요한 경로 구독 설정
-        stompClient.value.subscribe('/topic/your_topic_here', (message) => {
-          console.log('받은 메시지:', message.body);
-        });
-      }, (error) => {
-        console.error('소켓 연결 실패:', error);
-      });
-    };
-
-    const disconnectSocket = () => {
-      if (stompClient.value !== null && stompClient.value.connected) {
-        stompClient.value.disconnect(() => {
-          console.log('소켓 연결 해제');
-        });
       }
     };
 
@@ -89,7 +61,7 @@ export default {
     });
 
     onUnmounted(() => {
-      disconnectSocket();
+      socketStore.disconnect();
     });
 
     return {

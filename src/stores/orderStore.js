@@ -4,8 +4,8 @@ import { defineStore } from 'pinia';
 export const useOrderStore = defineStore('order', {
   state: () => ({
     orderIdx: 1,
-    maxMemberCnt: 1,
-    type: null,
+    maxMemberCnt: 2,
+    type: "BY_MENU",
   }),
   actions: {
     setOrderIdx(orderIdx) {
