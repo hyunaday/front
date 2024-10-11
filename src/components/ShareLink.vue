@@ -26,9 +26,11 @@
 <script>
 import QRCode from 'qrcode.vue';
 import { useOrderStore } from '../stores/orderStore.js';
+import { usePriceStore } from '../stores/orderStore.js';
 import apiClient from '../../src/api/axios.js';
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { useSocketStore } from '../stores/socketStore.js';
+import { useRouter } from 'vue-router'; // vue-router 사용
 
 export default {
   components: {
@@ -38,7 +40,10 @@ export default {
     const orderStore = useOrderStore();
     const socketStore = useSocketStore();
     const shareableLink = ref('');
+    const router = useRouter(); // router 사용 선언
+    const priceStore = usePriceStore();
 
+    // 방 생성 함수
     const createRoom = async () => {
       try {
         const response = await apiClient.post('/order/room/create', {
@@ -56,21 +61,45 @@ export default {
       }
     };
 
+    // MENU_INFO 메시지를 감시하고 도착 시 페이지 이동
+    watch(
+      () => socketStore.messages,
+      (newMessages) => {
+        const lastMessage = newMessages[newMessages.length - 1];
+        const parsedMessage = JSON.parse(lastMessage);
+
+        // MENU_INFO 타입 메시지가 도착하면 페이지 이동
+        if (parsedMessage.type === 'MENU_INFO' && orderStore.type === "BY_MENU") {
+          console.log('MENU_INFO 메시지 도착:', parsedMessage);
+          alert('MENU_INFO 수신 완료. 다음 페이지로 이동합니다.');
+          router.push('/gamelist'); // 페이지 이동 (소켓 연결 유지)
+        } else if (parsedMessage.type === 'PARTICIPANT_INFO' && orderStore.type === "BY_PRICE") {
+          console.log('PARTICIPANT_INFO 메시지 도착:', parsedMessage);
+          
+          priceStore.setPriceData(parsedMessage);
+          router.push('/requestPay')
+        }
+      },
+      { deep: true }
+    );
+
+    // 컴포넌트가 마운트되면 방 생성
     onMounted(() => {
       createRoom();
     });
 
+    // 컴포넌트가 언마운트되면 소켓 연결 해제 (소켓을 유지하려면 이 부분은 삭제해도 됨)
     onUnmounted(() => {
-      socketStore.disconnect();
+      // socketStore.disconnect(); // 소켓 연결을 해제하지 않음
     });
 
     return {
       shareableLink,
       goBack() {
-        this.$router.go(-1);
+        router.go(-1); // router 사용하여 뒤로가기 처리
       },
       goToNext() {
-        this.$router.push('/gamelist');
+        router.push('/gamelist');
       },
       shareLink() {
         navigator.clipboard

@@ -1,5 +1,6 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 import "./style.css";
 import App from "./App.vue";
 // Bootstrap
@@ -22,6 +23,7 @@ const app = createApp(App);
 
 // Pinia 설정
 const pinia = createPinia();
+pinia.use(piniaPluginPersistedstate);
 app.use(pinia);
 
 // Vue Router 설정 추가

@@ -9,12 +9,10 @@
       </div>
 
       <div class="merchant-info">
-        <h3 class="merchant-name">{{ merchantName }} 에서</h3>
+        <h3 class="merchant-name">{{ orderInfo.marketName }} 에서</h3>
         <h4 class="payment-amount">
           총
-          <span style="color: #6981d9">{{
-            paymentAmount.toLocaleString()
-          }}</span>
+          <span style="color: #6981d9">{{ orderInfo.totalPrice.toLocaleString() }}</span>
           원
         </h4>
         <p class="payment-question">
@@ -25,15 +23,11 @@
       <hr class="divider" />
 
       <div class="payment-details">
-        <div
-          v-for="(item, index) in paymentItems"
-          :key="index"
-          class="payment-item"
-        >
+        <div v-for="(item, index) in orderInfo.orderMenuList" :key="index" class="payment-item">
           <img :src="item.image" alt="메뉴 이미지" class="item-image" />
           <div class="item-info">
-            <span class="item-name">{{ item.name }}</span>
-            <span class="item-price">{{ item.price.toLocaleString() }}원</span>
+            <span class="item-name">{{ item.menuName }}</span>
+            <span class="item-price">{{ (item.price * item.amount).toLocaleString() }}원</span>
           </div>
         </div>
       </div>
@@ -51,35 +45,42 @@
 </template>
 
 <script>
-import { useOrderStore } from "../../stores/orderStore";
-import hamburgerImage from "../../assets/images/hamburger.png";
-import sodaImage from "../../assets/images/soda.png";
+import { useOrderInfoStore } from "../../stores/orderStore.js"; // orderInfoStore 가져오기
+import { useOrderStore } from "../../stores/orderStore.js"; // orderStore 가져오기
+import { onMounted } from 'vue'; // onMounted 사용
+import { useRouter } from 'vue-router'; // vue-router 사용
 
 export default {
-  data() {
-    return {
-      merchantName: "KFC 군자능동점",
-      paymentAmount: 95600,
-      paymentItems: [
-        { name: "정크버거 세트", price: 12000, image: hamburgerImage },
-        { name: "스파이시 치킨 버거", price: 9900, image: hamburgerImage },
-        { name: "타워 버거 세트", price: 20000, image: hamburgerImage },
-        { name: "정크버거", price: 8200, image: hamburgerImage },
-        { name: "텟지버거 3개", price: 27000, image: hamburgerImage },
-        { name: "제로 콜라 5개", price: 10000, image: sodaImage },
-      ],
-    };
-  },
-  methods: {
-    goBack() {
-      this.$router.go(-1);
-    },
-    goToShareLink(type) {
-      const orderStore = useOrderStore();
-      orderStore.setType(type === "amount" ? "BY_PRICE" : "BY_MENU");
+  setup() {
+    const orderInfoStore = useOrderInfoStore(); // Pinia의 orderInfoStore 사용
+    const orderStore = useOrderStore(); // Pinia의 orderStore 사용
+    const router = useRouter(); // router 사용 선언
 
-      this.$router.push("/sharelink");
-    },
+    // API로부터 주문 정보를 가져오는 함수
+    const fetchOrderInfo = async () => {
+      await orderInfoStore.getOrderInfo(1, 1); // orderIdx, marketIdx를 사용하여 API 요청
+    };
+
+    // 금액별 또는 메뉴별 나누기 처리
+    const goToShareLink = (type) => {
+      orderStore.setType(type === "amount" ? "BY_PRICE" : "BY_MENU");
+      router.push("/sharelink");
+    };
+
+    const goBack = () => {
+      router.go(-1);
+    };
+
+    // 컴포넌트가 마운트될 때 API 호출
+    onMounted(() => {
+      fetchOrderInfo();
+    });
+
+    return {
+      orderInfo: orderInfoStore, // orderInfoStore의 상태를 템플릿에서 사용 가능하도록 설정
+      goToShareLink,
+      goBack
+    };
   },
 };
 </script>
