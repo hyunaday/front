@@ -47,6 +47,7 @@ import Agree4 from '../views/agreement/Agree4.vue';
 import Agree5 from '../views/agreement/Agree5.vue';
 import Agree6 from '../views/agreement/Agree6.vue';
 import Agree_Loading from '../views/agreement/Agree_Loading.vue';
+import HeadCount from "../views/pay/HeadCount.vue";
 
 const routes = [
   {
@@ -295,6 +296,11 @@ const routes = [
     path: '/agree_loading',
     name: 'Agree_Loading',
     component: Agree_Loading,
+  },
+  {
+    path: '/headcount',
+    name: 'HeadCount',
+    component: HeadCount,
   },
 ];
 
