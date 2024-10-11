@@ -69,7 +69,6 @@
 import FooterNav from '../../components/FooterNav.vue';
 import Header from '../../components/Header.vue';
 import apiClient from '../../api/axios';
-import { useAccountStore } from '../../stores/accountStore';
 
 export default {
   name: 'Transfer',
@@ -94,6 +93,35 @@ export default {
     },
 
     async fetchTransactions() {
+      // 더미 거래 내역
+      const dummyTransactions = [
+        {
+          idx: 1,
+          name: '홍길동',
+          accountNumber: '000-00-0000-000',
+          createdAt: new Date().toISOString(),
+        },
+        {
+          idx: 2,
+          name: '김철수',
+          accountNumber: '111-11-1111-111',
+          createdAt: new Date().toISOString(),
+        },
+        {
+          idx: 3,
+          name: '이영희',
+          accountNumber: '222-22-2222-222',
+          createdAt: new Date().toISOString(),
+        },
+      ];
+
+      // 더미 데이터 설정
+      this.recentTransactions = dummyTransactions.map(transaction => ({
+        name: transaction.name,
+        accountNumber: transaction.accountNumber,
+        createdAt: new Date(transaction.createdAt).toLocaleString(),
+      }));
+
       try {
         const response = await apiClient.get(`/account/history?accountIdx=${this.accountIdx}`);
         
@@ -105,11 +133,11 @@ export default {
           }));
         } else {
           console.error("거래 내역을 불러오지 못했습니다:", response.data.message);
-          this.recentTransactions = [];
+          // 더미 데이터가 있으므로 그대로 사용
         }
       } catch (error) {
         console.error("거래 내역을 불러오는 중 오류가 발생했습니다:", error);
-        this.recentTransactions = [];
+        // API 호출 실패 시에도 더미 데이터가 보이게 설정
       }
     },
     copyAccountNumber(accountNumber) {
