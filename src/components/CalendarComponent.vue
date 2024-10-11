@@ -49,18 +49,17 @@
             <td v-for="day in week" :key="day.day" class="day-cell">
               <div class="day-number">{{ day.day }}</div>
               <div class="day-data">
+                <!-- 수입지출 -->
                 <div v-if="day.day && day.data.income">
                   <!-- 수입: -->
                   <span class="income-amount"
-                    >{{ day.data.income
-                    }}<span style="color: black">원</span></span
+                    >+{{ day.data.income.toLocaleString() }}</span
                   >
                 </div>
                 <div v-if="day.day && day.data.expense">
                   <!-- 지출: -->
                   <span class="expense-amount"
-                    >{{ day.data.expense
-                    }}<span style="color: black">원</span></span
+                    >-{{ day.data.expense.toLocaleString() }}</span
                   >
                 </div>
               </div>
