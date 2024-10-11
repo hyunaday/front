@@ -11,13 +11,12 @@
 
       <div class="advertisement-banner">
         <div class="banner-content">
-  <img src="../../assets/images/kbpay.png" alt="광고 배너" class="banner-image" />
-  <div class="banner-text">
-    <p class="banner-title">KB Pay</p>
-    <p class="banner-subtitle">편리한 국민 생활 파트너</p>
-  </div>
-</div>
-
+          <img src="../../assets/images/kbpay.png" alt="광고 배너" class="banner-image" />
+          <div class="banner-text">
+            <p class="banner-title">KB Pay</p>
+            <p class="banner-subtitle">편리한 국민 생활 파트너</p>
+          </div>
+        </div>
       </div>
 
       <div class="account">
@@ -32,8 +31,25 @@
         </div>
 
         <div class="account-list">
+  <div v-for="(account, index) in accounts" :key="index" class="account-card">
+    <img :src="bankLogos[account.name]" alt="입출금통장 아이콘" class="account-icon" />
+    <div class="account-info">
+      <span class="transactions-title">{{ account.name }}</span>
+      <span class="account-balance">{{ formatNumber(account.balance) }}원</span>
+    </div>
+    <div class="button-container">
+      <router-link :to="`/transactionhistory${account.idx}`">
+        <button class="view-button">조회</button>
+      </router-link>
+      <router-link to="/transfer">
+        <button class="transfer-button">송금</button>
+      </router-link>
+    </div>
+  </div>
+</div>
+<!-- 
+        <div class="account-list">
           <div v-for="(account, index) in accounts" :key="index" class="account-card">
-            <!-- img 자동 출력 : api로 받아온 은행에 따라 동적으로 출력 -->
             <img :src="bankLogos[account.name]" alt="입출금통장 아이콘" class="account-icon" />
             <div class="account-info">
               <span class="transactions-title">{{ account.name }}</span>
@@ -45,7 +61,7 @@
               </router-link>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
 
       <div class="savings-section">
@@ -54,15 +70,8 @@
           <span class="transactions-amount">{{ formatNumber(savingsAccount.balance) }}원</span>
         </div>
 
-        <div class="account-list">
-          <div class="account-card">
-            <img src="../../assets/images/kbbank.png" alt="적금 아이콘" class="account-icon" />
-            <div class="account-info">
-              <span class="transactions-title">KB국민프리미엄적금</span>
-              <span class="account-balance">{{ formatNumber(savingsAccount.balance) }}원</span>
-            </div>
-          </div>
-        </div>
+
+
       </div>
 
       <hr>
@@ -77,7 +86,7 @@
         </div>
         <div class="account-list">
           <div v-for="(creditCard, index) in creditCards" :key="index" class="account-card">
-            <img :src="creditCard.image" alt="신용카드 아이콘" class="account-icon" />
+            <img :src="cardLogos[creditCard.name]" alt="신용카드 아이콘" class="card-icon" />
             <div class="account-info">
               <span class="transactions-title">{{ creditCard.name }}</span>
               <span class="account-balance credit-card-balance">{{ formatNumber(creditCard.amount_sum) }}원</span>
@@ -118,7 +127,16 @@ import ibkbankLogo from "../../assets/images/IBKbank.png";
 import wooriLogo from "../../assets/images/wooribank.png";
 import tossLogo from "../../assets/images/toss.png";
 import nhLogo from "../../assets/images/NHbank.png";
-import copyIcon from "../../assets/images/copy.png";
+import kbCardLogo from "../../assets/images/kbcard.png";
+import shinhanCardLogo from "../../assets/images/shinhancard.png";
+import hanaCardLogo from "../../assets/images/hanacard.png";
+import kakaoCardLogo from "../../assets/images/kakaocard.png";
+import wooriCardLogo from "../../assets/images/wooricard.png";
+import lotteCardLogo from "../../assets/images/lottecard.png"
+import samsungCardLogo from "../../assets/images/samsungcard.png"
+import hyundaiCardLogo from "../../assets/images/hyundaicard.png"
+
+
 
 export default {
   name: 'MyAssets',
@@ -144,6 +162,17 @@ export default {
         IBK기업은행: ibkbankLogo,
         토스은행: tossLogo,
         농협은행: nhLogo,
+      },
+      cardLogos: {
+        'KB 국민카드': kbCardLogo, 
+        우리카드: wooriCardLogo,
+        신한카드: shinhanCardLogo,
+        '카카오뱅크 카드': kakaoCardLogo,
+        하나카드: hanaCardLogo,
+        롯데카드: lotteCardLogo,
+        삼성카드: samsungCardLogo,
+        현대카드: hyundaiCardLogo,
+
       },
     };
   },
@@ -174,6 +203,7 @@ export default {
           this.accounts = response.data.result.accountList.map(account => ({
             name: account.bankName,
             balance: account.amount,
+            idx: account.idx, // idx 값 추가
             image: '../src/assets/images/default-account.png',
           }));
         } else {
@@ -209,7 +239,31 @@ export default {
 };
 </script>
 
+
 <style scoped>
+.button-container {
+  display: flex;
+  align-items: center;
+  margin-left: auto; /* 버튼을 오른쪽으로 정렬 */
+}
+
+.view-button {
+  background-color: #d9d9d9;
+  color: black;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 12px;
+  margin-right: 10px; /* 송금 버튼과의 간격 */
+}
+
+.card-icon {
+  width: 70px; /* 카드 아이콘 너비 */
+  height: 40px; /* 카드 아이콘 높이 */
+  object-fit: cover; /* 이미지를 비율에 맞춰서 자름 */
+  border-radius: 5px; /* 카드 아이콘 테두리 둥글게 */
+  margin-right: 10px; /* 카드 아이콘과 텍스트 사이 여백 */
+}
 .my-assets {
   margin-top: 70px;
   padding: 20px;

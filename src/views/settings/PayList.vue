@@ -2,7 +2,9 @@
   <div class="main-container">
     <Header />
     <div>
-      <h1 class="title">함께 결제 내역 조회</h1>
+      <h1 class="title"><button @click="goBack" class="back-button">
+          <i class="fas fa-chevron-left"></i>
+        </button>함께 결제 내역 조회</h1>
       <div class="container">
         <div class="transaction-details">
           <img :src="imageSrc" alt="Bank Logo" class="bank-logo" />
@@ -83,6 +85,9 @@ export default {
     },
   },
   methods: {
+    goBack() {
+      this.$router.go(-1);
+    },
     async fetchTransactions() {
       try {
         const response = await apiClient.get('/pay/together'); // API에서 계좌 데이터 가져오기
@@ -141,6 +146,16 @@ export default {
   font-size: 16px;
   font-weight: bold;
   margin: 20px 0;
+}
+
+.back-button {
+  position: absolute;
+  left: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #000;
 }
 
 .container {

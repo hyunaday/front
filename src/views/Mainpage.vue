@@ -46,7 +46,8 @@
                   <router-link :to="`/transactionhistory${account.idx}`">
                     <button class="btn btn-light check" type="button">조회</button>
                   </router-link>
-                  <router-link :to="`/transfer${account.idx}`">
+                  <!-- <router-link :to="`/transfer${account.idx}`"> -->
+                    <router-link :to="`/transfer`">
                     <button class="btn btn-light transfer" type="button">이체</button>
                   </router-link>
                 </div>
@@ -120,6 +121,7 @@ import wooriLogo from "../assets/images/wooribank.png";
 import tossLogo from "../assets/images/toss.png";
 import nhLogo from "../assets/images/NHbank.png";
 import copyIcon from "../assets/images/copy.png";
+import { useMemberStore } from '../stores/memberStore.js'
 
 export default {
   name: "MainPage",

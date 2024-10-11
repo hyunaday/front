@@ -1,9 +1,13 @@
 <template>
   <div class="main-container">
     <Header />
+    
     <div class="transfer-page">
+      <!-- <button @click="goBack" class="back-button">
+          <i class="fas fa-chevron-left"></i>
+        </button> -->
       <div class="transfer-form">
-        <label for="recipient">
+        <label for="recipient"> 
           <span class="point">누구</span>에게<br /> 보내겠습니까?
         </label>
         <input
@@ -23,16 +27,14 @@
             v-model="message"
             placeholder="받는 분에게 표시될 내용"
           />
-          <router-link to="/transfer2">
-            <button 
-              type="button" 
-              class="stroke-button" 
-              @click="sendMoney" 
-              v-if="recipient.length >= 11"
-            >
-              송금하기
-            </button>
-          </router-link>
+          <button 
+            type="button" 
+            class="stroke-button" 
+            @click="sendMoney" 
+            v-if="recipient.length >= 11"
+          >
+            송금하기
+          </button>
         </div>
       </div>
 
@@ -61,6 +63,7 @@
         <p v-else class="no-transactions">최근 거래 내역이 없습니다.</p>
       </div>
     </div>
+
     <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
   </div>
 </template>
@@ -68,8 +71,6 @@
 <script>
 import FooterNav from '../../components/FooterNav.vue';
 import Header from '../../components/Header.vue';
-import apiClient from '../../api/axios';
-import { useAccountStore } from '../../stores/accountStore';
 
 export default {
   name: 'Transfer',
@@ -82,10 +83,12 @@ export default {
       recipient: '',
       message: '',
       recentTransactions: [],
-      accountIdx: 1,
     };
   },
   methods: {
+    goBack() {
+      this.$router.go(-1);
+    },
     validateInput() {
       this.recipient = this.recipient.replace(/[^0-9]/g, '').slice(0, 13);
     },
@@ -93,34 +96,49 @@ export default {
       this.$router.push("/grouppay");
     },
 
-    async fetchTransactions() {
-      try {
-        const response = await apiClient.get(`/account/history?accountIdx=${this.accountIdx}`);
-        
-        if (response.data.isSuccess && response.data.result.success) {
-          this.recentTransactions = response.data.result.accountHistoryList.map(transaction => ({
-            name: transaction.name,
-            accountNumber: transaction.accountNumber,
-            createdAt: new Date(transaction.createdAt).toLocaleString(),
-          }));
-        } else {
-          console.error("거래 내역을 불러오지 못했습니다:", response.data.message);
-          this.recentTransactions = [];
-        }
-      } catch (error) {
-        console.error("거래 내역을 불러오는 중 오류가 발생했습니다:", error);
-        this.recentTransactions = [];
-      }
+    // 더미 거래 내역을 fetch하는 메서드
+    fetchTransactions() {
+      // 더미 거래 내역
+      const dummyTransactions = [
+        {
+          idx: 1,
+          name: '홍길동',
+          accountNumber: '123-456-789012',
+          createdAt: new Date().toLocaleString(),
+        },
+        {
+          idx: 2,
+          name: '김철수',
+          accountNumber: '234-567-890123',
+          createdAt: new Date().toLocaleString(),
+        },
+        {
+          idx: 3,
+          name: '이영희',
+          accountNumber: '345-678-901234',
+          createdAt: new Date().toLocaleString(),
+        },
+      ];
+
+      // 더미 데이터 설정
+      this.recentTransactions = dummyTransactions;
     },
+    
     copyAccountNumber(accountNumber) {
       this.recipient = accountNumber;
       navigator.clipboard.writeText(accountNumber)
         .then(() => {
-          alert("계좌번호가 복사되었습니다.");
+          // 계좌번호 복사 성공 시 알림 추가
+          console.log("계좌번호가 복사되었습니다.");
         })
         .catch(err => {
           console.error('복사 실패:', err);
         });
+    },
+    
+    sendMoney() {
+      // 송금 로직 (여기에 필요한 송금 로직을 추가하세요)
+      this.$router.push('/transfer2'); // /transfer2로 이동
     },
   },
   mounted() {
@@ -145,6 +163,16 @@ export default {
 
 .transfer-form {
   margin-bottom: 70px;
+}
+
+.back-button {
+  position: absolute;
+  left: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #000;
 }
 
 label {
