@@ -13,7 +13,8 @@
         </button>
         <button
           class="name-tag-sec"
-          @click="toggleCardList"
+          cancel-button
+          @click="goToCardList"
           :class="{ active: isCardListVisible }"
         >
           명함 목록
@@ -62,12 +63,10 @@
             <p><strong>유선전화:</strong> {{ formData.phoneLandline }}</p>
             <p><strong>이메일:</strong> {{ formData.email }}</p>
             <p><strong>주소:</strong> {{ formData.address }}</p>
-            <qrcode-vue
-              :value="qrValue"
-              :size="75"
-              class="qr-code"
-              @click="showModal = true"
-            />
+            <div v-if="qrCodeData" class="qr-code-container">
+              <h2>QR 코드</h2>
+              <img :src="qrCodeData" alt="QR 코드" class="qr-code-image" />
+            </div>
           </div>
         </div>
       </div>
@@ -92,12 +91,10 @@
         <button class="close-btn" @click="closeCardDetailModal">
           <i class="fa-solid fa-xmark"></i>
         </button>
-        <!-- 수정 입력 폼 -->
         <div class="form-row">
           <label class="form-label">이름:</label>
           <input v-model="editSelectedCard.name" type="text" class="input" />
         </div>
-        <!-- 나머지 수정 필드들 생략 -->
         <div class="modal-buttons">
           <button @click="saveCardDetails">저장</button>
           <button @click="deleteCardDetails">삭제</button>
@@ -118,6 +115,7 @@
 </template>
 
 <script>
+import apiClient from '../../api/axios.js';
 import FooterNav from '../../components/FooterNav.vue';
 import Header from '../../components/Header.vue';
 import QrcodeVue from 'qrcode.vue';
@@ -148,6 +146,7 @@ export default {
       selectedCard: null,
       editSelectedCard: {},
       showModal: false,
+      qrCodeData: '', // QR 코드 데이터를 저장할 변수
     };
   },
   computed: {
@@ -159,18 +158,46 @@ export default {
     },
   },
   created() {
-    const storedData = localStorage.getItem('businessCardData');
-    if (storedData) {
-      this.formData = JSON.parse(storedData);
-    } else {
-      if (
-        confirm('등록된 나의 명함 정보가 없습니다. 새 명함을 등록하시겠습니까?')
-      ) {
-        this.$router.push('/addbusinesscard');
-      }
-    }
+    this.fetchBusinessCardData();
   },
   methods: {
+    async fetchBusinessCardData() {
+      apiClient
+        .get('/businessCard/myBusinessCard')
+        .then((response) => {
+          console.log('서버 응답 데이터:', response.data);
+
+          if (response.data.isSuccess) {
+            this.formData = {
+              name: response.data.result.name,
+              phone: response.data.result.phone,
+              email: response.data.result.email,
+              position: response.data.result.position,
+              department: response.data.result.department,
+              company: response.data.result.company,
+              address: response.data.result.address,
+              phoneLandline: response.data.result.phoneLandline,
+            };
+
+            // QR 코드 데이터를 BASE64 형식으로 변환
+            this.qrCodeData =
+              'data:image/png;base64,' + response.data.result.qrCodeData;
+          } else {
+            console.error(response.data.message);
+            alert(response.data.message);
+          }
+        })
+        .catch((error) => {
+          console.error('명함 정보를 가져오는 중 오류 발생:', error);
+          if (
+            confirm(
+              '등록된 나의 명함 정보가 없습니다. 새 명함을 등록하시겠습니까?'
+            )
+          ) {
+            this.$router.push('/addbusinesscard');
+          }
+        });
+    },
     toggleCardList() {
       this.isCardListVisible = !this.isCardListVisible;
     },
@@ -231,28 +258,77 @@ export default {
     },
     saveChanges() {
       this.formData = { ...this.editData };
-      localStorage.setItem('businessCardData', JSON.stringify(this.formData));
       alert('나의 명함 정보가 저장되었습니다.');
       this.closeBottomSheet();
     },
     deleteCard() {
       if (confirm('정말로 이 명함을 삭제하시겠습니까?')) {
-        this.resetMyCard();
-        alert('나의 명함 정보가 초기화되었습니다.');
+        // 명함 삭제 로직 추가
       }
-    },
-    resetMyCard() {
-      this.formData = {};
-      localStorage.removeItem('businessCardData');
     },
     closeModal() {
       this.showModal = false;
     },
+    goToCardList() {
+      this.$router.push('/businesscardlist'); // 명함 목록 페이지로 이동
+    },
   },
+  // async addFriendCard(data) {
+  //   try {
+  //     // QR 코드에서 추출한 사용자 ID 또는 기타 정보를 기반으로 친구 명함 정보를 가져옵니다.
+  //     const response = await apiClient.get(`/businessCard/friends/${data.id}`); // 데이터에 ID가 있다고 가정
+  //     console.log('명함 추가 응답:', response.data);
+
+  //     if (response.data.isSuccess) {
+  //       const friendCardData = response.data.result; // 친구 명함 정보
+
+  //       // 명함 목록에 추가할 데이터를 설정합니다.
+  //       const newCard = {
+  //         id: friendCardData.id,
+  //         name: friendCardData.name,
+  //         phone: friendCardData.phone,
+  //         email: friendCardData.email,
+  //         position: friendCardData.position,
+  //         department: friendCardData.department,
+  //         company: friendCardData.company,
+  //         address: friendCardData.address,
+  //         phoneLandline: friendCardData.phoneLandline,
+  //       };
+
+  //       alert('명함이 성공적으로 추가되었습니다.');
+  //       this.cardList.push(newCard); // 추가한 명함을 cardList에 추가
+  //     } else {
+  //       alert('명함 추가에 실패했습니다.');
+  //     }
+  //   } catch (error) {
+  //     console.error('명함 추가 중 오류 발생:', error);
+  //     alert('명함 추가 중 오류가 발생했습니다.');
+  //   }
+  // },
+
+  // handleScannedData(scannedData) {
+  //   // JSON.parse를 통해 스캔한 데이터를 파싱하여 추가
+  //   try {
+  //     const parsedData = JSON.parse(scannedData);
+  //     this.addFriendCard(parsedData);
+  //   } catch (error) {
+  //     console.error('스캔한 데이터 파싱 오류:', error);
+  //     alert('QR 코드 데이터가 올바르지 않습니다.');
+  //   }
+  // },
 };
 </script>
 
 <style scoped>
+/* 필요한 스타일 추가 */
+/* .qr-code-container {
+  text-align: center;
+  margin-top: 20px;
+}
+.qr-code-image {
+  width: 150px;
+  height: 150px;
+} */
 .input {
   width: 200px;
 }
