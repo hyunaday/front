@@ -11,8 +11,11 @@ export const useOrderStore = defineStore('order', {
     setOrderIdx(orderIdx) {
       this.orderIdx = orderIdx;
     },
-    setType(type) { // 이 함수가 제대로 정의되었는지 확인하세요.
+    setType(type) {
       this.type = type;
+    },
+    setMaxMemberCnt(maxMemberCnt) { // 인원 설정 함수 추가
+      this.maxMemberCnt = maxMemberCnt;
     },
   },
 });
