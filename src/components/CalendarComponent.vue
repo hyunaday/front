@@ -114,7 +114,7 @@ export default {
   },
   mounted() {
     this.updateCalendar();
-    this.fetchTransactionData();
+    this.fetchTransactionHistory();
   },
   methods: {
     generateYears() {
@@ -126,37 +126,32 @@ export default {
       return years;
     },
 
-    async fetchTransactionData() {
+    async fetchTransactionHistory() {
       try {
-        const response = await apiClient.get(`/transaction?idx=2`);
+        const response = await apiClient.get("/transaction/history/all");
 
-        // 응답 검증: `isSuccess`가 true이고 `result`가 존재할 때만 처리
-        if (response.data.isSuccess && response.data.result) {
-          const transaction = response.data.result;
+        if (response.data.isSuccess && response.data.result.transactionList) {
+          const transactions = response.data.result.transactionList;
 
-          // `transaction.time`이 존재하는지 확인
-          if (transaction.time) {
-            const dateKey = `${transaction.time[0]}-${String(
-              transaction.time[1]
-            ).padStart(2, "0")}-${String(transaction.time[2]).padStart(
-              2,
-              "0"
-            )}`;
+          // 데이터 가공
+          transactions.forEach((transaction) => {
+            const [year, month, day] = transaction.time; // 시간 정보 추출
+            const dateKey = `${year}-${String(month).padStart(2, "0")}-${String(
+              day
+            ).padStart(2, "0")}`;
 
             if (!this.data[dateKey]) {
               this.data[dateKey] = { income: 0, expense: 0 };
             }
 
-            if (transaction.amount > 0) {
-              this.data[dateKey].income += transaction.amount;
+            if (transaction.amount < 0) {
+              this.data[dateKey].income += Math.abs(transaction.amount); // 수입
             } else {
-              this.data[dateKey].expense += Math.abs(transaction.amount);
+              this.data[dateKey].expense += transaction.amount; // 지출
             }
-
-            this.updateCalendar();
-          } else {
-            console.error("Transaction time data is missing.");
-          }
+          });
+          // 캘린더 업데이트
+          this.updateCalendar();
         } else {
           console.error(
             "API 응답 오류:",
