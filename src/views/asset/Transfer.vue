@@ -23,16 +23,14 @@
             v-model="message"
             placeholder="받는 분에게 표시될 내용"
           />
-          <router-link to="/transfer2">
-            <button 
-              type="button" 
-              class="stroke-button" 
-              @click="sendMoney" 
-              v-if="recipient.length >= 11"
-            >
-              송금하기
-            </button>
-          </router-link>
+          <button 
+            type="button" 
+            class="stroke-button" 
+            @click="sendMoney" 
+            v-if="recipient.length >= 11"
+          >
+            송금하기
+          </button>
         </div>
       </div>
 
@@ -62,13 +60,20 @@
       </div>
     </div>
     <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
+    
+    <!-- 모달 -->
+    <div class="modal" v-if="showModal">
+      <div class="modal-content">
+        <span class="close" @click="closeModal">&times;</span>
+        <p>{{ modalMessage }}</p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import FooterNav from '../../components/FooterNav.vue';
 import Header from '../../components/Header.vue';
-import apiClient from '../../api/axios';
 
 export default {
   name: 'Transfer',
@@ -81,7 +86,8 @@ export default {
       recipient: '',
       message: '',
       recentTransactions: [],
-      accountIdx: 1,
+      showModal: false,
+      modalMessage: '',
     };
   },
   methods: {
@@ -92,64 +98,49 @@ export default {
       this.$router.push("/grouppay");
     },
 
-    async fetchTransactions() {
-      // 더미 거래 내역
+    fetchTransactions() {
       const dummyTransactions = [
         {
           idx: 1,
           name: '홍길동',
-          accountNumber: '000-00-0000-000',
-          createdAt: new Date().toISOString(),
+          accountNumber: '123-456-789012',
+          createdAt: new Date().toLocaleString(),
         },
         {
           idx: 2,
           name: '김철수',
-          accountNumber: '111-11-1111-111',
-          createdAt: new Date().toISOString(),
+          accountNumber: '234-567-890123',
+          createdAt: new Date().toLocaleString(),
         },
         {
           idx: 3,
           name: '이영희',
-          accountNumber: '222-22-2222-222',
-          createdAt: new Date().toISOString(),
+          accountNumber: '345-678-901234',
+          createdAt: new Date().toLocaleString(),
         },
       ];
 
-      // 더미 데이터 설정
-      this.recentTransactions = dummyTransactions.map(transaction => ({
-        name: transaction.name,
-        accountNumber: transaction.accountNumber,
-        createdAt: new Date(transaction.createdAt).toLocaleString(),
-      }));
-
-      try {
-        const response = await apiClient.get(`/account/history?accountIdx=${this.accountIdx}`);
-        
-        if (response.data.isSuccess && response.data.result.success) {
-          this.recentTransactions = response.data.result.accountHistoryList.map(transaction => ({
-            name: transaction.name,
-            accountNumber: transaction.accountNumber,
-            createdAt: new Date(transaction.createdAt).toLocaleString(),
-          }));
-        } else {
-          console.error("거래 내역을 불러오지 못했습니다:", response.data.message);
-          // 더미 데이터가 있으므로 그대로 사용
-        }
-      } catch (error) {
-        console.error("거래 내역을 불러오는 중 오류가 발생했습니다:", error);
-        // API 호출 실패 시에도 더미 데이터가 보이게 설정
-      }
+      this.recentTransactions = dummyTransactions;
     },
     copyAccountNumber(accountNumber) {
       this.recipient = accountNumber;
       navigator.clipboard.writeText(accountNumber)
         .then(() => {
-          alert("계좌번호가 복사되었습니다.");
+          this.showModal = true;
+          this.modalMessage = "계좌번호가 복사되었습니다.";
         })
         .catch(err => {
           console.error('복사 실패:', err);
         });
     },
+    closeModal() {
+      this.showModal = false;
+    },
+    sendMoney() {
+      // 송금 로직을 여기에 추가하세요
+      this.showModal = true;
+      this.modalMessage = "송금이 완료되었습니다."; // 예시 메시지
+    }
   },
   mounted() {
     this.fetchTransactions();
@@ -271,5 +262,42 @@ input[type="text"]::placeholder {
 .stroke-button:hover {
   background-color: white;
   color: #6981d9;
+}
+
+/* 모달 스타일 */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* 모달의 z-index 설정 */
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  width: 300px; /* 모달 너비 */
+}
+
+.close {
+  cursor: pointer;
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
 }
 </style>
