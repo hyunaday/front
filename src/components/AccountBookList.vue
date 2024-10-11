@@ -283,6 +283,8 @@
 </template>
 
 <script>
+import apiClient from "../api/axios.js";
+
 const months = [
   "January",
   "February",
@@ -310,12 +312,11 @@ function generateYears() {
 export default {
   data() {
     return {
-      // 카테고리 선택 상태
+      // 기존 데이터와 상태 값들
       selectedCategory: "",
-      selectedFilter: null, // 수입, 지출 필터링 상태
+      selectedFilter: null,
       incomeCategories: ["월급", "이자", "용돈"],
       expenseCategories: ["식비", "쇼핑", "교통", "문화", "주거/통신", "기타"],
-      // 모든 카테고리를 포함한 배열
       allCategories: [
         "월급",
         "이자",
@@ -327,102 +328,53 @@ export default {
         "주거/통신",
         "기타",
       ],
-
+      entries: [], // API 데이터를 담을 배열
+      totalExpense: 0,
+      totalIncome: 0,
+      searchQuery: "",
       selectedYear: new Date().getFullYear(),
       selectedMonth: new Date().getMonth(),
-      years: generateYears(),
-      months,
-      searchQuery: "",
-      finalQuery: "",
-      totalExpense: 90000,
-      totalIncome: 1000000,
-
+      // 추가 데이터
       storeName: "",
-      fixedAmount: 0,
       editablePrice: 0,
       isEditingPrice: false,
       selectedCategory: null,
-      selectedFilter: null,
       transactionDate: "",
       paymentMethod: "",
       memo: "",
-      category: "",
-      entries: [
-        {
-          date: "19",
-          day: "화요일",
-          totalAmount: -27000,
-          entries: [
-            {
-              category: "주거/통신",
-              detail: "주방/욕실",
-              paymentMethod: "신한은행",
-              amount: -30000,
-              storeName: "마트",
-              memo: "주방용품 구매",
-            },
-            {
-              category: "주거/통신",
-              detail: "",
-              paymentMethod: "현금",
-              amount: 3000,
-              storeName: "",
-              memo: "",
-            },
-          ],
-        },
-        {
-          date: "20",
-          day: "수요일",
-          totalAmount: -27000,
-          entries: [
-            {
-              category: "주거/통신",
-              detail: "주방/욕실",
-              amount: -30000,
-              storeName: "다이소",
-              memo: "생활용품",
-            },
-            {
-              category: "부수입",
-              detail: "",
-              amount: 3000,
-              storeName: "",
-              memo: "",
-            },
-          ],
-        },
-      ],
     };
   },
 
   computed: {
-    // 선택한 연도와 월의 총 지출과 수입을 계산
+    // 총 지출 계산 (filteredEntries가 정의되지 않았거나 빈 배열일 경우 기본값을 설정)
     totalExpense() {
-      return this.filteredEntries.reduce((total, entryGroup) => {
+      return (this.filteredEntries || []).reduce((total, entryGroup) => {
         return (
           total +
           entryGroup.entries
-            .filter((entry) => entry.amount < 0) // 지출 필터링
+            .filter((entry) => entry.amount < 0)
             .reduce((sum, entry) => sum + entry.amount, 0)
         );
       }, 0);
     },
+
+    // 총 수입 계산 (filteredEntries가 정의되지 않았거나 빈 배열일 경우 기본값을 설정)
     totalIncome() {
-      return this.filteredEntries.reduce((total, entryGroup) => {
+      return (this.filteredEntries || []).reduce((total, entryGroup) => {
         return (
           total +
           entryGroup.entries
-            .filter((entry) => entry.amount > 0) // 수입 필터링
+            .filter((entry) => entry.amount > 0)
             .reduce((sum, entry) => sum + entry.amount, 0)
         );
       }, 0);
     },
-    // 선택한 연도와 월에 맞는 엔트리 필터링
+
+    // 필터링된 거래 내역
     filteredEntries() {
+      if (!this.entries) return [];
       return this.entries
         .filter((entryGroup) => {
-          // 선택된 수입/지출 필터에 따라 엔트리 필터링
           if (this.selectedFilter === "income") {
             return entryGroup.entries.some((entry) => entry.amount > 0);
           } else if (this.selectedFilter === "expense") {
@@ -431,7 +383,6 @@ export default {
           return true;
         })
         .map((entryGroup) => {
-          // 선택된 카테고리에 따라 엔트리의 항목 필터링
           const filteredEntries = entryGroup.entries.filter((entry) => {
             const matchesFilter =
               this.selectedFilter === "income"
@@ -451,15 +402,47 @@ export default {
           (a, b) =>
             new Date(this.selectedYear, this.selectedMonth, a.date) -
             new Date(this.selectedYear, this.selectedMonth, b.date)
-        ); // 날짜순 정렬
-    },
-
-    formattedPrice() {
-      return `${this.editablePrice.toLocaleString()}원`;
+        );
     },
   },
 
+  mounted() {
+    // 컴포넌트가 마운트될 때 API 호출
+    this.fetchTransactionHistory();
+  },
+
   methods: {
+    async fetchTransactionHistory() {
+      try {
+        const response = await apiClient.get("/transaction/history/all");
+        if (response.data.isSuccess) {
+          // 응답 데이터에서 거래 내역을 entries에 추가
+          this.entries = response.data.result.transactionList.map((item) => {
+            return {
+              date: item.time[2].toString(),
+              day: new Date(
+                item.time[0],
+                item.time[1] - 1,
+                item.time[2]
+              ).toLocaleString("ko-KR", { weekday: "long" }),
+              totalAmount: item.amount,
+              entries: [
+                {
+                  category: item.category,
+                  detail: item.memo,
+                  paymentMethod: item.payMethod,
+                  amount: item.amount,
+                  storeName: item.memo,
+                },
+              ],
+            };
+          });
+        }
+      } catch (error) {
+        console.error("거래 내역을 불러오는 중 오류가 발생했습니다:", error);
+      }
+    },
+
     executeSearch() {
       this.finalQuery = this.searchQuery;
     },
