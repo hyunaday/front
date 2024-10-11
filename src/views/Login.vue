@@ -67,7 +67,7 @@
 
 <script>
 import axios from '../api/axios.js'; // Axios 설정 파일을 임포트
-import { useMemberStore } from '../stores/memberStore.js'
+import { useMemberStore } from '../stores/MemberStore.js'
 
 export default {
   name: "Login",
