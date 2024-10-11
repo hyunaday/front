@@ -1,7 +1,7 @@
 <template>
-  <div
-    class="main-container d-flex flex-column justify-content-center align-items-center"
-  >
+  <div class="main-container">
+    <Header />
+
     <div>
       <!-- CalendarComponent 또는 리스트 보기 -->
       <div v-if="isCalendarView">
@@ -33,10 +33,10 @@
     </div>
 
     <div class="divider"></div>
-  </div>
 
-  <!-- FooterNav 컴포넌트 사용 -->
-  <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
+    <!-- FooterNav 컴포넌트 사용 -->
+    <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
+  </div>
 </template>
 
 <script>
@@ -47,11 +47,13 @@ import FooterNav from "../../components/FooterNav.vue";
 import AccountBookList from "../../components/AccountBookList.vue"; // AccountBookList 컴포넌트 import
 import axios from "../../api/axios";
 import apiClient from "../../api/axios";
+import Header from "../../components/Header.vue";
 
 export default {
   name: "AccountBook",
   components: {
     FooterNav,
+    Header,
     VueCal,
     CalendarComponent,
     AccountBookList, // 리스트 보기 컴포넌트 추가
@@ -62,18 +64,18 @@ export default {
       selectedMonth: new Date().getMonth() + 1,
       years: [],
       months: [
-        "January",
-        "February",
+        "Jan",
+        "Feb",
         "March",
         "April",
         "May",
         "June",
         "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
       ],
       isCalendarView: true, // 캘린더 보기 여부 상태 관리
     };
@@ -108,17 +110,6 @@ export default {
 <style scoped>
 a {
   text-decoration: none;
-}
-
-.main-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  min-height: 100vh;
-  background-color: white;
-  overflow-y: auto;
-  margin-bottom: 60px;
 }
 
 .calendar-container {

@@ -1,26 +1,24 @@
-import { defineConfig } from 'vite';
-import vue from '@vitejs/plugin-vue';
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
   server: {
     proxy: {
-      '/api': {
-        target: 'http://localhost:8080/api',
+      "/api": {
+        target: "http://34.64.141.174:8080/api",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''), // 여기를 수정
-    //     alias: {
-    //       '@': fileURLToPath(new URL('./src', import.meta.url)),
-    // }
+        rewrite: (path) => path.replace(/^\/api/, ""), // 여기를 수정
+        //     alias: {
+        //       '@': fileURLToPath(new URL('./src', import.meta.url)),
+        // }
       },
     },
     open: {
       app: {
-        name: 'Google Chrome', // 원하는 브라우저 이름
+        name: "Google Chrome", // 원하는 브라우저 이름
       },
     },
   },
-
-
 });

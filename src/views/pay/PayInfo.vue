@@ -209,3 +209,4 @@ export default {
   flex-grow: 1; /* 스페이서 추가하여 공간 확보 */
 }
 </style>
+
