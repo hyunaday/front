@@ -32,7 +32,7 @@
 
 <script>
 import QrScanner from '../../components/QrScanner.vue'; // QrScanner 컴포넌트 임포트
-import { useOrderStore } from '../../stores/orderStore';
+import { useOrderStore } from '../../stores/orderStore.js';
 
 export default {
   name: 'Grouppay',
@@ -179,3 +179,4 @@ h3 {
   margin-top: 20px;
 }
 </style>
+

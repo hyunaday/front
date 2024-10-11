@@ -21,15 +21,13 @@
       <div class="financial-summary">
         <div class="expense">
           지출:
-          <span class="expense-amount"
-            >{{ totalExpense }} <span style="color: black">원</span></span
-          >
+          <span class="expense-amount">{{ totalExpense }}</span
+          ><span style="color: black"> 원</span>
         </div>
         <div class="income">
           수입:
-          <span class="income-amount"
-            >{{ totalIncome }} <span style="color: black">원</span></span
-          >
+          <span class="income-amount">{{ totalIncome }}</span
+          ><span style="color: black"> 원</span>
         </div>
       </div>
       <table>
@@ -46,21 +44,22 @@
         </thead>
         <tbody>
           <tr v-for="week in calendar" :key="week">
-            <td v-for="day in week" :key="day.day" class="day-cell">
-              <div class="day-number">{{ day.day }}</div>
-              <div class="day-data">
-                <!-- 수입지출 -->
-                <div v-if="day.day && day.data.income">
-                  <!-- 수입: -->
-                  <span class="income-amount"
-                    >+{{ day.data.income.toLocaleString() }}</span
-                  >
-                </div>
-                <div v-if="day.day && day.data.expense">
-                  <!-- 지출: -->
-                  <span class="expense-amount"
-                    >-{{ day.data.expense.toLocaleString() }}</span
-                  >
+            <td v-for="day in week" :key="day.day">
+              <div class="day-cell-wrapper">
+                <div class="day-cell">
+                  <div class="day-number">{{ day.day }}</div>
+                  <div class="day-data">
+                    <div v-if="day.day && day.data.income">
+                      <span class="income-amount"
+                        >+{{ day.data.income.toLocaleString() }}</span
+                      >
+                    </div>
+                    <div v-if="day.day && day.data.expense">
+                      <span class="expense-amount"
+                        >-{{ day.data.expense.toLocaleString() }}</span
+                      >
+                    </div>
+                  </div>
                 </div>
               </div>
             </td>
@@ -81,41 +80,49 @@ export default {
       selectedMonth: new Date().getMonth(),
       years: this.generateYears(),
       months: [
-        "January",
-        "February",
+        "Jan",
+        "Feb",
         "March",
         "April",
         "May",
         "June",
         "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
       ],
       calendar: [],
       data: {},
     };
   },
+
   computed: {
     totalIncome() {
-      return Object.values(this.data).reduce(
-        (acc, day) => acc + (day.income || 0),
-        0
-      );
+      // 선택된 연도와 월에 맞는 데이터만 필터링하여 합산
+      const selectedYearMonth = `${this.selectedYear}-${String(
+        this.selectedMonth + 1
+      ).padStart(2, "0")}`;
+      return Object.entries(this.data)
+        .filter(([date]) => date.startsWith(selectedYearMonth)) // 해당 월 데이터만 필터링
+        .reduce((acc, [_, day]) => acc + (day.income || 0), 0);
     },
     totalExpense() {
-      return Object.values(this.data).reduce(
-        (acc, day) => acc + (day.expense || 0),
-        0
-      );
+      const selectedYearMonth = `${this.selectedYear}-${String(
+        this.selectedMonth + 1
+      ).padStart(2, "0")}`;
+      return Object.entries(this.data)
+        .filter(([date]) => date.startsWith(selectedYearMonth)) // 해당 월 데이터만 필터링
+        .reduce((acc, [_, day]) => acc + (day.expense || 0), 0);
     },
   },
+
   mounted() {
     this.updateCalendar();
     this.fetchTransactionHistory();
   },
+
   methods: {
     generateYears() {
       const currentYear = new Date().getFullYear();
@@ -144,12 +151,13 @@ export default {
               this.data[dateKey] = { income: 0, expense: 0 };
             }
 
-            if (transaction.amount < 0) {
-              this.data[dateKey].income += Math.abs(transaction.amount); // 수입
-            } else {
+            if (transaction.payMethod === "ACCOUNT") {
+              this.data[dateKey].income += transaction.amount; // 수입
+            } else if (transaction.payMethod === "CARD") {
               this.data[dateKey].expense += transaction.amount; // 지출
             }
           });
+
           // 캘린더 업데이트
           this.updateCalendar();
         } else {
@@ -230,7 +238,7 @@ h1 {
   margin-right: 0.5rem;
   border-radius: 5px;
   border: none; /* 테두리 제거 */
-  appearance: none; /* 기본 드롭다운 화살표 제거 */
+  /* appearance: none; 기본 드롭다운 화살표 제거 */
   background: transparent; /* 배경을 투명으로 설정 */
   font-family: "Poppins", sans-serif; /* Poppins 폰트 적용 */
 }
@@ -256,6 +264,11 @@ h1 {
 .income-amount {
   color: #6981d9; /* 수입 색상 */
   /* font-size: 10px; */
+}
+
+.expense-amount,
+.income-amount {
+  font-weight: bold;
 }
 
 table {
@@ -293,14 +306,22 @@ thead tr {
   height: 60px;
 }
 
+.day-cell-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .day-number {
   font-weight: bold;
   color: #444;
 }
 
 .day-data {
-  font-size: 0.8rem;
+  align-items: center;
+  font-size: 9px;
   margin-top: 5px;
   color: #666;
+  font-weight: bold;
 }
 </style>

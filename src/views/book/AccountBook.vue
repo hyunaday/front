@@ -1,5 +1,6 @@
 <template>
-   <div class="main-container">
+
+  <div class="main-container">
     <Header />
 
     <div>
@@ -34,10 +35,9 @@
 
     <div class="divider"></div>
 
-
-  <!-- FooterNav 컴포넌트 사용 -->
-  <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
-</div>
+    <!-- FooterNav 컴포넌트 사용 -->
+    <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
+  </div>
 </template>
 
 <script>

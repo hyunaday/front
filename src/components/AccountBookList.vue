@@ -265,18 +265,18 @@
 <script>
 import apiClient from "../api/axios.js";
 const months = [
-  "January",
-  "February",
+  "Jan",
+  "Feb",
   "March",
   "April",
   "May",
   "June",
   "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
 ];
 function generateYears() {
   const currentYear = new Date().getFullYear();
@@ -311,6 +311,21 @@ export default {
       searchQuery: "",
       selectedYear: new Date().getFullYear(),
       selectedMonth: new Date().getMonth(),
+      years: this.generateYears(),
+      months: [
+        "Jan",
+        "Feb",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ],
       // 추가 데이터
       storeName: "",
       editablePrice: 0,
@@ -323,7 +338,8 @@ export default {
   },
   computed: {
     // 총 지출 계산 (filteredEntries가 정의되지 않았거나 빈 배열일 경우 기본값을 설정)
-    totalAmount() {
+    totalExpense() {
+
       return (this.filteredEntries || []).reduce((total, entryGroup) => {
         return (
           total +
@@ -384,31 +400,64 @@ export default {
     this.fetchTransactionHistory();
   },
   methods: {
+    generateYears() {
+      const currentYear = new Date().getFullYear();
+      const years = [];
+      for (let year = currentYear - 10; year <= currentYear + 10; year++) {
+        years.push(year);
+      }
+      return years;
+    },
+    updateCalendar() {
+      // 필요한 경우 달력 업데이트 로직 추가
+    },
+
     async fetchTransactionHistory() {
       try {
         const response = await apiClient.get("/transaction/history/all");
         if (response.data.isSuccess) {
-          // 응답 데이터에서 거래 내역을 entries에 추가
-          this.entries = response.data.result.transactionList.map((item) => {
-            return {
-              date: item.time[2].toString(),
-              day: new Date(
-                item.time[0],
-                item.time[1] - 1,
-                item.time[2]
-              ).toLocaleString("ko-KR", { weekday: "long" }),
-              totalAmount: item.amount,
-              entries: [
-                {
-                  category: item.category,
-                  detail: item.memo,
-                  paymentMethod: item.payMethod,
-                  amount: item.amount,
-                  storeName: item.memo,
-                },
-              ],
-            };
-          });
+          // 날짜별로 데이터 그룹화
+          const groupedEntries = response.data.result.transactionList.reduce(
+            (acc, item) => {
+              // 날짜를 문자열 형식으로 생성 (YYYY-MM-DD)
+              const dateKey = `${item.time[0]}-${String(item.time[1]).padStart(
+                2,
+                "0"
+              )}-${String(item.time[2]).padStart(2, "0")}`;
+
+              // 날짜가 이미 존재하면 해당 배열에 추가하고, 없으면 새 배열 생성
+              if (!acc[dateKey]) {
+                acc[dateKey] = {
+                  date: item.time[2].toString(), // 일 정보만 저장
+                  day: new Date(
+                    item.time[0],
+                    item.time[1] - 1,
+                    item.time[2]
+                  ).toLocaleString("ko-KR", { weekday: "long" }),
+                  totalAmount: 0,
+                  entries: [],
+                };
+              }
+
+              // 일별 총 금액을 업데이트
+              acc[dateKey].totalAmount += item.amount;
+
+              // 각 거래 항목을 entries 배열에 추가
+              acc[dateKey].entries.push({
+                category: item.category,
+                detail: item.memo,
+                paymentMethod: item.payMethod,
+                amount: item.amount,
+                storeName: item.memo,
+              });
+
+              return acc;
+            },
+            {}
+          );
+
+          // entries 배열에 날짜별로 정리된 데이터를 추가
+          this.entries = Object.values(groupedEntries);
         }
       } catch (error) {
         console.error("거래 내역을 불러오는 중 오류가 발생했습니다:", error);
@@ -495,8 +544,8 @@ export default {
   max-height: 80vh; /* 최대 높이 설정 */
   top: 0; /* 페이지 상단에 고정 */
 
-   /* 스크롤바 숨기기 */
-   scrollbar-width: none; /* Firefox */
+  /* 스크롤바 숨기기 */
+  scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
 }
 
@@ -607,6 +656,11 @@ div.total-amount {
   justify-content: space-between;
   padding: 10px 0;
 }
+
+/* .entry-item:hover {
+  background-color: #f0f0f0;
+  cursor: pointer;
+} */
 
 .entry-info {
   display: flex;

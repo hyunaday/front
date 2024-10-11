@@ -91,6 +91,7 @@ import wooriLogo from "../assets/images/wooribank.png";
 import tossLogo from "../assets/images/toss.png";
 import nhLogo from "../assets/images/NHbank.png";
 import copyIcon from "../assets/images/copy.png";
+import { useMemberStore } from '../stores/memberStore.js'
 
 export default {
   name: "MainPage",
@@ -101,6 +102,8 @@ export default {
     Header,
   },
   setup() {
+    const memberStore = useMemberStore();
+    console.log("pinia memberId : ", memberStore.memberId);
     const onSwiper = (swiper) => {
       console.log(swiper);
     };
