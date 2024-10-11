@@ -67,6 +67,7 @@
 
 <script>
 import axios from '../api/axios.js'; // Axios 설정 파일을 임포트
+import { useMemberStore } from '../stores/memberStore.js'
 
 export default {
   name: "Login",
@@ -78,6 +79,8 @@ export default {
   },
   methods: {
     async handleSubmit() {
+      const memberStore = useMemberStore();
+      
       const loginData = {
         memberId: this.email,
         password: this.password,
@@ -86,7 +89,13 @@ export default {
       try {
         const response = await axios.post("/member/login", loginData);
         if (response.data.isSuccess) {
+          // 토큰을 로컬 스토리지에 저장
           localStorage.setItem("accessToken", response.data.result.accessToken);
+
+          // 사용자 정보 가져오기 (await으로 상태 업데이트가 완료되기를 기다림)
+          await memberStore.fetchMemberInfo();
+
+          // 메인 페이지로 이동
           this.$router.push("/");
         } else {
           alert(`${response.data.message || "알 수 없는 오류"}`);
@@ -112,6 +121,10 @@ export default {
         const response = await axios.post(`/member/login/oauth2/kakao?code=${code}`);
         if (response.data.isSuccess) {
           localStorage.setItem("accessToken", response.data.result.accessToken);
+
+          const memberStore = useMemberStore();
+          await memberStore.fetchMemberInfo(); // 사용자 정보 가져오기
+
           this.$router.push("/phone");
         } else {
           alert(`카카오 로그인 실패: ${response.data.message || "알 수 없는 오류"}`);
@@ -121,23 +134,8 @@ export default {
         alert("카카오 로그인 중 오류가 발생했습니다.");
       }
     },
-
-    handleSocialLogin(platform) {
-      let loginUrl = "";
-      switch (platform) {
-        case "naver":
-          loginUrl = `https://nid.naver.com/oauth2.0/authorize?client_id=YOUR_NAVER_CLIENT_ID&redirect_uri=http://localhost:8080/login/oauth2/code/naver&response_type=code`;
-          break;
-        case "google":
-          loginUrl = `https://accounts.google.com/o/oauth2/auth?client_id=YOUR_GOOGLE_CLIENT_ID&redirect_uri=http://localhost:8080/login/oauth2/code/google&response_type=code&scope=email`;
-          break;
-        default:
-          alert("지원하지 않는 소셜 로그인입니다.");
-          return;
-      }
-      window.location.href = loginUrl;
-    },
   },
+
   async mounted() {
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get("code");
