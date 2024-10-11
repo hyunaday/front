@@ -7,7 +7,6 @@
 
 <script>
 import { QrcodeStream } from 'vue3-qrcode-reader';
-import { useBusinessCardStore } from '../../src/stores/useBusinessCardStore';
 
 export default {
   name: 'BqrScanner',

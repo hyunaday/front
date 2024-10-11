@@ -17,8 +17,8 @@
     <!-- 모달 -->
     <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content">
-        <!-- QR 스캐너 컴포넌트에서 스캔된 데이터 받기 -->
-        <QrScanner @close="closeModal" @scanned="handleScannedData" />
+        <!-- BqrScanner 컴포넌트에서 스캔된 데이터 받기 -->
+        <BqrScanner @close="closeModal" @scanned="handleScannedData" />
       </div>
     </div>
 
@@ -39,17 +39,18 @@
 
 <script>
 import FooterNav from '../../components/FooterNav.vue';
-import QrScanner from '../../components/QrScanner.vue';
+import BqrScanner from '../../components/BqrScanner.vue'; // BqrScanner로 변경
 
 export default {
   name: 'AddBusinessCard',
   components: {
     FooterNav,
-    QrScanner,
+    BqrScanner, // BqrScanner로 변경
   },
   data() {
     return {
       showModal: false, // 모달 상태 관리
+      scannedData: null, // 스캔된 데이터를 초기화
     };
   },
   methods: {
