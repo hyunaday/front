@@ -1,9 +1,13 @@
 <template>
   <div class="main-container">
     <Header />
+    
     <div class="transfer-page">
+      <!-- <button @click="goBack" class="back-button">
+          <i class="fas fa-chevron-left"></i>
+        </button> -->
       <div class="transfer-form">
-        <label for="recipient">
+        <label for="recipient"> 
           <span class="point">누구</span>에게<br /> 보내겠습니까?
         </label>
         <input
@@ -82,6 +86,9 @@ export default {
     };
   },
   methods: {
+    goBack() {
+      this.$router.go(-1);
+    },
     validateInput() {
       this.recipient = this.recipient.replace(/[^0-9]/g, '').slice(0, 13);
     },
@@ -156,6 +163,16 @@ export default {
 
 .transfer-form {
   margin-bottom: 70px;
+}
+
+.back-button {
+  position: absolute;
+  left: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #000;
 }
 
 label {

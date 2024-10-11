@@ -3,7 +3,9 @@
     <Header />
 
     <div>
-      <h1 class="title">계좌 조회</h1>
+      <h1 class="title">  <button @click="goBack" class="back-button">
+          <i class="fas fa-chevron-left"></i>
+        </button>계좌 조회</h1>
       <div class="container">
         <div class="transaction-details">
           <img :src="imageSrc" alt="Bank Logo" class="bank-logo" />
@@ -99,6 +101,9 @@ export default {
     },
   },
   methods: {
+    goBack() {
+      this.$router.go(-1);
+    },
     async fetchTransactions() {
       try {
         const response = await apiClient.get("/account/all"); // API에서 계좌 데이터 가져오기
@@ -185,7 +190,15 @@ a {
   height: 30px;
   margin-right: 10px;
 }
-
+.back-button {
+  position: absolute;
+  left: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: #000;
+}
 .account-info {
   align-items: center;
   flex-grow: 1;
