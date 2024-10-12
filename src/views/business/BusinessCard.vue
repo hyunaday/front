@@ -13,7 +13,8 @@
         </button>
         <button
           class="name-tag-sec"
-          @click="toggleCardList"
+          cancel-button
+          @click="goToCardList"
           :class="{ active: isCardListVisible }"
         >
           명함 목록
@@ -53,7 +54,7 @@
         </div>
 
         <div v-if="!isCardListVisible" class="card-details-container">
-          <div class="card-details">
+          <class class="card-details">
             <p><strong>이름:</strong> {{ formData.name }}</p>
             <p><strong>회사:</strong> {{ formData.company }}</p>
             <p><strong>부서:</strong> {{ formData.department }}</p>
@@ -62,62 +63,60 @@
             <p><strong>유선전화:</strong> {{ formData.phoneLandline }}</p>
             <p><strong>이메일:</strong> {{ formData.email }}</p>
             <p><strong>주소:</strong> {{ formData.address }}</p>
-            <qrcode-vue
-              :value="qrValue"
-              :size="75"
-              class="qr-code"
-              @click="showModal = true"
-            />
-          </div>
+            <!-- QR 코드 이미지를 주소 아래에 표시 -->
+            <div v-if="qrCodeData" class="qr-code-container">
+              <h2>QR 코드</h2>
+              <img :src="qrCodeData" alt="QR 코드" class="qr-code-image" />
+            </div>
+          </class>
         </div>
       </div>
-
-      <div
-        class="button-container"
-        v-if="!isCardListVisible && !isCardDetailModalVisible"
-      >
-        <button type="button" @click="openBottomSheet">수정</button>
-        <button @click="deleteCard">삭제</button>
-      </div>
     </div>
-
-    <FooterNav :buttonType="'plus'" :buttonAction="goToaddBusinessCard" />
 
     <div
-      v-if="isCardDetailModalVisible"
-      class="modal"
-      @click="closeCardDetailModal"
+      class="button-container"
+      v-if="!isCardListVisible && !isCardDetailModalVisible"
     >
-      <div class="modal-content card-detail-container" @click.stop>
-        <button class="close-btn" @click="closeCardDetailModal">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
-        <!-- 수정 입력 폼 -->
-        <div class="form-row">
-          <label class="form-label">이름:</label>
-          <input v-model="editSelectedCard.name" type="text" class="input" />
-        </div>
-        <!-- 나머지 수정 필드들 생략 -->
-        <div class="modal-buttons">
-          <button @click="saveCardDetails">저장</button>
-          <button @click="deleteCardDetails">삭제</button>
-        </div>
-      </div>
+      <button type="button" @click="openBottomSheet">수정</button>
+      <button @click="deleteCard">삭제</button>
     </div>
+  </div>
 
-    <!-- QR 코드 모달 -->
-    <div v-if="showModal" class="modal" @click="closeModal">
-      <div class="modal-content qr-modal" @click.stop>
-        <div class="qr-code-container">
-          <qrcode-vue :value="qrValue" size="200" class="qr-code" />
-        </div>
+  <FooterNav :buttonType="'plus'" :buttonAction="goToaddBusinessCard" />
+
+  <div
+    v-if="isCardDetailModalVisible"
+    class="modal"
+    @click="closeCardDetailModal"
+  >
+    <div class="modal-content card-detail-container" @click.stop>
+      <button class="close-btn" @click="closeCardDetailModal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="form-row">
+        <label class="form-label">이름:</label>
+        <input v-model="editSelectedCard.name" type="text" class="input" />
       </div>
-      <p class="additional-text">QR코드를 스캔하세요</p>
+      <div class="modal-buttons">
+        <button @click="saveCardDetails">저장</button>
+        <button @click="deleteCardDetails">삭제</button>
+      </div>
     </div>
+  </div>
+
+  <!-- QR 코드 모달 -->
+  <div v-if="showModal" class="modal" @click="closeModal">
+    <div class="modal-content qr-modal" @click.stop>
+      <div class="qr-code-container">
+        <qrcode-vue :value="qrValue" size="200" class="qr-code" />
+      </div>
+    </div>
+    <p class="additional-text">QR코드를 스캔하세요</p>
   </div>
 </template>
 
 <script>
+import apiClient from '../../api/axios.js';
 import FooterNav from '../../components/FooterNav.vue';
 import Header from '../../components/Header.vue';
 import QrcodeVue from 'qrcode.vue';
@@ -148,29 +147,63 @@ export default {
       selectedCard: null,
       editSelectedCard: {},
       showModal: false,
+      qrCodeData: '', // QR 코드 데이터를 저장할 변수
     };
   },
   computed: {
     nameTagLabel() {
       return '나의 명함';
     },
-    qrValue() {
-      return JSON.stringify(this.formData); // QR 코드 데이터 생성
-    },
   },
   created() {
-    const storedData = localStorage.getItem('businessCardData');
-    if (storedData) {
-      this.formData = JSON.parse(storedData);
-    } else {
-      if (
-        confirm('등록된 나의 명함 정보가 없습니다. 새 명함을 등록하시겠습니까?')
-      ) {
-        this.$router.push('/addbusinesscard');
-      }
-    }
+    this.fetchBusinessCardData();
   },
   methods: {
+    async fetchBusinessCardData() {
+      try {
+        const response = await apiClient.get('/businessCard/myBusinessCard');
+        console.log('서버 응답 데이터:', response.data);
+
+        if (response.data.isSuccess) {
+          console.log('명함 데이터:', response.data.result);
+
+          // 비즈니스 카드 데이터
+          const cardData = response.data.result.businessCardList[0]; // 첫 번째 카드 데이터
+          console.log('비즈니스 카드 데이터:', cardData);
+
+          this.formData = {
+            name: cardData.name,
+            phone: cardData.phoneNumber,
+            email: cardData.email,
+            position: cardData.position,
+            department: cardData.department,
+            company: cardData.company,
+            address: cardData.address,
+            phoneLandline: cardData.tel_num,
+          };
+
+          // QR 코드 데이터 처리 (imgUrl 사용)
+          if (cardData.imgUrl) {
+            this.qrCodeData = cardData.imgUrl; // imgUrl 가져오기
+          } else {
+            console.error('QR 코드 데이터가 없습니다.');
+            alert('QR 코드 데이터가 없습니다.');
+          }
+        } else {
+          console.error(response.data.message);
+          alert(response.data.message);
+        }
+      } catch (error) {
+        console.error('명함 정보를 가져오는 중 오류 발생:', error);
+        if (
+          confirm(
+            '등록된 나의 명함 정보가 없습니다. 새 명함을 등록하시겠습니까?'
+          )
+        ) {
+          this.$router.push('/addbusinesscard');
+        }
+      }
+    },
     toggleCardList() {
       this.isCardListVisible = !this.isCardListVisible;
     },
@@ -229,30 +262,34 @@ export default {
         bottomSheet.closeSheet();
       }
     },
-    saveChanges() {
-      this.formData = { ...this.editData };
-      localStorage.setItem('businessCardData', JSON.stringify(this.formData));
-      alert('나의 명함 정보가 저장되었습니다.');
-      this.closeBottomSheet();
-    },
-    deleteCard() {
-      if (confirm('정말로 이 명함을 삭제하시겠습니까?')) {
-        this.resetMyCard();
-        alert('나의 명함 정보가 초기화되었습니다.');
-      }
-    },
-    resetMyCard() {
-      this.formData = {};
-      localStorage.removeItem('businessCardData');
-    },
-    closeModal() {
-      this.showModal = false;
+    saveFormData() {
+      this.cardList.push({ ...this.formData });
+      this.formData = {
+        name: '',
+        phone: '',
+        email: '',
+        position: '',
+        department: '',
+        company: '',
+        address: '',
+        phoneLandline: '',
+        memo: '',
+      };
     },
   },
 };
 </script>
 
 <style scoped>
+/* 필요한 스타일 추가 */
+/* .qr-code-container {
+  text-align: center;
+  margin-top: 20px;
+}
+.qr-code-image {
+  width: 150px;
+  height: 150px;
+} */
 .input {
   width: 200px;
 }

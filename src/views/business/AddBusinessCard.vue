@@ -40,6 +40,7 @@
 <script>
 import FooterNav from '../../components/FooterNav.vue';
 import BqrScanner from '../../components/BqrScanner.vue'; // BqrScanner로 변경
+import axios from 'axios';
 
 export default {
   name: 'AddBusinessCard',
@@ -60,7 +61,28 @@ export default {
     handleScannedData(data) {
       // QR 코드 스캔 결과를 저장
       this.scannedData = data;
+      // businessCardIdx는 적절한 값으로 설정해야 합니다.
+      const businessCardIdx = this.getBusinessCardIdx(); // 예시로 메서드를 사용
+
+      // API 호출
+      axios
+        .post(
+          `/businessCard/scanFriendQrCode?businessCardIdx=${businessCardIdx}`,
+          data
+        )
+        .then((response) => {
+          console.log('Data successfully sent to the server', response);
+          this.$emit('scanned', response.data); // 서버에서 받은 데이터를 부모 컴포넌트로 전달
+        })
+        .catch((error) => {
+          console.error('Error sending data to the server', error);
+        });
+
       this.showModal = false; // 스캔 후 모달 닫기
+    },
+    getBusinessCardIdx() {
+      // businessCardIdx 값을 적절히 반환하는 로직을 구현
+      return 1; // 예시로 고정값 사용
     },
   },
 };
@@ -78,14 +100,14 @@ export default {
   justify-content: flex-start;
   align-items: center;
   min-height: 100vh;
-  margin-bottom: 60px;
   background-color: white;
   overflow-y: auto;
 }
 
 /* 제목 스타일 */
 h3 {
-  margin-bottom: 80px;
+  margin-top: -150px;
+  margin-bottom: 60px;
   font-weight: bold;
   font-size: 20px;
 }

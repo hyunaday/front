@@ -6,6 +6,7 @@
 </template>
 
 <script>
+import { ref } from 'vue';
 import { QrcodeStream } from 'vue3-qrcode-reader';
 
 export default {
@@ -13,36 +14,37 @@ export default {
   components: {
     QrcodeStream,
   },
-  setup() {
-    const { addBusinessCard } = useBusinessCardStore();
+  setup(props, { emit }) {
+    const scannedData = ref(null);
 
     const onDecode = (decodedString) => {
       try {
         console.log('스캔된 데이터:', decodedString);
         const cardData = JSON.parse(decodedString); // JSON으로 변환
 
-        // 명함 정보를 상태에 추가
-        addBusinessCard(cardData);
-
+        // 명함 정보를 상태에 추가 (스토어 없이 처리)
         console.log('명함 정보가 추가되었습니다:', cardData);
+
         // 부모 컴포넌트에 스캔 완료 이벤트를 보냄
-        this.$emit('scanned', cardData);
+        emit('scanned', cardData);
       } catch (error) {
         console.error('onDecode 처리 중 오류 발생:', error);
+        alert('스캔된 데이터가 유효하지 않습니다.');
       }
     };
 
-    const onInit = (success, error) => {
-      if (error) {
-        console.error('QR Code scanner error:', error);
-        this.$emit('error', '카메라에 접근할 수 없습니다. 권한을 확인하세요.');
-      } else if (success) {
-        console.log('QR Code scanner ready!');
-      }
+    const onInit = (promise) => {
+      promise.catch((error) => {
+        if (error.name === 'NotAllowedError') {
+          alert('카메라 접근 권한이 필요합니다.');
+        } else {
+          console.error(error);
+        }
+      });
     };
 
     const closeScanner = () => {
-      this.$emit('close');
+      emit('close');
     };
 
     return { onDecode, onInit, closeScanner };
