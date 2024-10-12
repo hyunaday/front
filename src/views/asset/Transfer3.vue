@@ -18,9 +18,19 @@
         </div>
       </div>
       <div class="button-container">
-        <button class="stroke-button" @click="confirm">확인</button>
+        <button class="stroke-button" @click="showConfirmModal = true">확인</button>
       </div>
     </div>
+
+    <!-- 송금 확인 모달 -->
+    <div v-if="showConfirmModal" class="modal-overlay">
+      <div class="modal-content">
+        <p>계속 송금하시겠습니까?</p>
+        <button @click="confirmTransfer" class="confirm-button">계속 송금하기</button>
+        <button @click="showConfirmModal = false" class="cancel-button">취소</button>
+      </div>
+    </div>
+
     <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
   </div>
 </template>
@@ -38,25 +48,40 @@ export default {
   data() {
     return {
       amount: 10000, // 송금 금액
-      recipient: '박비바', // 받는 사람
-      date: '2020년 3월 12일 12:45', // 송금 날짜
+      recipient: '김국민', // 받는 사람
+      date: '', // 송금 날짜
+      showConfirmModal: false, // 모달 표시 상태
     };
   },
   methods: {
     goToGroupPayPage() {
       this.$router.push("/grouppay");
     },
-    confirm() {
-      const userConfirmed = confirm('계속 송금하시겠습니까?');
-      if (userConfirmed) {
-        this.$router.push('/transfer'); // 예일 경우 /transfer로 이동
-      } else {
-        this.$router.push('/'); // 아니오일 경우 홈으로 이동
-      }
+    confirmTransfer() {
+      // 여기에 송금 완료 후 필요한 로직 추가
+      console.log('송금이 완료되었습니다.'); // 임시 로그
+      this.showConfirmModal = false; // 모달 닫기
+      this.$router.push('/transfer'); // 송금 완료 후 페이지 이동
     },
+    getCurrentDate() {
+      const now = new Date();
+      const options = {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+      };
+      return now.toLocaleString('ko-KR', options).replace(',', '').replace(/\//g, '-');
+    }
+  },
+  mounted() {
+    this.date = this.getCurrentDate(); // 현재 날짜 설정
   },
 }
 </script>
+
 
 <style scoped>
 .complete-page {
@@ -127,5 +152,46 @@ export default {
 .stroke-button:hover {
   background-color: white;
   color: #6981d9;
+}
+
+/* 모달 스타일 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  width: 300px;
+}
+
+.confirm-button,
+.cancel-button {
+  margin: 5px;
+  padding: 8px 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.confirm-button {
+  background-color: #98b6ef;
+  color: white;
+}
+
+.cancel-button {
+  background-color: #6981d9;
+  color: white;
 }
 </style>

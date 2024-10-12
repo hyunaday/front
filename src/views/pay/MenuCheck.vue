@@ -24,20 +24,20 @@
 
       <div class="payment-details">
         <div
-          v-for="(item, index) in paymentItems"
+          v-for="(item, index) in orderInfoStore.orderMenuList"
           :key="index"
           class="payment-item"
+          :class="{ selected: item.selected }"
           @click="toggleSelection(item)"
         >
           <div class="item-content">
-            <img :src="item.image" alt="아이템 이미지" class="item-image" />
+            <img :src="item.image || defaultImage" alt="아이템 이미지" class="item-image" />
             <div class="item-info">
-              <span class="item-name">{{ item.name }}</span>
-              <span class="item-price"
-                >{{ item.price.toLocaleString() }} 원</span
-              >
+              <span class="item-name">
+                {{ item.menuName }} ({{ item.selectedCount || 0 }}명)
+              </span>
+              <span class="item-price">{{ (item.price * item.amount).toLocaleString() }} 원</span>
             </div>
-            <input type="checkbox" class="checkbox" v-model="item.selected" />
           </div>
         </div>
       </div>
@@ -45,10 +45,7 @@
 
       <h4 class="payment-secamount">
         <span class="total-label">총&nbsp;</span>
-        <span style="color: #6981d9">
-          {{ selectedPaymentAmount.toLocaleString() }}
-        </span>
-        원
+        <span style="color: #6981d9">{{ selectedPaymentAmount.toLocaleString() }}</span> 원
       </h4>
       <button @click="splitByAmount" class="split-button">선택완료</button>
 
@@ -58,62 +55,191 @@
 </template>
 
 <script>
-import hamburgerImage from '../../assets/images/hamburger.png';
-import sodaImage from '../../assets/images/soda.png';
+import { useOrderInfoStore } from '../../stores/orderStore.js'; // Pinia store 사용
+import { useSocketStore } from '../../stores/socketStore.js'; // Socket store 사용
+import { useMemberStore } from '../../stores/MemberStore.js';
+import { onMounted, ref, watch } from 'vue';
+import hamburgerImage from '../../assets/images/hamburger.png'; // 이미지 샘플
+import { useRouter } from 'vue-router'; // router 사용
 
 export default {
-  data() {
-    return {
-      merchantName: 'KFC 군자능동점',
-      paymentItems: [], // 로컬 스토리지에서 가져올 결제 항목
-      selectedPaymentAmount: 0,
+  setup() {
+    const orderInfoStore = useOrderInfoStore(); // Pinia store 인스턴스
+    const socketStore = useSocketStore(); // Socket store 인스턴스
+    const memberStore = useMemberStore();
+    const selectedPaymentAmount = ref(0);
+    const defaultImage = hamburgerImage; // 기본 이미지 (없을 경우)
+    const router = useRouter(); // router 사용 선언
+
+    const initializeSelectedCount = () => {
+      // 메뉴 리스트에 selectedCount를 초기화
+      orderInfoStore.orderMenuList.forEach((item) => {
+        if (!item.selectedCount) {
+          item.selectedCount = 0;
+        }
+        // 반응형으로 selected 필드 초기화
+        if (item.selected === undefined) {
+          item.selected = false;
+        }
+      });
     };
-  },
-  methods: {
-    goBack() {
-      this.$router.go(-1);
-    },
-    splitByAmount() {
-      this.$router.push('/solopay');
-    },
-    toggleSelection(item) {
+
+    const toggleSelection = (item) => {
+      if (!socketStore.stompClient || !socketStore.stompClient.connected) {
+        console.error("STOMP 연결이 되어 있지 않습니다.");
+        alert("소켓 연결 상태를 확인하세요.");
+        return;
+      }
+
+      // 선택 상태를 즉시 토글하여 반영
       item.selected = !item.selected;
-      this.updateSelectedAmount(); // 선택 상태 변경 후 금액 업데이트 호출
-      this.saveSelectedItemsToLocalStorage(); // 로컬 스토리지에 저장
-    },
-    updateSelectedAmount() {
+
+      const message = {
+        orderIdx: orderInfoStore.orderIdx,
+        menuIdx: item.menuIdx,
+        memberId: memberStore.memberId,
+        menuName: item.menuName,
+        menuPrice: item.price,
+        amount: item.amount,
+      };
+
+      const destination = item.selected
+        ? '/pub/order/room/select' // 선택 시 전송
+        : '/pub/order/room/cancel'; // 선택 해제 시 전송
+
+      // 소켓을 통해 선택 또는 해제된 메뉴 정보를 서버로 전송
+      try {
+        socketStore.stompClient.send(
+          destination,
+          {
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+            'MemberId': memberStore.memberId,
+            'content-type': 'application/json',
+          },
+          JSON.stringify(message)
+        );
+      } catch (error) {
+        console.error('메시지 전송 실패:', error);
+        alert('메시지 전송 중 오류가 발생했습니다.');
+      }
+
+      // 선택된 금액 업데이트
+      updateSelectedAmount();
+    };
+
+
+    const updateSelectedAmount = () => {
       // 선택된 항목의 금액을 업데이트합니다.
-      this.selectedPaymentAmount = this.paymentItems
+      selectedPaymentAmount.value = orderInfoStore.orderMenuList
         .filter((item) => item.selected)
-        .reduce((total, item) => total + item.price, 0);
-    },
-    saveSelectedItemsToLocalStorage() {
-      // 선택된 항목들을 로컬 스토리지에 저장합니다.
-      const selectedItems = this.paymentItems.filter((item) => item.selected);
-      localStorage.setItem(
-        'selectedPaymentItems',
-        JSON.stringify(selectedItems)
-      );
-    },
-  },
+        .reduce((total, item) => total + item.price * item.amount, 0);
+    };
 
-  mounted() {
-    // 로컬 스토리지에서 결제 항목을 불러옵니다.
-    const storedItems = JSON.parse(
-      localStorage.getItem('selectedPaymentItems')
+    // 소켓 메시지에 따라 선택 인원 수를 업데이트하는 함수
+    watch(
+      () => socketStore.messages,
+      (newMessages) => {
+        const lastMessage = newMessages[newMessages.length - 1];
+        if (!lastMessage) return; // 메시지가 없으면 처리하지 않음
+
+        try {
+          console.log('Received message:', lastMessage);
+          const parsedMessage = JSON.parse(lastMessage);
+
+          // 메뉴 선택 처리
+          if (parsedMessage.type === 'MENU_SELECT' || parsedMessage.type === 'MENU_CANCEL') {
+            const menu = orderInfoStore.orderMenuList.find(item => item.menuIdx === parsedMessage.menuIdx);
+            if (menu) {
+              // 선택 인원 수 업데이트
+              if (parsedMessage.type === 'MENU_SELECT') {
+                menu.selectedCount = (menu.selectedCount || 0) + 1;
+              } else if (parsedMessage.type === 'MENU_CANCEL') {
+                if (menu.selectedCount > 0) {
+                  menu.selectedCount -= 1;
+                }
+              }
+
+              // 자신의 선택 상태 업데이트
+              if (parsedMessage.memberId === memberStore.memberId) {
+                menu.selected = (parsedMessage.type === 'MENU_SELECT');
+                updateSelectedAmount(); // 금액 업데이트
+              }
+            }
+          }
+
+          if (parsedMessage.type === 'ERROR') {
+            console.log("ERROR :", parsedMessage);
+          }
+
+          // START_PAY 메시지가 도착하면 소켓 연결 해제 및 페이지 이동
+          if (parsedMessage.type === 'START_PAY') {
+            console.log('START_PAY 메시지 도착:', parsedMessage);
+            socketStore.disconnect(); // 소켓 연결 해제
+            router.push('/solopay'); // 결제 페이지로 이동
+          }
+        } catch (error) {
+          console.error('메시지 파싱 실패:', error);
+        }
+      },
+      { deep: true }
     );
-    if (storedItems && storedItems.length > 0) {
-      this.paymentItems = storedItems; // 로컬 스토리지에서 가져온 항목으로 설정
-    }
 
-    // 초기 선택된 항목의 금액을 계산합니다.
-    this.updateSelectedAmount();
+    const splitByAmount = () => {
+      // 선택 완료 후 처리 로직: 서버에 READY 요청 보내기
+      try {
+        socketStore.stompClient.send(
+          `/pub/order/room/ready`,
+          { 
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+            'MemberId': "test@gmail.com",
+            'content-type': 'application/json'
+          },
+          JSON.stringify({
+            "memberId" : memberStore.memberId,
+            "orderIdx" : orderInfoStore.orderIdx
+          })
+        );
+        console.log("선택 완료 요청 전송");
+      } catch (error) {
+        console.error('READY 메시지 전송 실패:', error);
+        alert('READY 요청을 전송하는 중 오류가 발생했습니다.');
+      }
+    };
+
+    const goBack = () => {
+      router.go(-1);
+    };
+
+    onMounted(() => {
+      // API 호출로 주문 정보 가져오기
+      orderInfoStore.getOrderInfo(1, 1); // orderIdx, marketIdx는 예시로 넣었으며 실제 값을 사용
+
+      // selectedCount 및 selected 필드 초기화
+      initializeSelectedCount();
+
+      // 소켓 연결
+      socketStore.connect();
+    });
+
+    return {
+      orderInfoStore, // Pinia store 상태 사용
+      selectedPaymentAmount,
+      toggleSelection,
+      splitByAmount,
+      goBack,
+      defaultImage,
+    };
   },
 };
 </script>
 
 <style scoped>
-/* 스타일은 변경 없이 유지 */
+/* 스타일 코드 생략 (기존 코드와 동일) */
+</style>
+
+
+
+<style scoped>
 .main-container {
   height: 100vh;
   display: flex;
@@ -195,7 +321,7 @@ export default {
 }
 
 .payment-item.selected {
-  background-color: #f0f0f0;
+  background-color: #f0f0f0; /* 선택된 항목에 대한 회색 배경 */
 }
 
 .item-label {

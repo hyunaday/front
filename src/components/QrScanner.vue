@@ -31,7 +31,7 @@ export default {
           if (this.$route.query.paymentType === 'SoloPay') {
             this.$router.push('/solopay');
           } else if (this.$route.query.paymentType === 'MainPay') {
-            this.$router.push('/payinfo');
+            this.$router.push('/headcount');
           } else {
             console.error('유효하지 않은 URL 또는 결제 방식:', decodedString);
           }

@@ -20,7 +20,8 @@
 </template>
 
 <script>
-import { useNavigationStore } from '../../stores/navigation';
+import { useNavigationStore } from '../../stores/navigation.js';
+import { useOrderStore } from '../../stores/orderStore.js';
 
 export default {
   name: 'GameList',
@@ -30,12 +31,20 @@ export default {
     },
     navigateTo(routeName) {
       const navigationStore = useNavigationStore();
+      const orderStore = useOrderStore();
       navigationStore.setSelectedPage(routeName, this.$router); // 선택한 페이지를 저장합니다.
 
       // 페이지에 따라 이동
+      
       if (routeName === 'PayInfo') {
-        this.$router.push('/payinfo');
-      } else if (routeName === 'LotteryGame') {
+        console.log("type = ", useOrderStore.type);
+        if (orderStore.type === 'BY_MENU') {
+          this.$router.push('/menucheck');
+        } else if (orderStore.type === 'BY_PRICE')  {
+          this.$router.push('/payinfo');
+        }
+      }
+      else if (routeName === 'LotteryGame') {
         this.$router.push('/lottery-game'); // 룰렛 돌리기 페이지로 수정
       }
     },
@@ -118,3 +127,4 @@ h3 {
   color: #333;
 }
 </style>
+

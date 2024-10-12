@@ -12,8 +12,7 @@
         <h3 class="merchant-name">{{ merchantName }} 에서</h3>
         <h4 class="payment-amount">
           총
-          <span class="amount">{{ paymentAmount.toLocaleString() }}</span
-          >원
+          <span class="amount">{{ priceStore.totalPrice.toLocaleString() }}</span>원
         </h4>
         <p class="payment-question">결제 하시겠습니까?</p>
       </div>
@@ -23,20 +22,20 @@
       <div class="payment-details">
         <div
           class="payer-info"
-          v-for="(name, index) in payerNames"
-          :key="index"
+          v-for="(member, index) in priceStore.memberList"
+          :key="member.memberIdx"
         >
           <div class="profile-section">
             <div class="profile-icon">
               <img :src="getProfileIcon(index)" alt="Profile Icon" />
             </div>
-            <div class="payer-name">{{ maskedPayerName(name) }}</div>
+            <div class="payer-name">{{ maskedPayerName(member.memberName) }}</div>
           </div>
 
           <div class="requested-amount">
             <input
               type="number"
-              v-model.number="requestedAmounts[index]"
+              v-model.number="priceStore.memberList[index].price"
               @input="validateAmount"
               placeholder="수정할 금액을 입력하세요"
               class="amount-input"
@@ -60,6 +59,12 @@
 </template>
 
 <script>
+import { ref, watch } from 'vue';
+import { usePriceStore } from '../../stores/orderStore.js';
+import { useSocketStore } from '../../stores/socketStore.js'; // 소켓 스토어 가져오기
+import { useRouter } from 'vue-router'; // router 가져오기
+import { useMemberStore } from '../../stores/MemberStore.js';
+import { usePayPriceInfoStore } from '../../stores/orderStore.js';
 import profileIcon1 from '../../assets/images/profile1.png';
 import profileIcon2 from '../../assets/images/profile2.png';
 import profileIcon3 from '../../assets/images/profile3.png';
@@ -67,30 +72,15 @@ import profileIcon4 from '../../assets/images/profile4.png';
 import profileIcon5 from '../../assets/images/profile5.png';
 
 export default {
-  data() {
-    return {
-      merchantName: 'KFC 군자능동점',
-      paymentAmount: 95600,
-      payerNames: ['공희진', '백도현', '서석현', '이동훈', '조현아'],
-      requestedAmounts: Array(5).fill(Number((95600 / 5).toFixed(0))),
-      isAmountValid: true,
-    };
-  },
-  computed: {
-    maskedPayerName() {
-      return (name) => {
-        if (name.length > 1) {
-          return name.charAt(0) + '*' + name.charAt(name.length - 1);
-        }
-        return name;
-      };
-    },
-  },
-  methods: {
-    goBack() {
-      this.$router.go(-1);
-    },
-    getProfileIcon(index) {
+  setup() {
+    const priceStore = usePriceStore(); // store 인스턴스 가져오기
+    const socketStore = useSocketStore(); // 소켓 스토어 가져오기
+    const router = useRouter(); // router 가져오기
+    const isAmountValid = ref(true);
+    const memberStore = useMemberStore();
+    const payPriceInfoStore = usePayPriceInfoStore();
+
+    const getProfileIcon = (index) => {
       const profileIcons = [
         profileIcon1,
         profileIcon2,
@@ -99,35 +89,97 @@ export default {
         profileIcon5,
       ];
       return profileIcons[index];
-    },
-    validateAmount() {
-      const totalRequestedAmount = this.requestedAmounts.reduce(
-        (acc, amount) => acc + (Number(amount) || 0),
-        0
-      );
-      this.isAmountValid = totalRequestedAmount === this.paymentAmount;
-    },
-    handleSplitByAmount() {
-      const totalRequestedAmount = this.requestedAmounts.reduce(
-        (acc, amount) => acc + Number(amount),
-        0
-      );
+    };
 
-      if (totalRequestedAmount !== this.paymentAmount) {
-        this.showErrorMessage('결제 금액이 맞지 않습니다. 다시 확인해주세요');
-      } else {
-        // 결제 요청하기 버튼 클릭 시 대기 화면으로 이동
-        this.$router.push('/solopay');
+    const validateAmount = () => {
+      const totalRequestedAmount = priceStore.getTotalPrice();
+      isAmountValid.value = totalRequestedAmount === priceStore.totalPrice;
+    };
+
+    const handleSplitByAmount = () => {
+      if (!isAmountValid.value) {
+        showErrorMessage('결제 금액이 맞지 않습니다. 다시 확인해주세요');
+        return;
       }
-    },
-    splitByAmount() {
-      // 이 메서드는 PaymentWaiting.vue에서 호출되어야 하므로 비워두거나
-      // PaymentWaiting.vue에서 결제 완료 후 호출하여 solopay로 이동
-    },
-    showErrorMessage(message) {
-      // 사용자 친화적인 에러 메시지 UI 구현 (예: 모달 또는 toast)
-      alert(message); // 단순 alert 대신 다른 UI로 대체할 수 있음
-    },
+
+      // 요청 보내기 로직
+      const payload = {
+        orderIdx: priceStore.orderIdx,
+        memberId: memberStore.memberId,
+        totalPrice: priceStore.totalPrice,
+        memberCnt: priceStore.memberList.length,
+        memberPriceInfoList: priceStore.memberList.map((member) => ({
+          memberIdx: member.memberIdx,
+          price: member.price,
+        })),
+      };
+
+      const headers = {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+        'content-type': 'application/json',
+        'MemberId': memberStore.memberId,
+      };
+
+      // WebSocket을 통해 전송
+      try {
+        socketStore.stompClient.send(
+          '/pub/order/room/price',  // 목적지
+          headers,                  // 헤더
+          JSON.stringify(payload)   // 페이로드
+        );
+        console.log('결제 요청 보내기:', payload);
+      } catch (error) {
+        console.error('결제 요청 전송 실패:', error);
+      }
+    };
+
+    const maskedPayerName = (name) => {
+      if (name.length > 1) {
+        return name.charAt(0) + '*' + name.charAt(name.length - 1);
+      }
+      return name;
+    };
+
+    const goBack = () => {
+      this.$router.go(-1);
+    };
+
+    // 소켓 메시지 감시
+    watch(
+      () => socketStore.messages,
+      (newMessages) => {
+        const lastMessage = newMessages[newMessages.length - 1];
+        if (!lastMessage) return; // 메시지가 없으면 처리하지 않음
+
+        try {
+          const parsedMessage = JSON.parse(lastMessage);
+          
+          // 응답이 "PRICE_SELECT" 타입일 때 라우터 푸시
+          if (parsedMessage.type === 'PRICE_SELECT') {
+            console.log('PRICE_SELECT 메시지 도착:', parsedMessage);
+
+            // 필요한 데이터 priceStore에 업데이트
+            payPriceInfoStore.setPayPriceInfo(parsedMessage, memberStore.idx);
+
+            // 페이지 이동
+            router.push('/solopay');
+          }
+        } catch (error) {
+          console.error('메시지 파싱 실패:', error);
+        }
+      },
+      { deep: true }
+    );
+
+    return {
+      priceStore,
+      getProfileIcon,
+      validateAmount,
+      handleSplitByAmount,
+      maskedPayerName,
+      goBack,
+      isAmountValid,
+    };
   },
 };
 </script>
@@ -261,6 +313,7 @@ export default {
   flex-grow: 1;
 }
 .amount {
-  color: #6981d9; /* 이 스타일은 여전히 여기서 사용할 수 있습니다. */
+  color: #6981d9;
 }
 </style>
+
