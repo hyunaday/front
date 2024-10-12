@@ -7,7 +7,7 @@ export const useOrderStore = defineStore('order', {
   state: () => ({
     orderIdx: 1,
     maxMemberCnt: 2,
-    type: "BY_MENU",
+    type: null,
   }),
   actions: {
     setOrderIdx(orderIdx) {
