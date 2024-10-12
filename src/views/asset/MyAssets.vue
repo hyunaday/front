@@ -146,7 +146,7 @@ export default {
       },
       creditCards: [],
       loanAmount: 480000000,
-      banners: [
+     banners: [
         {
           image: kbPayImage,
           title: 'KB Pay',
