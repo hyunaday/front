@@ -85,7 +85,7 @@ export const useSocketStore = defineStore('socket', {
 
       const headers = {
         Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-        'MemberId': "test@gmail.com",
+        'MemberId': memberStore.memberId,
         'content-type': `application/json`,
       }
 
