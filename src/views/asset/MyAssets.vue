@@ -11,10 +11,10 @@
 
       <div class="advertisement-banner">
         <div class="banner-content">
-          <img src="../../assets/images/kbpay.png" alt="광고 배너" class="banner-image" />
+          <img :src="currentBanner.image" alt="광고 배너" class="banner-image" />
           <div class="banner-text">
-            <p class="banner-title">KB Pay</p>
-            <p class="banner-subtitle">편리한 국민 생활 파트너</p>
+            <p class="banner-title">{{ currentBanner.title }}</p>
+            <p class="banner-subtitle">{{ currentBanner.subtitle }}</p>
           </div>
         </div>
       </div>
@@ -31,23 +31,22 @@
         </div>
 
         <div class="account-list">
-  <div v-for="(account, index) in accounts" :key="index" class="account-card">
-    <img :src="bankLogos[account.name]" alt="입출금통장 아이콘" class="account-icon" />
-    <div class="account-info">
-      <span class="transactions-title">{{ account.name }}</span>
-      <span class="account-balance">{{ formatNumber(account.balance) }}원</span>
-    </div>
-    <div class="button-container">
-      <router-link :to="`/transactionhistory${account.idx}`">
-        <button class="view-button">조회</button>
-      </router-link>
-      <router-link to="/transfer">
-        <button class="transfer-button">송금</button>
-      </router-link>
-    </div>
-  </div>
-</div>
-
+          <div v-for="(account, index) in accounts" :key="index" class="account-card">
+            <img :src="bankLogos[account.name]" alt="입출금통장 아이콘" class="account-icon" />
+            <div class="account-info">
+              <span class="transactions-title">{{ account.name }}</span>
+              <span class="account-balance">{{ formatNumber(account.balance) }}원</span>
+            </div>
+            <div class="button-container">
+              <router-link :to="`/transactionhistory${account.idx}`">
+                <button class="view-button">조회</button>
+              </router-link>
+              <router-link to="/transfer">
+                <button class="transfer-button">송금</button>
+              </router-link>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="savings-section">
@@ -65,8 +64,6 @@
             </div>
           </div>
         </div>
-
-
       </div>
 
       <hr>
@@ -112,7 +109,7 @@
 
 <script>
 import FooterNav from '../../components/FooterNav.vue';
-import apiClient from '../../api/axios.js';  // axios 클라이언트 불러오기
+import apiClient from '../../api/axios.js';
 import Header from '../../components/Header.vue';
 import kbbankLogo from "../../assets/images/kbbank.png";
 import shinhanLogo from "../../assets/images/shinhan.png";
@@ -126,11 +123,12 @@ import kbCardLogo from "../../assets/images/kbcard.png";
 import shinhanCardLogo from "../../assets/images/shinhancard.png";
 import hanaCardLogo from "../../assets/images/hanacard.png";
 import kakaoCardLogo from "../../assets/images/kakaocard.png";
-import wooriCardLogo from "../../assets/images/wooricard.png";
-import lotteCardLogo from "../../assets/images/lottecard.png"
-import samsungCardLogo from "../../assets/images/samsungcard.png"
-import hyundaiCardLogo from "../../assets/images/hyundaicard.png"
-
+import wooriCardLogo from "../../assets/images/lottecard.png";
+import samsungCardLogo from "../../assets/images/samsungcard.png";
+import hyundaiCardLogo from "../../assets/images/hyundaicard.png";
+import kbPayImage from '../../assets/images/kbpay.png';
+import iphone from '../../assets/images/iphone.png';
+import multicampus from '../../assets/images/kbmulti.png';
 
 
 export default {
@@ -148,6 +146,24 @@ export default {
       },
       creditCards: [],
       loanAmount: 480000000,
+      banners: [
+        {
+          image: kbPayImage,
+          title: 'KB Pay',
+          subtitle: '편리한 국민 생활 파트너',
+        },
+        {
+          image: iphone,
+          title: 'Iphone 16',
+          subtitle: '안팎으로 넘치는 혁신과 강력함',
+        },
+        {
+          image: multicampus,
+          title: 'KB 멀티캠퍼스',
+          subtitle: '믿을 수 있는 교육기관 멀티캠퍼스',
+        },
+      ],
+      currentIndex: 0,
       bankLogos: {
         국민은행: kbbankLogo,
         신한은행: shinhanLogo,
@@ -159,19 +175,21 @@ export default {
         농협은행: nhLogo,
       },
       cardLogos: {
-        'KB 국민카드': kbCardLogo, 
+        'KB 국민카드': kbCardLogo,
         우리카드: wooriCardLogo,
         신한카드: shinhanCardLogo,
         '카카오뱅크 카드': kakaoCardLogo,
         하나카드: hanaCardLogo,
-        롯데카드: lotteCardLogo,
+        롯데카드: wooriCardLogo,
         삼성카드: samsungCardLogo,
         현대카드: hyundaiCardLogo,
-
       },
     };
   },
   computed: {
+    currentBanner() {
+      return this.banners[this.currentIndex];
+    },
     totalAccountBalance() {
       return this.accounts.reduce((total, account) => total + account.balance, 0) + this.savingsAccount.balance;
     },
@@ -180,7 +198,7 @@ export default {
     },
     totalWithdrawDeposit() {
       return this.accounts.reduce((total, account) => total + account.balance, 0);
-    }
+    },
   },
   
   methods: {
@@ -198,8 +216,7 @@ export default {
           this.accounts = response.data.result.accountList.map(account => ({
             name: account.bankName,
             balance: account.amount,
-            idx: account.idx, // idx 값 추가
-            image: '../src/assets/images/default-account.png',
+            idx: account.idx,
           }));
         } else {
           console.error('응답 데이터에서 계좌 정보를 찾을 수 없습니다.');
@@ -216,7 +233,6 @@ export default {
           this.creditCards = response.data.result.creditList.map(card => ({
             name: card.creditName,
             amount_sum: card.amountSum,
-            image: card.imgUrl || '../src/assets/images/default-card.png',
           }));
         } else {
           console.error('응답 데이터에서 신용카드 정보를 찾을 수 없습니다.');
@@ -224,22 +240,28 @@ export default {
       } catch (error) {
         console.error('신용카드 데이터를 불러오는 중 오류가 발생했습니다:', error);
       }
-    }
+    },
+    nextBanner() {
+      this.currentIndex = (this.currentIndex + 1) % this.banners.length;
+    },
+    startSlider() {
+      setInterval(this.nextBanner, 3000); // 3초마다 다음 배너로 전환
+    },
   },
 
-  created() {
+  mounted() {
+    this.startSlider();
     this.fetchAccounts();
     this.fetchCreditCards();
   }
 };
 </script>
 
-
 <style scoped>
 .button-container {
   display: flex;
   align-items: center;
-  margin-left: auto; /* 버튼을 오른쪽으로 정렬 */
+  margin-left: auto;
 }
 
 .view-button {
@@ -249,33 +271,32 @@ export default {
   padding: 5px 10px;
   border-radius: 5px;
   font-size: 12px;
-  margin-right: 10px; /* 송금 버튼과의 간격 */
+  margin-right: 10px;
 }
 
 .card-icon {
-  width: 70px; /* 카드 아이콘 너비 */
-  height: 40px; /* 카드 아이콘 높이 */
-  object-fit: cover; /* 이미지를 비율에 맞춰서 자름 */
-  border-radius: 5px; /* 카드 아이콘 테두리 둥글게 */
-  margin-right: 10px; /* 카드 아이콘과 텍스트 사이 여백 */
+  width: 70px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 5px;
+  margin-right: 10px;
 }
 .my-assets {
   margin-top: 70px;
   padding: 20px;
   width: 100%;
   max-width: 320px;
-  overflow-y: auto; /* 세로 스크롤 추가 */
-  max-height: 80vh; /* 최대 높이 설정 */
-  position: absolute; /* 페이지 안에서의 위치 설정 */
-  top: 0; /* 페이지 상단에 고정 */
+  overflow-y: auto;
+  max-height: 80vh;
+  position: absolute;
+  top: 0;
 
-   /* 스크롤바 숨기기 */
-   scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .my-assets::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none;
 }
 
 h1 {
@@ -347,22 +368,21 @@ h1 {
 
 .account-card {
   display: flex;
-  align-items: center; /* 수직 중앙 정렬 */
-  justify-content: space-between; /* 좌우 정렬 */
+  align-items: center;
+  justify-content: space-between;
   margin-top: 10px;
 }
 
 .account-info {
   display: flex;
   flex-direction: column;
-  text-align: left; /* 좌측 정렬 */
-  margin-left: 10px; /* 이미지와 텍스트 사이 여백 추가 */
+  text-align: left;
+  margin-left: 10px;
 }
 
 .account-balance {
   font-size: 12px;
   text-align: right;
-
 }
 
 .credit-card-balance::before {
@@ -372,7 +392,7 @@ h1 {
 .transfer-button-container {
   display: flex;
   align-items: center;
-  margin-left: auto; /* 버튼을 오른쪽으로 정렬 */
+  margin-left: auto;
 }
 
 .transfer-button {
@@ -391,16 +411,18 @@ h1 {
 .banner-image {
   width: 50px;
   height: 50px;
+  margin-right: 7px;
 }
+
 .banner-content {
   margin-top: 20px;
   display: flex;
   align-items: center;
   background-color: #e3e3e39f;
-  border-radius: 10px; /* 둥근 테두리 추가 */
-  padding: 10px; /* 내용물에 여백 추가 */
+  border-radius: 10px;
+  padding: 10px;
+  transition: opacity 0.5s ease-in-out; /* 추가된 애니메이션 */
 }
-
 
 .banner-text {
   margin-left: 10px;
@@ -411,7 +433,7 @@ h1 {
 .banner-title {
   font-size: 16px;
   font-weight: bold;
-  margin-bottom: 0; /* margin-bottom 제거 */
+  margin-bottom: 0;
 }
 
 .banner-subtitle {
@@ -427,15 +449,15 @@ hr {
 .account-icon {
   width: 40px;
   height: 40px;
-  object-fit: cover; /* 이미지를 비율에 맞춰서 자름 */
-  border-radius: 50%; /* 이미지를 동그랗게 만듦 */
-  margin-right: 10px; /* 이미지와 텍스트 사이 간격 추가 */
+  object-fit: cover;
+  border-radius: 50%;
+  margin-right: 10px;
 }
 
 .account-icons {
   width: 40px;
   height: 40px;
-  object-fit: cover; /* 이미지를 비율에 맞춰서 자름 */
-  margin-right: 10px; /* 이미지와 텍스트 사이 간격 추가 */
+  object-fit: cover;
+  margin-right: 10px;
 }
 </style>

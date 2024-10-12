@@ -153,7 +153,7 @@ export default {
 
 <style scoped>
 a {
-  text-decoration: none; /* 링크의 밑줄 제거 */
+  text-decoration: ; /* 링크의 밑줄 제거 */
 }
 
 .title {
