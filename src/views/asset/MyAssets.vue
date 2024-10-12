@@ -47,21 +47,7 @@
     </div>
   </div>
 </div>
-<!-- 
-        <div class="account-list">
-          <div v-for="(account, index) in accounts" :key="index" class="account-card">
-            <img :src="bankLogos[account.name]" alt="입출금통장 아이콘" class="account-icon" />
-            <div class="account-info">
-              <span class="transactions-title">{{ account.name }}</span>
-              <span class="account-balance">{{ formatNumber(account.balance) }}원</span>
-            </div>
-            <div class="transfer-button-container">
-              <router-link to="/transfer">
-                <button class="transfer-button">송금</button>
-              </router-link>
-            </div>
-          </div>
-        </div> -->
+
       </div>
 
       <div class="savings-section">
@@ -70,6 +56,15 @@
           <span class="transactions-amount">{{ formatNumber(savingsAccount.balance) }}원</span>
         </div>
 
+        <div class="account-list">
+          <div class="account-card">
+            <img src="../../assets/images/pig.png" alt="적금 아이콘" class="account-icons" />
+            <div class="account-info">
+              <span class="transactions-title">KB 국민프리미엄적금</span>
+              <span class="account-balance">{{ formatNumber(savingsAccount.balance) }}원</span>
+            </div>
+          </div>
+        </div>
 
 
       </div>
@@ -101,7 +96,7 @@
         <span class="account-title">대출</span>
         <div class="account-list">
           <div class="account-card">
-            <img src="../../assets/images/kbbank.png" alt="주택담보대출 아이콘" class="account-icon" />
+            <img src="../../assets/images/house.png" alt="주택담보대출 아이콘" class="account-icon" />
             <div class="account-info">
               <span class="transactions-title">주택담보대출</span>
               <span class="account-balance credit-card-balance">{{ `${formatNumber(loanAmount)}` }}원</span>
@@ -434,6 +429,13 @@ hr {
   height: 40px;
   object-fit: cover; /* 이미지를 비율에 맞춰서 자름 */
   border-radius: 50%; /* 이미지를 동그랗게 만듦 */
+  margin-right: 10px; /* 이미지와 텍스트 사이 간격 추가 */
+}
+
+.account-icons {
+  width: 40px;
+  height: 40px;
+  object-fit: cover; /* 이미지를 비율에 맞춰서 자름 */
   margin-right: 10px; /* 이미지와 텍스트 사이 간격 추가 */
 }
 </style>
