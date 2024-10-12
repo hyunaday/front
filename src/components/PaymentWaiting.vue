@@ -11,8 +11,8 @@
       <div class="circle-background">
         <RadialProgress
           :diameter="200"
-          :completed-steps="completedSteps"
-          :total-steps="totalSteps"
+          :completed-steps="completedParticipants"
+          :total-steps="totalParticipants"
         >
           <text
             x="50%"
@@ -33,69 +33,85 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import RadialProgress from 'vue3-radial-progress'; // RadialProgress 컴포넌트 가져오기
+import RadialProgress from 'vue3-radial-progress';
+import { useOrderStore, useOrderInfoStore, usePriceStore } from '../stores/orderStore.js';
+import { useSocketStore } from '../stores/socketStore.js';
 
 const router = useRouter();
-const interval = ref(null);
+const socketStore = useSocketStore();
+const orderStore = useOrderStore();
+const orderInfoStore = useOrderInfoStore();
+const priceStore = usePriceStore();
 const completedParticipants = ref(0);
-const totalParticipants = ref(5); // 전체 참여자 수
-const paymentStatus = ref([1, 1, 1, 0, 1]); // 예시: 결제 완료 상태 (1: 완료, 0: 미완료)
-const completedSteps = ref(0);
-const totalSteps = ref(10); // 총 단계 수
+const totalParticipants = ref(priceStore.maxMemberCnt); // 전체 참여자 수
+
+// 참여자 수 업데이트 함수
+const updateParticipantCount = () => {
+  completedParticipants.value = orderInfoStore.maxMemberCnt;
+};
 
 // 뒤로 가기 버튼
 const goBack = () => {
   router.go(-1);
 };
 
-// 원 업데이트
-const updateCircle = () => {
-  const completedCount = paymentStatus.value.reduce(
-    (acc, status) => acc + status,
-    0
-  );
-  completedParticipants.value = completedCount;
-
-  // 참여자 수에 따라 비율 계산
-  const percentage = (completedCount / totalParticipants.value) * 100;
-  completedSteps.value = Math.round((percentage / 100) * totalSteps.value);
+// 방 입장 및 구독
+const joinRoom = async () => {
+  socketStore.connect();
 };
 
-// 결제 상태 체크
-const checkPaymentStatus = async () => {
-  interval.value = setInterval(async () => {
-    const allPaymentsCompleted = await checkAllPayments(); // 모든 결제 상태 확인 API 호출
+// 주문 정보 가져오기
+const loadOrderInfo = async () => {
+  orderInfoStore.getOrderInfo(orderStore.orderIdx, orderStore.marketIdx);
+  totalParticipants.value = priceStore.maxMemberCnt;
+};
 
-    if (allPaymentsCompleted) {
-      clearInterval(interval.value);
-      router.push('/success'); // 모든 결제가 완료되면 success로 이동
+// 소켓 메시지 감시
+watch(
+  () => socketStore.messages,
+  (newMessages) => {
+    const lastMessage = newMessages[newMessages.length - 1];
+    if (!lastMessage) return;
+
+    try {
+      const parsedMessage = JSON.parse(lastMessage);
+      if (parsedMessage.type === 'PARTICIPANT_INFO') {
+        priceStore.setPriceData(parsedMessage);
+        updateParticipantCount();
+      }
+
+      if (parsedMessage.type === 'MENU_INFO') {
+          console.log('MENU_INFO 메시지 도착:', parsedMessage);
+          orderStore.setType("BY_MENU")
+          alert('MENU_INFO 수신 완료. 다음 페이지로 이동합니다.');
+          router.push('/menucheck'); // 페이지 이동 (소켓 연결 유지)
+        } else if (parsedMessage.type === 'PARTICIPANT_INFO') {
+          orderStore.setType("BY_PRICE")
+          console.log('PARTICIPANT_INFO 메시지 도착:', parsedMessage);
+          priceStore.setPriceData(parsedMessage);
+          router.push('/requestPay')
+        }
+
+    } catch (error) {
+      console.error('메시지 파싱 실패:', error);
     }
+    
+  },
+  { deep: true }
+);
 
-    // 예시로 결제 완료 상태를 랜덤으로 업데이트
-    paymentStatus.value[
-      Math.floor(Math.random() * totalParticipants.value)
-    ] = 1;
-    updateCircle();
-  }, 10000); // 10초마다 확인
-};
-
-// 모든 결제 상태 확인하는 로직 (예시)
-const checkAllPayments = async () => {
-  // 실제 API 호출로 모든 결제 완료 여부 확인하는 로직을 작성해야 합니다.
-  return true; // 실제로는 API 결과에 따라 true/false 반환
-};
-
-// 컴포넌트가 마운트될 때 상태 체크 시작
-onMounted(() => {
-  checkPaymentStatus();
-  updateCircle(); // 초기 원 상태 업데이트
+// 컴포넌트가 마운트될 때 소켓 연결 및 방 입장, 주문 정보 로드
+onMounted(async () => {
+  await loadOrderInfo();
+  joinRoom();
+  updateParticipantCount();
 });
 
-// 컴포넌트가 언마운트될 때 인터벌 정리
+// 컴포넌트가 언마운트될 때 소켓 연결 해제하지 않음 (필요 시 추가)
 onBeforeUnmount(() => {
-  clearInterval(interval.value);
+  // socketStore.disconnect(); // 소켓 연결 해제할 경우 사용
 });
 </script>
 
@@ -107,7 +123,7 @@ onBeforeUnmount(() => {
   justify-content: flex-start;
   align-items: center;
   padding: 20px;
-  overflow: hidden; /* 전체 스크롤 숨김 */
+  overflow: hidden;
 }
 
 .header {
@@ -120,40 +136,36 @@ onBeforeUnmount(() => {
 }
 
 .content {
-  text-align: center; /* 중앙 정렬 */
+  text-align: center;
   margin-top: auto;
   margin-bottom: 100px;
 }
 
 .circle-background {
-  width: 200px; /* 원의 크기 조정 */
-  height: 200px; /* 원의 크기 조정 */
-  border-radius: 50%; /* 둥근 형태 만들기 */
-  background-color: #6981d9; /* 파란색 배경 */
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background-color: #6981d9;
   display: flex;
   align-items: center;
-  justify-content: center; /* 중앙 정렬 */
-  margin: 0 auto; /* 수평 중앙 정렬 */
-  position: relative; /* 원 안의 텍스트를 중앙에 배치하기 위해 상대적으로 위치 지정 */
+  justify-content: center;
+  margin: 0 auto;
+  position: relative;
 }
 
 .circle-text {
   font-size: 50px;
   color: white;
   font-weight: bold;
-  fill: white; /* 텍스트 색상 */
 }
 
 .waiting-message {
   margin-top: 20px;
-  font-size: 20px; /* 원하는 폰트 사이즈로 조정 (예: 18px) */
+  font-size: 20px;
 }
 
 .waiting-description {
-  font-size: 14px; /* 원하는 폰트 사이즈로 조정 (예: 14px) */
-  white-space: nowrap; /* 다음 줄로 넘어가지 않도록 설정 */
-  overflow: hidden; /* 오버플로우 숨김 */
-  text-overflow: ellipsis; /* 오버플로우 시 생략 부호 표시 */
+  font-size: 14px;
 }
 
 .back-button {

@@ -47,7 +47,12 @@
         <span class="total-label">총&nbsp;</span>
         <span style="color: #6981d9">{{ selectedPaymentAmount.toLocaleString() }}</span> 원
       </h4>
-      <button @click="splitByAmount" class="split-button">선택완료</button>
+      <!-- 선택 완료 버튼 -->
+      <button 
+        @click="splitByAmount" 
+        :class="['split-button', { 'ready': isReadySent, 'not-ready': !isReadySent }]">
+        {{ isReadySent ? '선택 완료 취소' : '선택 완료' }}
+      </button>
 
       <div class="spacer"></div>
     </div>
@@ -62,6 +67,7 @@ import { onMounted, ref, watch } from 'vue';
 import hamburgerImage from '../../assets/images/hamburger.png'; // 이미지 샘플
 import { useRouter } from 'vue-router'; // router 사용
 
+
 export default {
   setup() {
     const orderInfoStore = useOrderInfoStore(); // Pinia store 인스턴스
@@ -70,6 +76,7 @@ export default {
     const selectedPaymentAmount = ref(0);
     const defaultImage = hamburgerImage; // 기본 이미지 (없을 경우)
     const router = useRouter(); // router 사용 선언
+    const isReadySent = ref(false); // 선택 완료 상태를 추적하는 변수
 
     const initializeSelectedCount = () => {
       // 메뉴 리스트에 selectedCount와 selectedByUser를 초기화
@@ -179,7 +186,7 @@ export default {
                 item.selectedByUser = false;
               }
             });
-            alert('더 이상 선택할 수 없는 메뉴입니다');
+            alert('더 이상 선택할 수 없는 메뉴입니다')
 
           }
 
@@ -197,25 +204,35 @@ export default {
     );
 
     const splitByAmount = () => {
-      // 선택 완료 후 처리 로직: 서버에 READY 요청 보내기
+      const destination = isReadySent.value
+        ? '/pub/order/room/ready/cancel'
+        : '/pub/order/room/ready';
+
+      const message = {
+        memberId: memberStore.memberId,
+        orderIdx: orderInfoStore.orderIdx,
+      };
+
       try {
         socketStore.stompClient.send(
-          `/pub/order/room/ready`,
-          { 
+          destination,
+          {
             Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
             'MemberId': memberStore.memberId,
-            'content-type': 'application/json'
+            'content-type': 'application/json',
           },
-          JSON.stringify({
-            "memberId" : memberStore.memberId,
-            "orderIdx" : orderInfoStore.orderIdx
-          })
+          JSON.stringify(message)
         );
-        console.log("선택 완료 요청 전송");
+        isReadySent.value = !isReadySent.value; // 상태 토글
+        console.log(`isReadySent 상태:`, isReadySent.value); // 상태 확인
+        console.log(`선택 완료 ${isReadySent.value ? '요청' : '취소'} 전송`);
       } catch (error) {
         console.error('READY 메시지 전송 실패:', error);
         alert('READY 요청을 전송하는 중 오류가 발생했습니다.');
       }
+      watch(isReadySent, (newValue) => {
+        console.log('isReadySent 상태 변경:', newValue);
+      });
     };
 
     const goBack = () => {
@@ -390,20 +407,26 @@ export default {
 .split-button {
   margin-top: 10px;
   padding: 10px 20px;
-  background-color: #c5c5c5;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   width: 300px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   font-size: 20px;
 }
 
-.split-button:hover {
+.split-button.ready {
   background-color: #6981d9;
   color: white;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.split-button.not-ready {
+  background-color: #5670d9;
+  color: white;
+}
+
+.split-button:hover {
+  background-color: #c5c5c5;
 }
 
 .spacer {
