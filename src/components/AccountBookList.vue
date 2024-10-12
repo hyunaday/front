@@ -443,10 +443,10 @@ export default {
         if (response.data.isSuccess) {
           const groupedEntries = response.data.result.transactionList.reduce(
             (acc, item) => {
-              const dateKey = `${item.time[0]}-${String(item.time[1]).padStart(
-                2,
-                "0"
-              )}-${String(item.time[2]).padStart(2, "0")}`;
+              const dateKey =
+                `${item.time[0]}` -
+                `${String(item.time[1]).padStart(2, "0")}` -
+                `${String(item.time[2]).padStart(2, "0")}`;
 
               if (!acc[dateKey]) {
                 acc[dateKey] = {
