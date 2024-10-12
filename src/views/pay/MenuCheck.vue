@@ -57,7 +57,7 @@
 <script>
 import { useOrderInfoStore } from '../../stores/orderStore.js'; // Pinia store 사용
 import { useSocketStore } from '../../stores/socketStore.js'; // Socket store 사용
-import { useMemberStore } from '../../stores/memberStore.js';
+import { useMemberStore } from '../../stores/MemberStore.js';
 import { onMounted, ref, watch } from 'vue';
 import hamburgerImage from '../../assets/images/hamburger.png'; // 이미지 샘플
 import { useRouter } from 'vue-router'; // router 사용

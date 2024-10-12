@@ -63,7 +63,7 @@ import { ref, watch } from 'vue';
 import { usePriceStore } from '../../stores/orderStore.js';
 import { useSocketStore } from '../../stores/socketStore.js'; // 소켓 스토어 가져오기
 import { useRouter } from 'vue-router'; // router 가져오기
-import { useMemberStore } from '../../stores/memberStore.js';
+import { useMemberStore } from '../../stores/MemberStore.js';
 import { usePayPriceInfoStore } from '../../stores/orderStore.js';
 import profileIcon1 from '../../assets/images/profile1.png';
 import profileIcon2 from '../../assets/images/profile2.png';
