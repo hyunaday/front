@@ -240,7 +240,8 @@
           <!-- 거래처와 카테고리를 세로로 배치 -->
           <div class="entry-info">
             <!-- <div class="store-name">{{ entry.storeName }}</div> -->
-            <div class="category">{{ entry.category }}</div>
+            <div class="category">{{ mapEnumToCategory(entry.category) }}</div>
+            <!-- 카테고리 변환 함수 사용 -->
           </div>
           <!-- 세부 내용 및 금액 -->
           <div>{{ entry.detail }}</div>
@@ -265,6 +266,32 @@
 
 <script>
 import apiClient from "../api/axios.js";
+
+// ENUM과 한글 카테고리 매핑 객체
+const CategoryMap = {
+  SALARY: "월급",
+  INTEREST: "이자",
+  ALLOWANCE: "용돈",
+  FOOD: "식비",
+  SHOPPING: "쇼핑",
+  TRANSPORT: "교통",
+  ENTERTAINMENT: "문화",
+  COMMUNICATION: "통신",
+  UNCATEGORIZED: "기타",
+};
+
+// ENUM 값을 한글로 매핑하는 함수
+function mapEnumToCategory(enumValue) {
+  return CategoryMap[enumValue] || enumValue;
+}
+
+// 한글 카테고리 값을 ENUM 값으로 매핑하는 함수
+function mapCategoryToEnum(categoryName) {
+  return Object.keys(CategoryMap).find(
+    (key) => CategoryMap[key] === categoryName
+  );
+}
+
 const months = [
   "Jan",
   "Feb",
@@ -295,17 +322,8 @@ export default {
       selectedFilter: null,
       incomeCategories: ["월급", "이자", "용돈"],
       expenseCategories: ["식비", "쇼핑", "교통", "문화", "통신", "기타"],
-      allCategories: [
-        "월급",
-        "이자",
-        "용돈",
-        "식비",
-        "쇼핑",
-        "교통",
-        "문화",
-        "통신",
-        "기타",
-      ],
+      allCategories: Object.values(CategoryMap), // 모든 카테고리 목록에 매핑된 한글 값 사용
+      entries: [],
       entries: [], // API 데이터를 담을 배열
       totalExpense: 0,
       totalIncome: 0,
@@ -412,6 +430,11 @@ export default {
     },
     updateCalendar() {
       // 필요한 경우 달력 업데이트 로직 추가
+    },
+
+    // 카테고리 변환 함수
+    mapEnumToCategory(enumValue) {
+      return CategoryMap[enumValue] || enumValue;
     },
 
     async fetchTransactionHistory() {
