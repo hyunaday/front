@@ -27,7 +27,7 @@
           v-for="(item, index) in orderInfoStore.orderMenuList"
           :key="index"
           class="payment-item"
-          :class="{ selected: item.selected }"
+          :class="{ selected: item.selectedByUser }"
           @click="toggleSelection(item)"
         >
           <div class="item-content">
@@ -72,14 +72,14 @@ export default {
     const router = useRouter(); // router 사용 선언
 
     const initializeSelectedCount = () => {
-      // 메뉴 리스트에 selectedCount를 초기화
+      // 메뉴 리스트에 selectedCount와 selectedByUser를 초기화
       orderInfoStore.orderMenuList.forEach((item) => {
         if (!item.selectedCount) {
           item.selectedCount = 0;
         }
-        // 반응형으로 selected 필드 초기화
-        if (item.selected === undefined) {
-          item.selected = false;
+        // 내가 선택한 항목을 표시하는 필드 추가
+        if (item.selectedByUser === undefined) {
+          item.selectedByUser = false;
         }
       });
     };
@@ -91,8 +91,11 @@ export default {
         return;
       }
 
+      // 현재 선택 상태를 기억해둠 (rollback 용도)
+      const wasSelected = item.selectedByUser;
+
       // 선택 상태를 즉시 토글하여 반영
-      item.selected = !item.selected;
+      item.selectedByUser = !item.selectedByUser;
 
       const message = {
         orderIdx: orderInfoStore.orderIdx,
@@ -103,7 +106,7 @@ export default {
         amount: item.amount,
       };
 
-      const destination = item.selected
+      const destination = item.selectedByUser
         ? '/pub/order/room/select' // 선택 시 전송
         : '/pub/order/room/cancel'; // 선택 해제 시 전송
 
@@ -123,16 +126,12 @@ export default {
         alert('메시지 전송 중 오류가 발생했습니다.');
       }
 
-      // 선택된 금액 업데이트
-      updateSelectedAmount();
+
     };
 
-
-    const updateSelectedAmount = () => {
-      // 선택된 항목의 금액을 업데이트합니다.
-      selectedPaymentAmount.value = orderInfoStore.orderMenuList
-        .filter((item) => item.selected)
-        .reduce((total, item) => total + item.price * item.amount, 0);
+    const updateSelectedAmount = (amount) => {
+      // 선택된 항목 중에서 내가 선택한 항목의 금액을 업데이트
+      selectedPaymentAmount.value += amount 
     };
 
     // 소켓 메시지에 따라 선택 인원 수를 업데이트하는 함수
@@ -143,7 +142,6 @@ export default {
         if (!lastMessage) return; // 메시지가 없으면 처리하지 않음
 
         try {
-          console.log('Received message:', lastMessage);
           const parsedMessage = JSON.parse(lastMessage);
 
           // 메뉴 선택 처리
@@ -160,15 +158,29 @@ export default {
               }
 
               // 자신의 선택 상태 업데이트
-              if (parsedMessage.memberId === memberStore.memberId) {
-                menu.selected = (parsedMessage.type === 'MENU_SELECT');
-                updateSelectedAmount(); // 금액 업데이트
+              if (parsedMessage.memberIdx === memberStore.idx) {
+                menu.selectedByUser = (parsedMessage.type === 'MENU_SELECT');
+                console.log("dfd", menu.price);
+                if (parsedMessage.type === 'MENU_SELECT') {
+                  updateSelectedAmount(menu.price);
+                } else {
+                  updateSelectedAmount(menu.price * -1);
+                }
               }
             }
           }
 
+          // ERROR 메시지 처리: 선택 상태 롤백
           if (parsedMessage.type === 'ERROR') {
-            console.log("ERROR :", parsedMessage);
+            console.log("ERROR:", parsedMessage);
+            // ERROR가 발생했으므로, 롤백 처리 (선택 상태 복원)
+            orderInfoStore.orderMenuList.forEach(item => {
+              if (parsedMessage.memberIdx === memberStore.idx) {
+                item.selectedByUser = false;
+              }
+            });
+            alert('더 이상 선택할 수 없는 메뉴입니다');
+
           }
 
           // START_PAY 메시지가 도착하면 소켓 연결 해제 및 페이지 이동
@@ -191,7 +203,7 @@ export default {
           `/pub/order/room/ready`,
           { 
             Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-            'MemberId': "test@gmail.com",
+            'MemberId': memberStore.memberId,
             'content-type': 'application/json'
           },
           JSON.stringify({
@@ -214,7 +226,7 @@ export default {
       // API 호출로 주문 정보 가져오기
       orderInfoStore.getOrderInfo(1, 1); // orderIdx, marketIdx는 예시로 넣었으며 실제 값을 사용
 
-      // selectedCount 및 selected 필드 초기화
+      // selectedCount 및 selectedByUser 필드 초기화
       initializeSelectedCount();
 
       // 소켓 연결
@@ -232,10 +244,6 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-/* 스타일 코드 생략 (기존 코드와 동일) */
-</style>
 
 
 
