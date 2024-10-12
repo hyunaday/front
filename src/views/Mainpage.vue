@@ -5,7 +5,7 @@
       <!-- 내 자산 연결 버튼 섹션 -->
       <div v-if="!isConnected" class="connect-card-container d-flex flex-column align-items-center justify-content-center">
         <img src="../assets/images/connect_logo_rm.png" alt="Connect Logo" class="connect-logo" />
-        <p class="connect-message">편리한 전자 지갑을 위해<br />자산을 연결해주세요!</p>
+        <p class="connect-message">편리한 전자 지갑 기능을 사용하려면<br />자산을 연결해주세요!</p>
         <button @click="goToAgreementPage" class="btn connect-button">내 자산 연결</button>
       </div>
 
@@ -46,8 +46,7 @@
                   <router-link :to="`/transactionhistory${account.idx}`">
                     <button class="btn btn-light check" type="button">조회</button>
                   </router-link>
-                  <!-- <router-link :to="`/transfer${account.idx}`"> -->
-                    <router-link :to="`/transfer`">
+                  <router-link :to="`/transfer`">
                     <button class="btn btn-light transfer" type="button">이체</button>
                   </router-link>
                 </div>
@@ -74,41 +73,40 @@
         </div>
       </div>
 
-      <!-- 카드 추천 슬라이드 - Autoplay progress -->
-      <div class="recommend-section mt-5">
-        <swiper
-          :spaceBetween="30"
-          :centeredSlides="true"
-          :autoplay="{ delay: 2500, disableOnInteraction: false }"
-          :pagination="{ clickable: true, type: 'progressbar' }"
-          :navigation="true"
-          :modules="modules"
-          @autoplayTimeLeft="onAutoplayTimeLeft"
-          class="swiper-autoplay"
-        >
-          <swiper-slide v-for="i in 6" :key="i">
-            <img :src="`../src/assets/images/국민카드${i}.png`" alt="Recommended Card" class="recommend-card" />
-          </swiper-slide>
-          <template #container-end>
-            <div class="autoplay-progress">
-              <svg viewBox="0 0 48 48" ref="progressCircle">
-                <circle cx="24" cy="24" r="20"></circle>
-              </svg>
-              <span ref="progressContent"></span>
-            </div>
-          </template>
-        </swiper>
+      <!-- 카드 추천 섹션 -->
+      <div class="recommend_card">
+        <label class="recommend_title">
+          <h6>내 소비 습관에 맞는 카드 추천</h6>
+        </label>
+        <div class="card-slider">
+          <swiper
+            :space-between="20"
+            :slides-per-view="1.2"
+            :centered-slides="true"
+            :loop="true"
+            :autoplay="{ delay: 2000, disableOnInteraction: false }"
+            :pagination="{ clickable: true, type: 'progressbar' }"
+            :navigation="true"
+          >
+            <!-- 카드 추천 슬라이드 -->
+            <swiper-slide v-for="(image, index) in cardImages" :key="index" class="slide-card">
+              <div class="card-content">
+                <img :src="image" alt="추천 카드" class="card-image-fixed" />
+                <p>{{ cardDescriptions[index] }}</p>
+              </div>
+            </swiper-slide>
+          </swiper>
+        </div>
       </div>
-      
     </div>
     <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
   </div>
 </template>
 
 <script>
-import { ref } from 'vue';
-import { Swiper, SwiperSlide } from 'swiper/vue';
-import { Autoplay, Pagination, Navigation } from 'swiper/modules';
+import { ref } from "vue";
+import { Swiper, SwiperSlide } from "swiper/vue";
+import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import FooterNav from "../components/FooterNav.vue";
 import Header from "../components/Header.vue";
 import apiClient from "../api/axios";
@@ -121,7 +119,7 @@ import wooriLogo from "../assets/images/wooribank.png";
 import tossLogo from "../assets/images/toss.png";
 import nhLogo from "../assets/images/NHbank.png";
 import copyIcon from "../assets/images/copy.png";
-import { useMemberStore } from '../stores/MemberStore.js'
+import { useMemberStore } from "../stores/MemberStore.js";
 
 export default {
   name: "MainPage",
@@ -132,23 +130,18 @@ export default {
     Header,
   },
   setup() {
-    const progressCircle = ref(null);
-    const progressContent = ref(null);
-
-    const onAutoplayTimeLeft = (s, time, progress) => {
-      progressCircle.value.style.setProperty('--progress', 1 - progress);
-      progressContent.value.textContent = `${Math.ceil(time / 1000)}s`;
-    };
-
-    return {
-      onAutoplayTimeLeft,
-      progressCircle,
-      progressContent,
-      modules: [Autoplay, Pagination, Navigation],
-    };
+    return {};
   },
   data() {
     return {
+      cardDescriptions: [
+        '편의점에서 총 80000원을 사용했어요.',
+        '식당에서 120000원을 사용했어요.',
+        '주유소에서 50000원을 사용했어요.',
+        '영화관에서 30000원을 사용했어요.',
+        '쇼핑몰에서 150000원을 사용했어요.',
+        '카페에서 20000원을 사용했어요.'
+      ],
       showamount: false,
       accounts: [],
       isConnected: false,
@@ -163,6 +156,14 @@ export default {
         농협은행: nhLogo,
       },
       copyIcon: copyIcon,
+      cardImages: [
+        "../src/assets/images/국민카드1.png",
+        "../src/assets/images/국민카드2.png",
+        "../src/assets/images/국민카드3.png",
+        "../src/assets/images/국민카드4.png",
+        "../src/assets/images/국민카드5.png",
+        "../src/assets/images/국민카드6.png",
+      ],
     };
   },
   created() {
@@ -227,20 +228,20 @@ export default {
   flex-direction: column;
   align-items: center;
   height: 100vh;
-  overflow-y: auto; /* Enable vertical scrolling */
-  padding-bottom: 20px; /* Optional: adds space at the bottom */
+  overflow-y: auto;
+  padding-bottom: 20px;
 }
 
 .container {
   max-width: 100%;
-  overflow-y: auto; /* 스크롤 가능하게 설정 */
-  padding-bottom: 80px; /* FooterNav와 겹치지 않도록 여유 공간 추가 */
-  scrollbar-width: none; /* Firefox용 */
-  -ms-overflow-style: none; /* IE와 Edge용 */
+  overflow-y: auto;
+  padding-bottom: 80px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .container::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera용 */
+  display: none;
 }
 
 .form-check-input {
@@ -350,12 +351,7 @@ h4 {
 
 .together-card {
   margin-top: 30px;
-  background: linear-gradient(
-    90deg,
-    rgba(105, 129, 217, 1) 0%,
-    rgba(105, 129, 217, 0.81) 53%,
-    rgba(105, 129, 217, 0.45) 100%
-  );
+  background: linear-gradient(90deg, rgba(105, 129, 217, 1) 0%, rgba(105, 129, 217, 0.81) 53%, rgba(105, 129, 217, 0.45) 100%);
   color: white;
   border-radius: 30px;
   width: 100%;
@@ -493,44 +489,40 @@ h4 {
   width: 230px;
 }
 
-.recommend-section {
+.recommend_card {
   margin-top: 20px;
+  padding-bottom: 20px;
 }
 
-.swiper-autoplay {
+.recommend_title {
+  margin-left: 10px;
+  margin-top: 60px;
+  font-size: 11px;
+}
+
+.recommend_title h6 {
+  margin-bottom: 30px;
+}
+
+.card-slider {
   width: 100%;
-  max-width: 300px;
-  height: 300px;
+  max-width: 600px;
   margin: 0 auto;
 }
 
-.recommend-card {
-  width: 80%;
-  height: 50%;
+.slide-card .card-content {
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  padding: 20px;
+  text-align: center;
 }
 
-.autoplay-progress {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  display: flex;
-  align-items: center;
-}
-.autoplay-progress svg {
-  width: 48px;
-  height: 48px;
-  transform: rotate(-90deg);
-}
-.autoplay-progress circle {
-  fill: none;
-  stroke: #007aff;
-  stroke-width: 4;
-  stroke-dasharray: 126;
-  stroke-dashoffset: calc(126 * var(--progress));
-  transition: stroke-dashoffset 0.25s;
-}
-.autoplay-progress span {
-  margin-left: 10px;
-  font-size: 14px;
+.card-image-fixed {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: 10px;
 }
 </style>
