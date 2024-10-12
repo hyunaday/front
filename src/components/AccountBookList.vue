@@ -94,6 +94,7 @@
         >
           <i class="fa-solid fa-plus"></i>
         </button>
+
         <bottom-sheet id="testBottomSheet" title="세부 내역">
           <main class="editable-sheet">
             <div class="header">
@@ -293,7 +294,7 @@ export default {
       selectedCategory: "",
       selectedFilter: null,
       incomeCategories: ["월급", "이자", "용돈"],
-      expenseCategories: ["식비", "쇼핑", "교통", "문화", "주거/통신", "기타"],
+      expenseCategories: ["식비", "쇼핑", "교통", "문화", "통신", "기타"],
       allCategories: [
         "월급",
         "이자",
@@ -302,7 +303,7 @@ export default {
         "쇼핑",
         "교통",
         "문화",
-        "주거/통신",
+        "통신",
         "기타",
       ],
       entries: [], // API 데이터를 담을 배열
@@ -339,7 +340,6 @@ export default {
   computed: {
     // 총 지출 계산 (filteredEntries가 정의되지 않았거나 빈 배열일 경우 기본값을 설정)
     totalExpense() {
-
       return (this.filteredEntries || []).reduce((total, entryGroup) => {
         return (
           total +
@@ -363,12 +363,13 @@ export default {
     // 필터링된 거래 내역
     filteredEntries() {
       if (!this.entries) return [];
+
       return this.entries
         .filter((entryGroup) => {
           if (this.selectedFilter === "income") {
-            return entryGroup.entries.some((entry) => entry.amount > 0);
+            return entryGroup.entries.some((entry) => !entry.isExpense);
           } else if (this.selectedFilter === "expense") {
-            return entryGroup.entries.some((entry) => entry.amount < 0);
+            return entryGroup.entries.some((entry) => entry.isExpense);
           }
           return true;
         })
@@ -376,13 +377,14 @@ export default {
           const filteredEntries = entryGroup.entries.filter((entry) => {
             const matchesFilter =
               this.selectedFilter === "income"
-                ? entry.amount > 0
+                ? !entry.isExpense
                 : this.selectedFilter === "expense"
-                ? entry.amount < 0
+                ? entry.isExpense
                 : true;
             const matchesCategory =
               !this.selectedCategory ||
               entry.category === this.selectedCategory;
+
             return matchesFilter && matchesCategory;
           });
           return { ...entryGroup, entries: filteredEntries };
@@ -416,19 +418,16 @@ export default {
       try {
         const response = await apiClient.get("/transaction/history/all");
         if (response.data.isSuccess) {
-          // 날짜별로 데이터 그룹화
           const groupedEntries = response.data.result.transactionList.reduce(
             (acc, item) => {
-              // 날짜를 문자열 형식으로 생성 (YYYY-MM-DD)
               const dateKey = `${item.time[0]}-${String(item.time[1]).padStart(
                 2,
                 "0"
               )}-${String(item.time[2]).padStart(2, "0")}`;
 
-              // 날짜가 이미 존재하면 해당 배열에 추가하고, 없으면 새 배열 생성
               if (!acc[dateKey]) {
                 acc[dateKey] = {
-                  date: item.time[2].toString(), // 일 정보만 저장
+                  date: item.time[2].toString(),
                   day: new Date(
                     item.time[0],
                     item.time[1] - 1,
@@ -439,16 +438,17 @@ export default {
                 };
               }
 
-              // 일별 총 금액을 업데이트
-              acc[dateKey].totalAmount += item.amount;
+              const isExpense = item.creditIdx !== null; // creditIdx가 있으면 지출
+              const amount = isExpense ? -Math.abs(item.amount) : item.amount; // 지출이면 음수로 변환
 
-              // 각 거래 항목을 entries 배열에 추가
+              acc[dateKey].totalAmount += amount;
               acc[dateKey].entries.push({
                 category: item.category,
                 detail: item.memo,
-                paymentMethod: item.payMethod,
-                amount: item.amount,
+                payMethod: item.payMethod,
+                amount: amount,
                 storeName: item.memo,
+                isExpense: isExpense,
               });
 
               return acc;
@@ -456,13 +456,27 @@ export default {
             {}
           );
 
-          // entries 배열에 날짜별로 정리된 데이터를 추가
           this.entries = Object.values(groupedEntries);
+          console.log("Grouped Entries:", this.entries); // 데이터 구조 확인용 로그
         }
       } catch (error) {
         console.error("거래 내역을 불러오는 중 오류가 발생했습니다:", error);
       }
     },
+
+    // 삭제 api
+    // deleteEntry(groupIndex, entryIndex) {
+    //   // 선택된 항목을 entries 배열에서 제거
+    //   this.entries[groupIndex].entries.splice(entryIndex, 1);
+
+    //   // 그룹 내 항목이 없을 경우 그룹 자체도 제거
+    //   if (this.entries[groupIndex].entries.length === 0) {
+    //     this.entries.splice(groupIndex, 1);
+    //   }
+
+    //   console.log("거래 내역이 성공적으로 삭제되었습니다.");
+    // },
+
     executeSearch() {
       this.finalQuery = this.searchQuery;
     },
@@ -533,7 +547,6 @@ export default {
 };
 </script>
 
-
 <style scoped>
 .calendar-container {
   margin-top: 70px;
@@ -597,7 +610,7 @@ export default {
 }
 .income .amount {
   font-size: 1rem;
-  color: #6981D9;
+  color: #6981d9;
 }
 .search-bar {
   margin: 1rem 0;
@@ -640,10 +653,9 @@ export default {
 }
 div.total-amount {
   text-align: right;
-
 }
 .positive {
-  color: #6981D9;
+  color: #6981d9;
 }
 .negative {
   color: red;
@@ -694,7 +706,7 @@ div.total-amount {
 }
 /* bottom-sheet 활성화 버튼 */
 .plus-btn {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border: none;
   border-radius: 5px;
   width: 25px;
@@ -706,10 +718,10 @@ div.total-amount {
   cursor: pointer;
 }
 .plus-btn:hover {
-  background-color: #F0F0F0;
+  background-color: #f0f0f0;
 }
 .plus-btn i {
-  color: #6981D9;
+  color: #6981d9;
 }
 .editable-sheet {
   padding: 20px;
@@ -722,18 +734,18 @@ div.total-amount {
 }
 .filter-container button {
   border: 1px solid #ccc;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-radius: 5px;
   cursor: pointer;
   color: #888;
 }
 .filter-container button.active {
-  border: 1px solid #6981D9;
+  border: 1px solid #6981d9;
   background-color: #fff;
-  color: #6981D9;
+  color: #6981d9;
 }
 .filter-container button:hover {
-  background-color: #E0E0E0;
+  background-color: #e0e0e0;
 }
 .header {
   display: flex;
@@ -774,17 +786,17 @@ div.total-amount {
 /* 카테고리 선택창 스타일 */
 select {
   word-wrap: normal;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border-radius: 5px;
   color: #888;
   padding: 1px 6px;
 }
 .category-select:focus {
-  border: 1px solid #6981D9;
-  color: #6981D9;
+  border: 1px solid #6981d9;
+  color: #6981d9;
 }
 .category-select:hover {
-  background-color: #E0E0E0;
+  background-color: #e0e0e0;
 }
 /* 가계부 추가_상세거래 내역 */
 .details-container {
@@ -857,8 +869,8 @@ select {
 }
 /* 일반 삭제 버튼 스타일 */
 .delete-btn {
-  background-color: #FFFFFF;
-  border: 1px solid #FFFFFF;
+  background-color: #ffffff;
+  border: 1px solid #ffffff;
   border-radius: 10px;
   width: 20px;
   height: 20px;
@@ -873,11 +885,11 @@ select {
   color: #888;
 }
 .delete-btn:hover {
-  background-color: #F0F0F0;
+  background-color: #f0f0f0;
 }
 /* 바텀시트 안의 삭제 버튼 스타일 */
 .bottom-sheet-delete-btn {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   border: 1px solid #ccc;
   border-radius: 10px;
   width: 50px;
@@ -893,11 +905,11 @@ select {
   color: #888;
 }
 .bottom-sheet-delete-btn:hover {
-  background-color: #F0F0F0;
+  background-color: #f0f0f0;
 }
 /* 다음 버튼 */
 .next-btn {
-  background-color: #6981D9;
+  background-color: #6981d9;
   border: none;
   color: white;
   width: 200px; /* 너비를 더 넓게 설정 */
@@ -909,7 +921,7 @@ select {
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 .next-btn:hover {
-  background-color: #6981D9;
+  background-color: #6981d9;
 }
 .customBottomsheet .content {
   padding: 0 30px 30px;
@@ -936,25 +948,16 @@ select {
   padding: 5px 15px;
   border-radius: 8px;
   border: 1px solid #ccc;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   color: #888;
   cursor: pointer;
 }
 .category-buttons button.active {
-  border: 1px solid #6981D9;
+  border: 1px solid #6981d9;
   background-color: #fff;
-  color: #6981D9;
+  color: #6981d9;
 }
 .category-buttons button:hover {
-  background-color: #E0E0E0;
+  background-color: #e0e0e0;
 }
 </style>
-
-
-
-
-
-
-
-
-
