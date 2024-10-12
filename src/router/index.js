@@ -119,11 +119,11 @@ const routes = [
     meta: { requiresAuth: true },
   },
   {
-    path: '/friend-card-registration',
+    path: '/friend-card-registration/:businessCardIdx',
     name: 'FriendCardRegistration',
     component: FriendCardRegistration,
     meta: { requiresAuth: true },
-  },
+  },  
   {
     path: '/my-card-registration',
     name: 'MyCardRegistration',

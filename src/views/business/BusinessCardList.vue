@@ -23,7 +23,7 @@
       <!-- 명함 목록 또는 나의 명함 상세 정보 표시 -->
       <div class="card">
         <!-- 명함 목록 표시: isCardListVisible가 true일 때 -->
-        <div class="card-list">
+        <div class="card-list" v-if="isCardListVisible">
           <div
             v-for="card in cardList"
             :key="card.id"
@@ -51,6 +51,19 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- 나의 명함 상세 정보 표시: isCardListVisible가 false일 때 -->
+        <div v-else class="my-card-detail">
+          <h3>{{ formData.company || '회사 정보 없음' }}</h3>
+          <p>이름: {{ formData.name }}</p>
+          <p>직책: {{ formData.position }}</p>
+          <p>부서: {{ formData.department }}</p>
+          <p>휴대전화: {{ formData.phone }}</p>
+          <p>유선전화: {{ formData.phoneLandline }}</p>
+          <p>이메일: {{ formData.email }}</p>
+          <p>주소: {{ formData.address }}</p>
+          <p>메모: {{ formData.memo || '메모 없음' }}</p>
         </div>
       </div>
     </div>
@@ -162,6 +175,7 @@
 import FooterNav from '../../components/FooterNav.vue';
 import Header from '../../components/Header.vue';
 import QrcodeVue from 'qrcode.vue'; // QR 코드 라이브러리
+import apiClient from '../../api/axios'; // API 클라이언트 import
 
 export default {
   name: 'BusinessCard',
@@ -184,62 +198,14 @@ export default {
         phoneLandline: '',
         memo: '',
       }, // 나의 명함 데이터
-      cardList: [
-        {
-          id: 1,
-          name: 'Alice Johnson',
-          position: 'Developer',
-          department: 'Engineering',
-          company: 'Tech Corp',
-          address: '123 Tech Street',
-          phone: '010-1234-5678',
-          phoneLandline: '02-123-4567',
-          email: 'alice@techcorp.com',
-          memo: '',
-        },
-        {
-          id: 2,
-          name: 'Bob Lee',
-          position: 'Designer',
-          department: 'Creative',
-          company: 'Creative Agency',
-          address: '456 Creative Ave',
-          phone: '010-8765-4321',
-          phoneLandline: '031-765-4321',
-          email: 'bob@creativeagency.com',
-          memo: '',
-        },
-        {
-          id: 3,
-          name: 'Charlie Kim',
-          position: 'Project Manager',
-          department: 'Operations',
-          company: 'Business Solutions',
-          address: '789 Business Blvd',
-          phone: '010-1111-2222',
-          phoneLandline: '051-111-2222',
-          email: 'charlie@businesssolutions.com',
-          memo: '',
-        },
-        {
-          id: 4,
-          name: 'David Park',
-          position: 'Marketing Specialist',
-          department: 'Marketing',
-          company: 'Marketing Group',
-          address: '321 Marketing Rd',
-          phone: '010-3333-4444',
-          phoneLandline: '053-333-4444',
-          email: 'david@marketinggroup.com',
-          memo: '',
-        },
-      ], // 명함 목록 데이터
-      isCardListVisible: false, // 명함 목록 표시 상태
+      
+      cardList: [], // 명함 목록 추가
       isCardDetailModalVisible: false, // 명함 상세 모달 표시 상태
       selectedCard: null, // 선택된 명함 데이터
       editSelectedCard: {}, // 명함 상세 모달 수정 데이터
       showModal: false, // QR 코드 모달 표시 상태
       editData: {}, // 나의 명함 수정 데이터
+      idx: null, // 현재 나의 명함 idx
     };
   },
   computed: {
@@ -248,11 +214,9 @@ export default {
     },
   },
   created() {
-    // cardList 로드 (옵션: 필요 시)
-    const storedCardList = localStorage.getItem('cardList');
-    if (storedCardList) {
-      this.cardList = JSON.parse(storedCardList);
-    }
+    // 현재 나의 명함 idx를 로드
+    this.idx = this.$route.params.idx; // URL 파라미터에서 idx를 가져옵니다.
+    this.fetchBusinessCard(this.idx); // API 호출
   },
   methods: {
     showCardList() {
@@ -261,118 +225,38 @@ export default {
     goBackToMyCard() {
       this.$router.push('/businesscard'); // Vue Router를 사용하여 이동
     },
+    async fetchBusinessCard(idx) {
+      try {
+        const response = await apiClient.get(`/api/businessCard/${idx}`); // API 호출
+        // 응답 결과로 formData 업데이트
+        this.formData = response.data;
+        // 명함 목록을 가져오는 경우 필요시 추가
+        // this.cardList = response.data.cards || []; // 명함 목록이 필요한 경우 추가
+      } catch (error) {
+        console.error('Error fetching business card:', error);
+      }
+    },
     openCardDetailModal(card) {
-      this.selectedCard = card;
-      // 선택한 명함의 데이터를 임시 편집 데이터로 복사
-      this.editSelectedCard = { ...card };
-      this.isCardDetailModalVisible = true; // 새로운 명함 상세 모달 열기
+      this.selectedCard = card; // 선택된 카드 설정
+      this.editSelectedCard = { ...card }; // 카드 데이터 복사
+      this.isCardDetailModalVisible = true; // 모달 표시
     },
     closeCardDetailModal() {
-      this.isCardDetailModalVisible = false; // 명함 상세 모달 닫기
-      this.editSelectedCard = {}; // 임시 편집 데이터 초기화
+      this.isCardDetailModalVisible = false; // 모달 숨김
+      this.selectedCard = null; // 선택된 카드 초기화
     },
     saveCardDetails() {
-      // 선택한 명함의 데이터를 업데이트
-      Object.assign(this.selectedCard, this.editSelectedCard);
-
-      // cardList에서도 업데이트된 명함을 반영
-      const index = this.cardList.findIndex(
-        (card) => card.id === this.selectedCard.id
-      );
-      if (index !== -1) {
-        this.cardList.splice(index, 1, { ...this.selectedCard });
-      }
-
-      // cardList를 로컬 스토리지에 저장
-      localStorage.setItem('cardList', JSON.stringify(this.cardList));
-
-      // 모달 닫기
-      this.isCardDetailModalVisible = false;
-      this.editSelectedCard = {};
-
-      // 선택한 명함의 변경 사항을 로컬 스토리지에 저장 (필요 시)
-      // 예시: 모든 명함 데이터를 로컬 스토리지에 저장
-      localStorage.setItem('businessCardData', JSON.stringify(this.formData));
-      alert('명함 정보가 저장되었습니다.');
+      // 선택된 카드 세부 정보 저장 로직 추가
+      console.log('Saving card details:', this.editSelectedCard);
+      this.closeCardDetailModal(); // 모달 닫기
     },
     deleteCardDetails() {
-      // 삭제 확인을 위한 alert 창
-      const confirmDelete = confirm('정말로 이 명함을 삭제하시겠습니까?');
-      if (confirmDelete) {
-        // 명함을 목록에서 삭제
-        const index = this.cardList.findIndex(
-          (card) => card.id === this.selectedCard.id
-        );
-        if (index !== -1) {
-          this.cardList.splice(index, 1); // 선택한 명함 삭제
-        }
-
-        // cardList를 로컬 스토리지에 저장
-        localStorage.setItem('cardList', JSON.stringify(this.cardList));
-
-        // 모달 닫기 및 선택한 카드 초기화
-        this.isCardDetailModalVisible = false;
-        this.editSelectedCard = {};
-
-        alert('명함이 삭제되었습니다.');
-      }
+      // 선택된 카드 삭제 로직 추가
+      console.log('Deleting card:', this.editSelectedCard);
+      this.closeCardDetailModal(); // 모달 닫기
     },
     goToaddBusinessCard() {
-      this.$router.push('/addbusinesscard'); // 라우터를 이용한 페이지 전환
-    },
-    openBottomSheet() {
-      // 수정 bottom-sheet 열기
-      this.editData = { ...this.formData }; // 나의 명함 수정 데이터 초기화
-      const bottomSheet = document.getElementById('editBottomSheet');
-      if (bottomSheet) {
-        bottomSheet.openSheet(); // bottom-sheet 열기
-      } else {
-        console.error('Bottom sheet element not found'); // 오류 로그
-      }
-    },
-    closeBottomSheet() {
-      // 수정 bottom-sheet 닫기
-      const bottomSheet = document.getElementById('editBottomSheet');
-      if (bottomSheet) {
-        bottomSheet.closeSheet(); // bottom-sheet 닫기
-      }
-    },
-    saveChanges() {
-      // "나의 명함" 수정 사항 저장
-      this.formData = { ...this.editData };
-      localStorage.setItem('businessCardData', JSON.stringify(this.formData)); // 로컬 스토리지에 저장
-
-      // 나의 명함이 수정되었음을 반영 (필요 시)
-      alert('나의 명함 정보가 저장되었습니다.');
-
-      this.closeBottomSheet(); // bottom-sheet 닫기
-    },
-    deleteCard() {
-      // 카드 삭제
-      if (confirm('정말로 이 명함을 삭제하시겠습니까?')) {
-        // 나의 명함 삭제
-        this.resetMyCard();
-        alert('나의 명함 정보가 초기화되었습니다.'); // 초기화 완료 메시지
-      }
-    },
-    resetMyCard() {
-      // 나의 명함 초기화
-      this.formData = {
-        name: '',
-        phone: '',
-        email: '',
-        position: '',
-        department: '',
-        company: '',
-        address: '',
-        phoneLandline: '',
-        memo: '',
-      }; // 명함 데이터 초기화
-      localStorage.removeItem('businessCardData'); // 로컬 스토리지에서 삭제
-    },
-    closeModal() {
-      // QR 코드 모달 닫기
-      this.showModal = false; // 모달 닫기
+      this.$router.push('/addBusinessCard'); // 추가 명함 페이지로 이동
     },
   },
 };
