@@ -1,7 +1,6 @@
 <template>
-  <div
-    class="main-container d-flex flex-column justify-content-center align-items-center"
-  >
+    <div class="main-container">
+
     <h3>추가할 명함을 선택해주세요.</h3>
 
     <!— '나의 명함' 버튼, 나의 명함 등록 페이지로 이동 —>
@@ -100,25 +99,8 @@ export default {
 </script>
 
 <style scoped>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-.main-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  min-height: 100vh;
-  background-color: white;
-  overflow-y: auto;
-}
-
 /* 제목 스타일 */
 h3 {
-  margin-top: -150px;
-  margin-bottom: 60px;
   font-weight: bold;
   font-size: 20px;
 }

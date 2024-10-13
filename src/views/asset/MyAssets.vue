@@ -346,7 +346,7 @@ h1 {
 
 .transactions-title {
   font-size: 12px;
-  text-align: left;
+  text-align: right;
   font-weight: bold; 
 }
 
