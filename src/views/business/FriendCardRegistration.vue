@@ -14,7 +14,11 @@
           <p>{{ friendCardData.phoneNumber || '전화번호 없음' }}</p>
           <p>{{ friendCardData.tel_num || '유선전화 없음' }}</p>
           <p>{{ friendCardData.email || '이메일 없음' }}</p>
-          <img v-if="friendCardData.imgurl" :src="friendCardData.imgurl" alt="명함 이미지" />
+          <img
+            v-if="friendCardData.imgurl"
+            :src="friendCardData.imgurl"
+            alt="명함 이미지"
+          />
         </div>
         <div class="divider"></div>
         <button class="button" @click="editFriendCard">수정하기</button>
@@ -29,7 +33,7 @@
 
 <script>
 import BusinessCardForm from '../../components/BusinessCardForm.vue';
-import FooterNav from '../../components/FooterNav.vue'; 
+import FooterNav from '../../components/FooterNav.vue';
 import apiClient from '../../api/axios';
 
 export default {
@@ -57,7 +61,9 @@ export default {
           this.friendCardData = response.data.result.businessCardList[0]; // 첫 번째 명함 데이터
         })
         .catch((error) => {
-          this.error = error.response ? error.response.data.message : '오류 발생';
+          this.error = error.response
+            ? error.response.data.message
+            : '오류 발생';
           console.error('친구 명함 정보 가져오기 실패:', this.error);
         })
         .finally(() => {
@@ -67,7 +73,10 @@ export default {
   },
   methods: {
     editFriendCard() {
-      this.$router.push({ name: 'EditFriendCard', params: { businessCardIdx: this.$route.params.businessCardIdx } });
+      this.$router.push({
+        name: 'EditFriendCard',
+        params: { businessCardIdx: this.$route.params.businessCardIdx },
+      });
     },
   },
 };
@@ -192,5 +201,3 @@ button:active {
   margin: 20px 0;
 }
 </style>
-
-

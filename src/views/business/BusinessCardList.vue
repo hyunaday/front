@@ -198,7 +198,7 @@ export default {
         phoneLandline: '',
         memo: '',
       }, // 나의 명함 데이터
-      
+
       cardList: [], // 명함 목록 추가
       isCardDetailModalVisible: false, // 명함 상세 모달 표시 상태
       selectedCard: null, // 선택된 명함 데이터

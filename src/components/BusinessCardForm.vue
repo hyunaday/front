@@ -71,12 +71,6 @@
 
       <button class="button" type="submit">등록</button>
     </form>
-
-    <!-- QR 코드 이미지 표시 -->
-    <div v-if="qrCodeData" class="qr-code-container">
-      <h2>QR 코드</h2>
-      <img :src="qrCodeData" alt="QR 코드" />
-    </div>
   </div>
 </template>
 

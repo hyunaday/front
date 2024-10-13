@@ -65,20 +65,28 @@
             <p><strong>주소:</strong> {{ formData.address }}</p>
 
             <!-- QR 코드 이미지를 주소 아래에 표시 -->
-            <div v-if="qrCodeData" class="qr-code-container">
-              <img :src="qrCodeData" alt="QR 코드" class="qr-code-image" style="width: 140px; height: 140px;" />
+            <div
+              v-if="qrCodeData"
+              class="qr-code-container"
+              @click="showModal = true"
+            >
+              <img
+                :src="qrCodeData"
+                alt="QR 코드"
+                class="qr-code-image"
+                style="width: 140px; height: 140px"
+              />
             </div>
           </class>
         </div>
       </div>
-    </div>
-
-    <div
-      class="button-container"
-      v-if="!isCardListVisible && !isCardDetailModalVisible"
-    >
-      <button type="button" @click="openBottomSheet">수정</button>
-      <button @click="deleteCard">삭제</button>
+      <div
+        class="button-container"
+        v-if="!isCardListVisible && !isCardDetailModalVisible"
+      >
+        <button type="button" @click="openBottomSheet">수정</button>
+        <button @click="deleteCard">삭제</button>
+      </div>
     </div>
   </div>
 
@@ -103,15 +111,104 @@
       </div>
     </div>
   </div>
+  <!-- 수정 bottom-sheet -->
+  <bottom-sheet id="editBottomSheet" title="명함 수정">
+    <main>
+      <div class="edit-form">
+        <label>회사명:</label>
+        <input v-model="formData.company" type="text" />
+        <label>주소:</label>
+        <input v-model="formData.address" type="text" />
+        <label>이름:</label>
+        <input v-model="formData.name" type="text" />
+        <label>직책:</label>
+        <input v-model="formData.position" type="text" />
+        <label>부서:</label>
+        <input v-model="formData.department" type="text" />
+        <label>휴대전화:</label>
+        <input v-model="formData.phone" type="text" />
+        <label>유선전화:</label>
+        <input v-model="formData.phoneLandline" type="text" />
+        <label>이메일:</label>
+        <input v-model="formData.email" type="text" />
+        <div v-if="isFriendCard">
+          <label>메모:</label>
+          <textarea
+            v-model="formData.memo"
+            class="memo-textarea"
+            placeholder="메모를 입력하세요..."
+          ></textarea>
+        </div>
+      </div>
+      <div class="modal-buttons">
+        <button @click="saveChanges">저장</button>
+        <button @click="closeBottomSheet">취소</button>
+      </div>
+    </main>
+  </bottom-sheet>
 
   <!-- QR 코드 모달 -->
   <div v-if="showModal" class="modal" @click="closeModal">
     <div class="modal-content qr-modal" @click.stop>
       <div class="qr-code-container">
-        <qrcode-vue :value="qrValue" size="200" class="qr-code" />
+        <img
+          :src="qrCodeData"
+          alt="QR 코드"
+          class="qr-code-image"
+          style="width: 200px; height: 200px"
+        />
       </div>
     </div>
     <p class="additional-text">QR코드를 스캔하세요</p>
+  </div>
+  <!-- 수정 (Bottom Sheet) 모달 -->
+  <div
+    v-if="isBottomSheetVisible"
+    class="modal bottom-sheet"
+    @click="closeBottomSheet"
+  >
+    <div class="modal-content bottom-sheet-content" @click.stop>
+      <button class="close-btn" @click="closeBottomSheet">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <h2>명함 수정</h2>
+      <div class="form-row">
+        <label class="form-label">이름:</label>
+        <input v-model="editData.name" type="text" class="input" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">회사:</label>
+        <input v-model="editData.company" type="text" class="input" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">부서:</label>
+        <input v-model="editData.department" type="text" class="input" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">직책:</label>
+        <input v-model="editData.position" type="text" class="input" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">연락처:</label>
+        <input v-model="editData.phone" type="text" class="input" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">유선전화:</label>
+        <input v-model="editData.phoneLandline" type="text" class="input" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">이메일:</label>
+        <input v-model="editData.email" type="email" class="input" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">주소:</label>
+        <input v-model="editData.address" type="text" class="input" />
+      </div>
+      <div class="modal-buttons">
+        <button @click="saveFormData">저장</button>
+        <button @click="closeBottomSheet">취소</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -148,6 +245,8 @@ export default {
       editSelectedCard: {},
       showModal: false,
       qrCodeData: '', // QR 코드 데이터를 저장할 변수
+      isBottomSheetVisible: false,
+      editData: {},
     };
   },
   computed: {
@@ -160,56 +259,59 @@ export default {
   },
   methods: {
     async fetchBusinessCardData() {
-  try {
-    const response = await apiClient.get('/businessCard/myBusinessCard');
-    console.log('서버 응답 데이터:', response.data);
+      try {
+        const response = await apiClient.get('/businessCard/myBusinessCard');
+        console.log('서버 응답 데이터:', response.data);
 
-    if (response.data.isSuccess) {
-      console.log('명함 데이터:', response.data.result);
+        if (response.data.isSuccess) {
+          console.log('명함 데이터:', response.data.result);
 
-      const cardData = response.data.result.businessCardList[0]; // 첫 번째 카드 데이터
-      console.log('비즈니스 카드 데이터:', cardData);
+          const cardData = response.data.result.businessCardList[0]; // 첫 번째 카드 데이터
+          console.log('비즈니스 카드 데이터:', cardData);
 
-      this.formData = {
-        name: cardData.name,
-        phone: cardData.phoneNumber,
-        email: cardData.email,
-        position: cardData.position,
-        department: cardData.part,
-        company: cardData.company,
-        address: cardData.address,
-        phoneLandline: cardData.tel_num,
-      };
+          this.formData = {
+            name: cardData.name,
+            phone: cardData.phoneNumber,
+            email: cardData.email,
+            position: cardData.position,
+            department: cardData.part,
+            company: cardData.company,
+            address: cardData.address,
+            phoneLandline: cardData.tel_num,
+          };
 
-      // QR 코드 이미지 URL이 있으면 qrCodeData에 할당
-      if (cardData.imgurl) {  // 서버에서 받은 데이터의 imgurl
-        this.qrCodeData = cardData.imgurl;
-      } else {
-        console.error('QR 코드 데이터가 없습니다.');
-        alert('QR 코드 데이터가 없습니다.');
+          // QR 코드 이미지 URL이 있으면 qrCodeData에 할당
+          if (cardData.imgurl) {
+            // 서버에서 받은 데이터의 imgurl
+            this.qrCodeData = cardData.imgurl;
+          } else {
+            console.error('QR 코드 데이터가 없습니다.');
+            alert('QR 코드 데이터가 없습니다.');
+          }
+        } else {
+          console.error(response.data.message);
+          alert(response.data.message);
+        }
+      } catch (error) {
+        console.error('명함 정보를 가져오는 중 오류 발생:', error);
+        if (
+          confirm(
+            '등록된 나의 명함 정보가 없습니다. 새 명함을 등록하시겠습니까?'
+          )
+        ) {
+          this.$router.push('/addbusinesscard');
+        }
       }
-    } else {
-      console.error(response.data.message);
-      alert(response.data.message);
-    }
-  } catch (error) {
-    console.error('명함 정보를 가져오는 중 오류 발생:', error);
-    if (
-      confirm(
-        '등록된 나의 명함 정보가 없습니다. 새 명함을 등록하시겠습니까?'
-      )
-    ) {
-      this.$router.push('/addbusinesscard');
-    }
-  }
-}
+    },
 
-    ,
     toggleCardList() {
       this.isCardListVisible = !this.isCardListVisible;
     },
     goBackToMyCard() {
       this.isCardListVisible = false;
+    },
+    goToCardList() {
+      this.$router.push('/businesscardlist'); // 페이지 이동
     },
     openCardDetailModal(card) {
       this.selectedCard = card;
@@ -262,6 +364,19 @@ export default {
       if (bottomSheet) {
         bottomSheet.closeSheet();
       }
+    },
+    saveChanges() {
+      this.formData = { ...this.editData };
+      alert('나의 명함 정보가 저장되었습니다.');
+      this.closeBottomSheet();
+    },
+    deleteCard() {
+      if (confirm('정말로 이 명함을 삭제하시겠습니까?')) {
+        // 명함 삭제 로직 추가
+      }
+    },
+    closeModal() {
+      this.showModal = false;
     },
     saveFormData() {
       this.cardList.push({ ...this.formData });

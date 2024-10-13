@@ -40,7 +40,7 @@
 <script>
 import FooterNav from '../../components/FooterNav.vue';
 import BqrScanner from '../../components/BqrScanner.vue'; // BqrScanner로 변경
-import apiClient from '../../api/axios'; 
+import apiClient from '../../api/axios';
 
 export default {
   name: 'AddBusinessCard',
@@ -55,48 +55,51 @@ export default {
     };
   },
   methods: {
-  closeModal() {
-    this.showModal = false;
-  },
-  async handleScannedData(data) {
-    this.scannedData = data;
+    closeModal() {
+      this.showModal = false;
+    },
+    async handleScannedData(data) {
+      this.scannedData = data;
 
-    // QR 코드 데이터에서 businessCardIdx 추출
-    const businessCardIdx = this.extractBusinessCardIdx(data);
+      // QR 코드 데이터에서 businessCardIdx 추출
+      const businessCardIdx = this.extractBusinessCardIdx(data);
 
-    if (businessCardIdx) {
-      try {
-        // apiClient를 사용해 POST 요청
-        const response = await apiClient.post(`/businessCard/scanFriendQrCode?businessCardIdx=${businessCardIdx}`);
-        console.log('QR 코드 스캔 성공:', response.data);
+      if (businessCardIdx) {
+        try {
+          // apiClient를 사용해 POST 요청
+          const response = await apiClient.post(
+            `/businessCard/scanFriendQrCode?businessCardIdx=${businessCardIdx}`
+          );
+          console.log('QR 코드 스캔 성공:', response.data);
 
-        // 성공 시 해당 URL로 리다이렉트
-        const redirectUrl = `/friend-card-registration/${businessCardIdx}`; // 리다이렉트할 URL 경로 설정
-        window.location.href = redirectUrl;  // 해당 URL로 이동
-
-      } catch (error) {
-        console.error('QR 코드 스캔 실패:', error.response ? error.response.data : error);
+          // 성공 시 해당 URL로 리다이렉트
+          const redirectUrl = `/friend-card-registration/${businessCardIdx}`; // 리다이렉트할 URL 경로 설정
+          window.location.href = redirectUrl; // 해당 URL로 이동
+        } catch (error) {
+          console.error(
+            'QR 코드 스캔 실패:',
+            error.response ? error.response.data : error
+          );
+        }
+      } else {
+        console.error('QR 코드에서 businessCardIdx를 찾을 수 없습니다.');
       }
-    } else {
-      console.error('QR 코드에서 businessCardIdx를 찾을 수 없습니다.');
-    }
 
-    this.showModal = false; // 모달 닫기
+      this.showModal = false; // 모달 닫기
+    },
+    // QR 코드 데이터에서 businessCardIdx 추출하는 메서드
+    extractBusinessCardIdx(data) {
+      try {
+        const url = new URL(data.url);
+        const params = new URLSearchParams(url.search);
+        return params.get('idx'); // idx 값을 반환
+      } catch (error) {
+        console.error('QR 코드 데이터에서 URL 파싱 실패:', error);
+        return null;
+      }
+    },
   },
-  // QR 코드 데이터에서 businessCardIdx 추출하는 메서드
-  extractBusinessCardIdx(data) {
-    try {
-      const url = new URL(data.url);
-      const params = new URLSearchParams(url.search);
-      return params.get('idx'); // idx 값을 반환
-    } catch (error) {
-      console.error('QR 코드 데이터에서 URL 파싱 실패:', error);
-      return null;
-    }
-  },
-},
 };
-
 </script>
 
 <style scoped>
