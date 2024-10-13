@@ -270,6 +270,7 @@ export default {
           console.log('비즈니스 카드 데이터:', cardData);
 
           this.formData = {
+            idx: cardData.idx,
             name: cardData.name,
             phone: cardData.phoneNumber,
             email: cardData.email,
@@ -313,40 +314,40 @@ export default {
     goToCardList() {
       this.$router.push('/businesscardlist'); // 페이지 이동
     },
-    openCardDetailModal(card) {
-      this.selectedCard = card;
-      this.editSelectedCard = { ...card };
-      this.isCardDetailModalVisible = true;
-    },
-    closeCardDetailModal() {
-      this.isCardDetailModalVisible = false;
-      this.editSelectedCard = {};
-    },
-    saveCardDetails() {
-      Object.assign(this.selectedCard, this.editSelectedCard);
-      const index = this.cardList.findIndex(
-        (card) => card.id === this.selectedCard.id
-      );
-      if (index !== -1) {
-        this.cardList.splice(index, 1, { ...this.selectedCard });
-      }
-      this.isCardDetailModalVisible = false;
-      this.editSelectedCard = {};
-      alert('명함 정보가 저장되었습니다.');
-    },
-    deleteCardDetails() {
-      const confirmDelete = confirm('정말로 이 명함을 삭제하시겠습니까?');
-      if (confirmDelete) {
-        const index = this.cardList.findIndex(
-          (card) => card.id === this.selectedCard.id
-        );
-        if (index !== -1) {
-          this.cardList.splice(index, 1);
-        }
-        this.isCardDetailModalVisible = false;
-        this.editSelectedCard = {};
-      }
-    },
+    // openCardDetailModal(card) {
+    //   this.selectedCard = card;
+    //   this.editSelectedCard = { ...card };
+    //   this.isCardDetailModalVisible = true;
+    // },
+    // closeCardDetailModal() {
+    //   this.isCardDetailModalVisible = false;
+    //   this.editSelectedCard = {};
+    // },
+    // saveCardDetails() {
+    //   Object.assign(this.selectedCard, this.editSelectedCard);
+    //   const index = this.cardList.findIndex(
+    //     (card) => card.id === this.selectedCard.id
+    //   );
+    //   if (index !== -1) {
+    //     this.cardList.splice(index, 1, { ...this.selectedCard });
+    //   }
+    //   this.isCardDetailModalVisible = false;
+    //   this.editSelectedCard = {};
+    //   alert('명함 정보가 저장되었습니다.');
+    // },
+    // deleteCardDetails() {
+    //   const confirmDelete = confirm('정말로 이 명함을 삭제하시겠습니까?');
+    //   if (confirmDelete) {
+    //     const index = this.cardList.findIndex(
+    //       (card) => card.id === this.selectedCard.id
+    //     );
+    //     if (index !== -1) {
+    //       this.cardList.splice(index, 1);
+    //     }
+    //     this.isCardDetailModalVisible = false;
+    //     this.editSelectedCard = {};
+    //   }
+    // },
     goToaddBusinessCard() {
       this.$router.push('/addbusinesscard');
     },
@@ -366,13 +367,56 @@ export default {
       }
     },
     saveChanges() {
-      this.formData = { ...this.editData };
-      alert('나의 명함 정보가 저장되었습니다.');
-      this.closeBottomSheet();
+      if (!this.formData.idx) {
+        alert('명함 ID가 설정되지 않았습니다.');
+        console.error('formData에서 idx 값이 없습니다:', this.formData);
+        return;
+      }
+
+      console.log('전송할 데이터:', this.editData);
+
+      // PATCH 요청으로 서버에 데이터 수정 요청
+      apiClient
+        .patch(`/businessCard?idx=${this.formData.idx}`, this.editData)
+        .then((response) => {
+          console.log('서버 응답:', response.data);
+
+          if (response.data.isSuccess) {
+            this.formData = { ...this.editData }; // 수정된 데이터로 formData 업데이트
+            alert('나의 명함 정보가 저장되었습니다.');
+          } else {
+            alert('수정 실패: ' + response.data.message);
+          }
+        })
+        .catch((error) => {
+          console.error('명함 정보 수정 중 오류 발생:', error);
+          alert('명함 정보 수정 중 오류가 발생했습니다.');
+        })
+        .finally(() => {
+          this.closeBottomSheet(); // Bottom sheet 닫기
+        });
     },
     deleteCard() {
       if (confirm('정말로 이 명함을 삭제하시겠습니까?')) {
-        // 명함 삭제 로직 추가
+        // DELETE 요청으로 서버에 명함 삭제 요청
+        apiClient
+          .delete(`/businessCard?idx=${this.formData.idx}`)
+          .then((response) => {
+            // 서버 응답 확인
+            console.log('서버 응답:', response.data);
+
+            if (response.data.isSuccess) {
+              alert('명함이 삭제되었습니다.');
+              // 명함 삭제 후 상태를 업데이트하거나 리스트를 새로고침할 수 있음
+              this.fetchBusinessCardData(); // 비즈니스 카드 목록을 새로고침하는 메서드 호출
+            } else {
+              alert('삭제 실패: ' + response.data.message);
+            }
+          })
+          .catch((error) => {
+            console.error('명함 삭제 중 오류 발생:', error);
+            alert('명함 삭제 중 오류가 발생했습니다.');
+          });
       }
     },
     closeModal() {
@@ -397,15 +441,6 @@ export default {
 </script>
 
 <style scoped>
-/* 필요한 스타일 추가 */
-/* .qr-code-container {
-  text-align: center;
-  margin-top: 20px;
-}
-.qr-code-image {
-  width: 150px;
-  height: 150px;
-} */
 .input {
   width: 200px;
 }
