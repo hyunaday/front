@@ -8,7 +8,7 @@
     </div>
 
     <div class="content">
-      <div class="circle-background">
+      <div class="circle-background pulse rotate">
         <RadialProgress
           :diameter="200"
           :completed-steps="completedParticipants"
@@ -26,7 +26,7 @@
         </RadialProgress>
       </div>
 
-      <h2 class="waiting-message">잠시만 기다려주세요</h2>
+      <h2 class="waiting-message blink">잠시만 기다려주세요</h2>
       <p class="waiting-description">다른 팀원들이 결제를 준비하고 있어요!</p>
     </div>
   </div>
@@ -39,22 +39,20 @@ import RadialProgress from 'vue3-radial-progress';
 import { useOrderStore, useOrderInfoStore, usePriceStore } from '../stores/orderStore.js';
 import { useSocketStore } from '../stores/socketStore.js';
 
-
 const router = useRouter();
 const socketStore = useSocketStore();
 const orderStore = useOrderStore();
 const orderInfoStore = useOrderInfoStore();
 const priceStore = usePriceStore();
 const completedParticipants = ref(0);
-const totalParticipants = ref(priceStore.maxMemberCnt); // 전체 참여자 수
+const totalParticipants = ref(0); // 전체 참여자 수
 const route = useRoute();
 
 const orderIdx = route.query.orderIdx;
 const marketIdx = route.query.marketIdx;
 
-// 참여자 수 업데이트 함수
 const updateParticipantCount = () => {
-  completedParticipants.value = orderInfoStore.maxMemberCnt;
+  totalParticipants.value = orderStore.maxMemberCnt;
 };
 
 // 뒤로 가기 버튼
@@ -70,6 +68,7 @@ const joinRoom = async () => {
 // 주문 정보 가져오기
 const loadOrderInfo = async () => {
   orderInfoStore.getOrderInfo(orderIdx, marketIdx);
+  orderStore.setOrderIdx(orderIdx);
 };
 
 // 소켓 메시지 감시
@@ -81,30 +80,28 @@ watch(
 
     try {
       const parsedMessage = JSON.parse(lastMessage);
-      if (parsedMessage.type === 'PARTICIPANT_INFO') {
-        priceStore.setPriceData(parsedMessage);
-        updateParticipantCount();
-      }
 
       if (parsedMessage.type === 'MENU_INFO') {
-          console.log('MENU_INFO 메시지 도착:', parsedMessage);
-          orderStore.setOrderIdx(parsedMessage.orderIdx);
-          orderStore.setMaxMemberCnt(parsedMessage.maxMemberCnt);
-          orderStore.setType(parsedMessage.roomType);
-          totalParticipants.value = parsedMessage.maxMemberCnt;
-          alert('MENU_INFO 수신 완료. 다음 페이지로 이동합니다.');
-          router.push('/menucheck'); // 페이지 이동 (소켓 연결 유지)
-        } else if (parsedMessage.type === 'PARTICIPANT_INFO') {
-          orderStore.setType("BY_PRICE")
-          console.log('PARTICIPANT_INFO 메시지 도착:', parsedMessage);
-          priceStore.setPriceData(parsedMessage);
-          router.push('/requestPay')
-        }
-
+        console.log('MENU_INFO 메시지 도착:', parsedMessage);
+        orderStore.setOrderIdx(parsedMessage.orderIdx);
+        orderStore.setMaxMemberCnt(parsedMessage.maxMemberCnt);
+        orderStore.setType(parsedMessage.roomType);
+        totalParticipants.value = parsedMessage.maxMemberCnt;
+        alert('MENU_INFO 수신 완료. 다음 페이지로 이동합니다.');
+        router.push('/menucheck'); // 페이지 이동 (소켓 연결 유지)
+      } else if (parsedMessage.type === 'PARTICIPANT_INFO') {
+        orderStore.setType("BY_PRICE");
+        console.log('PARTICIPANT_INFO 메시지 도착:', parsedMessage);
+        priceStore.setPriceData(parsedMessage);
+        router.push('/requestPay');
+      } else if (parsedMessage.type === 'ENTER') {
+        completedParticipants.value = parsedMessage.memberCnt;
+        orderStore.setMaxMemberCnt(parsedMessage.maxMemberCnt);
+        orderStore.setType(parsedMessage.roomType);
+      }
     } catch (error) {
       console.error('메시지 파싱 실패:', error);
     }
-    
   },
   { deep: true }
 );
@@ -114,11 +111,6 @@ onMounted(async () => {
   await loadOrderInfo();
   joinRoom();
   updateParticipantCount();
-});
-
-// 컴포넌트가 언마운트될 때 소켓 연결 해제하지 않음 (필요 시 추가)
-onBeforeUnmount(() => {
-  // socketStore.disconnect(); // 소켓 연결 해제할 경우 사용
 });
 </script>
 
@@ -143,9 +135,12 @@ onBeforeUnmount(() => {
 }
 
 .content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1; /* 화면 중앙으로 정렬하기 위해 flex-grow 사용 */
   text-align: center;
-  margin-top: auto;
-  margin-bottom: 100px;
 }
 
 .circle-background {
@@ -156,14 +151,34 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto;
   position: relative;
+  animation: pulse 3s infinite ease-in-out, rotate 5s infinite linear; /* pulse 및 rotate 애니메이션 추가 */
+  margin-bottom: 40px;
 }
 
 .circle-text {
   font-size: 50px;
   color: white;
   font-weight: bold;
+}
+
+
+
+/* 텍스트 깜박임 애니메이션 */
+.blink {
+  animation: blink 3s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 70% {
+    opacity: 1; /* 글씨가 보이는 구간 */
+  }
+  85% {
+    opacity: 0; /* 서서히 사라짐 */
+  }
+  100% {
+    opacity: 1; /* 다시 서서히 나타남 */
+  }
 }
 
 .waiting-message {
