@@ -31,16 +31,18 @@
         </div>
 
         <div class="account-list">
-          <div v-for="(account, index) in accounts" :key="index" class="account-card">
+          <div
+            v-for="(account, index) in accounts"
+            :key="index"
+            class="account-card"
+            @click="goToTransactionHistory(account.idx)"
+          >
             <img :src="bankLogos[account.name]" alt="입출금통장 아이콘" class="account-icon" />
             <div class="account-info">
               <span class="transactions-title">{{ account.name }}</span>
               <span class="account-balance">{{ formatNumber(account.balance) }}원</span>
             </div>
-            <div class="button-container">
-              <router-link :to="`/transactionhistory${account.idx}`">
-                <button class="view-button">조회</button>
-              </router-link>
+            <div class="transfer-button-container">
               <router-link to="/transfer">
                 <button class="transfer-button">송금</button>
               </router-link>
@@ -130,7 +132,6 @@ import kbPayImage from '../../assets/images/kbpay.png';
 import iphone from '../../assets/images/iphone.png';
 import multicampus from '../../assets/images/kbmulti.png';
 
-
 export default {
   name: 'MyAssets',
   components: {
@@ -146,7 +147,7 @@ export default {
       },
       creditCards: [],
       loanAmount: 200000000,
-     banners: [
+      banners: [
         {
           image: kbPayImage,
           title: 'KB Pay',
@@ -202,6 +203,9 @@ export default {
   },
   
   methods: {
+    goToTransactionHistory(accountIdx) {
+      this.$router.push(`/transactionhistory${accountIdx}`);
+    },
     goToGroupPayPage() {
       this.$router.push("/grouppay");
     },
@@ -245,7 +249,7 @@ export default {
       this.currentIndex = (this.currentIndex + 1) % this.banners.length;
     },
     startSlider() {
-      setInterval(this.nextBanner, 3000); // 3초마다 다음 배너로 전환
+      setInterval(this.nextBanner, 2500); // 3초마다 다음 배너로 전환
     },
   },
 
@@ -262,16 +266,6 @@ export default {
   display: flex;
   align-items: center;
   margin-left: auto;
-}
-
-.view-button {
-  background-color: #d9d9d9;
-  color: black;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-size: 12px;
-  margin-right: 10px;
 }
 
 .card-icon {

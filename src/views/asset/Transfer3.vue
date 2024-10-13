@@ -5,7 +5,7 @@
       <div class="logo">
         <i class="fa-solid fa-circle-check logo-icon"></i>
       </div>
-      <h1 class="amount">{{ amount }}원</h1>
+      <h1 class="amount">{{ formatNumber(amount) }}원</h1>
       <h2 class="status">송금 완료</h2>
       <div class="details-container">
         <div class="details-label">
@@ -48,7 +48,7 @@ export default {
   data() {
     return {
       amount: 10000, // 송금 금액
-      recipient: '김국민', // 받는 사람
+      recipient: '홍길동', // 받는 사람
       date: '', // 송금 날짜
       showConfirmModal: false, // 모달 표시 상태
     };
@@ -74,6 +74,9 @@ export default {
         hour12: false,
       };
       return now.toLocaleString('ko-KR', options).replace(',', '').replace(/\//g, '-');
+    },
+    formatNumber(num) {
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
   },
   mounted() {
@@ -81,7 +84,6 @@ export default {
   },
 }
 </script>
-
 
 <style scoped>
 .complete-page {
