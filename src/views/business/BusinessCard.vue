@@ -103,7 +103,41 @@
       </div>
     </div>
   </div>
-
+<!-- 수정 bottom-sheet -->
+<bottom-sheet id="editBottomSheet" title="명함 수정">
+      <main>
+        <div class="edit-form">
+          <label>회사명:</label>
+          <input v-model="formData.company" type="text" />
+          <label>주소:</label>
+          <input v-model="formData.address" type="text" />
+          <label>이름:</label>
+          <input v-model="formData.name" type="text" />
+          <label>직책:</label>
+          <input v-model="formData.position" type="text" />
+          <label>부서:</label>
+          <input v-model="formData.department" type="text" />
+          <label>휴대전화:</label>
+          <input v-model="formData.phone" type="text" />
+          <label>유선전화:</label>
+          <input v-model="formData.phoneLandline" type="text" />
+          <label>이메일:</label>
+          <input v-model="formData.email" type="text" />
+          <div v-if="isFriendCard">
+            <label>메모:</label>
+            <textarea
+              v-model="formData.memo"
+              class="memo-textarea"
+              placeholder="메모를 입력하세요..."
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-buttons">
+          <button @click="saveChanges">저장</button>
+          <button @click="closeBottomSheet">취소</button>
+        </div>
+      </main>
+    </bottom-sheet>
   <!-- QR 코드 모달 -->
   <div v-if="showModal" class="modal" @click="closeModal">
     <div class="modal-content qr-modal" @click.stop>

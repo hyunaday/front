@@ -34,12 +34,12 @@
           <div
             v-for="(account, index) in accounts"
             :key="index"
-            class="account-card"
+            class="account-cards"
             @click="goToTransactionHistory(account.idx)"
           >
             <img :src="bankLogos[account.name]" alt="입출금통장 아이콘" class="account-icon" />
             <div class="account-info">
-              <span class="transactions-title">{{ account.name }}</span>
+              <span class="transactions-titles">{{ account.name }}</span>
               <span class="account-balance">{{ formatNumber(account.balance) }}원</span>
             </div>
             <div class="transfer-button-container">
@@ -344,6 +344,12 @@ h1 {
   justify-content: space-between;
 }
 
+.transactions-titles {
+  font-size: 12px;
+  text-align: left;
+  font-weight: bold; 
+}
+
 .transactions-title {
   font-size: 12px;
   text-align: right;
@@ -358,6 +364,24 @@ h1 {
 .account-list {
   display: flex;
   flex-direction: column;
+}
+
+.account-cards {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s; /* 부드러운 전환 추가 */
+  border-radius: 8px; /* 기본적으로 둥글게 설정 */
+
+}
+
+.account-cards:hover {
+  background-color: #f0f0f0; /* hover 시 배경색 변화 */
+  transform: scale(1.02); /* hover 시 살짝 커지는 효과 */
+  border-radius: 12px; /* hover 시 더 둥글게 */
+
 }
 
 .account-card {
