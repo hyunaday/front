@@ -401,7 +401,6 @@ export default {
     // 필터링된 거래 내역
     filteredEntries() {
       if (!this.entries) return [];
-
       return this.entries
         .filter((entryGroup) => {
           if (this.selectedFilter === "income") {
@@ -421,7 +420,7 @@ export default {
                 : true;
             const matchesCategory =
               !this.selectedCategory ||
-              entry.category === this.selectedCategory;
+              mapEnumToCategory(entry.category) === this.selectedCategory;
 
             return matchesFilter && matchesCategory;
           });
@@ -452,6 +451,10 @@ export default {
       // 필요한 경우 달력 업데이트 로직 추가
     },
 
+    toggleFilter(filter) {
+      this.selectedFilter = this.selectedFilter === filter ? null : filter;
+      this.selectedCategory = ""; // 필터 변경 시 카테고리 초기화
+    },
     // 카테고리 변환 함수
     mapEnumToCategory(enumValue) {
       return CategoryMap[enumValue] || enumValue;
@@ -549,10 +552,7 @@ export default {
     closeBottomSheet() {
       document.getElementById("testBottomSheet").closeSheet();
     },
-    toggleFilter(filter) {
-      this.selectedFilter = this.selectedFilter === filter ? null : filter;
-      this.selectedCategory = ""; // 필터 변경 시 카테고리 초기화
-    },
+
     setCategoryType(type) {
       this.selectedFilter = type;
     },
