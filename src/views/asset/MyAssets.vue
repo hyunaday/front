@@ -123,9 +123,10 @@ import tossLogo from "../../assets/images/toss.png";
 import nhLogo from "../../assets/images/NHbank.png";
 import kbCardLogo from "../../assets/images/kbcard.png";
 import shinhanCardLogo from "../../assets/images/shinhancard.png";
+import wooriCardLogo from '../../assets/images/wooricard.png';
 import hanaCardLogo from "../../assets/images/hanacard.png";
 import kakaoCardLogo from "../../assets/images/kakaocard.png";
-import wooriCardLogo from "../../assets/images/lottecard.png";
+import lotteCardLogo from "../../assets/images/lottecard.png";
 import samsungCardLogo from "../../assets/images/samsungcard.png";
 import hyundaiCardLogo from "../../assets/images/hyundaicard.png";
 import kbPayImage from '../../assets/images/kbpay.png';
@@ -143,7 +144,7 @@ export default {
       userName: '김국민',
       accounts: [],
       savingsAccount: {
-        balance: 6000000,
+        balance: 200000,
       },
       creditCards: [],
       loanAmount: 200000000,
@@ -181,7 +182,7 @@ export default {
         신한카드: shinhanCardLogo,
         '카카오뱅크 카드': kakaoCardLogo,
         하나카드: hanaCardLogo,
-        롯데카드: wooriCardLogo,
+        롯데카드: lotteCardLogo,
         삼성카드: samsungCardLogo,
         현대카드: hyundaiCardLogo,
       },
@@ -381,7 +382,6 @@ h1 {
   background-color: #f0f0f0; /* hover 시 배경색 변화 */
   transform: scale(1.02); /* hover 시 살짝 커지는 효과 */
   border-radius: 12px; /* hover 시 더 둥글게 */
-
 }
 
 .account-card {
