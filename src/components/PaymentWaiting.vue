@@ -34,10 +34,11 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import RadialProgress from 'vue3-radial-progress';
 import { useOrderStore, useOrderInfoStore, usePriceStore } from '../stores/orderStore.js';
 import { useSocketStore } from '../stores/socketStore.js';
+
 
 const router = useRouter();
 const socketStore = useSocketStore();
@@ -46,6 +47,10 @@ const orderInfoStore = useOrderInfoStore();
 const priceStore = usePriceStore();
 const completedParticipants = ref(0);
 const totalParticipants = ref(priceStore.maxMemberCnt); // 전체 참여자 수
+const route = useRoute();
+
+const orderIdx = route.query.orderIdx;
+const marketIdx = route.query.marketIdx;
 
 // 참여자 수 업데이트 함수
 const updateParticipantCount = () => {
@@ -64,8 +69,7 @@ const joinRoom = async () => {
 
 // 주문 정보 가져오기
 const loadOrderInfo = async () => {
-  orderInfoStore.getOrderInfo(orderStore.orderIdx, orderStore.marketIdx);
-  totalParticipants.value = priceStore.maxMemberCnt;
+  orderInfoStore.getOrderInfo(orderIdx, marketIdx);
 };
 
 // 소켓 메시지 감시
@@ -84,7 +88,10 @@ watch(
 
       if (parsedMessage.type === 'MENU_INFO') {
           console.log('MENU_INFO 메시지 도착:', parsedMessage);
-          orderStore.setType("BY_MENU")
+          orderStore.setOrderIdx(parsedMessage.orderIdx);
+          orderStore.setMaxMemberCnt(parsedMessage.maxMemberCnt);
+          orderStore.setType(parsedMessage.roomType);
+          totalParticipants.value = parsedMessage.maxMemberCnt;
           alert('MENU_INFO 수신 완료. 다음 페이지로 이동합니다.');
           router.push('/menucheck'); // 페이지 이동 (소켓 연결 유지)
         } else if (parsedMessage.type === 'PARTICIPANT_INFO') {

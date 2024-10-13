@@ -5,8 +5,8 @@ import apiClient from "../api/axios";
 
 export const useOrderStore = defineStore('order', {
   state: () => ({
-    orderIdx: 1,
-    maxMemberCnt: 2,
+    orderIdx: 0,
+    maxMemberCnt: 0,
     type: null,
   }),
   actions: {

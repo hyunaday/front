@@ -186,7 +186,10 @@ export default {
                 item.selectedByUser = false;
               }
             });
-            alert('더 이상 선택할 수 없는 메뉴입니다')
+            if (parsedMessage.code === 'ORDER4014') {
+              alert('더 이상 선택할 수 없는 메뉴입니다');
+            }
+              
 
           }
 
@@ -257,6 +260,7 @@ export default {
       splitByAmount,
       goBack,
       defaultImage,
+      isReadySent
     };
   },
 };
