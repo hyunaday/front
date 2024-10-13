@@ -139,13 +139,13 @@ export default {
   },
   data() {
     return {
-      userName: '조현아',
+      userName: '김국민',
       accounts: [],
       savingsAccount: {
         balance: 6000000,
       },
       creditCards: [],
-      loanAmount: 480000000,
+      loanAmount: 200000000,
      banners: [
         {
           image: kbPayImage,
