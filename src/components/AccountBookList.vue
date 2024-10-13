@@ -35,6 +35,14 @@
         class="search-input"
       />
     </div>
+    <!-- 검색 결과가 있는 경우 필터링된 데이터로 표시, 없을 경우 원래 데이터 표시 -->
+    <div
+      v-for="(entryGroup, groupIndex) in filteredResults.length > 0
+        ? filteredResults
+        : entries"
+      :key="(groupIndex, entryGroup)"
+      class="entry-group"
+    ></div>
     <!-- 필터링 및 카테고리 선택 버튼을 왼쪽 아래에 고정 -->
     <div class="filter-container">
       <!-- 수입/지출 필터링 버튼 -->
@@ -51,7 +59,7 @@
         지출
       </button>
       <!-- 전체 카테고리 선택 -->
-      <select v-model="selectedCategory">
+      <select v-model="selectedCategory" placeholder="전체">
         <option value="">전체</option>
         <!-- 전체 카테고리 옵션 -->
         <!-- 전체 카테고리 (필터가 설정되지 않았을 때) -->
@@ -348,6 +356,7 @@ export default {
       totalExpense: 0,
       totalIncome: 0,
       searchQuery: "",
+      filteredResults: [],
       selectedYear: new Date().getFullYear(),
       selectedMonth: new Date().getMonth(),
       years: this.generateYears(),
@@ -400,15 +409,18 @@ export default {
     },
     // 필터링된 거래 내역
     filteredEntries() {
-      if (!this.entries) return [];
       return this.entries
         .filter((entryGroup) => {
-          if (this.selectedFilter === "income") {
-            return entryGroup.entries.some((entry) => !entry.isExpense);
-          } else if (this.selectedFilter === "expense") {
-            return entryGroup.entries.some((entry) => entry.isExpense);
-          }
-          return true;
+          // 검색어와 다른 조건을 반영한 필터링
+          const searchLower = this.searchQuery.toLowerCase();
+          const filteredEntries = entryGroup.entries.filter((entry) => {
+            return (
+              entry.detail.toLowerCase().includes(searchLower) ||
+              mapEnumToCategory(entry.category).includes(this.searchQuery) ||
+              entry.storeName.toLowerCase().includes(searchLower)
+            );
+          });
+          return filteredEntries.length > 0;
         })
         .map((entryGroup) => {
           const filteredEntries = entryGroup.entries.filter((entry) => {
@@ -541,7 +553,20 @@ export default {
     // },
 
     executeSearch() {
-      this.finalQuery = this.searchQuery;
+      const searchLower = this.searchQuery.toLowerCase();
+      this.filteredResults = this.entries
+        .map((entryGroup) => {
+          // 필터링된 항목이 있는 그룹만 반환
+          const filteredEntries = entryGroup.entries.filter((entry) => {
+            return (
+              entry.detail.toLowerCase().includes(searchLower) ||
+              mapEnumToCategory(entry.category).includes(this.searchQuery) ||
+              entry.storeName.toLowerCase().includes(searchLower)
+            );
+          });
+          return { ...entryGroup, entries: filteredEntries };
+        })
+        .filter((entryGroup) => entryGroup.entries.length > 0);
     },
     startEditingPrice() {
       this.isEditingPrice = true;
@@ -555,9 +580,6 @@ export default {
 
     setCategoryType(type) {
       this.selectedFilter = type;
-    },
-    executeSearch() {
-      this.finalQuery = this.searchQuery;
     },
     // 카테고리 타입 설정
     setFilter(filter) {
