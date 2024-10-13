@@ -231,28 +231,38 @@
           </div>
         </div>
       </div>
+
       <div class="entry-details">
         <div
           v-for="(entry, entryIndex) in entryGroup.entries"
           :key="entryIndex"
           class="entry-item"
         >
-          <!-- 거래처와 카테고리를 세로로 배치 -->
+          <!-- 카테고리 이미지 및 이름 표시 -->
           <div class="entry-info">
-            <!-- <div class="store-name">{{ entry.storeName }}</div> -->
-            <div class="category">{{ mapEnumToCategory(entry.category) }}</div>
-            <!-- 카테고리 변환 함수 사용 -->
+            <img
+              v-if="entry && entry.category"
+              :src="mapEnumToImage(entry.category)"
+              alt="카테고리 이미지"
+              class="category-image"
+            />
+            <div class="category" v-if="entry && entry.category">
+              {{ mapEnumToCategory(entry.category) }}
+            </div>
           </div>
-          <!-- 세부 내용 및 금액 -->
-          <div>{{ entry.detail }}</div>
+          <!-- 세부 내용 및 금액 - 여기서 조건부 렌더링 추가 -->
+          <div v-if="entry && entry.detail">{{ entry.detail }}</div>
           <div
+            v-if="entry && entry.amount"
             class="amount"
             :class="entry.amount < 0 ? 'negative' : 'positive'"
           >
             {{ formatAmount(entry.amount) }}
           </div>
+
           <!-- 삭제 버튼 -->
           <button
+            v-if="entry"
             @click="deleteEntry(groupIndex, entryIndex)"
             class="delete-btn"
           >
@@ -266,6 +276,16 @@
 
 <script>
 import apiClient from "../api/axios.js";
+
+import allowanceIcon from "../assets/images/allowance1.png";
+import communicationIcon from "../assets/images/communication1.png";
+import entertainmentIcon from "../assets/images/entertainment1.png";
+import foodIcon from "../assets/images/food.png";
+import interestIcon from "../assets/images/interest1.png";
+import salaryIcon from "../assets/images/salary1.png";
+import shoppingIcon from "../assets/images/shopping1.png";
+import transportIcon from "../assets/images/transport1.png";
+import uncategorizedIcon from "../assets/images/uncategorized1.png";
 
 // ENUM과 한글 카테고리 매핑 객체
 const CategoryMap = {
@@ -356,7 +376,7 @@ export default {
     };
   },
   computed: {
-    // 총 지출 계산 (filteredEntries가 정의되지 않았거나 빈 배열일 경우 기본값을 설정)
+    // 총 지출 계산
     totalExpense() {
       return (this.filteredEntries || []).reduce((total, entryGroup) => {
         return (
@@ -367,7 +387,7 @@ export default {
         );
       }, 0);
     },
-    // 총 수입 계산 (filteredEntries가 정의되지 않았거나 빈 배열일 경우 기본값을 설정)
+    // 총 수입 계산
     totalIncome() {
       return (this.filteredEntries || []).reduce((total, entryGroup) => {
         return (
@@ -435,6 +455,23 @@ export default {
     // 카테고리 변환 함수
     mapEnumToCategory(enumValue) {
       return CategoryMap[enumValue] || enumValue;
+    },
+
+    mapEnumToImage(category) {
+      const categoryMap = {
+        ALLOWANCE: allowanceIcon,
+        COMMUNICATION: communicationIcon,
+        ENTERTAINMENT: entertainmentIcon,
+        FOOD: foodIcon,
+        INTEREST: interestIcon,
+        SALARY: salaryIcon,
+        SHOPPING: shoppingIcon,
+        TRANSPORT: transportIcon,
+        UNCATEGORIZED: uncategorizedIcon,
+      };
+
+      // 카테고리 키에 해당하는 이미지 반환, 없으면 기본 이미지
+      return categoryMap[category] || uncategorizedIcon;
     },
 
     async fetchTransactionHistory() {
@@ -685,11 +722,14 @@ div.total-amount {
 }
 .entry-details {
   margin-top: 10px;
+  justify-content: space-between; /* 왼쪽과 오른쪽에 있는 요소들을 적절히 분배 */
 }
 .entry-item {
   display: flex;
   justify-content: space-between;
   padding: 10px 0;
+  align-items: center; /* 세로로 중앙 정렬 */
+  width: 100%; /* 항목이 가로로 꽉 차게 설정 */
 }
 
 /* .entry-item:hover {
@@ -700,6 +740,8 @@ div.total-amount {
 .entry-info {
   display: flex;
   flex-direction: column; /* 세로 정렬 */
+  align-items: center;
+  justify-content: center; /* 수직 가운데 정렬 */
 }
 .store-name {
   font-size: 0.9rem;
@@ -710,9 +752,19 @@ div.total-amount {
 .category {
   font-size: 0.8rem;
   color: black;
+  text-align: left;
+  margin-right: 8px;
 }
+
+.category-image {
+  width: 24px; /* 원하는 너비 */
+  height: 24px; /* 원하는 높이 */
+  object-fit: contain; /* 이미지 비율 유지 */
+  margin-right: 8px; /* 텍스트와의 간격 조절 */
+}
+
 .detail {
-  flex: 1;
+  flex-grow: 1; /* detail 항목이 가로 공간을 적절히 차지하도록 설정 */
   text-align: center; /* detail 필드 중앙 정렬 */
   font-size: 0.8rem;
   color: #333;
