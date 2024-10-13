@@ -3,10 +3,21 @@
     <Header />
     <div class="container mt-3">
       <!-- 내 자산 연결 버튼 섹션 -->
-      <div v-if="!isConnected" class="connect-card-container d-flex flex-column align-items-center justify-content-center">
-        <img src="../assets/images/connect_logo_rm.png" alt="Connect Logo" class="connect-logo" />
-        <p class="connect-message">편리한 전자 지갑 기능을 사용하려면<br />자산을 연결해주세요!</p>
-        <button @click="goToAgreementPage" class="btn connect-button">내 자산 연결</button>
+      <div
+        v-if="!isConnected"
+        class="connect-card-container d-flex flex-column align-items-center justify-content-center"
+      >
+        <img
+          src="../assets/images/connect_logo_rm.png"
+          alt="Connect Logo"
+          class="connect-logo"
+        />
+        <p class="connect-message">
+          편리한 전자 지갑 기능을 사용하려면<br />자산을 연결해주세요!
+        </p>
+        <button @click="goToAgreementPage" class="btn connect-button">
+          내 자산 연결
+        </button>
       </div>
 
       <!-- 내 계좌 텍스트 및 잔액 조회 스위치 -->
@@ -15,27 +26,53 @@
           <h4 class="mb-0">내 계좌</h4>
         </div>
         <div class="col-6">
-          <div class="form-check form-switch d-flex justify-content-end align-items-center">
-            <label class="form-check-label me-2" for="amountSwitch">잔액 보기</label>
-            <input class="form-check-input" type="checkbox" id="amountSwitch" v-model="showamount" />
+          <div
+            class="form-check form-switch d-flex justify-content-end align-items-center"
+          >
+            <label class="form-check-label me-2" for="amountSwitch"
+              >잔액 보기</label
+            >
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="amountSwitch"
+              v-model="showamount"
+            />
           </div>
         </div>
       </div>
 
       <!-- 내 계좌 섹션 -->
-      <div v-if="isConnected" class="account-section d-flex justify-content-center">
-        <swiper :slides-per-view="1.2" :centered-slides="true" :space-between="10" :pagination="{ clickable: true }" :initial-slide="1" @swiper="onSwiper" @slideChange="onSlideChange">
+      <div
+        v-if="isConnected"
+        class="account-section d-flex justify-content-center"
+      >
+        <swiper
+          :slides-per-view="1.2"
+          :centered-slides="true"
+          :loop="true"
+          :space-between="10"
+          :pagination="{ clickable: true }"
+          @swiper="onSwiper"
+          @slideChange="onSlideChange"
+        >
           <!-- 계좌 카드 슬라이드 -->
           <swiper-slide v-for="account in accounts" :key="account.idx">
             <div class="account-card">
               <label>입출금통장</label>
               <label class="account-number">{{ account.accountNumber }}</label>
-              <img :src="copyIcon" class="copy-icon" @click="copyAccountNumber(account.accountNumber)" />
+              <img
+                :src="copyIcon"
+                class="copy-icon"
+                @click="copyAccountNumber(account.accountNumber)"
+              />
               <div class="account-name">
                 <img :src="bankLogos[account.bankName]" class="bank-icon" />
                 <label class="bank-name">{{ account.bankName }}</label>
                 <div class="amount-container" v-if="showamount">
-                  <label class="amount">₩ {{ formatNumber(account.amount) }}</label>
+                  <label class="amount"
+                    >₩ {{ formatNumber(account.amount) }}</label
+                  >
                 </div>
                 <div class="amount-container" v-else>
                   <label class="amount-hidden">잔액 숨김</label>
@@ -44,10 +81,14 @@
               <div class="account-button">
                 <div class="d-flex justify-content-between gap-4">
                   <router-link :to="`/transactionhistory${account.idx}`">
-                    <button class="btn btn-light check" type="button">조회</button>
+                    <button class="btn btn-light check" type="button">
+                      조회
+                    </button>
                   </router-link>
                   <router-link :to="`/transfer`">
-                    <button class="btn btn-light transfer" type="button">이체</button>
+                    <button class="btn btn-light transfer" type="button">
+                      이체
+                    </button>
                   </router-link>
                 </div>
               </div>
@@ -58,17 +99,27 @@
 
       <!-- 함께 결제 섹션 -->
       <div class="together-pay">
-        <label><h6>정산은 그만! <strong>함께 결제</strong>해봐요</h6></label>
+        <label
+          ><h6>정산은 그만! <strong>함께 결제</strong>해봐요</h6></label
+        >
       </div>
       <div class="together-section d-flex justify-content-center">
-        <div class="together-card d-flex justify-content-between align-items-center p-3">
+        <div
+          class="together-card d-flex justify-content-between align-items-center p-3"
+        >
           <div class="text-content">
             <h6>결제 할때, 한번에 다같이</h6>
             <p>함께 결제</p>
             <button class="btn btn-light">사용방법 보러가기</button>
           </div>
-          <div class="image-content d-flex justify-content-center align-items-center">
-            <img src="../assets/images/humans.png" class="human-image img-fluid" alt="humans" />
+          <div
+            class="image-content d-flex justify-content-center align-items-center"
+          >
+            <img
+              src="../assets/images/humans.png"
+              class="human-image img-fluid"
+              alt="humans"
+            />
           </div>
         </div>
       </div>
@@ -84,15 +135,20 @@
             :slides-per-view="1.2"
             :centered-slides="true"
             :loop="true"
-            :autoplay="{ delay: 2000, disableOnInteraction: false }"
+            :autoplay="{ delay: 2000 }"
             :pagination="{ clickable: true, type: 'progressbar' }"
             :navigation="true"
           >
             <!-- 카드 추천 슬라이드 -->
-            <swiper-slide v-for="(image, index) in cardImages" :key="index" class="slide-card">
+            <swiper-slide
+              v-for="(image, index) in cardImages"
+              :key="index"
+              class="slide-card"
+            >
               <div class="card-content">
                 <img :src="image" alt="추천 카드" class="card-image-fixed" />
-                <p>{{ cardDescriptions[index] }}</p>
+                <p class="cardTitle">{{ cardTitle[index] }}</p>
+                <p class="cardDescription">{{ cardDescriptions[index] }}</p>
               </div>
             </swiper-slide>
           </swiper>
@@ -130,17 +186,26 @@ export default {
     Header,
   },
   setup() {
-    return {};
+    return {
+    };
   },
   data() {
     return {
       cardDescriptions: [
-        '편의점에서 총 80000원을 사용했어요.',
-        '식당에서 120000원을 사용했어요.',
-        '주유소에서 50000원을 사용했어요.',
-        '영화관에서 30000원을 사용했어요.',
-        '쇼핑몰에서 150000원을 사용했어요.',
-        '카페에서 20000원을 사용했어요.'
+        "스타벅스 최대 60%할인은 기본교통·택시·통신 등 일상생활 할인!",
+        "통신·교통·외식 등 생활영역10%할인주유 리터당 60원 할인혜택!",
+        "대한항공 1천원당 1마일리지 적립공항 라운지 / 발레파킹 무료 이용",
+        "해외가맹점 최대 3% 포인트리 적립전월 실적없이 국내가맹점 0.3%적립",
+        "스카이패스 1500원당 최대3마일적립전세계 공항라운지 동반1인 무료",
+        "대한항공 및 저가항공사 15만원할인!국내가맹점1%+특별영역5%, 중복할인",
+      ],
+      cardTitle: [
+        "카페 최대60%할인, 일상할인까지",
+        "생활업종 할인으로 혜택 가득한 하루!",
+        "카드 하나로 누리는 항공 특화 서비스!",
+        "포인트리 적립받고 해외배송료 할인까지",
+        "여행도 프리미엄! 마일리지적립+전세계라운지 무료",
+        "국내외 라운지 무료이용과 항공권 15만원 할인!",
       ],
       showamount: false,
       accounts: [],
@@ -351,7 +416,12 @@ h4 {
 
 .together-card {
   margin-top: 30px;
-  background: linear-gradient(90deg, rgba(105, 129, 217, 1) 0%, rgba(105, 129, 217, 0.81) 53%, rgba(105, 129, 217, 0.45) 100%);
+  background: linear-gradient(
+    90deg,
+    rgba(105, 129, 217, 1) 0%,
+    rgba(105, 129, 217, 0.81) 53%,
+    rgba(105, 129, 217, 0.45) 100%
+  );
   color: white;
   border-radius: 30px;
   width: 100%;
@@ -458,7 +528,7 @@ h4 {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
   margin: 30px auto;
   margin-bottom: 5px;
-  margin-top: 3px;
+  margin-top: 30px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -516,6 +586,7 @@ h4 {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   padding: 20px;
+  padding-bottom: 10px;
   text-align: center;
 }
 
@@ -524,5 +595,16 @@ h4 {
   height: auto;
   object-fit: contain;
   border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.cardTitle {
+  color: #6981d6;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.cardDescription {
+  font-size: 12px;
 }
 </style>

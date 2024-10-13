@@ -130,7 +130,7 @@ import nhLogo from "../../assets/images/NHbank.png";
 import kbCardLogo from "../../assets/images/kbcard.png";
 import shinhanCardLogo from "../../assets/images/shinhancard.png";
 import hanaCardLogo from "../../assets/images/hanacard.png";
-import kakaoCardLogo from "../../assets/images/kakaocard.png";
+import kakaoCardLogo from "../../assets/images/kakaocard2.png";
 import wooriCardLogo from "../../assets/images/wooricard.png";
 import lotteCardLogo from "../../assets/images/lottecard.png"
 import samsungCardLogo from "../../assets/images/samsungcard.png"
@@ -241,6 +241,16 @@ export default {
 
 
 <style scoped>
+.main-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  overflow-y: auto;
+  padding-bottom: 20px;
+}
+
 .button-container {
   display: flex;
   align-items: center;

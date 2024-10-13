@@ -15,7 +15,7 @@ export const useSocketStore = defineStore('socket', {
     connect() {
       if (this.stompClient) return; // 이미 연결되어 있으면 반환
 
-      this.stompClient = Stomp.client('ws://localhost:8080/ws');
+      this.stompClient = Stomp.client('ws://34.64.141.174:8080/ws');
 
       const orderStore = useOrderStore(); // orderStore 인스턴스 가져오기
       const memberStore = useMemberStore();
