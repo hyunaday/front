@@ -2,11 +2,11 @@ import axios from "axios";
 import router from "../router"; // Vue Router 임포트
 
 const apiClient = axios.create({
-  baseURL: "/api", // '/api'로 시작하도록 설정
+  baseURL: import.meta.env.VITE_API_URL || "/api", // 환경 변수 사용, 기본값은 '/api'
   headers: {
     "Content-Type": "application/json",
   },
-  withCredentials: true,
+  withCredentials: true, // 필요시 사용
 });
 
 // 요청 인터셉터: 요청 시 토큰을 헤더에 추가
