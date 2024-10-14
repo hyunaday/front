@@ -110,7 +110,9 @@
           <div class="text-content">
             <h6>결제 할때, 한번에 다같이</h6>
             <p>함께 결제</p>
-            <button class="btn btn-light">사용방법 보러가기</button>
+            <router-link :to="`/usage`">
+              <button class="btn btn-light">사용방법 보러가기</button>
+            </router-link>
           </div>
           <div
             class="image-content d-flex justify-content-center align-items-center"
