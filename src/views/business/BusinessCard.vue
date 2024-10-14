@@ -108,83 +108,28 @@
 
   <!-- 수정 bottom-sheet -->
   <bottom-sheet id="editBottomSheet" title="명함 수정">
-      <main>
-        <div class="edit-form">
-          <label>회사명:</label>
-          <input v-model="formData.company" type="text" />
-          <label>주소:</label>
-          <input v-model="formData.address" type="text" />
-          <label>이름:</label>
-          <input v-model="formData.name" type="text" />
-          <label>직책:</label>
-          <input v-model="formData.position" type="text" />
-          <label>부서:</label>
-          <input v-model="formData.department" type="text" />
-          <label>휴대전화:</label>
-          <input v-model="formData.phone" type="text" />
-          <label>유선전화:</label>
-          <input v-model="formData.phoneLandline" type="text" />
-          <label>이메일:</label>
-          <input v-model="formData.email" type="text" />
-          <div v-if="isFriendCard">
-            <label>메모:</label>
-            <textarea
-              v-model="formData.memo"
-              class="memo-textarea"
-              placeholder="메모를 입력하세요..."
-            ></textarea>
-          </div>
-        </div>
-        <div class="modal-buttons">
-          <button @click="saveChanges">저장</button>
-          <button @click="closeBottomSheet">취소</button>
-        </div>
-      </main>
-    </bottom-sheet>
-
-  <div
-    v-if="isCardDetailModalVisible"
-    class="modal"
-    @click="closeCardDetailModal"
-  >
-    <div class="modal-content card-detail-container" @click.stop>
-      <button class="close-btn" @click="closeCardDetailModal">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-      <div class="form-row">
-        <label class="form-label">이름:</label>
-        <input v-model="editSelectedCard.name" type="text" class="input" />
-      </div>
-      <div class="modal-buttons">
-        <button @click="saveCardDetails">저장</button>
-        <button @click="deleteCardDetails">삭제</button>
-      </div>
-    </div>
-  </div>
-  <!-- 수정 bottom-sheet -->
-  <bottom-sheet id="editBottomSheet" title="명함 수정">
     <main>
       <div class="edit-form">
         <label>회사명:</label>
-        <input v-model="formData.company" type="text" />
+        <input v-model="editData.company" type="text" />
         <label>주소:</label>
-        <input v-model="formData.address" type="text" />
+        <input v-model="editData.address" type="text" />
         <label>이름:</label>
-        <input v-model="formData.name" type="text" />
+        <input v-model="editData.name" type="text" />
         <label>직책:</label>
-        <input v-model="formData.position" type="text" />
+        <input v-model="editData.position" type="text" />
         <label>부서:</label>
-        <input v-model="formData.department" type="text" />
+        <input v-model="editData.department" type="text" />
         <label>휴대전화:</label>
-        <input v-model="formData.phone" type="text" />
+        <input v-model="editData.phone" type="text" />
         <label>유선전화:</label>
-        <input v-model="formData.phoneLandline" type="text" />
+        <input v-model="editData.phoneLandline" type="text" />
         <label>이메일:</label>
-        <input v-model="formData.email" type="text" />
+        <input v-model="editData.email" type="text" />
         <div v-if="isFriendCard">
           <label>메모:</label>
           <textarea
-            v-model="formData.memo"
+            v-model="editData.memo"
             class="memo-textarea"
             placeholder="메모를 입력하세요..."
           ></textarea>
@@ -217,55 +162,7 @@
     </div>
     <p class="additional-text">QR코드를 스캔하세요</p>
   </div>
-  <!-- 수정 (Bottom Sheet) 모달 -->
-  <div
-    v-if="isBottomSheetVisible"
-    class="modal bottom-sheet"
-    @click="closeBottomSheet"
-  >
-    <div class="modal-content bottom-sheet-content" @click.stop>
-      <button class="close-btn" @click="closeBottomSheet">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-      <h2>명함 수정</h2>
-      <div class="form-row">
-        <label class="form-label">이름:</label>
-        <input v-model="editData.name" type="text" class="input" />
-      </div>
-      <div class="form-row">
-        <label class="form-label">회사:</label>
-        <input v-model="editData.company" type="text" class="input" />
-      </div>
-      <div class="form-row">
-        <label class="form-label">부서:</label>
-        <input v-model="editData.department" type="text" class="input" />
-      </div>
-      <div class="form-row">
-        <label class="form-label">직책:</label>
-        <input v-model="editData.position" type="text" class="input" />
-      </div>
-      <div class="form-row">
-        <label class="form-label">연락처:</label>
-        <input v-model="editData.phone" type="text" class="input" />
-      </div>
-      <div class="form-row">
-        <label class="form-label">유선전화:</label>
-        <input v-model="editData.phoneLandline" type="text" class="input" />
-      </div>
-      <div class="form-row">
-        <label class="form-label">이메일:</label>
-        <input v-model="editData.email" type="email" class="input" />
-      </div>
-      <div class="form-row">
-        <label class="form-label">주소:</label>
-        <input v-model="editData.address" type="text" class="input" />
-      </div>
-      <div class="modal-buttons">
-        <button @click="saveFormData">저장</button>
-        <button @click="closeBottomSheet">취소</button>
-      </div>
-    </div>
-  </div>
+
 </template>
 
 
@@ -355,7 +252,7 @@ export default {
         console.error('명함 정보를 가져오는 중 오류 발생:', error);
         if (
           confirm(
-            '등록된 나의 명함 정보가 없���니다. 새 명함을 등록하시겠습니까?'
+            '등록된 나의 명함 정보가 없습니다. 새 명함을 등록하시겠습니까?'
           )
         ) {
           this.$router.push('/addbusinesscard');
@@ -372,77 +269,9 @@ export default {
     goToCardList() {
       this.$router.push('/businesscardlist'); // 페이지 이동
     },
-    // openCardDetailModal(card) {
-    //   this.selectedCard = card;
-    //   this.editSelectedCard = { ...card };
-    //   this.isCardDetailModalVisible = true;
-    // },
-    // closeCardDetailModal() {
-    //   this.isCardDetailModalVisible = false;
-    //   this.editSelectedCard = {};
-    // },
-    // saveCardDetails() {
-    //   Object.assign(this.selectedCard, this.editSelectedCard);
-    //   const index = this.cardList.findIndex(
-    //     (card) => card.id === this.selectedCard.id
-    //   );
-    //   if (index !== -1) {
-    //     this.cardList.splice(index, 1, { ...this.selectedCard });
-    //   }
-    //   this.isCardDetailModalVisible = false;
-    //   this.editSelectedCard = {};
-    //   alert('명함 정보가 저장되었습니다.');
-    // },
-    // deleteCardDetails() {
-    //   const confirmDelete = confirm('정말로 이 명함을 삭제하시겠습니까?');
-    //   if (confirmDelete) {
-    //     const index = this.cardList.findIndex(
-    //       (card) => card.id === this.selectedCard.id
-    //     );
-    //     if (index !== -1) {
-    //       this.cardList.splice(index, 1);
-    //     }
-    //     this.isCardDetailModalVisible = false;
-    //     this.editSelectedCard = {};
-    //   }
-    // },
     goToCardList() {
       this.$router.push('/businesscardlist'); // 페이지 이동
     },
-    // openCardDetailModal(card) {
-    //   this.selectedCard = card;
-    //   this.editSelectedCard = { ...card };
-    //   this.isCardDetailModalVisible = true;
-    // },
-    // closeCardDetailModal() {
-    //   this.isCardDetailModalVisible = false;
-    //   this.editSelectedCard = {};
-    // },
-    // saveCardDetails() {
-    //   Object.assign(this.selectedCard, this.editSelectedCard);
-    //   const index = this.cardList.findIndex(
-    //     (card) => card.id === this.selectedCard.id
-    //   );
-    //   if (index !== -1) {
-    //     this.cardList.splice(index, 1, { ...this.selectedCard });
-    //   }
-    //   this.isCardDetailModalVisible = false;
-    //   this.editSelectedCard = {};
-    //   alert('명함 정보가 저장되었습니다.');
-    // },
-    // deleteCardDetails() {
-    //   const confirmDelete = confirm('정말로 이 명함을 삭제하시겠습니까?');
-    //   if (confirmDelete) {
-    //     const index = this.cardList.findIndex(
-    //       (card) => card.id === this.selectedCard.id
-    //     );
-    //     if (index !== -1) {
-    //       this.cardList.splice(index, 1);
-    //     }
-    //     this.isCardDetailModalVisible = false;
-    //     this.editSelectedCard = {};
-    //   }
-    // },
     goToaddBusinessCard() {
       this.$router.push('/addbusinesscard');
     },
@@ -461,36 +290,36 @@ export default {
         bottomSheet.closeSheet();
       }
     },
-    saveChanges() {
-      if (!this.formData.idx) {
-        alert('명함 ID가 설정되지 않았습니다.');
-        console.error('formData에서 idx 값이 없습니다:', this.formData);
-        return;
+saveChanges() {
+  if (!this.formData.idx) {
+    alert('명함 ID가 설정되지 않았습니다.');
+    console.error('formData에서 idx 값이 없습니다:', this.formData);
+    return;
+  }
+
+  console.log('전송할 데이터:', this.editData);
+
+  // PATCH 요청으로 서버에 데이터 수정 요청
+  apiClient
+    .patch(`/businessCard?idx=${this.formData.idx}`, this.editData)
+    .then((response) => {
+      console.log('서버 응답:', response.data);
+
+      if (response.data.isSuccess) {
+        this.formData = { ...this.editData }; // 수정된 데이터로 formData 업데이트
+        alert('나의 명함 정보가 저장되었습니다.');
+      } else {
+        alert('수정 실패: ' + response.data.message);
       }
-
-      console.log('전송할 데이터:', this.editData);
-
-      // PATCH 요청으로 서버에 데이터 수정 요청
-      apiClient
-        .patch(`/businessCard?idx=${this.formData.idx}`, this.editData)
-        .then((response) => {
-          console.log('���버 응답:', response.data);
-
-          if (response.data.isSuccess) {
-            this.formData = { ...this.editData }; // 수정된 데이터로 formData 업데이트
-            alert('나의 명함 정보가 저장되었습니다.');
-          } else {
-            alert('수정 실패: ' + response.data.message);
-          }
-        })
-        .catch((error) => {
-          console.error('명함 정보 수정 중 오류 발생:', error);
-          alert('명함 정보 수정 중 오류가 발생했습니다.');
-        })
-        .finally(() => {
-          this.closeBottomSheet(); // Bottom sheet 닫기
-        });
-    },
+    })
+    .catch((error) => {
+      console.error('명함 정보 수정 중 오류 발생:', error);
+      alert('명함 정보 수정 중 오류가 발생했습니다.');
+    })
+    .finally(() => {
+      this.closeBottomSheet(); // Bottom sheet 닫기
+    });
+},
     deleteCard() {
       if (confirm('정말로 이 명함을 삭제하시겠습니까?')) {
         // DELETE 요청으로 서버에 명함 삭제 요청
