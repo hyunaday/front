@@ -49,7 +49,7 @@
           <p>{{ formData.name || '이름 없음' }}</p>
           <p>{{ formData.position || '직책 없음' }}</p>
           <p>{{ formData.part || '부서 없음' }}</p>
-          <p>{{ formData.phone_num || '전화번호 없음' }}</p>
+          <p>{{ formData.phoneNumber || '전화번호 없음' }}</p>
           <p>{{ formData.tel_num || '유선전화 없음' }}</p>
           <p>{{ formData.email || '이메일 없음' }}</p>
 
@@ -151,7 +151,7 @@ export default {
     return {
       formData: {
         name: '',
-        phone_num: '',
+        phoneNumber: '',
         email: '',
         position: '',
         part: '',
@@ -196,7 +196,7 @@ export default {
           this.formData = {
             idx: cardData.idx,
             name: cardData.name,
-            phone_num: cardData.phone_num,
+            phoneNumber: cardData.phoneNumber,
             email: cardData.email,
             position: cardData.position,
             part: cardData.part,
@@ -319,7 +319,7 @@ saveChanges() {
       this.cardList.push({ ...this.formData });
       this.formData = {
         name: '',
-        phone_num: '',
+        phoneNumber: '',
         email: '',
         position: '',
         part: '',
@@ -376,7 +376,7 @@ saveChanges() {
 
 /* 내 명함 */
 .preview-box {
-  margin : 10px 0 20px 10px;
+  margin : 10px 0 28px 10px;
   text-align: center;
   padding: 10px 20px;
   height: 375px;
@@ -847,7 +847,7 @@ select {
 /* QR 코드 모달 스타일 */
 .qr-code-container {
   cursor: pointer;
-  margin: 20px 0 ;
+  margin: 0 13px 0 0 ;
   display: flex;
   flex-direction: column;
   align-items: center;

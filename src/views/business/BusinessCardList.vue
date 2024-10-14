@@ -187,7 +187,7 @@ export default {
         part: '',
         company: '',
         address: '',
-        phone_num: '',
+        phoneNumber: '',
         memo: '',
       }, // 나의 명함 데이터
 

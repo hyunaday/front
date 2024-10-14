@@ -10,7 +10,7 @@
           <p>{{ formData.name || '이름 없음' }}</p>
           <p>{{ formData.position || '직책 없음' }}</p>
           <p>{{ formData.part || '부서 없음' }}</p>
-          <p>{{ formData.phone_num || '전화번호 없음' }}</p>
+          <p>{{ formData.phoneNumber || '전화번호 없음' }}</p>
           <p>{{ formData.tel_num || '유선전화 없음' }}</p>
           <p>{{ formData.email || '이메일 없음' }}</p>
         </div>
@@ -23,9 +23,9 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="phone_num">연락처&nbsp;<span class="required">*</span></label>
+        <label for="phoneNumber">연락처&nbsp;<span class="required">*</span></label>
         <div class="input-container">
-          <input type="tel" id="phone_num" v-model="formData.phone_num" required />
+          <input type="tel" id="phoneNumber" v-model="formData.phoneNumber" required />
         </div>
       </div>
       <div class="form-group">
@@ -87,7 +87,7 @@ export default {
     return {
       formData: {
         name: '',
-        phone_num: '',
+        phoneNumber: '',
         email: '',
         position: '',
         part: '',
@@ -103,7 +103,7 @@ export default {
       // API 요청 데이터
       const payload = {
         name: this.formData.name,
-        phone_num: this.formData.phone_num,
+        phoneNumber: this.formData.phoneNumber,
         email: this.formData.email,
         position: this.formData.position,
         company: this.formData.company,
