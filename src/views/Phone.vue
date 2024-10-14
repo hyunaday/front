@@ -11,7 +11,7 @@
             type="tel"
             id="phoneInput"
             class="custom-input1"
-            v-model="phoneNumber"
+            v-model="phone_num"
             @input="filterInput"
           />
           <button class="confirm-button1" @click="sendVerification">인증번호 전송</button>
@@ -52,7 +52,7 @@ import apiClient from "../api/axios.js"; // Axios 설정 파일을 임포트
 export default {
   data() {
     return {
-      phoneNumber: "",
+      phone_num: "",
       verificationCode: "",
       showVerificationInput: false, // 인증번호 입력 필드를 숨기기 위한 상태
       isVerified: false, // 인증 완료 여부를 위한 상태
@@ -60,12 +60,12 @@ export default {
   },
   methods: {
     filterInput(event) {
-      this.phoneNumber = event.target.value.replace(/[^0-9]/g, "");
+      this.phone_num = event.target.value.replace(/[^0-9]/g, "");
     },
     async sendVerification() {
       try {
         const response = await apiClient.get(
-          `/message/send?phoneNum=${this.phoneNumber}`
+          `/message/send?phoneNum=${this.phone_num}`
         );
         if (response.data.isSuccess) {
           alert("인증번호가 전송되었습니다.");
@@ -81,7 +81,7 @@ export default {
     async verifyCode() {
       try {
         const verificationData = {
-          phoneNum: this.phoneNumber,
+          phoneum: this.phone_num,
           authNum: this.verificationCode,
         };
 

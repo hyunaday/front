@@ -35,39 +35,27 @@
                   <p>
                     <strong>{{ card.name }}</strong>
                   </p>
-                  <p>{{ card.position }} / {{ card.department }}</p>
+                  <p>{{ card.position }} / {{ card.part }}</p>
                   <p>{{ card.company }}</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
-   
-<!-- 삭제하기! 존재하지 않을 시, “내 명함을 등록해주세요.” + 등록 버튼 -->
-     <div v-else class="preview-box">
+
+        <div v-else class="preview-box">
           <h3>{{ formData.company || '회사 정보 없음' }}</h3>
           <p>{{ formData.address || '주소 없음' }}</p>
           <p>{{ formData.name || '이름 없음' }}</p>
           <p>{{ formData.position || '직책 없음' }}</p>
-          <p>{{ formData.department || '부서 없음' }}</p>
-          <p>{{ formData.phone || '전화번호 없음' }}</p>
-          <p>{{ formData.phoneLandline || '유선전화 없음' }}</p>
+          <p>{{ formData.part || '부서 없음' }}</p>
+          <p>{{ formData.phone_num || '전화번호 없음' }}</p>
+          <p>{{ formData.tel_num || '유선전화 없음' }}</p>
           <p>{{ formData.email || '이메일 없음' }}</p>
-        </div>
 
-        <div v-if="!isCardListVisible" class="card-details-container">
-          <class class="card-details">
-            <p><strong>이름:</strong> {{ formData.name }}</p>
-            <p><strong>회사:</strong> {{ formData.company }}</p>
-            <p><strong>부서:</strong> {{ formData.department }}</p>
-            <p><strong>직책:</strong> {{ formData.position }}</p>
-            <p><strong>연락처:</strong> {{ formData.phone }}</p>
-            <p><strong>유선전화:</strong> {{ formData.phoneLandline }}</p>
-            <p><strong>이메일:</strong> {{ formData.email }}</p>
-            <p><strong>주소:</strong> {{ formData.address }}</p>
-<!-- 필요 -->
-            <!-- QR 코드 이미지를 주소 아래에 표시 -->
-            <div
+          <hr>
+              <!-- QR 코드 이미지를 주소 아래에 표시 -->
+         <div
               v-if="qrCodeData"
               class="qr-code-container"
               @click="showModal = true"
@@ -79,21 +67,24 @@
                 style="width: 140px; height: 140px"
               />
             </div>
-            <div
-              v-if="qrCodeData"
-              class="qr-code-container"
-              @click="showModal = true"
-            >
-              <img
-                :src="qrCodeData"
-                alt="QR 코드"
-                class="qr-code-image"
-                style="width: 140px; height: 140px"
-              />
-            </div>
-          </class>
-        </div>
+        </div>  
       </div>
+
+        <!-- QR 코드 모달 -->
+  <div v-if="showModal" class="modal" @click="closeModal">
+    <div class="modal-content qr-modal" @click.stop>
+      <div class="qr-code-container">
+        <img
+          :src="qrCodeData"
+          alt="QR 코드"
+          class="qr-code-image"
+          style="width: 200px; height: 200px"
+        />
+      </div>
+    </div>
+    <p class="additional-text">QR 코드를 <br>스캔하세요</p>
+  </div>
+
       <div
         class="button-container"
         v-if="!isCardListVisible && !isCardDetailModalVisible"
@@ -135,36 +126,14 @@
           ></textarea>
         </div>
       </div>
+      
       <div class="modal-buttons">
         <button @click="saveChanges">저장</button>
         <button @click="closeBottomSheet">취소</button>
       </div>
     </main>
   </bottom-sheet>
-
-  <!-- QR 코드 모달 -->
-  <div v-if="showModal" class="modal" @click="closeModal">
-    <div class="modal-content qr-modal" @click.stop>
-      <div class="qr-code-container">
-        <img
-          :src="qrCodeData"
-          alt="QR 코드"
-          class="qr-code-image"
-          style="width: 200px; height: 200px"
-        />
-        <img
-          :src="qrCodeData"
-          alt="QR 코드"
-          class="qr-code-image"
-          style="width: 200px; height: 200px"
-        />
-      </div>
-    </div>
-    <p class="additional-text">QR코드를 스캔하세요</p>
-  </div>
-
 </template>
-
 
 <script>
 import apiClient from '../../api/axios.js';
@@ -182,13 +151,13 @@ export default {
     return {
       formData: {
         name: '',
-        phone: '',
+        phone_num: '',
         email: '',
         position: '',
-        department: '',
+        part: '',
         company: '',
         address: '',
-        phoneLandline: '',
+        tel_num: '',
         memo: '',
       },
       cardList: [],
@@ -227,13 +196,13 @@ export default {
           this.formData = {
             idx: cardData.idx,
             name: cardData.name,
-            phone: cardData.phoneNumber,
+            phone_num: cardData.phone_num,
             email: cardData.email,
             position: cardData.position,
-            department: cardData.part,
+            part: cardData.part,
             company: cardData.company,
             address: cardData.address,
-            phoneLandline: cardData.tel_num,
+            tel_num: cardData.tel_num,
           };
 
           // QR 코드 이미지 URL이 있으면 qrCodeData에 할당
@@ -269,10 +238,10 @@ export default {
     goToCardList() {
       this.$router.push('/businesscardlist'); // 페이지 이동
     },
-    goToCardList() {
+   goToCardList() {
       this.$router.push('/businesscardlist'); // 페이지 이동
     },
-    goToaddBusinessCard() {
+   goToaddBusinessCard() {
       this.$router.push('/addbusinesscard');
     },
     openBottomSheet() {
@@ -350,13 +319,13 @@ saveChanges() {
       this.cardList.push({ ...this.formData });
       this.formData = {
         name: '',
-        phone: '',
+        phone_num: '',
         email: '',
         position: '',
-        department: '',
+        part: '',
         company: '',
         address: '',
-        phoneLandline: '',
+        tel_num: '',
         memo: '',
       };
     },
@@ -407,21 +376,17 @@ saveChanges() {
 
 /* 내 명함 */
 .preview-box {
-  margin-top: 5px;
+  margin : 10px 0 20px 10px;
   text-align: center;
-  padding: 8px 20px;
-  height: 150px;
+  padding: 10px 20px;
+  height: 375px;
   width: 300px;
-  background-color: white;
-  border: 2px solid #b3b3b3; /* 조금 더 진한 테두리 색상 */
-  border-radius: 5px; /* 더 둥글게 */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05); /* 그림자 강화 */
-}
+  }
 
 .preview-box h3 {
-  font-size: 18px; /* 회사명 폰트 크기 */
+  font-size: 23px; /* 회사명 폰트 크기 */
   font-weight: bold; /* 굵게 */
-  text-align: left;
+  text-align: right;
   margin: 0px;
 }
 
@@ -429,18 +394,25 @@ saveChanges() {
 .preview-box p {
   margin: 0px 0; /* 각 문장 간의 간격 */
   font-size: 15px; /* 일반 텍스트 크기 */
-  text-align: left;
+  /* text-align: left; */
 }
 
 .preview-box p:nth-child(2) {
-  font-size: 10px; /* 주소 폰트 크기 */
-  text-align: left;
-  margin: 0px 0px 3px;
+  font-size: 14px; /* 주소 폰트 크기 */
+  text-align: right;
+  margin: 3px 0px;
 }
 
+.preview-box p:nth-child(3) {
+  font-size: 22px; /* 이름 폰트 크기 */
+  text-align: left;
+  margin: 0px 0px 3px;
+  font-weight: bold; /* 이름 텍스트 굵게 */
+
+}
 .preview-box p:nth-child(4),
 .preview-box p:nth-child(5) {
-  font-size: 10px; /* 직책과 부서 폰트 크기 */
+  font-size: 13px; /* 직책과 부서 폰트 크기 */
   font-weight: bold; /* 직책과 부서 텍스트 굵게 */
   text-align: left;
 }
@@ -448,8 +420,8 @@ saveChanges() {
 .preview-box p:nth-child(6),
 .preview-box p:nth-child(7),
 .preview-box p:nth-child(8) {
-  font-size: 10px; /*  전화번호, 유선전화번호, 이메일 크기 */
-  text-align: right;
+  font-size: 13px; /*  전화번호, 유선전화번호, 이메일 크기 */
+  text-align: left;
 }
 
 .preview-box p:nth-child(4)::before {
@@ -569,6 +541,7 @@ select {
   word-wrap: break-word; /* 텍스트가 너무 길 경우 줄바꿈 처리 */
 }
 
+/* 사용 유무 확인 필요 */
 .preview-box-small {
   text-align: center; /* 가운데 정렬 */
   padding: 3px 8px; /* 내부 패딩을 줄임 */
@@ -658,7 +631,7 @@ select {
 /* 명함 카드 스타일 */
 .selected-card {
   background-color: #6981d9;
-  padding: 20px;
+  padding: 60px 20px 40px 20px;
   margin-top: 38px;
   margin-bottom: 20px;
   border-radius: 15px;
@@ -734,38 +707,6 @@ select {
   background-color: #6981d9;
 }
 
-/* 명함 내용 스타일 */
-.card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #ffffff;
-  height: 550px;
-  z-index: 2;
-}
-
-.card-details-container {
-  display: flex;
-  align-items: flex-start;
-  max-width: 100%;
-  overflow: hidden;
-  position: relative; /* 상대적 위치 설정 */
-  min-height: 150px; /* 컨테이너의 최소 높이 설정 */
-}
-
-.card-details {
-  flex: 1;
-  margin-top: 10px;
-  margin-left: 20px;
-  font-size: 13px;
-  line-height: 1.2;
-  max-height: 100%;
-  overflow-y: overlay; /* auto에서 overlay로 변경 */
-  /* padding-right: 150px; QR 코드 공간 확보 */
-  width: 300px;
-  height: 390px;
-}
-
 /* QR 코드 스타일 수정 */
 .qr-code {
   position: absolute; /* 절대 위치 설정 */
@@ -773,6 +714,7 @@ select {
   bottom: 70px; /* 아래에서 10px 떨어짐 */
   width: 75px; /* QR 코드의 너비 설정 */
   height: 75px; /* QR 코드의 높이 설정 */
+
 }
 
 /* 스크롤바 스타일 */
@@ -842,7 +784,7 @@ select {
 }
 
 .button-container button {
-  font-size: 12px;
+  font-size: 13px;
   border: 1.5px solid #efeded;
   border-radius: 5px;
   background-color: #6981d9;
@@ -904,6 +846,8 @@ select {
 
 /* QR 코드 모달 스타일 */
 .qr-code-container {
+  cursor: pointer;
+  margin: 20px 0 ;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -984,6 +928,7 @@ select {
   background-color: rgba(255, 255, 255, 0.9);
   padding: 15px;
   border-radius: 10px;
+  height: 250px;
   width: 250px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
