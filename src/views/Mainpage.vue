@@ -141,9 +141,9 @@
             :slides-per-view="1.2"
             :centered-slides="true"
             :loop="true"
-            :autoplay="{ delay: 2000 }"
             :pagination="{ clickable: true, type: 'progressbar' }"
             :navigation="true"
+            :autoplay="{ delay: 3000 }"
           >
             <!-- 카드 추천 슬라이드 -->
             <swiper-slide

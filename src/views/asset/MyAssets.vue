@@ -2,7 +2,7 @@
   <div class="main-container">
     <Header />
     <div class="my-assets">
-      <h1><strong>{{ userName }}</strong>님의 총 자산</h1>
+      <h1><strong>{{ accountHolderName }}</strong>님의 총 자산</h1>
 
       <div class="total-assets">
         <span class="amount">{{ formatNumber(transactionAmount) }}원</span>
@@ -125,7 +125,6 @@ import kbCardLogo from "../../assets/images/kbcard.png";
 import shinhanCardLogo from "../../assets/images/shinhancard.png";
 import wooriCardLogo from '../../assets/images/wooricard.png';
 import hanaCardLogo from "../../assets/images/hanacard.png";
-
 import kakaoCardLogo from "../../assets/images/kakaocard.png";
 import lotteCardLogo from "../../assets/images/lottecard.png";
 import samsungCardLogo from "../../assets/images/samsungcard.png";
@@ -133,7 +132,6 @@ import hyundaiCardLogo from "../../assets/images/hyundaicard.png";
 import kbPayImage from '../../assets/images/kbpay.png';
 import iphone from '../../assets/images/iphone.png';
 import multicampus from '../../assets/images/kbmulti.png';
-
 
 export default {
   name: 'MyAssets',
@@ -143,7 +141,7 @@ export default {
   },
   data() {
     return {
-      userName: '김국민',
+      accountHolderName: '',  // userName을 accountHolderName으로 변경
       accounts: [],
       savingsAccount: {
         balance: 200000,
@@ -204,7 +202,6 @@ export default {
       return this.accounts.reduce((total, account) => total + account.balance, 0);
     },
   },
-  
   methods: {
     goToTransactionHistory(accountIdx) {
       this.$router.push(`/transactionhistory${accountIdx}`);
@@ -220,7 +217,9 @@ export default {
         const response = await apiClient.get('/account/all');
         
         if (response.data.isSuccess && response.data.result && response.data.result.accountList) {
-          this.accounts = response.data.result.accountList.map(account => ({
+          const accountList = response.data.result.accountList;
+          this.accountHolderName = accountList[0].accountHolderName; // 첫 번째 계좌의 소유자 이름을 가져옴
+          this.accounts = accountList.map(account => ({
             name: account.bankName,
             balance: account.amount,
             idx: account.idx,
@@ -252,10 +251,9 @@ export default {
       this.currentIndex = (this.currentIndex + 1) % this.banners.length;
     },
     startSlider() {
-      setInterval(this.nextBanner, 2500); // 3초마다 다음 배너로 전환
+      setInterval(this.nextBanner, 2500);
     },
   },
-
   mounted() {
     this.startSlider();
     this.fetchAccounts();
