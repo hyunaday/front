@@ -207,8 +207,16 @@ export default {
 
 <style scoped>
 .calendar-container {
+  padding: 10px;
   text-align: center;
+  max-height: 70vh; /* 최대 높이 설정 */
+  overflow-y: auto; /* 세로 스크롤 추가 */
+  top: 0; /* 페이지 상단에 고정 */
   font-family: "Poppins", sans-serif; /* Poppins 폰트 적용 */
+
+  /* 스크롤바 숨기기 */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
 
 .calendar {
