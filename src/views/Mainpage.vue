@@ -86,7 +86,11 @@
                     </button>
                   </router-link>
                   <router-link :to="`/transfer`">
-                    <button class="btn btn-light transfer" type="button">
+                    <button
+                      class="btn btn-light transfer"
+                      type="button"
+                      @click="selectAccount(account)"
+                    >
                       이체
                     </button>
                   </router-link>
@@ -178,6 +182,7 @@ import tossLogo from "../assets/images/toss.png";
 import nhLogo from "../assets/images/NHbank.png";
 import copyIcon from "../assets/images/copy.png";
 import { useMemberStore } from "../stores/MemberStore.js";
+import { useTransferStore } from "../stores/TransferStore.js";
 
 export default {
   name: "MainPage",
@@ -188,8 +193,8 @@ export default {
     Header,
   },
   setup() {
-    return {
-    };
+    const transferStore = useTransferStore();
+    return { transferStore };
   },
   data() {
     return {
@@ -206,7 +211,7 @@ export default {
         "생활업종 할인으로 혜택 가득한 하루!",
         "카드 하나로 누리는 항공 특화 서비스!",
         "포인트리 적립받고 해외배송료 할인까지",
-        "여행도 프리미엄! 마일리지적립 + 라운지 무료",
+        "여행도 프리미엄! 마일리지적립+ 라운지 무료",
         "국내외 라운지 무료이용과 항공권 15만원 할인!",
       ],
       showamount: false,
@@ -284,12 +289,16 @@ export default {
     goToAgreementPage() {
       this.$router.push("/agree1");
     },
+    selectAccount(account) {
+      this.transferStore.selectedAccount = account;
+      this.transferStore.availableAmount = account.amount;
+      this.$router.push("/transfer");
+    },
   },
 };
 </script>
 
 <style scoped>
-
 #main-title {
   margin-top: 30px;
 }
@@ -609,7 +618,6 @@ h4 {
   color: #6981d6;
   font-weight: bold;
   margin-bottom: 5px;
-  font-size: 13px;
 }
 
 .cardDescription {
