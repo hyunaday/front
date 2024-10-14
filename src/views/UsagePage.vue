@@ -94,6 +94,7 @@ export default {
 
 .title {
   font-size: 1.75rem; /* h1 크기 줄임 */
+  margin-top: 20px;
 }
 
 .subtitle {

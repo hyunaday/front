@@ -21,7 +21,7 @@
       </div>
 
       <!-- 내 계좌 텍스트 및 잔액 조회 스위치 -->
-      <div v-if="isConnected" class="row align-items-center">
+      <div v-if="isConnected" class="row align-items-center" id="main-title">
         <div class="col-6 ps-4">
           <h4 class="mb-0">내 계좌</h4>
         </div>
@@ -206,7 +206,7 @@ export default {
         "생활업종 할인으로 혜택 가득한 하루!",
         "카드 하나로 누리는 항공 특화 서비스!",
         "포인트리 적립받고 해외배송료 할인까지",
-        "여행도 프리미엄! 마일리지적립+전세계라운지 무료",
+        "여행도 프리미엄! 마일리지적립 + 라운지 무료",
         "국내외 라운지 무료이용과 항공권 15만원 할인!",
       ],
       showamount: false,
@@ -289,6 +289,11 @@ export default {
 </script>
 
 <style scoped>
+
+#main-title {
+  margin-top: 30px;
+}
+
 .main-container {
   position: relative;
   display: flex;
@@ -604,6 +609,7 @@ h4 {
   color: #6981d6;
   font-weight: bold;
   margin-bottom: 5px;
+  font-size: 13px;
 }
 
 .cardDescription {
