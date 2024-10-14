@@ -50,7 +50,7 @@
           <p>{{ formData.position || '직책 없음' }}</p>
           <p>{{ formData.part || '부서 없음' }}</p>
           <p>{{ formData.phoneNum || '전화번호 없음' }}</p>
-          <p>{{ formData.telNum || '유선전화 없음' }}</p>
+          <p>{{ formData.tel_num || '유선전화 없음' }}</p>
           <p>{{ formData.email || '이메일 없음' }}</p>
 
           <hr>
@@ -114,7 +114,7 @@
         <label>휴대전화:</label>
         <input v-model="editData.phoneNum" type="text" />
         <label>유선전화:</label>
-        <input v-model="editData.telNum" type="text" />
+        <input v-model="editData.tel_num" type="text" />
         <label>이메일:</label>
         <input v-model="editData.email" type="text" />
         <div v-if="isFriendCard">
@@ -157,7 +157,7 @@ export default {
         part: '',
         company: '',
         address: '',
-        telNum: '',
+        tel_num: '',
         memo: '',
       },
       cardList: [],
@@ -202,7 +202,7 @@ export default {
             part: cardData.part,
             company: cardData.company,
             address: cardData.address,
-            telNum: cardData.telNum,
+            tel_num: cardData.tel_num,
           };
 
           // QR 코드 이미지 URL이 있으면 qrCodeData에 할당
@@ -325,7 +325,7 @@ saveChanges() {
         part: '',
         company: '',
         address: '',
-        telNum: '',
+        tel_num: '',
         memo: '',
       };
     },

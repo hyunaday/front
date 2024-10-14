@@ -11,7 +11,7 @@
           <p>{{ formData.position || '직책 없음' }}</p>
           <p>{{ formData.part || '부서 없음' }}</p>
           <p>{{ formData.phoneNum || '전화번호 없음' }}</p>
-          <p>{{ formData.telNum || '유선전화 없음' }}</p>
+          <p>{{ formData.tel_num || '유선전화 없음' }}</p>
           <p>{{ formData.email || '이메일 없음' }}</p>
         </div>
       </div>
@@ -59,12 +59,12 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="telNum">유선번호</label>
+        <label for="tel_num">유선번호</label>
         <div class="input-container">
           <input
             type="tel"
-            id="telNum"
-            v-model="formData.telNum"
+            id="tel_num"
+            v-model="formData.tel_num"
           />
         </div>
       </div>
@@ -93,7 +93,7 @@ export default {
         part: '',
         company: '',
         address: '',
-        telNum: '',
+        tel_num: '',
       },
       qrCodeData: null, // QR 코드 데이터 초기화
     };
@@ -109,7 +109,7 @@ export default {
         company: this.formData.company,
         address: this.formData.address,
         part: this.formData.part,
-        telNum: this.formData.telNum,
+        tel_num: this.formData.tel_num,
       };
       try {
         // 명함 생성 API 호출 (API 엔드포인트 수정)
