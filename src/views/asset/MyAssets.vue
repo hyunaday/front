@@ -36,13 +36,17 @@
             :key="index"
             class="account-cards"
           >
-            <img :src="bankLogos[account.name]" alt="입출금통장 아이콘" class="account-icon"             @click="goToTransactionHistory(account.idx)"
+            <img :src="bankLogos[account.name]" alt="입출금통장 아이콘" class="account-icon"             
+            @click="goToTransactionHistory(account.idx)"
             />
             <div class="account-info">
-              <span class="transactions-titles"            @click="goToTransactionHistory(account.idx)"
+              <span class="transactions-titles"            
+              @click="goToTransactionHistory(account.idx)"
               >{{ account.name }}</span>
-              <span class="account-balance"             @click="goToTransactionHistory(account.idx)"
+              <span class="account-balance"             
+              @click="goToTransactionHistory(account.idx)"
               >{{ formatNumber(account.balance) }}원</span>
+              
             </div>
             <div class="transfer-button-container">
               <router-link to="/transfer">
@@ -148,10 +152,10 @@ export default {
       userName: '김국민',
       accounts: [],
       savingsAccount: {
-        balance: 200000,
+        balance: 1000000,
       },
       creditCards: [],
-      loanAmount: 200000000,
+      loanAmount: 30000000,
       banners: [
         {
           image: kbPayImage,
