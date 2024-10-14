@@ -125,6 +125,7 @@ import kbCardLogo from "../../assets/images/kbcard.png";
 import shinhanCardLogo from "../../assets/images/shinhancard.png";
 import wooriCardLogo from '../../assets/images/wooricard.png';
 import hanaCardLogo from "../../assets/images/hanacard.png";
+
 import kakaoCardLogo from "../../assets/images/kakaocard.png";
 import lotteCardLogo from "../../assets/images/lottecard.png";
 import samsungCardLogo from "../../assets/images/samsungcard.png";
@@ -132,6 +133,7 @@ import hyundaiCardLogo from "../../assets/images/hyundaicard.png";
 import kbPayImage from '../../assets/images/kbpay.png';
 import iphone from '../../assets/images/iphone.png';
 import multicampus from '../../assets/images/kbmulti.png';
+
 
 export default {
   name: 'MyAssets',
@@ -263,6 +265,16 @@ export default {
 </script>
 
 <style scoped>
+.main-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  overflow-y: auto;
+  padding-bottom: 20px;
+}
+
 .button-container {
   display: flex;
   align-items: center;
