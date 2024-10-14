@@ -6,7 +6,6 @@
       </button>
       <h2 class="title">룰렛 돌리기</h2>
     </div>
-    <img src="../assets/images/logo.png" alt="로고" class="logo-image" />
     <div class="input-group">
       <label for="participants"></label>
       <input v-model="participantInput" placeholder="참여자를 추가해주세요" />
