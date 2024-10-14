@@ -38,30 +38,43 @@
 <script>
 import FooterNav from '../../components/FooterNav.vue';
 import Header from '../../components/Header.vue';
+import { useTransferStore } from "../../stores/TransferStore.js";
 
 export default {
-  name: 'Transfer',
+  name: 'Transfer3',
   components: {
     FooterNav,
     Header,
   },
+  setup() {
+    const transferStore = useTransferStore();
+    return { transferStore };
+  },
+  computed: {
+    amount() {
+      return this.transferStore.transferAmount;
+    },
+    recipient() {
+      return this.transferStore.recipient;
+    }
+  },
   data() {
     return {
-      amount: 10000, // 송금 금액
-      recipient: '홍길동', // 받는 사람
-      date: '', // 송금 날짜
-      showConfirmModal: false, // 모달 표시 상태
+      showConfirmModal: false,
+      date: '',
     };
+  },
+  mounted() {
+    this.date = this.getCurrentDate();
   },
   methods: {
     goToGroupPayPage() {
       this.$router.push("/grouppay");
     },
     confirmTransfer() {
-      // 여기에 송금 완료 후 필요한 로직 추가
-      console.log('송금이 완료되었습니다.'); // 임시 로그
-      this.showConfirmModal = false; // 모달 닫기
-      this.$router.push('/transfer'); // 송금 완료 후 페이지 이동
+      console.log('송금이 완료되었습니다.');
+      this.showConfirmModal = false;
+      this.$router.push('/transfer');
     },
     getCurrentDate() {
       const now = new Date();
@@ -78,10 +91,7 @@ export default {
     formatNumber(num) {
       return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     }
-  },
-  mounted() {
-    this.date = this.getCurrentDate(); // 현재 날짜 설정
-  },
+  }
 }
 </script>
 
