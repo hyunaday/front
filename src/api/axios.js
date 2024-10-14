@@ -1,6 +1,7 @@
 import axios from "axios";
 import router from "../router"; // Vue Router 임포트
 
+// 환경 변수를 통해 baseURL을 설정
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "/api", // 환경 변수 사용, 기본값은 '/api'
   headers: {

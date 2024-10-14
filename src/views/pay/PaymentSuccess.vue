@@ -133,7 +133,7 @@ export default {
 }
 
 .confirm-button {
-  margin-top: 20px;
+  margin-top: 60px;
   padding: 10px 20px;
   background-color: #6981d9;
   color: white;
@@ -141,7 +141,7 @@ export default {
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
-  width: 300px;
+  width: 200px;
 }
 
 .confirm-button:hover {
