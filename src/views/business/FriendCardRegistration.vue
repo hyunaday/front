@@ -14,14 +14,10 @@
           <p>{{ friendCardData.phoneNumber || '전화번호 없음' }}</p>
           <p>{{ friendCardData.tel_num || '유선전화 없음' }}</p>
           <p>{{ friendCardData.email || '이메일 없음' }}</p>
-          <img
-            v-if="friendCardData.imgurl"
-            :src="friendCardData.imgurl"
-            alt="명함 이미지"
-          />
         </div>
         <div class="divider"></div>
-        <button class="button" @click="editFriendCard">수정하기</button>
+        <button class="button edit-button" @click="editFriendCard">수정하기</button>
+        <button class="button delete-button" @click="deleteFriendCard">삭제하기</button>
       </div>
       <div v-else>
         <BusinessCardForm title="친구 명함 등록하기" />
@@ -43,40 +39,50 @@ export default {
   },
   data() {
     return {
-      friendCardData: null, // 친구 명함 데이터를 저장할 곳
-      loading: true, // 로딩 상태
-      error: null, // 에러 상태
+      friendCardData: null,
+      loading: true,
+      error: null,
     };
   },
   created() {
-    // URL 파라미터에서 businessCardIdx 값을 가져옴
     const businessCardIdx = this.$route.params.businessCardIdx;
-
     if (businessCardIdx) {
-      // GET 요청을 통해 친구 명함 데이터 가져오기
-      apiClient
-        .get(`/businessCard/friends?businessCardIdx=${businessCardIdx}`)
-        .then((response) => {
-          console.log('친구 명함 정보 가져오기 성공:', response.data);
-          this.friendCardData = response.data.result.businessCardList[0]; // 첫 번째 명함 데이터
-        })
-        .catch((error) => {
-          this.error = error.response
-            ? error.response.data.message
-            : '오류 발생';
-          console.error('친구 명함 정보 가져오기 실패:', this.error);
-        })
-        .finally(() => {
-          this.loading = false; // 로딩 완료
-        });
+      this.fetchFriendCardData(businessCardIdx);
     }
   },
   methods: {
+    async fetchFriendCardData(businessCardIdx) {
+      try {
+        const response = await apiClient.get(`/businessCard/friends?businessCardIdx=${businessCardIdx}`);
+        console.log('친구 명함 정보 가져오기 성공:', response.data);
+        this.friendCardData = response.data.result.businessCardList[0];
+      } catch (error) {
+        this.error = error.response ? error.response.data.message : '오류 발생';
+        console.error('친구 명함 정보 가져오기 실패:', this.error);
+      } finally {
+        this.loading = false;
+      }
+    },
     editFriendCard() {
       this.$router.push({
         name: 'EditFriendCard',
         params: { businessCardIdx: this.$route.params.businessCardIdx },
       });
+    },
+    async deleteFriendCard() {
+      try {
+        const response = await apiClient.delete(`/businessCard/friends?businessCardIdx=${this.friendCardData.idx}`);
+        
+        if (response.data.isSuccess) {
+          alert('명함이 성공적으로 삭제되었습니다.');
+          this.$router.push('/businesscardlist'); // 명함 목록 페이지로 이동
+        } else {
+          alert(`명함 삭제에 실패했습니다: ${response.data.message}`);
+        }
+      } catch (error) {
+        console.error('명함 삭제 중 오류 발생:', error);
+        alert('명함 삭제 중 오류가 발생했습니다. 다시 시도해 주세요.');
+      }
     },
   },
 };
@@ -165,33 +171,39 @@ h3 {
   content: 'TEL: '; /* 유선전화번호 앞에 텍스트 추가 */
 }
 
-/* 이미지 스타일 */
-.preview-box img {
-  margin-top: 10px; /* 이미지 상단 여백 */
-  max-width: 100%; /* 이미지가 박스 너비에 맞게 조정 */
-  height: auto; /* 이미지 비율 유지 */
-}
-
 /* 버튼 스타일 */
-button {
-  background-color: #6981d6; /* 버튼 배경색 */
-  color: white; /* 글자색을 흰색으로 설정 */
-  border: none; /* 테두리 없음 */
+.button {
+  background-color: #6981d6;
+  color: white;
+  border: none;
   width: 100%;
-  padding: 5px 15px; /* 여백 추가 */
-  font-size: 16px; /* 글자 크기 설정 */
-  font-weight: bold; /* 글자 굵게 */
-  border-radius: 5px; /* 모서리를 둥글게 */
-  cursor: pointer; /* 마우스를 올렸을 때 포인터 커서 표시 */
-  transition: background-color 0.3s ease; /* 부드러운 배경색 전환 */
+  padding: 10px 15px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 10px; /* 버튼 사이 간격 */
 }
 
-button:hover {
-  background-color: #ccc; /* 호버 시 더 어두운 색으로 변경 */
+.edit-button:hover {
+  background-color: #5670c5;
 }
 
-button:active {
-  background-color: #e0e0e0; /* 클릭 시 더 어두운 색 */
+.edit-button:active {
+  background-color: #4a62b3;
+}
+
+.delete-button {
+  background-color: #808080; /* 회색 */
+}
+
+.delete-button:hover {
+  background-color: #707070;
+}
+
+.delete-button:active {
+  background-color: #606060;
 }
 
 .divider {
