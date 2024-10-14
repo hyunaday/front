@@ -35,7 +35,7 @@
                   <p>
                     <strong>{{ card.name }}</strong>
                   </p>
-                  <p>{{ card.position }} / {{ card.department }}</p>
+                  <p>{{ card.position }} / {{ card.part }}</p>
                   <p>{{ card.company }}</p>
                 </div>
               </div>
@@ -48,9 +48,9 @@
           <p>{{ formData.address || '주소 없음' }}</p>
           <p>{{ formData.name || '이름 없음' }}</p>
           <p>{{ formData.position || '직책 없음' }}</p>
-          <p>{{ formData.department || '부서 없음' }}</p>
-          <p>{{ formData.phone || '전화번호 없음' }}</p>
-          <p>{{ formData.phoneLandline || '유선전화 없음' }}</p>
+          <p>{{ formData.part || '부서 없음' }}</p>
+          <p>{{ formData.phone_num || '전화번호 없음' }}</p>
+          <p>{{ formData.tel_num || '유선전화 없음' }}</p>
           <p>{{ formData.email || '이메일 없음' }}</p>
 
           <hr>
@@ -104,20 +104,28 @@
       <div class="edit-form">
         <label>회사명:</label>
         <input v-model="formData.company" type="text" />
+
         <label>주소:</label>
         <input v-model="formData.address" type="text" />
+
         <label>이름:</label>
         <input v-model="formData.name" type="text" />
+
         <label>직책:</label>
         <input v-model="formData.position" type="text" />
+
         <label>부서:</label>
-        <input v-model="formData.department" type="text" />
+        <input v-model="formData.part" type="text" />
+
         <label>휴대전화:</label>
-        <input v-model="formData.phone" type="text" />
+        <input v-model="formData.phone_num" type="tel" />
+        
         <label>유선전화:</label>
-        <input v-model="formData.phoneLandline" type="text" />
+        <input v-model="formData.tel_num" type="tel" />
+
         <label>이메일:</label>
         <input v-model="formData.email" type="text" />
+
         <div v-if="isFriendCard">
           <label>메모:</label>
           <textarea
@@ -127,6 +135,7 @@
           ></textarea>
         </div>
       </div>
+      
       <div class="modal-buttons">
         <button @click="saveChanges">저장</button>
         <button @click="closeBottomSheet">취소</button>
@@ -134,7 +143,6 @@
     </main>
   </bottom-sheet>
 </template>
-
 
 <script>
 import apiClient from '../../api/axios.js';
@@ -152,13 +160,13 @@ export default {
     return {
       formData: {
         name: '',
-        phone: '',
+        phone_num: '',
         email: '',
         position: '',
-        department: '',
+        part: '',
         company: '',
         address: '',
-        phoneLandline: '',
+        tel_num: '',
         memo: '',
       },
       cardList: [],
@@ -197,13 +205,13 @@ export default {
           this.formData = {
             idx: cardData.idx,
             name: cardData.name,
-            phone: cardData.phoneNumber,
+            phone_num: cardData.phone_num,
             email: cardData.email,
             position: cardData.position,
-            department: cardData.part,
+            part: cardData.part,
             company: cardData.company,
             address: cardData.address,
-            phoneLandline: cardData.tel_num,
+            tel_num: cardData.tel_num,
           };
 
           // QR 코드 이미지 URL이 있으면 qrCodeData에 할당
@@ -273,7 +281,7 @@ export default {
       apiClient
         .patch(`/businessCard?idx=${this.formData.idx}`, this.editData)
         .then((response) => {
-          console.log('���버 응답:', response.data);
+          console.log('서버 응답:', response.data);
 
           if (response.data.isSuccess) {
             this.formData = { ...this.editData }; // 수정된 데이터로 formData 업데이트
@@ -320,13 +328,13 @@ export default {
       this.cardList.push({ ...this.formData });
       this.formData = {
         name: '',
-        phone: '',
+        phone_num: '',
         email: '',
         position: '',
-        department: '',
+        part: '',
         company: '',
         address: '',
-        phoneLandline: '',
+        tel_num: '',
         memo: '',
       };
     },
@@ -387,7 +395,7 @@ export default {
 .preview-box h3 {
   font-size: 23px; /* 회사명 폰트 크기 */
   font-weight: bold; /* 굵게 */
-  text-align: left;
+  text-align: right;
   margin: 0px;
 }
 
@@ -395,18 +403,18 @@ export default {
 .preview-box p {
   margin: 0px 0; /* 각 문장 간의 간격 */
   font-size: 15px; /* 일반 텍스트 크기 */
-  text-align: left;
+  /* text-align: left; */
 }
 
 .preview-box p:nth-child(2) {
   font-size: 14px; /* 주소 폰트 크기 */
-  text-align: left;
+  text-align: right;
   margin: 3px 0px;
 }
 
 .preview-box p:nth-child(3) {
   font-size: 22px; /* 이름 폰트 크기 */
-  text-align: right;
+  text-align: left;
   margin: 0px 0px 3px;
   font-weight: bold; /* 이름 텍스트 굵게 */
 
@@ -422,7 +430,7 @@ export default {
 .preview-box p:nth-child(7),
 .preview-box p:nth-child(8) {
   font-size: 13px; /*  전화번호, 유선전화번호, 이메일 크기 */
-  text-align: right;
+  text-align: left;
 }
 
 .preview-box p:nth-child(4)::before {

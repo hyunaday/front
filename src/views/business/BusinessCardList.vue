@@ -35,7 +35,7 @@
                 <p>
                   <strong>{{ card.name }}</strong>
                 </p>
-                <p>{{ card.position }} / {{ card.department }}</p>
+                <p>{{ card.position }} / {{ card.part }}</p>
                 <p>{{ card.company }}</p>
               </div>
               <div class="preview-box-small">
@@ -44,9 +44,9 @@
                 <p>{{ card.address }}</p>
                 <p>{{ card.name }}</p>
                 <p>{{ card.position }}</p>
-                <p>{{ card.department }}</p>
-                <p>{{ card.phone }}</p>
-                <p>{{ card.phoneLandline }}</p>
+                <p>{{ card.part }}</p>
+                <p>{{ card.phone_num }}</p>
+                <p>{{ card.tel_num }}</p>
                 <p>{{ card.email }}</p>
               </div>
             </div>
@@ -58,9 +58,9 @@
           <h3>{{ formData.company || '회사 정보 없음' }}</h3>
           <p>이름: {{ formData.name }}</p>
           <p>직책: {{ formData.position }}</p>
-          <p>부서: {{ formData.department }}</p>
-          <p>휴대전화: {{ formData.phone }}</p>
-          <p>유선전화: {{ formData.phoneLandline }}</p>
+          <p>부서: {{ formData.part }}</p>
+          <p>휴대전화: {{ formData.phone_num }}</p>
+          <p>유선전화: {{ formData.tel_num }}</p>
           <p>이메일: {{ formData.email }}</p>
           <p>주소: {{ formData.address }}</p>
           <p>메모: {{ formData.memo || '메모 없음' }}</p>
@@ -104,15 +104,15 @@
           </div>
           <div class="form-row">
             <label class="form-label">부서:</label>
-            <input v-model="editSelectedCard.department" type="text" />
+            <input v-model="editSelectedCard.part" type="text" />
           </div>
           <div class="form-row">
             <label class="form-label">휴대전화:</label>
-            <input v-model="editSelectedCard.phone" type="text" />
+            <input v-model="editSelectedCard.phone_num" type="tel" />
           </div>
           <div class="form-row">
             <label class="form-label">유선전화:</label>
-            <input v-model="editSelectedCard.phoneLandline" type="text" />
+            <input v-model="editSelectedCard.tel_num" type="tel" />
           </div>
           <div class="form-row">
             <label class="form-label">이메일:</label>
@@ -149,13 +149,13 @@
           <input v-model="editData.position" type="text" />
 
           <label>부서:</label>
-          <input v-model="editData.department" type="text" />
+          <input v-model="editData.part" type="text" />
 
           <label>휴대전화:</label>
-          <input v-model="editData.phone" type="text" />
+          <input v-model="editData.phone_num" type="tel" />
 
           <label>유선전화:</label>
-          <input v-model="editData.phoneLandline" type="text" />
+          <input v-model="editData.tel_num" type="tel" />
 
           <label>이메일:</label>
           <input v-model="editData.email" type="text" />
@@ -192,10 +192,10 @@ export default {
         phone: '',
         email: '',
         position: '',
-        department: '',
+        part: '',
         company: '',
         address: '',
-        phoneLandline: '',
+        phone_num: '',
         memo: '',
       }, // 나의 명함 데이터
 
@@ -227,7 +227,7 @@ export default {
     },
     async fetchBusinessCard(idx) {
       try {
-        const response = await apiClient.get(`/api/businessCard/${idx}`); // API 호출
+        const response = await apiClient.get(`/businessCard/friends/all`); // API 호출
         // 응답 결과로 formData 업데이트
         this.formData = response.data;
         // 명함 목록을 가져오는 경우 필요시 추가
