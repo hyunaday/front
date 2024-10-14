@@ -40,14 +40,16 @@
           <div class="item-content">
             <img :src="item.image || defaultImage" alt="아이템 이미지" class="item-image" />
             <div class="item-info">
+              <!-- 메뉴 이름과 메뉴 갯수를 함께 표시 -->
               <span class="item-name">
-                {{ item.menuName }} ({{ item.selectedCount || 0 }}명)
+                {{ item.menuName }} (x{{ item.amount }}) <!-- 메뉴 갯수 표시 -->
               </span>
               <span class="item-price">{{ (item.price * item.amount).toLocaleString() }} 원</span>
             </div>
           </div>
         </div>
       </div>
+
       <hr class="divider" />
 
       <h4 class="payment-secamount">
@@ -67,6 +69,7 @@
 </template>
 
 <script>
+// 아래에 있는 내용은 동일하므로 수정할 필요 없음
 import { useOrderInfoStore } from '../../stores/orderStore.js'; // Pinia store 사용
 import { useSocketStore } from '../../stores/socketStore.js'; // Socket store 사용
 import { useMemberStore } from '../../stores/MemberStore.js';
@@ -172,7 +175,6 @@ export default {
               // 자신의 선택 상태 업데이트
               if (parsedMessage.memberIdx === memberStore.idx) {
                 menu.selectedByUser = (parsedMessage.type === 'MENU_SELECT');
-                console.log("dfd", menu.price);
                 if (parsedMessage.type === 'MENU_SELECT') {
                   updateSelectedAmount(menu.price);
                 } else {
@@ -280,6 +282,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 .main-container {
