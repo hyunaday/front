@@ -79,6 +79,18 @@
                 style="width: 140px; height: 140px"
               />
             </div>
+            <div
+              v-if="qrCodeData"
+              class="qr-code-container"
+              @click="showModal = true"
+            >
+              <img
+                :src="qrCodeData"
+                alt="QR 코드"
+                class="qr-code-image"
+                style="width: 140px; height: 140px"
+              />
+            </div>
           </class>
         </div>
       </div>
