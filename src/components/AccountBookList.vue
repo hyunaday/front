@@ -769,13 +769,16 @@ export default {
 
 <style scoped>
 .calendar-container {
-  margin-top: 70px;
-  padding: 20px;
+  padding: 10px;
   width: 100%;
   max-width: 320px;
   overflow-y: auto; /* 세로 스크롤 추가 */
-  max-height: 80vh; /* 최대 높이 설정 */
+  max-height: 70vh; /* 최대 높이 설정 */
   top: 0; /* 페이지 상단에 고정 */
+  margin-top: 10px;
+  text-align: center;
+  width: 260px;
+  font-family: "Poppins", sans-serif; /* Poppins 폰트 적용 */
 
   /* 스크롤바 숨기기 */
   scrollbar-width: none; /* Firefox */
@@ -785,12 +788,7 @@ export default {
 .calendar-container::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
-.calendar-container {
-  margin-top: 100px;
-  text-align: center;
-  width: 260px;
-  font-family: "Poppins", sans-serif; /* Poppins 폰트 적용 */
-}
+
 .calendar-header {
   margin-bottom: 1rem;
   font-size: 1.5rem;
@@ -804,7 +802,7 @@ export default {
   margin-right: 0.5rem;
   border-radius: 5px;
   border: none; /* 테두리 제거 */
-  appearance: none; /* 기본 드롭다운 화살표 제거 */
+  /* appearance: none; 기본 드롭다운 화살표 제거 */
   background: transparent; /* 배경을 투명으로 설정 */
   font-family: "Poppins", sans-serif; /* Poppins 폰트 적용 */
   font-size: 24px;
@@ -826,7 +824,7 @@ export default {
 }
 .expense .amount {
   font-size: 1rem;
-  color: red;
+  color: #ee8282;
 }
 .income .amount {
   font-size: 1rem;
@@ -878,7 +876,7 @@ div.total-amount {
   color: #6981d9;
 }
 .negative {
-  color: red;
+  color: #ee8282;
 }
 .entry-details {
   margin-top: 10px;
@@ -1213,7 +1211,7 @@ select {
 .modal-content {
   background-color: #ffffff;
   width: 80%;
-  max-width: 400px;
+  max-width: 360px;
   padding: 20px;
   border-radius: 10px;
 }
@@ -1239,5 +1237,10 @@ select {
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
+  border-radius: 5px;
+}
+
+.close-btn:hover {
+  background-color: #f0f0f0;
 }
 </style>
