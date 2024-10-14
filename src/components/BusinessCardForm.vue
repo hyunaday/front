@@ -59,11 +59,11 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="telNume">유선번호</label>
+        <label for="telNum">유선번호</label>
         <div class="input-container">
           <input
             type="tel"
-            id="telNume"
+            id="telNum"
             v-model="formData.telNum"
           />
         </div>
