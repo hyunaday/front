@@ -426,6 +426,8 @@ export default {
         "Nov",
         "Dec",
       ],
+      calendar: [],
+      data: {},
       // 추가 데이터
       storeName: "",
       editablePrice: 0,
@@ -451,7 +453,7 @@ export default {
           total +
           entryGroup.entries
             .filter((entry) => entry.amount < 0)
-            .reduce((sum, entry) => sum + entry.amount, 0)
+            .reduce((sum, entry) => sum + Math.abs(entry.amount), 0) // 절대값으로 변환
         );
       }, 0);
     },
@@ -770,14 +772,12 @@ export default {
 <style scoped>
 .calendar-container {
   padding: 10px;
-  width: 100%;
-  max-width: 320px;
+  width: 320px;
   overflow-y: auto; /* 세로 스크롤 추가 */
   max-height: 70vh; /* 최대 높이 설정 */
   top: 0; /* 페이지 상단에 고정 */
   margin-top: 10px;
   text-align: center;
-  width: 260px;
   font-family: "Poppins", sans-serif; /* Poppins 폰트 적용 */
 
   /* 스크롤바 숨기기 */
@@ -830,18 +830,7 @@ export default {
   font-size: 1rem;
   color: #6981d9;
 }
-.search-bar {
-  margin: 1rem 0;
-  text-align: center;
-}
-.search-input {
-  padding: 0.5rem;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  width: 100%;
-  height: 35px;
-  max-width: 300px;
-}
+
 .entry-header {
   display: flex;
   justify-content: space-between;
@@ -959,16 +948,30 @@ div.total-amount {
 .editable-sheet {
   padding: 20px;
 }
+
+.search-bar {
+  margin: 1rem 0;
+  text-align: center;
+}
+.search-input {
+  padding: 0.5rem;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  width: 70%;
+  height: 35px;
+  max-width: 300px;
+}
 /* 필터링 버튼 스타일 */
 .filter-container {
   margin: 1rem 0;
   display: flex;
   gap: 10px;
+  margin-left: 49px;
 }
 .filter-container button {
   border: 1px solid #ccc;
   background-color: #ffffff;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
   color: #888;
 }
@@ -1020,7 +1023,7 @@ div.total-amount {
 select {
   word-wrap: normal;
   background-color: #ffffff;
-  border-radius: 5px;
+  border-radius: 8px;
   color: #888;
   padding: 1px 6px;
 }
