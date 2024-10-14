@@ -21,7 +21,7 @@
       </div>
 
       <!-- 내 계좌 텍스트 및 잔액 조회 스위치 -->
-      <div v-if="isConnected" class="row align-items-center">
+      <div v-if="isConnected" class="row align-items-center" id="main-title">
         <div class="col-6 ps-4">
           <h4 class="mb-0">내 계좌</h4>
         </div>
@@ -86,7 +86,11 @@
                     </button>
                   </router-link>
                   <router-link :to="`/transfer`">
-                    <button class="btn btn-light transfer" type="button">
+                    <button
+                      class="btn btn-light transfer"
+                      type="button"
+                      @click="selectAccount(account)"
+                    >
                       이체
                     </button>
                   </router-link>
@@ -178,6 +182,7 @@ import tossLogo from "../assets/images/toss.png";
 import nhLogo from "../assets/images/NHbank.png";
 import copyIcon from "../assets/images/copy.png";
 import { useMemberStore } from "../stores/MemberStore.js";
+import { useTransferStore } from "../stores/TransferStore.js";
 
 export default {
   name: "MainPage",
@@ -188,8 +193,8 @@ export default {
     Header,
   },
   setup() {
-    return {
-    };
+    const transferStore = useTransferStore();
+    return { transferStore };
   },
   data() {
     return {
@@ -206,7 +211,7 @@ export default {
         "생활업종 할인으로 혜택 가득한 하루!",
         "카드 하나로 누리는 항공 특화 서비스!",
         "포인트리 적립받고 해외배송료 할인까지",
-        "여행도 프리미엄! 마일리지적립+전세계라운지 무료",
+        "여행도 프리미엄! 마일리지적립+ 라운지 무료",
         "국내외 라운지 무료이용과 항공권 15만원 할인!",
       ],
       showamount: false,
@@ -284,11 +289,20 @@ export default {
     goToAgreementPage() {
       this.$router.push("/agree1");
     },
+    selectAccount(account) {
+      this.transferStore.selectedAccount = account;
+      this.transferStore.availableAmount = account.amount;
+      this.$router.push("/transfer");
+    },
   },
 };
 </script>
 
 <style scoped>
+#main-title {
+  margin-top: 30px;
+}
+
 .main-container {
   position: relative;
   display: flex;
@@ -370,7 +384,7 @@ h4 {
   color: #ffffff;
   display: inline-block;
   max-width: 100%;
-  /* text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   margin-left: -30px;
 }
 

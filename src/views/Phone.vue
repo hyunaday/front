@@ -81,7 +81,7 @@ export default {
     async verifyCode() {
       try {
         const verificationData = {
-          phoneum: this.phone_num,
+          phoneNum: this.phone_num,
           authNum: this.verificationCode,
         };
 
