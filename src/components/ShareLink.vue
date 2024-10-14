@@ -8,14 +8,21 @@
           </button>
           <h2 class="title">결제 초대하기</h2>
         </div>
-        <QRCode :value="shareableLink" :size="200" />
+
+        <!-- QR 코드 자리에 이미지 표시 -->
+        <div v-if="orderStore.imgUrl">
+          <img :src="orderStore.imgUrl" alt="공유된 이미지" class="shared-img" />
+        </div>
+
         <br />
-        <h3>함께 결제를 위한 QR코드</h3>
+        <h3>함께 결제를 위한 이미지</h3>
         <br />
         <p style="text-align: center">
-          함께 결제할 팀원들에게 해당 QR코드를<br />
+          함께 결제할 팀원들에게 해당 이미지를<br />
           공유하거나 링크를 보내주세요!
         </p>
+
+        <!-- 버튼들 -->
         <button @click="shareLink" class="share-button">링크 전송</button>
         <button @click="goToNext" class="next-button">다음</button>
       </div>
@@ -24,7 +31,6 @@
 </template>
 
 <script>
-import QRCode from 'qrcode.vue';
 import { useOrderStore } from '../stores/orderStore.js';
 import { usePriceStore } from '../stores/orderStore.js';
 import apiClient from '../../src/api/axios.js';
@@ -33,9 +39,6 @@ import { useSocketStore } from '../stores/socketStore.js';
 import { useRouter } from 'vue-router'; // vue-router 사용
 
 export default {
-  components: {
-    QRCode,
-  },
   setup() {
     const orderStore = useOrderStore();
     const socketStore = useSocketStore();
@@ -57,6 +60,7 @@ export default {
         });
         shareableLink.value = `${response.data.result.idx}`;
         console.log('방 생성 성공:', response.data);
+        orderStore.setImgUrl(response.data.result.imgUrl); // imgUrl 설정
 
         // 방이 생성된 후 소켓 연결 시작
         socketStore.connect();
@@ -101,6 +105,7 @@ export default {
     return {
       shareableLink,
       fetchOrderStore,
+      orderStore, // orderStore를 반환하여 템플릿에서 사용 가능하게 설정
       goBack() {
         router.go(-1); // router 사용하여 뒤로가기 처리
       },
@@ -123,7 +128,6 @@ export default {
 </script>
 
 <style scoped>
-/* 기존 스타일 유지 */
 .main-container {
   height: 100vh;
   display: flex;
@@ -163,7 +167,14 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 50%;
+  margin-top: 20%;
+}
+
+.shared-img {
+  margin-top: 20px;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #ccc;
 }
 
 .next-button,

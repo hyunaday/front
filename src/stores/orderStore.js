@@ -8,6 +8,7 @@ export const useOrderStore = defineStore('order', {
     orderIdx: 0,
     maxMemberCnt: 0,
     type: null,
+    imgUrl: null,
   }),
   actions: {
     setOrderIdx(orderIdx) {
@@ -18,6 +19,9 @@ export const useOrderStore = defineStore('order', {
     },
     setMaxMemberCnt(maxMemberCnt) {
       this.maxMemberCnt = maxMemberCnt;
+    },
+    setImgUrl(imgUrl) {
+      this.imgUrl = imgUrl;
     },
   },
   persist: {

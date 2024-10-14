@@ -67,8 +67,7 @@
                 style="width: 140px; height: 140px"
               />
             </div>
-        </div>
-     
+        </div>  
       </div>
 
         <!-- QR 코드 모달 -->
@@ -103,33 +102,25 @@
     <main>
       <div class="edit-form">
         <label>회사명:</label>
-        <input v-model="formData.company" type="text" />
-
+        <input v-model="editData.company" type="text" />
         <label>주소:</label>
-        <input v-model="formData.address" type="text" />
-
+        <input v-model="editData.address" type="text" />
         <label>이름:</label>
-        <input v-model="formData.name" type="text" />
-
+        <input v-model="editData.name" type="text" />
         <label>직책:</label>
-        <input v-model="formData.position" type="text" />
-
+        <input v-model="editData.position" type="text" />
         <label>부서:</label>
-        <input v-model="formData.part" type="text" />
-
+        <input v-model="editData.department" type="text" />
         <label>휴대전화:</label>
-        <input v-model="formData.phone_num" type="tel" />
-        
+        <input v-model="editData.phone" type="text" />
         <label>유선전화:</label>
-        <input v-model="formData.tel_num" type="tel" />
-
+        <input v-model="editData.phoneLandline" type="text" />
         <label>이메일:</label>
-        <input v-model="formData.email" type="text" />
-
+        <input v-model="editData.email" type="text" />
         <div v-if="isFriendCard">
           <label>메모:</label>
           <textarea
-            v-model="formData.memo"
+            v-model="editData.memo"
             class="memo-textarea"
             placeholder="메모를 입력하세요..."
           ></textarea>
@@ -268,36 +259,36 @@ export default {
         bottomSheet.closeSheet();
       }
     },
-    saveChanges() {
-      if (!this.formData.idx) {
-        alert('명함 ID가 설정되지 않았습니다.');
-        console.error('formData에서 idx 값이 없습니다:', this.formData);
-        return;
+saveChanges() {
+  if (!this.formData.idx) {
+    alert('명함 ID가 설정되지 않았습니다.');
+    console.error('formData에서 idx 값이 없습니다:', this.formData);
+    return;
+  }
+
+  console.log('전송할 데이터:', this.editData);
+
+  // PATCH 요청으로 서버에 데이터 수정 요청
+  apiClient
+    .patch(`/businessCard?idx=${this.formData.idx}`, this.editData)
+    .then((response) => {
+      console.log('서버 응답:', response.data);
+
+      if (response.data.isSuccess) {
+        this.formData = { ...this.editData }; // 수정된 데이터로 formData 업데이트
+        alert('나의 명함 정보가 저장되었습니다.');
+      } else {
+        alert('수정 실패: ' + response.data.message);
       }
-
-      console.log('전송할 데이터:', this.editData);
-
-      // PATCH 요청으로 서버에 데이터 수정 요청
-      apiClient
-        .patch(`/businessCard?idx=${this.formData.idx}`, this.editData)
-        .then((response) => {
-          console.log('서버 응답:', response.data);
-
-          if (response.data.isSuccess) {
-            this.formData = { ...this.editData }; // 수정된 데이터로 formData 업데이트
-            alert('나의 명함 정보가 저장되었습니다.');
-          } else {
-            alert('수정 실패: ' + response.data.message);
-          }
-        })
-        .catch((error) => {
-          console.error('명함 정보 수정 중 오류 발생:', error);
-          alert('명함 정보 수정 중 오류가 발생했습니다.');
-        })
-        .finally(() => {
-          this.closeBottomSheet(); // Bottom sheet 닫기
-        });
-    },
+    })
+    .catch((error) => {
+      console.error('명함 정보 수정 중 오류 발생:', error);
+      alert('명함 정보 수정 중 오류가 발생했습니다.');
+    })
+    .finally(() => {
+      this.closeBottomSheet(); // Bottom sheet 닫기
+    });
+},
     deleteCard() {
       if (confirm('정말로 이 명함을 삭제하시겠습니까?')) {
         // DELETE 요청으로 서버에 명함 삭제 요청
