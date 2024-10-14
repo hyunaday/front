@@ -237,7 +237,7 @@ export default {
       requestAnimationFrame(animate);
     },
     getColor(index) {
-      const colors = ['#D9D2E9', '#B6D7A8', '#FFD966', '#EAD1DC', '#9FC5E8', '#F6B26B'];
+      const colors = ['#f14545', '#54e4fa', '#ca66f2', '#80ff80', '#9FC5E8', '#F6B26B'];
 
 
       return colors[index % colors.length];
