@@ -252,7 +252,12 @@ export default {
       this.drawRoulette();
     },
     confirm() {
-      this.showModal = false;
+      this.$router.push({
+      path: '/requestPay',
+      query: {
+        winner: this.winner,
+      },
+    });
     },
   },
 };

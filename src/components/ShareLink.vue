@@ -24,8 +24,18 @@
 
         <!-- 버튼들 -->
         <button @click="shareLink" class="share-button">링크 전송</button>
-        <button @click="goToNext" class="next-button">다음</button>
       </div>
+
+      <!-- 링크 복사 완료 모달 -->
+      <transition name="fade">
+        <div v-if="showModal" class="modal-overlay" @click="closeModal">
+          <div class="modal-content" @click.stop>
+            <h3>복사 완료</h3>
+            <p>링크가 클립보드에 복사되었습니다!</p>
+            <button @click="closeModal" class="close-modal-button">확인</button>
+          </div>
+        </div>
+      </transition>
 
       <!-- 참여 완료 메시지 (알림창처럼 상단에 고정) -->
       <transition name="fade">
@@ -52,6 +62,7 @@ export default {
     const socketStore = useSocketStore();
     const shareableLink = ref('');
     const showCompletionMessage = ref(false); // 완료 메시지 표시 여부
+    const showModal = ref(false); // 모달 상태 관리
     const router = useRouter();
     const priceStore = usePriceStore();
 
@@ -74,6 +85,22 @@ export default {
       } catch (error) {
         console.error('방 생성 실패:', error);
       }
+    };
+
+    const shareLink = () => {
+      navigator.clipboard
+        .writeText(orderStore.imgUrl)
+        .then(() => {
+          showModal.value = true; // 링크 복사 성공 시 모달 열기
+        })
+        .catch((err) => {
+          console.error('링크 복사 실패:', err);
+        });
+    };
+
+    // 모달 닫기
+    const closeModal = () => {
+      showModal.value = false;
     };
 
     // MENU_INFO 메시지를 감시하고 도착 시 페이지 이동
@@ -127,6 +154,8 @@ export default {
       shareableLink,
       fetchOrderStore,
       orderStore,
+      showModal,
+      closeModal,
       showCompletionMessage,
       closeCompletionMessage,
       goBack() {
@@ -135,16 +164,7 @@ export default {
       goToNext() {
         router.push('/gamelist');
       },
-      shareLink() {
-        navigator.clipboard
-          .writeText(shareableLink.value)
-          .then(() => {
-            alert('링크가 클립보드에 복사되었습니다!');
-          })
-          .catch((err) => {
-            console.error('링크 복사 실패:', err);
-          });
-      },
+      shareLink,
     };
   },
 };
@@ -204,8 +224,8 @@ export default {
 .share-button {
   margin-top: 15px;
   padding: 10px 20px;
-  background-color: white; /* 버튼 색상 */
-  color: black;
+  background-color: #6981d9; /* 버튼 색상 */
+  color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -214,11 +234,74 @@ export default {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.next-button:hover,
 .share-button:hover {
-  background-color: #6981d9; /* 마우스 오버 시 색상 변경 */
+  background-color: #b0b0b0; /* 마우스 오버 시 색상 변경 */
   color: white;
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* 호버 시 더 강조된 그림자 */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.modal-content {
+  background: #ffffff;
+  padding: 30px 20px; /* 패딩 추가 */
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* 더 진한 그림자 */
+  max-width: 360px; /* 최대 너비 조정 */
+  width: 90%;
+  animation: fadeIn 0.3s ease; /* 나타나는 애니메이션 추가 */
+}
+
+.modal-content h3 {
+  font-size: 24px; /* 제목 폰트 크기 확대 */
+  margin-bottom: 15px;
+  color: #333; /* 좀 더 짙은 텍스트 색상 */
+}
+
+.modal-content p {
+  font-size: 18px; /* 본문 폰트 크기 확대 */
+  margin-bottom: 20px;
+  color: #555; /* 본문 텍스트 색상 */
+}
+
+.close-modal-button {
+  padding: 12px 24px; /* 버튼 크기 확대 */
+  background-color: #6981d9;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 18px; /* 버튼 폰트 크기 확대 */
+  transition: background-color 0.3s ease;
+}
+
+.close-modal-button:hover {
+  background-color: #4a5c9c;
+}
+
+/* 모달 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* 성공 메시지 알림창 */
@@ -227,7 +310,7 @@ export default {
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #4caf50;
+  background-color: #6981d9;
   color: white;
   padding: 10px 20px;
   text-align: center;
@@ -249,5 +332,23 @@ export default {
   position: absolute;
   right: 10px;
   top: 10px;
+}
+
+.completion-message {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #6981d9;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  z-index: 1000;
+  box-sizing: border-box;
+  transition: opacity 0.5s ease-out;
+  width: 90%;
+  max-width: 300px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 </style>
