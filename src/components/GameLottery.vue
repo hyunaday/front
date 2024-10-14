@@ -7,11 +7,6 @@
       <h2 class="title">룰렛 돌리기</h2>
     </div>
     <img src="../assets/images/logo.png" alt="로고" class="logo-image" />
-    <div class="input-group">
-      <label for="participants"></label>
-      <input v-model="participantInput" placeholder="참여자를 추가해주세요" />
-      <button @click="addParticipant" class="add-participant-button">+</button>
-    </div>
 
     <div class="roulette-container">
       <canvas
@@ -51,18 +46,25 @@
 
 <script>
 import { useNavigationStore } from '../../src/stores/navigation.js'; // Pinia Store import
+import { useSocketStore } from '../stores/socketStore.js';
+import { useMemberStore } from '../stores/memberStore.js';
+import { useOrderStore, useOrderInfoStore } from '../stores/orderStore.js';
+
+import { watch, onMounted } from 'vue';
 
 export default {
   data() {
     return {
       participants: [],
-      participantInput: '',
       winner: null,
       rotationAngle: 0,
       spinning: false,
       showModal: false,
-      selectedMethod: null, // 선택된 방법
     };
+  },
+  mounted() {
+    this.handleSocketResponse(); // 소켓 응답 감시 시작
+    this.sendSocketRequest(); // 페이지 로드 시 소켓 요청
   },
   watch: {
     participants: {
@@ -76,23 +78,62 @@ export default {
     goBack() {
       this.$router.go(-1);
     },
-    addParticipant() {
-      const trimmedInput = this.participantInput.trim();
-      if (trimmedInput && !this.participants.includes(trimmedInput)) {
-        if (this.participants.length < 10) {
-          this.participants.push(trimmedInput);
-          this.participantInput = '';
-          this.drawRoulette();
-        } else {
-          alert('참여자는 최대 10명까지만 추가할 수 있습니다.');
-        }
-      } else {
-        if (!trimmedInput) {
-          alert('참여자 이름을 입력해주세요.');
-        } else {
-          alert('이미 추가된 참여자입니다.');
+    // 소켓 요청을 보내는 함수
+    sendSocketRequest() {
+      const socketStore = useSocketStore();
+      const memberStore = useMemberStore();
+      const orderInfoStore = useOrderInfoStore();
+
+      if (!socketStore.stompClient || !socketStore.stompClient.connected) {
+        console.error('소켓이 연결되지 않았습니다.');
+        return;
+      }
+      if (memberStore.memberId === orderInfoStore.ownerMemberIdx) {
+        const message = {
+          orderIdx: 1,
+          memberId: memberStore.memberId,
+        };
+
+        try {
+          socketStore.stompClient.send(
+            '/pub/order/room/list',
+            {
+              Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+              'MemberId': memberStore.memberId,
+              'content-type': 'application/json',
+            },
+            JSON.stringify(message)
+          );
+        } catch (error) {
+          console.error('소켓 요청 실패:', error);
         }
       }
+    },
+    // 소켓으로부터 받은 데이터를 처리하는 함수
+    handleSocketResponse() {
+      const socketStore = useSocketStore();
+
+      watch(
+        () => socketStore.messages,
+        (newMessages) => {
+          const lastMessage = newMessages[newMessages.length - 1];
+          if (!lastMessage) return;
+
+          try {
+            const parsedMessage = JSON.parse(lastMessage);
+
+            if (parsedMessage.type === 'MEMBER_LIST_INFO') {
+              const memberNameList = parsedMessage.memberInfoList.map(member => member.memberName);
+
+              // store에 저장된 memberNameList를 participants로 설정
+              this.participants = [...memberNameList];
+            }
+          } catch (error) {
+            console.error('메시지 파싱 실패:', error);
+          }
+        },
+        { deep: true }
+      );
     },
     drawRoulette() {
       const canvas = this.$refs.canvas;
@@ -197,15 +238,8 @@ export default {
       this.winner = null;
       this.rotationAngle = 0;
       this.spinning = false;
-      this.participantInput = '';
       this.drawRoulette();
     },
-    // goToSelectedPage() {
-    //   // 선택된 방법에 따라 이동할 페이지 결정
-    //   const targetPage =
-    //     this.selectedMethod === 'split' ? '/paysplit' : '/paymenu';
-    //   this.$router.push(targetPage);
-    // },
     confirm() {
       const navigationStore = useNavigationStore();
 
@@ -228,6 +262,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+/* 기존 스타일 유지 */
+</style>
+
 
 <style scoped>
 .main-container {

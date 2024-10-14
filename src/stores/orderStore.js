@@ -9,6 +9,8 @@ export const useOrderStore = defineStore('order', {
     maxMemberCnt: 0,
     type: null,
     imgUrl: null,
+    memberIdxList: [],
+    memberNameList: [], // 멤버 이름을 저장할 리스트
   }),
   actions: {
     setOrderIdx(orderIdx) {
@@ -22,6 +24,9 @@ export const useOrderStore = defineStore('order', {
     },
     setImgUrl(imgUrl) {
       this.imgUrl = imgUrl;
+    },
+    setMemberNameList(memberNameList) {
+      this.memberNameList = memberNameList;
     },
   }
 });

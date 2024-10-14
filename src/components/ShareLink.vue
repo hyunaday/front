@@ -26,6 +26,14 @@
         <button @click="shareLink" class="share-button">링크 전송</button>
         <button @click="goToNext" class="next-button">다음</button>
       </div>
+
+      <!-- 참여 완료 메시지 (알림창처럼 상단에 고정) -->
+      <transition name="fade">
+        <div v-if="showCompletionMessage" class="completion-message">
+          모두 참여를 완료했습니다.
+          <button @click="closeCompletionMessage" class="close-error-button">X</button>
+        </div>
+      </transition>
     </div>
   </div>
 </template>
@@ -43,12 +51,11 @@ export default {
     const orderStore = useOrderStore();
     const socketStore = useSocketStore();
     const shareableLink = ref('');
-    const router = useRouter(); // router 사용 선언
+    const showCompletionMessage = ref(false); // 완료 메시지 표시 여부
+    const router = useRouter();
     const priceStore = usePriceStore();
 
-    const fetchOrderStore = async () => {
-
-    }
+    const fetchOrderStore = async () => {}
 
     // 방 생성 함수
     const createRoom = async () => {
@@ -76,16 +83,25 @@ export default {
         const lastMessage = newMessages[newMessages.length - 1];
         const parsedMessage = JSON.parse(lastMessage);
 
-        // MENU_INFO 타입 메시지가 도착하면 페이지 이동
-        if (parsedMessage.type === 'MENU_INFO' && orderStore.type === "BY_MENU") {
+        // MENU_INFO 타입 메시지가 도착하면 알림창 표시 후 페이지 이동
+        if (parsedMessage.type === 'MENU_INFO' && orderStore.type === 'BY_MENU') {
           console.log('MENU_INFO 메시지 도착:', parsedMessage);
-          alert('MENU_INFO 수신 완료. 다음 페이지로 이동합니다.');
-          router.push('/gamelist'); // 페이지 이동 (소켓 연결 유지)
-        } else if (parsedMessage.type === 'PARTICIPANT_INFO' && orderStore.type === "BY_PRICE") {
+
+          // "모두 참여를 완료했습니다" 메시지를 3초 동안 표시 후 페이지 이동
+          showCompletionMessage.value = true;
+          setTimeout(() => {
+            showCompletionMessage.value = false;
+            router.push('/menucheck'); // 페이지 이동 (소켓 연결 유지)
+          }, 3000);
+        } else if (parsedMessage.type === 'PARTICIPANT_INFO' && orderStore.type === 'BY_PRICE') {
           console.log('PARTICIPANT_INFO 메시지 도착:', parsedMessage);
-          
+
           priceStore.setPriceData(parsedMessage);
-          router.push('/requestPay')
+          showCompletionMessage.value = true;
+          setTimeout(() => {
+            showCompletionMessage.value = false;
+            router.push('/gamelist'); // 페이지 이동 (소켓 연결 유지)
+          }, 3000);
         }
       },
       { deep: true }
@@ -102,10 +118,17 @@ export default {
       // socketStore.disconnect(); // 소켓 연결을 해제하지 않음
     });
 
+    // 성공 메시지 닫기 함수
+    const closeCompletionMessage = () => {
+      showCompletionMessage.value = false;
+    };
+
     return {
       shareableLink,
       fetchOrderStore,
-      orderStore, // orderStore를 반환하여 템플릿에서 사용 가능하게 설정
+      orderStore,
+      showCompletionMessage,
+      closeCompletionMessage,
       goBack() {
         router.go(-1); // router 사용하여 뒤로가기 처리
       },
@@ -196,5 +219,35 @@ export default {
   background-color: #6981d9; /* 마우스 오버 시 색상 변경 */
   color: white;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* 호버 시 더 강조된 그림자 */
+}
+
+/* 성공 메시지 알림창 */
+.completion-message {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  z-index: 1000;
+  box-sizing: border-box;
+  transition: opacity 0.5s ease-out;
+  width: 90%;
+  max-width: 300px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.close-error-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: white;
+  position: absolute;
+  right: 10px;
+  top: 10px;
 }
 </style>
