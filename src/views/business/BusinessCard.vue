@@ -42,7 +42,9 @@
             </div>
           </div>
         </div>
-        <div v-else class="preview-box">
+   
+<!-- 삭제하기! 존재하지 않을 시, “내 명함을 등록해주세요.” + 등록 버튼 -->
+     <div v-else class="preview-box">
           <h3>{{ formData.company || '회사 정보 없음' }}</h3>
           <p>{{ formData.address || '주소 없음' }}</p>
           <p>{{ formData.name || '이름 없음' }}</p>
@@ -63,7 +65,7 @@
             <p><strong>유선전화:</strong> {{ formData.phoneLandline }}</p>
             <p><strong>이메일:</strong> {{ formData.email }}</p>
             <p><strong>주소:</strong> {{ formData.address }}</p>
-
+<!-- 필요 -->
             <!-- QR 코드 이미지를 주소 아래에 표시 -->
             <div
               v-if="qrCodeData"
@@ -147,6 +149,7 @@
     </main>
   </bottom-sheet>
 
+<!-- 필요 -->
   <!-- QR 코드 모달 -->
   <div v-if="showModal" class="modal" @click="closeModal">
     <div class="modal-content qr-modal" @click.stop>
@@ -161,6 +164,7 @@
     </div>
     <p class="additional-text">QR코드를 스캔하세요</p>
   </div>
+<!-- 필요 -->
   <!-- 수정 (Bottom Sheet) 모달 -->
   <div
     v-if="isBottomSheetVisible"
@@ -211,6 +215,7 @@
     </div>
   </div>
 </template>
+
 
 <script>
 import apiClient from '../../api/axios.js';
