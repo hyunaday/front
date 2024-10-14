@@ -209,7 +209,7 @@ h3 {
 .divider {
   width: 100%;
   height: 1px;
-  background-color: #ccc;
+  background-color: #ffffff00;
   margin: 20px 0;
 }
 </style>
