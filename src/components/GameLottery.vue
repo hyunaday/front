@@ -6,7 +6,6 @@
       </button>
       <h2 class="title">룰렛 돌리기</h2>
     </div>
-
     <div class="roulette-container">
       <canvas
         ref="canvas"
