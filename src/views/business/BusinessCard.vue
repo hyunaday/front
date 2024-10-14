@@ -49,8 +49,8 @@
           <p>{{ formData.name || '이름 없음' }}</p>
           <p>{{ formData.position || '직책 없음' }}</p>
           <p>{{ formData.part || '부서 없음' }}</p>
-          <p>{{ formData.phoneNumber || '전화번호 없음' }}</p>
-          <p>{{ formData.tel_num || '유선전화 없음' }}</p>
+          <p>{{ formData.phoneNum || '전화번호 없음' }}</p>
+          <p>{{ formData.telNum || '유선전화 없음' }}</p>
           <p>{{ formData.email || '이메일 없음' }}</p>
 
           <hr>
@@ -110,11 +110,11 @@
         <label>직책:</label>
         <input v-model="editData.position" type="text" />
         <label>부서:</label>
-        <input v-model="editData.department" type="text" />
+        <input v-model="editData.part" type="text" />
         <label>휴대전화:</label>
-        <input v-model="editData.phone" type="text" />
+        <input v-model="editData.phoneNum" type="text" />
         <label>유선전화:</label>
-        <input v-model="editData.phoneLandline" type="text" />
+        <input v-model="editData.telNum" type="text" />
         <label>이메일:</label>
         <input v-model="editData.email" type="text" />
         <div v-if="isFriendCard">
@@ -151,13 +151,13 @@ export default {
     return {
       formData: {
         name: '',
-        phoneNumber: '',
+        phoneNum: '',
         email: '',
         position: '',
         part: '',
         company: '',
         address: '',
-        tel_num: '',
+        telNum: '',
         memo: '',
       },
       cardList: [],
@@ -196,13 +196,13 @@ export default {
           this.formData = {
             idx: cardData.idx,
             name: cardData.name,
-            phoneNumber: cardData.phoneNumber,
+            phoneNum: cardData.phoneNum,
             email: cardData.email,
             position: cardData.position,
             part: cardData.part,
             company: cardData.company,
             address: cardData.address,
-            tel_num: cardData.tel_num,
+            telNum: cardData.telNum,
           };
 
           // QR 코드 이미지 URL이 있으면 qrCodeData에 할당
@@ -319,13 +319,13 @@ saveChanges() {
       this.cardList.push({ ...this.formData });
       this.formData = {
         name: '',
-        phoneNumber: '',
+        phoneNum: '',
         email: '',
         position: '',
         part: '',
         company: '',
         address: '',
-        tel_num: '',
+        telNum: '',
         memo: '',
       };
     },
@@ -378,7 +378,7 @@ saveChanges() {
 .preview-box {
   margin : 10px 0 28px 10px;
   text-align: center;
-  padding: 10px 20px;
+  padding: 10px 25px 20px 15px;
   height: 375px;
   width: 300px;
   }
@@ -855,7 +855,7 @@ select {
 
 .modal-content.qr-modal {
   background-color: rgba(255, 255, 255, 0.9);
-  padding: 15px;
+  padding: 15px 15px 15px 25px;
   border-radius: 10px;
   width: 250px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);

@@ -10,8 +10,8 @@
           <p>{{ formData.name || '이름 없음' }}</p>
           <p>{{ formData.position || '직책 없음' }}</p>
           <p>{{ formData.part || '부서 없음' }}</p>
-          <p>{{ formData.phoneNumber || '전화번호 없음' }}</p>
-          <p>{{ formData.tel_num || '유선전화 없음' }}</p>
+          <p>{{ formData.phoneNum || '전화번호 없음' }}</p>
+          <p>{{ formData.telNum || '유선전화 없음' }}</p>
           <p>{{ formData.email || '이메일 없음' }}</p>
         </div>
       </div>
@@ -23,9 +23,9 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="phoneNumber">연락처&nbsp;<span class="required">*</span></label>
+        <label for="phoneNum">연락처&nbsp;<span class="required">*</span></label>
         <div class="input-container">
-          <input type="tel" id="phoneNumber" v-model="formData.phoneNumber" required />
+          <input type="tel" id="phoneNum" v-model="formData.phoneNum" required />
         </div>
       </div>
       <div class="form-group">
@@ -59,12 +59,12 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="tel_nume">유선번호</label>
+        <label for="telNume">유선번호</label>
         <div class="input-container">
           <input
             type="tel"
-            id="tel_nume"
-            v-model="formData.tel_num"
+            id="telNume"
+            v-model="formData.telNum"
           />
         </div>
       </div>
@@ -87,13 +87,13 @@ export default {
     return {
       formData: {
         name: '',
-        phoneNumber: '',
+        phoneNum: '',
         email: '',
         position: '',
         part: '',
         company: '',
         address: '',
-        tel_num: '',
+        telNum: '',
       },
       qrCodeData: null, // QR 코드 데이터 초기화
     };
@@ -103,13 +103,13 @@ export default {
       // API 요청 데이터
       const payload = {
         name: this.formData.name,
-        phoneNumber: this.formData.phoneNumber,
+        phoneNum: this.formData.phoneNum,
         email: this.formData.email,
         position: this.formData.position,
         company: this.formData.company,
         address: this.formData.address,
         part: this.formData.part,
-        tel_num: this.formData.tel_num,
+        telNum: this.formData.telNum,
       };
       try {
         // 명함 생성 API 호출 (API 엔드포인트 수정)
