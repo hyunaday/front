@@ -57,6 +57,7 @@ import TransactionHistory4 from "../views/asset/TransactionHistory4.vue";
 import TransactionHistory5 from "../views/asset/TransactionHistory5.vue";
 import TransactionHistory6 from "../views/asset/TransactionHistory6.vue";
 import TransactionHistory from "../views/asset/TransactionHistory.vue";
+import UsagePage from "../views/UsagePage.vue";
 
 
 const routes = [
@@ -65,6 +66,11 @@ const routes = [
     name: 'MainPage',
     component: MainPage,
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/usage',
+    name: 'UsagePage',
+    component: UsagePage,
   },
   {
     path: '/login',
