@@ -28,7 +28,7 @@
               v-for="card in cardList"
               :key="card.id"
               class="card-item"
-              @click="openCardDetailModal(card)"
+              @click="goToCardList"
             >
               <div class="card-content">
                 <div class="card-text">
@@ -54,36 +54,36 @@
           <p>{{ formData.email || '이메일 없음' }}</p>
 
           <hr>
-              <!-- QR 코드 이미지를 주소 아래에 표시 -->
-         <div
-              v-if="qrCodeData"
-              class="qr-code-container"
-              @click="showModal = true"
-            >
-              <img
-                :src="qrCodeData"
-                alt="QR 코드"
-                class="qr-code-image"
-                style="width: 140px; height: 140px"
-              />
-            </div>
-        </div>  
+          <!-- QR 코드 이미지를 주소 아래에 표시 -->
+          <div
+            v-if="qrCodeData"
+            class="qr-code-container"
+            @click="showModal = true"
+          >
+            <img
+              :src="qrCodeData"
+              alt="QR 코드"
+              class="qr-code-image"
+              style="width: 140px; height: 140px"
+            />
+          </div>
+        </div>
       </div>
 
-        <!-- QR 코드 모달 -->
-  <div v-if="showModal" class="modal" @click="closeModal">
-    <div class="modal-content qr-modal" @click.stop>
-      <div class="qr-code-container">
-        <img
-          :src="qrCodeData"
-          alt="QR 코드"
-          class="qr-code-image"
-          style="width: 200px; height: 200px"
-        />
+      <!-- QR 코드 모달 -->
+      <div v-if="showModal" class="modal" @click="closeModal">
+        <div class="modal-content qr-modal" @click.stop>
+          <div class="qr-code-container">
+            <img
+              :src="qrCodeData"
+              alt="QR 코드"
+              class="qr-code-image"
+              style="width: 200px; height: 200px"
+            />
+          </div>
+        </div>
+        <p class="additional-text">QR 코드를 <br>스캔하세요</p>
       </div>
-    </div>
-    <p class="additional-text">QR 코드를 <br>스캔하세요</p>
-  </div>
 
       <div
         class="button-container"
@@ -236,9 +236,6 @@ export default {
       this.isCardListVisible = false;
     },
     goToCardList() {
-      this.$router.push('/businesscardlist'); // 페이지 이동
-    },
-   goToCardList() {
       this.$router.push('/businesscardlist'); // 페이지 이동
     },
    goToaddBusinessCard() {
