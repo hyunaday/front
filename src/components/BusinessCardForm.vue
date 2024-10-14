@@ -9,9 +9,9 @@
           <p>{{ formData.address || '주소 없음' }}</p>
           <p>{{ formData.name || '이름 없음' }}</p>
           <p>{{ formData.position || '직책 없음' }}</p>
-          <p>{{ formData.department || '부서 없음' }}</p>
-          <p>{{ formData.phone || '전화번호 없음' }}</p>
-          <p>{{ formData.phoneLandline || '유선전화 없음' }}</p>
+          <p>{{ formData.part || '부서 없음' }}</p>
+          <p>{{ formData.phone_num || '전화번호 없음' }}</p>
+          <p>{{ formData.tel_num || '유선전화 없음' }}</p>
           <p>{{ formData.email || '이메일 없음' }}</p>
         </div>
       </div>
@@ -23,9 +23,9 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="phone">연락처&nbsp;<span class="required">*</span></label>
+        <label for="phone_num">연락처&nbsp;<span class="required">*</span></label>
         <div class="input-container">
-          <input type="tel" id="phone" v-model="formData.phone" required />
+          <input type="tel" id="phone_num" v-model="formData.phone_num" required />
         </div>
       </div>
       <div class="form-group">
@@ -41,9 +41,9 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="department">부서/파트</label>
+        <label for="part">부서/파트</label>
         <div class="input-container">
-          <input type="text" id="department" v-model="formData.department" />
+          <input type="text" id="part" v-model="formData.part" />
         </div>
       </div>
       <div class="form-group">
@@ -59,12 +59,12 @@
         </div>
       </div>
       <div class="form-group">
-        <label for="phone-landline">유선번호</label>
+        <label for="tel_nume">유선번호</label>
         <div class="input-container">
           <input
             type="tel"
-            id="phone-landline"
-            v-model="formData.phoneLandline"
+            id="tel_nume"
+            v-model="formData.tel_num"
           />
         </div>
       </div>
@@ -72,6 +72,8 @@
     </form>
   </div>
 </template>
+
+
 <script>
 import apiClient from '../api/axios.js'; // Axios 인스턴스 임포트
 export default {
@@ -85,13 +87,13 @@ export default {
     return {
       formData: {
         name: '',
-        phone: '',
+        phone_num: '',
         email: '',
         position: '',
-        department: '',
+        part: '',
         company: '',
         address: '',
-        phoneLandline: '',
+        tel_num: '',
       },
       qrCodeData: null, // QR 코드 데이터 초기화
     };
@@ -101,13 +103,13 @@ export default {
       // API 요청 데이터
       const payload = {
         name: this.formData.name,
-        phone_Num: this.formData.phone,
-        tel_num: this.formData.phoneLandline,
+        phone_num: this.formData.phone_num,
         email: this.formData.email,
         position: this.formData.position,
-        part: this.formData.department,
         company: this.formData.company,
         address: this.formData.address,
+        part: this.formData.part,
+        tel_num: this.formData.tel_num,
       };
       try {
         // 명함 생성 API 호출 (API 엔드포인트 수정)

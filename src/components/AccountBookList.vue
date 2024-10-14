@@ -111,7 +111,9 @@
                 <i class="fa-solid fa-xmark"></i>
               </button>
             </div>
+
             <div class="price-section">
+              <!-- 입력 중일 때만 input, 아니면 포맷된 값 보이기 -->
               <input
                 v-if="isEditingPrice"
                 type="text"
@@ -124,7 +126,8 @@
                 <i class="fa-solid fa-pen edit-icon"></i>
               </div>
             </div>
-            <div class="description">인식 금액 {{ formattedFixedPrice }}</div>
+
+            <div class="description">{{ formattedFixedPrice }}</div>
             <!-- 분류 버튼 (수입, 지출 등록) -->
             <div class="category-container">
               <span class="category-label">분류</span>
@@ -184,24 +187,10 @@
                 </option>
               </select>
             </div>
-            <!-- 거래처 -->
-            <div class="detail-row">
-              <span class="label">거래처</span>
-              <input type="text" v-model="storeName" class="content" />
-            </div>
-            <!-- 결제 수단 -->
-            <div class="detail-row">
-              <span class="label">결제 수단</span>
-              <input type="text" v-model="paymentMethod" class="content" />
-            </div>
-            <!-- 날짜 -->
-            <div class="detail-row">
-              <span class="label">날짜</span>
-              <input type="date" v-model="transactionDate" class="content" />
-            </div>
+
             <!-- 메모 -->
             <div class="detail-row">
-              <span class="label">메모 · 태그</span>
+              <span class="label">거래처</span>
               <span class="content">
                 <textarea
                   placeholder="입력하세요."
@@ -210,6 +199,22 @@
                 ></textarea>
               </span>
             </div>
+            <!-- 거래처
+            <div class="detail-row">
+              <span class="label">거래처</span>
+              <input type="text" v-model="storeName" class="content" />
+            </div> -->
+            <!-- 결제 수단 -->
+            <!-- <div class="detail-row">
+              <span class="label">결제 수단</span>
+              <input type="text" v-model="paymentMethod" class="content" />
+            </div> -->
+            <!-- 날짜 -->
+            <div class="detail-row">
+              <span class="label">날짜</span>
+              <input type="date" v-model="transactionDate" class="content" />
+            </div>
+
             <!-- 삭제 버튼과 다음 버튼 -->
             <div class="button-row">
               <button class="bottom-sheet-delete-btn">
@@ -245,6 +250,7 @@
           v-for="(entry, entryIndex) in entryGroup.entries"
           :key="entryIndex"
           class="entry-item"
+          @click="openModal(entry)"
         >
           <!-- 카테고리 이미지 및 이름 표시 -->
           <div class="entry-info">
@@ -268,6 +274,51 @@
             {{ formatAmount(entry.amount) }}
           </div>
 
+          <!-- 모달 창 Template -->
+          <!-- 모달 창 Template -->
+          <div v-if="isModalOpen" class="modal-overlay" @click="closeModal">
+            <div class="modal-content" @click.stop>
+              <div class="modal-header">
+                <h3>세부 내역</h3>
+                <!-- 닫기 버튼에 closeModal 메서드 연결 -->
+                <button class="close-btn" @click="closeModal">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="detail-row">
+                  <span class="label">거래처</span>
+                  <span class="content">
+                    {{ selectedEntry.storeName || "거래처 정보 없음" }}
+                  </span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">금액</span>
+                  <span class="content">
+                    {{ formatAmount(selectedEntry.amount) }}
+                  </span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">메모</span>
+                  <span class="content">
+                    {{ selectedEntry.detail || "메모 없음" }}
+                  </span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">카테고리</span>
+                  <span class="content">
+                    {{ mapEnumToCategory(selectedEntry.category) }}
+                  </span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">결제 수단</span>
+                  <span class="content">
+                    {{ selectedEntry.payMethod || "정보 없음" }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
           <!-- 삭제 버튼 -->
           <button
             v-if="entry"
@@ -351,8 +402,9 @@ export default {
       incomeCategories: ["월급", "이자", "용돈"],
       expenseCategories: ["식비", "쇼핑", "교통", "문화", "통신", "기타"],
       allCategories: Object.values(CategoryMap), // 모든 카테고리 목록에 매핑된 한글 값 사용
-      entries: [],
       entries: [], // API 데이터를 담을 배열
+      selectedEntry: {}, // 모달에 표시할 선택된 항목
+      isModalOpen: false, // 모달 창 열림 여부
       totalExpense: 0,
       totalIncome: 0,
       searchQuery: "",
@@ -385,6 +437,13 @@ export default {
     };
   },
   computed: {
+    // 가격 포맷팅해서 보여주기
+    formattedPrice() {
+      return this.editablePrice
+        ? `${parseInt(this.editablePrice).toLocaleString()} 원`
+        : "가격을 입력하세요";
+    },
+
     // 총 지출 계산
     totalExpense() {
       return (this.filteredEntries || []).reduce((total, entryGroup) => {
@@ -511,10 +570,10 @@ export default {
         if (response.data.isSuccess) {
           const groupedEntries = response.data.result.transactionList.reduce(
             (acc, item) => {
-              const dateKey =
-                `${item.time[0]}` -
-                `${String(item.time[1]).padStart(2, "0")}` -
-                `${String(item.time[2]).padStart(2, "0")}`;
+              const dateKey = `${item.time[0]}-${String(item.time[1]).padStart(
+                2,
+                "0"
+              )}-${String(item.time[2]).padStart(2, "0")}`;
 
               if (!acc[dateKey]) {
                 acc[dateKey] = {
@@ -538,8 +597,10 @@ export default {
                 detail: item.memo,
                 payMethod: item.payMethod,
                 amount: amount,
-                storeName: item.memo,
+                storeName: "", // storeName은 이후에 불러올 예정
                 isExpense: isExpense,
+                creditIdx: item.creditIdx,
+                accountIdx: item.accountIdx,
               });
 
               return acc;
@@ -548,13 +609,72 @@ export default {
           );
 
           this.entries = Object.values(groupedEntries);
-          console.log("Grouped Entries:", this.entries); // 데이터 구조 확인용 로그
+
+          // storeName 업데이트를 위한 비동기 처리
+          await Promise.all(
+            this.entries.flatMap((entryGroup) =>
+              entryGroup.entries.map(async (entry) => {
+                if (entry.creditIdx) {
+                  const creditHistory = await this.fetchCreditHistory(
+                    entry.creditIdx
+                  );
+                  entry.storeName = creditHistory?.name || entry.detail; // creditHistory가 없으면 detail 사용
+                } else if (entry.accountIdx) {
+                  const accountHistory = await this.fetchAccountHistory(
+                    entry.accountIdx
+                  );
+                  entry.storeName = accountHistory?.name || entry.detail; // accountHistory가 없으면 detail 사용
+                }
+              })
+            )
+          );
+
+          console.log("Updated Entries with Store Names:", this.entries); // 데이터 구조 확인용 로그
         }
       } catch (error) {
         console.error("거래 내역을 불러오는 중 오류가 발생했습니다:", error);
       }
     },
 
+    openModal(entry) {
+      this.selectedEntry = entry;
+      this.isModalOpen = true;
+      console.log("Modal opened"); // 확인용 로그
+    },
+    closeModal() {
+      this.isModalOpen = false;
+      this.selectedEntry = {}; // 데이터 초기화
+      console.log("Modal closed"); // 확인용 로그
+    },
+
+    // 개별 API 호출 메서드들
+    async fetchCreditHistory(creditIdx) {
+      try {
+        const response = await apiClient.get(
+          `/credit/history?creditIdx=${creditIdx}`
+        );
+        if (response.data.isSuccess) {
+          return response.data.result.creditHistoryList[0] || null; // 가장 최근의 내역 반환
+        }
+      } catch (error) {
+        console.error("신용 카드 내역 가져오는 중 오류:", error);
+      }
+      return null;
+    },
+
+    async fetchAccountHistory(accountIdx) {
+      try {
+        const response = await apiClient.get(
+          `/account/history?accountIdx=${accountIdx}`
+        );
+        if (response.data.isSuccess) {
+          return response.data.result.accountHistoryList[0] || null; // 가장 최근의 내역 반환
+        }
+      } catch (error) {
+        console.error("계좌 내역 가져오는 중 오류:", error);
+      }
+      return null;
+    },
     // 삭제 api
     // deleteEntry(groupIndex, entryIndex) {
     //   // 선택된 항목을 entries 배열에서 제거
@@ -589,6 +709,8 @@ export default {
     },
     stopEditingPrice() {
       this.isEditingPrice = false;
+      // 입력 종료 후 포맷된 값으로 업데이트
+      this.editablePrice = parseInt(this.editablePrice) || 0;
     },
     closeBottomSheet() {
       document.getElementById("testBottomSheet").closeSheet();
@@ -647,13 +769,16 @@ export default {
 
 <style scoped>
 .calendar-container {
-  margin-top: 70px;
-  padding: 20px;
+  padding: 10px;
   width: 100%;
   max-width: 320px;
   overflow-y: auto; /* 세로 스크롤 추가 */
-  max-height: 80vh; /* 최대 높이 설정 */
+  max-height: 70vh; /* 최대 높이 설정 */
   top: 0; /* 페이지 상단에 고정 */
+  margin-top: 10px;
+  text-align: center;
+  width: 260px;
+  font-family: "Poppins", sans-serif; /* Poppins 폰트 적용 */
 
   /* 스크롤바 숨기기 */
   scrollbar-width: none; /* Firefox */
@@ -663,12 +788,7 @@ export default {
 .calendar-container::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
-.calendar-container {
-  margin-top: 100px;
-  text-align: center;
-  width: 260px;
-  font-family: "Poppins", sans-serif; /* Poppins 폰트 적용 */
-}
+
 .calendar-header {
   margin-bottom: 1rem;
   font-size: 1.5rem;
@@ -682,7 +802,7 @@ export default {
   margin-right: 0.5rem;
   border-radius: 5px;
   border: none; /* 테두리 제거 */
-  appearance: none; /* 기본 드롭다운 화살표 제거 */
+  /* appearance: none; 기본 드롭다운 화살표 제거 */
   background: transparent; /* 배경을 투명으로 설정 */
   font-family: "Poppins", sans-serif; /* Poppins 폰트 적용 */
   font-size: 24px;
@@ -704,7 +824,7 @@ export default {
 }
 .expense .amount {
   font-size: 1rem;
-  color: red;
+  color: #ee8282;
 }
 .income .amount {
   font-size: 1rem;
@@ -756,7 +876,7 @@ div.total-amount {
   color: #6981d9;
 }
 .negative {
-  color: red;
+  color: #ee8282;
 }
 .entry-details {
   margin-top: 10px;
@@ -770,10 +890,10 @@ div.total-amount {
   width: 100%; /* 항목이 가로로 꽉 차게 설정 */
 }
 
-/* .entry-item:hover {
+.entry-item:hover {
   background-color: #f0f0f0;
   cursor: pointer;
-} */
+}
 
 .entry-info {
   display: flex;
@@ -1072,5 +1192,55 @@ select {
 }
 .category-buttons button:hover {
   background-color: #e0e0e0;
+}
+
+/* 모달창 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #ffffff;
+  width: 80%;
+  max-width: 360px;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.modal-body .detail-row {
+  margin-bottom: 10px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.close-btn:hover {
+  background-color: #f0f0f0;
 }
 </style>

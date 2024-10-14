@@ -104,7 +104,7 @@
           </div>
           <div class="form-row">
             <label class="form-label">유선전화:</label>
-            <input v-model="editSelectedCard.phoneLandline" type="text" />
+            <input v-model="editSelectedCard.tel_num" type="tel" />
           </div>
           <div class="form-row">
             <label class="form-label">이메일:</label>
@@ -147,7 +147,7 @@
           <input v-model="editData.phoneNumber" type="text" />
 
           <label>유선전화:</label>
-          <input v-model="editData.phoneLandline" type="text" />
+          <input v-model="editData.tel_num" type="tel" />
 
           <label>이메일:</label>
           <input v-model="editData.email" type="text" />
@@ -184,10 +184,10 @@ export default {
         phone: '',
         email: '',
         position: '',
-        department: '',
+        part: '',
         company: '',
         address: '',
-        phoneLandline: '',
+        phone_num: '',
         memo: '',
       }, // 나의 명함 데이터
 

@@ -370,7 +370,7 @@ h4 {
   color: #ffffff;
   display: inline-block;
   max-width: 100%;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  /* text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); */
   margin-left: -30px;
 }
 
