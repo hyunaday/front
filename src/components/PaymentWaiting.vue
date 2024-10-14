@@ -28,6 +28,14 @@
 
       <h2 class="waiting-message blink">잠시만 기다려주세요</h2>
       <p class="waiting-description">다른 팀원들이 결제를 준비하고 있어요!</p>
+
+      <!-- 참여 완료 메시지 (알림창처럼 상단에 고정) -->
+      <transition name="fade">
+        <div v-if="showCompletionMessage" class="completion-message">
+          모두 참여를 완료했습니다.
+          <button @click="closeCompletionMessage" class="close-error-button">X</button>
+        </div>
+      </transition>
     </div>
   </div>
 </template>
@@ -47,6 +55,7 @@ const priceStore = usePriceStore();
 const completedParticipants = ref(0);
 const totalParticipants = ref(0); // 전체 참여자 수
 const route = useRoute();
+const showCompletionMessage = ref(false); // 완료 메시지 표시 여부
 
 const orderIdx = route.query.orderIdx;
 const marketIdx = route.query.marketIdx;
@@ -87,8 +96,13 @@ watch(
         orderStore.setMaxMemberCnt(parsedMessage.maxMemberCnt);
         orderStore.setType(parsedMessage.roomType);
         totalParticipants.value = parsedMessage.maxMemberCnt;
-        alert('MENU_INFO 수신 완료. 다음 페이지로 이동합니다.');
-        router.push('/menucheck'); // 페이지 이동 (소켓 연결 유지)
+
+        // "모두 참여를 완료했습니다" 메시지를 3초 동안 표시 후 페이지 이동
+        showCompletionMessage.value = true;
+        setTimeout(() => {
+          showCompletionMessage.value = false;
+          router.push('/menucheck'); // 페이지 이동 (소켓 연결 유지)
+        }, 3000);
       } else if (parsedMessage.type === 'PARTICIPANT_INFO') {
         orderStore.setType("BY_PRICE");
         console.log('PARTICIPANT_INFO 메시지 도착:', parsedMessage);
@@ -96,6 +110,7 @@ watch(
         router.push('/requestPay');
       } else if (parsedMessage.type === 'ENTER') {
         completedParticipants.value = parsedMessage.memberCnt;
+        totalParticipants.value = parsedMessage.maxMemberCnt;
         orderStore.setMaxMemberCnt(parsedMessage.maxMemberCnt);
         orderStore.setType(parsedMessage.roomType);
       }
@@ -105,6 +120,11 @@ watch(
   },
   { deep: true }
 );
+
+// 성공 메시지 닫기 함수
+const closeCompletionMessage = () => {
+  showCompletionMessage.value = false;
+};
 
 // 컴포넌트가 마운트될 때 소켓 연결 및 방 입장, 주문 정보 로드
 onMounted(async () => {
@@ -139,7 +159,7 @@ onMounted(async () => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  flex-grow: 1; /* 화면 중앙으로 정렬하기 위해 flex-grow 사용 */
+  flex-grow: 1;
   text-align: center;
 }
 
@@ -152,7 +172,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   position: relative;
-  animation: pulse 3s infinite ease-in-out, rotate 5s infinite linear; /* pulse 및 rotate 애니메이션 추가 */
+  animation: pulse 3s infinite ease-in-out, rotate 5s infinite linear;
   margin-bottom: 40px;
 }
 
@@ -162,8 +182,6 @@ onMounted(async () => {
   font-weight: bold;
 }
 
-
-
 /* 텍스트 깜박임 애니메이션 */
 .blink {
   animation: blink 3s ease-in-out infinite;
@@ -171,14 +189,44 @@ onMounted(async () => {
 
 @keyframes blink {
   0%, 70% {
-    opacity: 1; /* 글씨가 보이는 구간 */
+    opacity: 1;
   }
   85% {
-    opacity: 0; /* 서서히 사라짐 */
+    opacity: 0;
   }
   100% {
-    opacity: 1; /* 다시 서서히 나타남 */
+    opacity: 1;
   }
+}
+
+/* 성공 메시지 알림창 */
+.completion-message {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  z-index: 1000;
+  box-sizing: border-box;
+  transition: opacity 0.5s ease-out;
+  width: 90%;
+  max-width: 300px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.close-error-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: white;
+  position: absolute;
+  right: 10px;
+  top: 10px;
 }
 
 .waiting-message {
