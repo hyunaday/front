@@ -27,13 +27,16 @@
     </div>
     <!-- 검색창 추가 -->
     <div class="search-bar">
-      <input
-        type="text"
-        v-model="searchQuery"
-        @keydown.enter="executeSearch"
-        placeholder="검색어를 입력하세요"
-        class="search-input"
-      />
+      <div class="search-input-container">
+        <input
+          type="text"
+          v-model="searchQuery"
+          @keydown.enter="executeSearch"
+          placeholder="검색어를 입력하세요"
+          class="search-input"
+        />
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+      </div>
     </div>
     <!-- 검색 결과가 있는 경우 필터링된 데이터로 표시, 없을 경우 원래 데이터 표시 -->
     <div
@@ -953,13 +956,31 @@ div.total-amount {
   margin: 1rem 0;
   text-align: center;
 }
+.search-input-container {
+  position: relative;
+  display: inline-block;
+  width: 70%;
+  max-width: 300px;
+}
+
 .search-input {
+  width: 100%;
   padding: 0.5rem;
+  padding-right: 30px; /* 아이콘 위치를 위한 여백 */
   border-radius: 10px;
   border: 1px solid #ccc;
-  width: 70%;
   height: 35px;
-  max-width: 300px;
+  font-size: 1rem;
+}
+
+.search-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 1rem;
+  pointer-events: none; /* 아이콘 클릭 시 input에 영향 없음 */
 }
 /* 필터링 버튼 스타일 */
 .filter-container {
