@@ -147,6 +147,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center; /* 수평 정렬 */
+  margin-left: 19px;
 }
 
 .form-container {
