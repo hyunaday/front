@@ -16,7 +16,7 @@
         </div>
         <p>결제 승인이 취소 되었습니다.</p>
         <button class="request-payment-button" @click="goToPaymentRequest">
-          결제 요청하기
+          결제 재시도
         </button>
       </div>
     </div>
@@ -38,7 +38,7 @@ export default {
     },
     goToPaymentRequest() {
       // 결제 요청 페이지로 이동
-      this.$router.push('/payment-request'); // 결제 요청 페이지의 경로를 입력하세요.
+      this.$router.push('/solopay'); // 결제 요청 페이지의 경로를 입력하세요.
     },
   },
 };

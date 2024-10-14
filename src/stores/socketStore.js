@@ -118,8 +118,6 @@ export const useSocketStore = defineStore('socket', {
       // MENU_INFO 데이터를 저장하는 메서드
       this.menuInfo = menuInfo;
     }
-  },
-  persist: {
-    storage: localStorage, // localStorage에 저장
-  },
+  }
+
 });

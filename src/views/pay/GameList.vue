@@ -66,7 +66,7 @@ body {
 
 .main-container {
   width: 360px;
-  height: 800px;
+  height: 900px;
   background-color: white;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   overflow: hidden;
@@ -107,24 +107,25 @@ h3 {
 .custom-button {
   width: 300px;
   height: 100px;
-  background-color: #ffffff;
-  border: 1px solid gray;
+  background-color: #6981d9;
+  border: none;
   border-radius: 9px;
-  color: #000000;
+  color: #ffffff;
   font-size: 20px;
   cursor: pointer;
   outline: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  margin-bottom: 20px;
+  margin-top: 20px;
+  box-shadow: 0 14px 20px rgba(0, 0, 0, 0.2);
   transition: background-color 0.3s, color 0.3s;
 }
 
 .custom-button:hover {
-  background-color: #f3f8fe;
-  color: #333;
+  background-color: #bdbdbd;
+  color: #ffffff;
 }
 </style>
 

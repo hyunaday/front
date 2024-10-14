@@ -192,8 +192,8 @@ export default {
 .split-button {
   margin-top: 15px;
   padding: 10px 20px;
-  background-color: white; /* 버튼 색상 */
-  color: black;
+  background-color: #6981d9; /* 버튼 색상 */
+  color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -204,7 +204,7 @@ export default {
 }
 
 .split-button:hover {
-  background-color: #6981d9; /* 마우스 오버 시 색상 변경 */
+  background-color: #b0b0b0; /* 마우스 오버 시 색상 변경 */
   color: white;
   /* 호버 시 그림자 효과 증가 */
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* 호버 시 더 강조된 그림자 */

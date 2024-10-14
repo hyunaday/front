@@ -9,7 +9,7 @@
       </div>
 
       <div class="merchant-info">
-        <h3 class="merchant-name">{{ merchantName }} 에서</h3>
+        <h3 class="merchant-name">{{ orderInfoStore.marketName }} 에서</h3>
         <h4 class="payment-amount">
           총
           <span class="amount">{{ priceStore.totalPrice.toLocaleString() }}</span>원
@@ -45,6 +45,12 @@
         </div>
       </div>
 
+      <!-- 현재 선택한 금액의 총합 표시 -->
+      <div class="selected-total">
+        현재 선택한 금액 총합: 
+        <span class="amount">{{ totalSelectedAmount.toLocaleString() }}</span>원
+      </div>
+
       <button
         @click="handleSplitByAmount"
         class="split-button"
@@ -59,12 +65,12 @@
 </template>
 
 <script>
-import { ref, watch } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { usePriceStore } from '../../stores/orderStore.js';
-import { useSocketStore } from '../../stores/socketStore.js'; // 소켓 스토어 가져오기
-import { useRouter } from 'vue-router'; // router 가져오기
+import { useSocketStore } from '../../stores/socketStore.js';
+import { useRouter } from 'vue-router';
 import { useMemberStore } from '../../stores/MemberStore.js';
-import { usePayPriceInfoStore } from '../../stores/orderStore.js';
+import { usePayPriceInfoStore, useOrderStore, useOrderInfoStore } from '../../stores/orderStore.js';
 import profileIcon1 from '../../assets/images/profile1.png';
 import profileIcon2 from '../../assets/images/profile2.png';
 import profileIcon3 from '../../assets/images/profile3.png';
@@ -79,6 +85,13 @@ export default {
     const isAmountValid = ref(true);
     const memberStore = useMemberStore();
     const payPriceInfoStore = usePayPriceInfoStore();
+    const orderInfoStore = useOrderInfoStore();
+    const orderStore = useOrderStore();
+
+    // 각 멤버의 금액 합산 계산
+    const totalSelectedAmount = computed(() => {
+      return priceStore.memberList.reduce((total, member) => total + (member.price || 0), 0);
+    });
 
     const getProfileIcon = (index) => {
       const profileIcons = [
@@ -179,6 +192,8 @@ export default {
       maskedPayerName,
       goBack,
       isAmountValid,
+      orderInfoStore,
+      totalSelectedAmount, // 선택한 금액 총합
     };
   },
 };
@@ -295,8 +310,9 @@ export default {
 .split-button {
   margin-top: 10px;
   padding: 10px 20px;
-  background-color: white;
-  color: black;
+  background-color: #6981d9;
+  color: white;
+  
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -305,15 +321,19 @@ export default {
   font-size: 20px;
 }
 .split-button:hover {
-  background-color: #6981d9;
-  color: white;
+  background-color: rgb(169, 169, 169);
+  color: rgb(255, 255, 255);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 .spacer {
   flex-grow: 1;
 }
+.selected-total {
+  margin-top: 10px;
+  font-size: 18px;
+  color: #000000;
+}
 .amount {
   color: #6981d9;
 }
 </style>
-
