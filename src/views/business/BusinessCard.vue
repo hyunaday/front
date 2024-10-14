@@ -42,7 +42,9 @@
             </div>
           </div>
         </div>
-        <div v-else class="preview-box">
+   
+<!-- 삭제하기! 존재하지 않을 시, “내 명함을 등록해주세요.” + 등록 버튼 -->
+     <div v-else class="preview-box">
           <h3>{{ formData.company || '회사 정보 없음' }}</h3>
           <p>{{ formData.address || '주소 없음' }}</p>
           <p>{{ formData.name || '이름 없음' }}</p>
@@ -63,8 +65,19 @@
             <p><strong>유선전화:</strong> {{ formData.phoneLandline }}</p>
             <p><strong>이메일:</strong> {{ formData.email }}</p>
             <p><strong>주소:</strong> {{ formData.address }}</p>
-
+<!-- 필요 -->
             <!-- QR 코드 이미지를 주소 아래에 표시 -->
+            <div
+              v-if="qrCodeData"
+              class="qr-code-container"
+              @click="showModal = true"
+            >
+              <img
+                :src="qrCodeData"
+                alt="QR 코드"
+                class="qr-code-image"
+                style="width: 140px; height: 140px"
+              />
             <div
               v-if="qrCodeData"
               class="qr-code-container"
@@ -91,6 +104,42 @@
   </div>
 
   <FooterNav :buttonType="'plus'" :buttonAction="goToaddBusinessCard" />
+
+  <!-- 수정 bottom-sheet -->
+  <bottom-sheet id="editBottomSheet" title="명함 수정">
+      <main>
+        <div class="edit-form">
+          <label>회사명:</label>
+          <input v-model="formData.company" type="text" />
+          <label>주소:</label>
+          <input v-model="formData.address" type="text" />
+          <label>이름:</label>
+          <input v-model="formData.name" type="text" />
+          <label>직책:</label>
+          <input v-model="formData.position" type="text" />
+          <label>부서:</label>
+          <input v-model="formData.department" type="text" />
+          <label>휴대전화:</label>
+          <input v-model="formData.phone" type="text" />
+          <label>유선전화:</label>
+          <input v-model="formData.phoneLandline" type="text" />
+          <label>이메일:</label>
+          <input v-model="formData.email" type="text" />
+          <div v-if="isFriendCard">
+            <label>메모:</label>
+            <textarea
+              v-model="formData.memo"
+              class="memo-textarea"
+              placeholder="메모를 입력하세요..."
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-buttons">
+          <button @click="saveChanges">저장</button>
+          <button @click="closeBottomSheet">취소</button>
+        </div>
+      </main>
+    </bottom-sheet>
 
   <div
     v-if="isCardDetailModalVisible"
@@ -157,6 +206,12 @@
           class="qr-code-image"
           style="width: 200px; height: 200px"
         />
+        <img
+          :src="qrCodeData"
+          alt="QR 코드"
+          class="qr-code-image"
+          style="width: 200px; height: 200px"
+        />
       </div>
     </div>
     <p class="additional-text">QR코드를 스캔하세요</p>
@@ -212,12 +267,12 @@
   </div>
 </template>
 
+
 <script>
 import apiClient from '../../api/axios.js';
 import FooterNav from '../../components/FooterNav.vue';
 import Header from '../../components/Header.vue';
 import QrcodeVue from 'qrcode.vue';
-
 export default {
   name: 'BusinessCard',
   components: {
@@ -245,6 +300,8 @@ export default {
       editSelectedCard: {},
       showModal: false,
       qrCodeData: '', // QR 코드 데이터를 저장할 변수
+      isBottomSheetVisible: false,
+      editData: {},
       isBottomSheetVisible: false,
       editData: {},
     };
@@ -311,6 +368,43 @@ export default {
     goBackToMyCard() {
       this.isCardListVisible = false;
     },
+    goToCardList() {
+      this.$router.push('/businesscardlist'); // 페이지 이동
+    },
+    // openCardDetailModal(card) {
+    //   this.selectedCard = card;
+    //   this.editSelectedCard = { ...card };
+    //   this.isCardDetailModalVisible = true;
+    // },
+    // closeCardDetailModal() {
+    //   this.isCardDetailModalVisible = false;
+    //   this.editSelectedCard = {};
+    // },
+    // saveCardDetails() {
+    //   Object.assign(this.selectedCard, this.editSelectedCard);
+    //   const index = this.cardList.findIndex(
+    //     (card) => card.id === this.selectedCard.id
+    //   );
+    //   if (index !== -1) {
+    //     this.cardList.splice(index, 1, { ...this.selectedCard });
+    //   }
+    //   this.isCardDetailModalVisible = false;
+    //   this.editSelectedCard = {};
+    //   alert('명함 정보가 저장되었습니다.');
+    // },
+    // deleteCardDetails() {
+    //   const confirmDelete = confirm('정말로 이 명함을 삭제하시겠습니까?');
+    //   if (confirmDelete) {
+    //     const index = this.cardList.findIndex(
+    //       (card) => card.id === this.selectedCard.id
+    //     );
+    //     if (index !== -1) {
+    //       this.cardList.splice(index, 1);
+    //     }
+    //     this.isCardDetailModalVisible = false;
+    //     this.editSelectedCard = {};
+    //   }
+    // },
     goToCardList() {
       this.$router.push('/businesscardlist'); // 페이지 이동
     },

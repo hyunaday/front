@@ -46,17 +46,19 @@ import Agree4 from '../views/agreement/Agree4.vue';
 import Agree5 from '../views/agreement/Agree5.vue';
 import Agree6 from '../views/agreement/Agree6.vue';
 import Agree_Loading from '../views/agreement/Agree_Loading.vue';
-import HeadCount from '../views/pay/HeadCount.vue';
-import Transfer2 from '../views/asset/Transfer2.vue';
-import Transfer3 from '../views/asset/Transfer3.vue';
-import Y from 'vue-cal/dist/i18n/el.es.js';
-import TransactionHistory1 from '../views/asset/TransactionHistory1.vue';
-import TransactionHistory2 from '../views/asset/TransactionHistory2.vue';
-import TransactionHistory3 from '../views/asset/TransactionHistory3.vue';
-import TransactionHistory4 from '../views/asset/TransactionHistory4.vue';
-import TransactionHistory5 from '../views/asset/TransactionHistory5.vue';
-import TransactionHistory6 from '../views/asset/TransactionHistory6.vue';
-import TransactionHistory from '../views/asset/TransactionHistory.vue';
+import HeadCount from "../views/pay/HeadCount.vue";
+import Transfer2 from "../views/asset/Transfer2.vue";
+import Transfer3 from "../views/asset/Transfer3.vue";
+import Y from "vue-cal/dist/i18n/el.es.js";
+import TransactionHistory1 from "../views/asset/TransactionHistory1.vue";
+import TransactionHistory2 from "../views/asset/TransactionHistory2.vue";
+import TransactionHistory3 from "../views/asset/TransactionHistory3.vue";
+import TransactionHistory4 from "../views/asset/TransactionHistory4.vue";
+import TransactionHistory5 from "../views/asset/TransactionHistory5.vue";
+import TransactionHistory6 from "../views/asset/TransactionHistory6.vue";
+import TransactionHistory from "../views/asset/TransactionHistory.vue";
+import UsagePage from "../views/UsagePage.vue";
+
 
 const routes = [
   {
@@ -64,6 +66,11 @@ const routes = [
     name: 'MainPage',
     component: MainPage,
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/usage',
+    name: 'UsagePage',
+    component: UsagePage,
   },
   {
     path: '/login',

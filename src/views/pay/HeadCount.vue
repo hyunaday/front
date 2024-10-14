@@ -38,20 +38,25 @@
       },
       nextStep() {
         const orderStore = useOrderStore();
+        console.log(`선택된 인원 수: ${this.memberCount}`); // 선택된 인원수를 확인
         orderStore.setMaxMemberCnt(this.memberCount); // 인원 수를 Pinia에 저장
-        this.$router.push("/payinfo"); // 다음 페이지로 이동
+        console.log(`저장된 인원 수: ${orderStore.maxMemberCnt}`); // 저장된 인원수를 확인
+        this.$router.push("/sharelink"); // 다음 페이지로 이동
       },
       increment() {
         this.memberCount++;
+        console.log(`증가된 인원 수: ${this.memberCount}`); // 증가된 인원수를 확인
       },
       decrement() {
         if (this.memberCount > 1) {
           this.memberCount--;
         }
+        console.log(`감소된 인원 수: ${this.memberCount}`); // 감소된 인원수를 확인
       },
     },
   };
   </script>
+  
   
   <style scoped>
   body {

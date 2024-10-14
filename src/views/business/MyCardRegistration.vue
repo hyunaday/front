@@ -1,5 +1,5 @@
 <template>
-  <div class="main-container d-flex flex-column">
+  <div class="main-container">
     <div class="form-container">
       <BusinessCardForm title="나의 명함 등록하기" />
     </div>
@@ -25,14 +25,6 @@ a {
   text-decoration: none;
 }
 
-.main-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 100vh;
-  background-color: white;
-  margin-bottom: 60px;
-}
 
 .form-container {
   flex-grow: 1;

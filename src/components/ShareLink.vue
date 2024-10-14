@@ -43,6 +43,10 @@ export default {
     const router = useRouter(); // router 사용 선언
     const priceStore = usePriceStore();
 
+    const fetchOrderStore = async () => {
+
+    }
+
     // 방 생성 함수
     const createRoom = async () => {
       try {
@@ -85,6 +89,7 @@ export default {
 
     // 컴포넌트가 마운트되면 방 생성
     onMounted(() => {
+      fetchOrderStore(),
       createRoom();
     });
 
@@ -95,6 +100,7 @@ export default {
 
     return {
       shareableLink,
+      fetchOrderStore,
       goBack() {
         router.go(-1); // router 사용하여 뒤로가기 처리
       },

@@ -5,8 +5,8 @@ import apiClient from "../api/axios";
 
 export const useOrderStore = defineStore('order', {
   state: () => ({
-    orderIdx: 1,
-    maxMemberCnt: 2,
+    orderIdx: 0,
+    maxMemberCnt: 0,
     type: null,
   }),
   actions: {
@@ -39,7 +39,6 @@ export const useOrderInfoStore = defineStore('orderInfo', {
     menuCnt: 0,             // 메뉴 개수
     orderMenuList: [],      // 주문한 메뉴 목록
     createdAt: '',          // 주문 생성 시간
-    maxMemberCnt: 2,        // 최대 인원 수
     type: "BY_MENU",        // 결제 유형
   }),
   actions: {
