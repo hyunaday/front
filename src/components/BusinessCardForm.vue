@@ -119,6 +119,7 @@ export default {
           // QR 코드 데이터 처리
           this.qrCodeData = response.data.result.imgUrl; // imgUrl 가져오기
           this.$emit('qr-code-generated', this.qrCodeData); // 부모 컴포넌트로 QR 코드 데이터 전달
+
           this.$router.push('/businesscard');
         } else {
           console.log(response.data);

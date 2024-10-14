@@ -9,8 +9,8 @@
 </template>
 
 <script>
-import BusinessCardForm from "../../components/BusinessCardForm.vue";
-import FooterNav from "../../components/FooterNav.vue"; // FooterNav 컴포넌트 import
+import BusinessCardForm from '../../components/BusinessCardForm.vue';
+import FooterNav from '../../components/FooterNav.vue'; // FooterNav 컴포넌트 import
 
 export default {
   components: {

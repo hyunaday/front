@@ -78,6 +78,17 @@
                 class="qr-code-image"
                 style="width: 140px; height: 140px"
               />
+            <div
+              v-if="qrCodeData"
+              class="qr-code-container"
+              @click="showModal = true"
+            >
+              <img
+                :src="qrCodeData"
+                alt="QR 코드"
+                class="qr-code-image"
+                style="width: 140px; height: 140px"
+              />
             </div>
           </class>
         </div>
@@ -185,7 +196,6 @@
     </main>
   </bottom-sheet>
 
-<!-- 필요 -->
   <!-- QR 코드 모달 -->
   <div v-if="showModal" class="modal" @click="closeModal">
     <div class="modal-content qr-modal" @click.stop>
@@ -196,11 +206,16 @@
           class="qr-code-image"
           style="width: 200px; height: 200px"
         />
+        <img
+          :src="qrCodeData"
+          alt="QR 코드"
+          class="qr-code-image"
+          style="width: 200px; height: 200px"
+        />
       </div>
     </div>
     <p class="additional-text">QR코드를 스캔하세요</p>
   </div>
-<!-- 필요 -->
   <!-- 수정 (Bottom Sheet) 모달 -->
   <div
     v-if="isBottomSheetVisible"
@@ -287,6 +302,8 @@ export default {
       qrCodeData: '', // QR 코드 데이터를 저장할 변수
       isBottomSheetVisible: false,
       editData: {},
+      isBottomSheetVisible: false,
+      editData: {},
     };
   },
   computed: {
@@ -302,10 +319,13 @@ export default {
       try {
         const response = await apiClient.get('/businessCard/myBusinessCard');
         console.log('서버 응답 데이터:', response.data);
+
         if (response.data.isSuccess) {
           console.log('명함 데이터:', response.data.result);
+
           const cardData = response.data.result.businessCardList[0]; // 첫 번째 카드 데이터
           console.log('비즈니스 카드 데이터:', cardData);
+
           this.formData = {
             idx: cardData.idx,
             name: cardData.name,
@@ -317,6 +337,7 @@ export default {
             address: cardData.address,
             phoneLandline: cardData.tel_num,
           };
+
           // QR 코드 이미지 URL이 있으면 qrCodeData에 할당
           if (cardData.imgurl) {
             // 서버에서 받은 데이터의 imgurl
@@ -340,12 +361,50 @@ export default {
         }
       }
     },
+
     toggleCardList() {
       this.isCardListVisible = !this.isCardListVisible;
     },
     goBackToMyCard() {
       this.isCardListVisible = false;
     },
+    goToCardList() {
+      this.$router.push('/businesscardlist'); // 페이지 이동
+    },
+    // openCardDetailModal(card) {
+    //   this.selectedCard = card;
+    //   this.editSelectedCard = { ...card };
+    //   this.isCardDetailModalVisible = true;
+    // },
+    // closeCardDetailModal() {
+    //   this.isCardDetailModalVisible = false;
+    //   this.editSelectedCard = {};
+    // },
+    // saveCardDetails() {
+    //   Object.assign(this.selectedCard, this.editSelectedCard);
+    //   const index = this.cardList.findIndex(
+    //     (card) => card.id === this.selectedCard.id
+    //   );
+    //   if (index !== -1) {
+    //     this.cardList.splice(index, 1, { ...this.selectedCard });
+    //   }
+    //   this.isCardDetailModalVisible = false;
+    //   this.editSelectedCard = {};
+    //   alert('명함 정보가 저장되었습니다.');
+    // },
+    // deleteCardDetails() {
+    //   const confirmDelete = confirm('정말로 이 명함을 삭제하시겠습니까?');
+    //   if (confirmDelete) {
+    //     const index = this.cardList.findIndex(
+    //       (card) => card.id === this.selectedCard.id
+    //     );
+    //     if (index !== -1) {
+    //       this.cardList.splice(index, 1);
+    //     }
+    //     this.isCardDetailModalVisible = false;
+    //     this.editSelectedCard = {};
+    //   }
+    // },
     goToCardList() {
       this.$router.push('/businesscardlist'); // 페이지 이동
     },
@@ -407,12 +466,15 @@ export default {
         console.error('formData에서 idx 값이 없습니다:', this.formData);
         return;
       }
+
       console.log('전송할 데이터:', this.editData);
+
       // PATCH 요청으로 서버에 데이터 수정 요청
       apiClient
         .patch(`/businessCard?idx=${this.formData.idx}`, this.editData)
         .then((response) => {
           console.log('서버 응답:', response.data);
+
           if (response.data.isSuccess) {
             this.formData = { ...this.editData }; // 수정된 데이터로 formData 업데이트
             alert('나의 명함 정보가 저장되었습니다.');
@@ -436,6 +498,7 @@ export default {
           .then((response) => {
             // 서버 응답 확인
             console.log('서버 응답:', response.data);
+
             if (response.data.isSuccess) {
               alert('명함이 삭제되었습니다.');
               // 명함 삭제 후 상태를 업데이트하거나 리스트를 새로고침할 수 있음
@@ -472,15 +535,6 @@ export default {
 </script>
 
 <style scoped>
-/* 필요한 스타일 추가 */
-/* .qr-code-container {
-  text-align: center;
-  margin-top: 20px;
-}
-.qr-code-image {
-  width: 150px;
-  height: 150px;
-} */
 .input {
   width: 200px;
 }

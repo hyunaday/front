@@ -1,31 +1,31 @@
-import { createRouter, createWebHistory } from "vue-router";
-import Login from "../views/Login.vue";
-import MainPage from "../views/Mainpage.vue";
-import MyAssets from "../views/asset/MyAssets.vue";
-import AccountBook from "../views/book/AccountBook.vue";
-import BusinessCard from "../views/business/BusinessCard.vue";
-import GroupPay from "../views/pay/GroupPay.vue";
-import SoloPay from "../views/pay/SoloPay.vue";
-import SignUp from "../views/SignUp.vue";
-import AddList from "../views/book/AddList.vue";
-import Cards from "../views/asset/Cards.vue";
-import BusinessCardList from "../views/business/BusinessCardList.vue";
-import MyCardRegistration from "../views/business/MyCardRegistration.vue";
-import FriendCardRegistration from "../views/business/FriendCardRegistration.vue";
-import Settings from "../views/settings/Settings.vue";
-import PayList from "../views/settings/PayList.vue";
-import Cancel from "../views/settings/Cancel.vue";
-import Logout from "../views/settings/Logout.vue";
-import ChangePassword from "../views/settings/ChangePassword.vue";
-import AddBusinessCard from "../views/business/AddBusinessCard.vue";
-import MainPay from "../views/pay/MainPay.vue";
-import CurrentPassword from "../views/settings/CurrentPassword.vue";
-import Transfer from "../views/asset/Transfer.vue";
-import Loading from "../views/Loading.vue";
-import Phone from "../views/Phone.vue";
-import Verification from "../views/signup/Verification.vue";
-import Email from "../views/signup/Email.vue";
-import Password from "../views/signup/Password.vue";
+import { createRouter, createWebHistory } from 'vue-router';
+import Login from '../views/Login.vue';
+import MainPage from '../views/Mainpage.vue';
+import MyAssets from '../views/asset/MyAssets.vue';
+import AccountBook from '../views/book/AccountBook.vue';
+import BusinessCard from '../views/business/BusinessCard.vue';
+import GroupPay from '../views/pay/GroupPay.vue';
+import SoloPay from '../views/pay/SoloPay.vue';
+import SignUp from '../views/SignUp.vue';
+import AddList from '../views/book/AddList.vue';
+import Cards from '../views/asset/Cards.vue';
+import BusinessCardList from '../views/business/BusinessCardList.vue';
+import MyCardRegistration from '../views/business/MyCardRegistration.vue';
+import FriendCardRegistration from '../views/business/FriendCardRegistration.vue';
+import Settings from '../views/settings/Settings.vue';
+import PayList from '../views/settings/PayList.vue';
+import Cancel from '../views/settings/Cancel.vue';
+import Logout from '../views/settings/Logout.vue';
+import ChangePassword from '../views/settings/ChangePassword.vue';
+import AddBusinessCard from '../views/business/AddBusinessCard.vue';
+import MainPay from '../views/pay/MainPay.vue';
+import CurrentPassword from '../views/settings/CurrentPassword.vue';
+import Transfer from '../views/asset/Transfer.vue';
+import Loading from '../views/Loading.vue';
+import Phone from '../views/Phone.vue';
+import Verification from '../views/signup/Verification.vue';
+import Email from '../views/signup/Email.vue';
+import Password from '../views/signup/Password.vue';
 import PaymentSuccess from '../views/pay/PaymentSuccess.vue';
 import PaymentFailure from '../views/pay/PaymentFailure.vue';
 import GameList from '../views/pay/GameList.vue';
@@ -129,7 +129,7 @@ const routes = [
     name: 'FriendCardRegistration',
     component: FriendCardRegistration,
     meta: { requiresAuth: true },
-  },  
+  },
   {
     path: '/my-card-registration',
     name: 'MyCardRegistration',
@@ -189,8 +189,8 @@ const routes = [
     component: MainPay,
   },
   {
-    path: "/success", //  결제 성공
-    name: "PaymentSuccess",
+    path: '/success', //  결제 성공
+    name: 'PaymentSuccess',
     component: PaymentSuccess,
   },
   {
@@ -244,13 +244,13 @@ const routes = [
     component: Transfer,
   },
   {
-    path: "/transfer2", // 송금 페이지2
-    name: "Transfer2",
+    path: '/transfer2', // 송금 페이지2
+    name: 'Transfer2',
     component: Transfer2,
   },
   {
-    path: "/transfer3", // 송금 페이지3
-    name: "Transfer3",
+    path: '/transfer3', // 송금 페이지3
+    name: 'Transfer3',
     component: Transfer3,
   },
   // {
@@ -259,38 +259,38 @@ const routes = [
   //   component: () => import('../views/asset/Transfer2.vue')
   // },
   {
-    path: "/transactionhistory", // 거래내역조회 페이지
-    name: "TransactionHistory",
+    path: '/transactionhistory', // 거래내역조회 페이지
+    name: 'TransactionHistory',
     component: TransactionHistory,
   },
   {
-    path: "/transactionhistory1", // 거래내역조회 페이지1
-    name: "TransactionHistory1",
+    path: '/transactionhistory1', // 거래내역조회 페이지1
+    name: 'TransactionHistory1',
     component: TransactionHistory1,
   },
   {
-    path: "/transactionhistory2", // 거래내역조회 페이지2
-    name: "TransactionHistory2",
+    path: '/transactionhistory2', // 거래내역조회 페이지2
+    name: 'TransactionHistory2',
     component: TransactionHistory2,
   },
   {
-    path: "/transactionhistory3", // 거래내역조회 페이지3
-    name: "TransactionHistory3",
+    path: '/transactionhistory3', // 거래내역조회 페이지3
+    name: 'TransactionHistory3',
     component: TransactionHistory3,
   },
   {
-    path: "/transactionhistory4", // 거래내역조회 페이지4
-    name: "TransactionHistory4",
+    path: '/transactionhistory4', // 거래내역조회 페이지4
+    name: 'TransactionHistory4',
     component: TransactionHistory4,
   },
   {
-    path: "/transactionhistory5", // 거래내역조회 페이지5
-    name: "TransactionHistory5",
+    path: '/transactionhistory5', // 거래내역조회 페이지5
+    name: 'TransactionHistory5',
     component: TransactionHistory5,
   },
   {
-    path: "/transactionhistory6", // 거래내역조회 페이지6
-    name: "TransactionHistory6",
+    path: '/transactionhistory6', // 거래내역조회 페이지6
+    name: 'TransactionHistory6',
     component: TransactionHistory6,
   },
   {
