@@ -73,45 +73,16 @@
 </template>
 
 <script>
+import apiClient from "../../api/axios"; // Import your axios instance
+
 export default {
   data() {
     return {
-      paymentResult: '',
-      cards: [
-        {
-          id: 1,
-          name: '청춘대로 톡톡카드',
-          image: '../src/assets/images/국민카드1.png',
-        },
-        {
-          id: 2,
-          name: '굿데이 플래티늄카드',
-          image: '../src/assets/images/국민카드2.png',
-        },
-        {
-          id: 3,
-          name: '스카이패스 KB국민카드',
-          image: '../src/assets/images/국민카드3.png',
-        },
-        {
-          id: 4,
-          name: '가온올림카드(실속형)',
-          image: '../src/assets/images/국민카드4.png',
-        },
-        {
-          id: 5,
-          name: 'BeV Ⅴ카드 (스카이패스형)',
-          image: '../src/assets/images/국민카드5.png',
-        },
-        {
-          id: 6,
-          name: 'HERITAGE Exclusive',
-          image: '../src/assets/images/국민카드6.png',
-        },
-      ],
+      paymentResult: "",
+      cards: [], // Empty array to store cards fetched from API
       currentCardIndex: 0,
       isModalOpen: false,
-      paymentPassword: '',
+      paymentPassword: "",
     };
   },
   computed: {
@@ -120,6 +91,51 @@ export default {
     },
   },
   methods: {
+    async fetchCards() {
+      try {
+        const response = await apiClient.get("/pay/payMethod/all");
+        if (response.data.isSuccess) {
+          this.cards = response.data.result.credit.creditList.map((card) => {
+            let imageUrl;
+            switch (card.creditName) {
+              case "KB 국민카드":
+                imageUrl = "../src/assets/images/국민카드1.png";
+                break;
+              case "카카오뱅크 카드":
+                imageUrl = "../src/assets/images/kakaocard2.png";
+                break;
+              case "신한카드":
+                imageUrl = "../src/assets/images/shinhancard.png";
+                break;
+              case "우리카드":
+                imageUrl = "../src/assets/images/wooricard.png";
+                break;
+              case "삼성카드":
+                imageUrl = "../src/assets/images/samsungcard2.png";
+                break;
+              case "롯데카드":
+                imageUrl = "../src/assets/images/lottecard.png";
+                break;
+              case "현대카드":
+                imageUrl = "../src/assets/images/hyundaicard.png";
+                break;
+              case "하나카드":
+                imageUrl = "../src/assets/images/hanacard.png";
+                break;
+              default:
+                imageUrl = "../src/assets/images/default_card.png";
+            }
+            return {
+              id: card.idx,
+              name: card.creditName,
+              image: imageUrl,
+            };
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching cards:", error);
+      }
+    },
     prevCard() {
       if (this.currentCardIndex > 0) {
         this.currentCardIndex--;
@@ -136,27 +152,30 @@ export default {
     },
     closeModal() {
       this.isModalOpen = false;
-      this.paymentPassword = '';
+      this.paymentPassword = "";
     },
     updateCircles() {
-      // 원 채우기 로직은 템플릿의 바인딩으로 처리하므로 이 메소드는 필요 없습니다.
+      // Placeholder for circle update logic, if needed
     },
     confirmPayment() {
       if (this.paymentPassword.length === 6) {
-        // 비밀번호 확인 로직 추가
-        if (this.paymentPassword === '123456') {
-          this.$router.push('/success');
+        if (this.paymentPassword === "123456") {
+          // Placeholder password check
+          this.$router.push("/success");
         } else {
-          this.$router.push('/failure');
+          this.$router.push("/failure");
         }
         this.closeModal();
       } else {
-        alert('비밀번호는 6자리여야 합니다.');
+        alert("비밀번호는 6자리여야 합니다.");
       }
     },
     goBack() {
-      this.$router.go(-1); // 이전 페이지로 이동
+      this.$router.go(-1);
     },
+  },
+  created() {
+    this.fetchCards(); // Fetch cards when the component is created
   },
 };
 </script>
