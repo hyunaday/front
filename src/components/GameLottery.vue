@@ -43,7 +43,7 @@
 
 <script>
 import { useSocketStore } from '../stores/socketStore.js';
-import { useMemberStore } from '../stores/memberStore.js';
+import { useMemberStore } from '../stores/MemberStore.js';
 import { useOrderStore } from '../stores/orderStore.js';
 import { onMounted, watch } from 'vue';
 
