@@ -7,7 +7,7 @@ export default defineConfig({
     proxy: {
       // 프록시는 로컬 개발 환경에서만 작동합니다.
       '/api': {
-        target: 'http://34.64.141.174:8080', // 실제 API 서버 URL
+        target: 'https://together-pay.store', // 실제 API 서버 URL
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
