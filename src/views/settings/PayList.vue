@@ -89,21 +89,28 @@ export default {
       this.$router.go(-1);
     },
     async fetchTransactions() {
-      try {
-        const response = await apiClient.get('/pay/together'); // API에서 계좌 데이터 가져오기
-        if (response.data.isSuccess) {
-          this.transactions = response.data.result.accountList; // 계좌 리스트에서 거래 내역을 가져오기
-          this.bankName = this.transactions[0].bankName; // 은행 이름 설정
-          this.accountNumber = this.transactions[0].accountNumber; // 계좌 번호 설정
-          this.Name = this.transactions[0].Name; // 계좌 번호 설정
-
-        } else {
-          console.error('계좌 정보를 가져오지 못했습니다.');
-        }
-      } catch (error) {
-        console.error('API 호출 중 오류 발생:', error);
+  try {
+    const response = await apiClient.get('/pay/all'); // API에서 데이터 가져오기
+    if (response.data.isSuccess) {
+      this.transactions = response.data.result.togetherPayList.map(transaction => ({
+        idx: transaction.idx,
+        price: transaction.price,
+        creditName: transaction.creditName,
+        createdAt: transaction.createdAt,
+      }));
+      // 추가적으로 필요한 데이터도 설정
+      if (this.transactions.length > 0) {
+        // this.bankName = '국민은행'; // 예시로 설정
+        // this.accountNumber = '1234567890'; // 예시로 설정
       }
-    },
+    } else {
+      console.error('계좌 정보를 가져오지 못했습니다.');
+    }
+  } catch (error) {
+    console.error('API 호출 중 오류 발생:', error);
+  }
+}
+,
     copyAccountNumber() {
       navigator.clipboard.writeText(this.accountNumber)
         .then(() => {

@@ -68,21 +68,12 @@
           />
         </div>
       </div>
-
       <button class="button" type="submit">등록</button>
     </form>
-
-    <!-- QR 코드 이미지 표시 -->
-    <div v-if="qrCodeData" class="qr-code-container">
-      <h2>QR 코드</h2>
-      <img :src="qrCodeData" alt="QR 코드" />
-    </div>
   </div>
 </template>
-
 <script>
 import apiClient from '../api/axios.js'; // Axios 인스턴스 임포트
-
 export default {
   props: {
     title: {
@@ -118,19 +109,17 @@ export default {
         company: this.formData.company,
         address: this.formData.address,
       };
-
       try {
         // 명함 생성 API 호출 (API 엔드포인트 수정)
         const response = await apiClient.post('/businessCard', payload);
-
         if (response.data.isSuccess) {
           alert('명함이 성공적으로 생성되었습니다.');
           // QR 코드 등 추가 처리 가능
           console.log('서버 응답 데이터:', response.data); // 응답 데이터 출력
-
           // QR 코드 데이터 처리
           this.qrCodeData = response.data.result.imgUrl; // imgUrl 가져오기
           this.$emit('qr-code-generated', this.qrCodeData); // 부모 컴포넌트로 QR 코드 데이터 전달
+          this.$router.push('/businesscard');
         } else {
           console.log(response.data);
           console.log('Payload:', payload);
@@ -152,7 +141,9 @@ export default {
 h3 {
   font-size: 20px;
   font-weight: bold;
+  margin: 20px 0;
 }
+
 .required {
   color: red; /* 필수 항목 표시 색상 */
 }
@@ -265,20 +256,22 @@ textarea {
 }
 
 button {
-  background-color: #6981d6; /* 녹색 배경 */
-  color: white; /* 글자색을 흰색으로 설정 */
-  border: none; /* 테두리 없음 */
   width: 100%;
+  margin: 10px 0;
   padding: 5px 15px; /* 여백 추가 */
-  font-size: 16px; /* 글자 크기 설정 */
-  font-weight: bold; /* 글자 굵게 */
-  border-radius: 5px; /* 모서리를 둥글게 */
-  cursor: pointer; /* 마우스를 올렸을 때 포인터 커서 표시 */
-  transition: background-color 0.3s ease; /* 부드러운 배경색 전환 */
+  background-color: #7189ff;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  border: 2px solid #6981d9;
+  border-radius: 10px;
+  font-weight: bold;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 button:hover {
-  background-color: #ccc; /* 호버 시 더 어두운 녹색으로 변경 */
+  background-color: white;
+  color: #6981d9;
 }
 
 button:active {
