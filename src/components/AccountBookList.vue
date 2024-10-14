@@ -459,14 +459,30 @@ export default {
       }
       return years;
     },
+
     updateCalendar() {
-      // 필요한 경우 달력 업데이트 로직 추가
+      // 현재 연도와 월을 기준으로만 필터링
+      const currentYear = this.selectedYear;
+      const currentMonth = this.selectedMonth + 1; // month는 0부터 시작하므로 1 더하기
+
+      // 현재 월에 포함되는 날짜만 필터링
+      this.filteredResults = this.entries.filter((entryGroup) => {
+        // 연도와 월 정보가 없어 일치하는 날짜만 확인 가능
+        const entryDay = parseInt(entryGroup.date); // 날짜 부분만 사용
+        return (
+          new Date(currentYear, currentMonth - 1, entryDay).getMonth() ===
+            currentMonth - 1 &&
+          new Date(currentYear, currentMonth - 1, entryDay).getFullYear() ===
+            currentYear
+        );
+      });
     },
 
     toggleFilter(filter) {
       this.selectedFilter = this.selectedFilter === filter ? null : filter;
       this.selectedCategory = ""; // 필터 변경 시 카테고리 초기화
     },
+
     // 카테고리 변환 함수
     mapEnumToCategory(enumValue) {
       return CategoryMap[enumValue] || enumValue;
@@ -806,8 +822,8 @@ div.total-amount {
   background-color: #ffffff;
   border: none;
   border-radius: 5px;
-  width: 25px;
-  height: 25px;
+  width: 28px;
+  height: 28px;
   display: flex;
   justify-content: center;
   align-items: center;
