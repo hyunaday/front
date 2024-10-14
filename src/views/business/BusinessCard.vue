@@ -355,7 +355,7 @@ export default {
         console.error('명함 정보를 가져오는 중 오류 발생:', error);
         if (
           confirm(
-            '등록된 나의 명함 정보가 없습니다. 새 명함을 등록하시겠습니까?'
+            '등록된 나의 명함 정보가 없���니다. 새 명함을 등록하시겠습니까?'
           )
         ) {
           this.$router.push('/addbusinesscard');
@@ -474,7 +474,7 @@ export default {
       apiClient
         .patch(`/businessCard?idx=${this.formData.idx}`, this.editData)
         .then((response) => {
-          console.log('서버 응답:', response.data);
+          console.log('���버 응답:', response.data);
 
           if (response.data.isSuccess) {
             this.formData = { ...this.editData }; // 수정된 데이터로 formData 업데이트
@@ -632,7 +632,7 @@ export default {
 }
 
 .preview-box p:nth-child(6)::before {
-  content: 'H.P: '; /* 전화번호 앞에 텍스트 추가 */
+  content: 'H.P: '; /* 전화번호 앞�� 텍스트 추가 */
 }
 
 .preview-box p:nth-child(7)::before {

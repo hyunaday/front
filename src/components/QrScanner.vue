@@ -18,23 +18,22 @@ export default {
       try {
         console.log('스캔된 데이터:', decodedString);
 
-        // 스캔된 데이터가 URL인지 확인
+        let url;
         if (this.isValidUrl(decodedString)) {
-          console.log('링크로 이동:', decodedString);
-          window.location.href = decodedString; // 현재 탭에서 링크 열기
+          url = decodedString;
         } else {
-          // URL이 아닌 경우, 명함 정보로 간주하여 부모 컴포넌트로 전송
-          console.log('명함 정보 스캔됨:', decodedString);
-          this.$emit('scanned', decodedString); // 부모 컴포넌트로 전달
+          const parsedData = JSON.parse(decodedString);
+          url = parsedData.url;
+        }
 
-          // 페이지 이동 로직 (결제 방식에 따라 이동)
-          if (this.$route.query.paymentType === 'SoloPay') {
-            this.$router.push('/solopay');
-          } else if (this.$route.query.paymentType === 'MainPay') {
-            this.$router.push('/headcount');
-          } else {
-            console.error('유효하지 않은 URL 또는 결제 방식:', decodedString);
-          }
+        if (this.isValidUrl(url)) {
+          console.log('링크로 이동:', url);
+          const parsedUrl = new URL(url);
+          const path = parsedUrl.pathname;
+          const query = Object.fromEntries(parsedUrl.searchParams.entries());
+          this.$router.push({ path, query });
+        } else {
+          console.error('유효하지 않은 URL:', url);
         }
       } catch (error) {
         console.error('onDecode 처리 중 오류 발생:', error);
@@ -59,18 +58,15 @@ export default {
       this.$emit('close');
     },
     isValidUrl(string) {
-      const pattern = new RegExp(
-        '^(https?:\\/\\/)?' + // 프로토콜 (http 또는 https)
-          '((([a-z\\d]([a-z\\d-]*[a-z\\d])?)\\.)+[a-z]{2,}|' + // 도메인
-          'localhost|' + // localhost
-          '\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|' + // IPv4
-          '\\[([0-9a-f]{1,4}:){1,7}[0-9a-f]{1,4}\\]|' + // IPv6
-          '([a-f0-9]{1,4}:){1,7}:|:((:[a-f0-9]{1,4}){1,7}|:))' + // IPv6 대체
-          '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*(\\?[;&a-z\\d%_.~+=-]*)?(\\#[-a-z\\d_]*)?$',
-        'i'
-      );
-      return pattern.test(string);
-    },
+      try {
+        // URL 객체로 변환이 가능하면 유효한 URL로 간주
+        new URL(string);
+        return true;
+      } catch (error) {
+        // URL 객체로 변환이 불가능하면 잘못된 URL
+        return false;
+      }
+    }
   },
 };
 </script>
