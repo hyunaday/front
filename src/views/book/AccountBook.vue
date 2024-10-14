@@ -1,5 +1,4 @@
 <template>
-
   <div class="main-container">
     <Header />
 
@@ -109,6 +108,16 @@ export default {
 </script>
 
 <style scoped>
+.main-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  overflow-y: auto;
+  padding-bottom: 20px;
+}
+
 a {
   text-decoration: none;
 }

@@ -34,7 +34,7 @@
     "vue3-radial-progress": "^1.1.1"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.1.2",
+    "@vitejs/plugin-vue": "^5.1.4",
     "autoprefixer": "^10.4.20",
     "html5-qrcode": "^2.3.8",
     "postcss": "^8.4.47",

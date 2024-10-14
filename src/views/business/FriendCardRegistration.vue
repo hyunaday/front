@@ -11,7 +11,7 @@
           <p>{{ friendCardData.name || '이름 없음' }}</p>
           <p>{{ friendCardData.position || '직책 없음' }}</p>
           <p>{{ friendCardData.part || '부서 없음' }}</p>
-          <p>{{ friendCardData.phoneNumber || '전화번호 없음' }}</p>
+          <p>{{ friendCardData.phone_num || '전화번호 없음' }}</p>
           <p>{{ friendCardData.tel_num || '유선전화 없음' }}</p>
           <p>{{ friendCardData.email || '이메일 없음' }}</p>
         </div>
