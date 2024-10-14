@@ -4,8 +4,8 @@
     "display": "standalone",
     "scope": "/",
     "start_url": "/",
-    "name": "PWA",
-    "short_name": "PWA",
+    "name": "모두의결제",
+    "short_name": "모두의결제",
     "icons": [
       {
         "src": "icons/modu-192x192.png",
