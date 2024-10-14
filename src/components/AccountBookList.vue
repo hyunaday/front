@@ -187,11 +187,23 @@
                 </option>
               </select>
             </div>
-            <!-- 거래처 -->
+
+            <!-- 메모 -->
+            <div class="detail-row">
+              <span class="label">거래처</span>
+              <span class="content">
+                <textarea
+                  placeholder="입력하세요."
+                  v-model="memo"
+                  class="memo-input"
+                ></textarea>
+              </span>
+            </div>
+            <!-- 거래처
             <div class="detail-row">
               <span class="label">거래처</span>
               <input type="text" v-model="storeName" class="content" />
-            </div>
+            </div> -->
             <!-- 결제 수단 -->
             <!-- <div class="detail-row">
               <span class="label">결제 수단</span>
@@ -202,17 +214,7 @@
               <span class="label">날짜</span>
               <input type="date" v-model="transactionDate" class="content" />
             </div>
-            <!-- 메모 -->
-            <div class="detail-row">
-              <span class="label">메모 · 태그</span>
-              <span class="content">
-                <textarea
-                  placeholder="입력하세요."
-                  v-model="memo"
-                  class="memo-input"
-                ></textarea>
-              </span>
-            </div>
+
             <!-- 삭제 버튼과 다음 버튼 -->
             <div class="button-row">
               <button class="bottom-sheet-delete-btn">
@@ -248,6 +250,7 @@
           v-for="(entry, entryIndex) in entryGroup.entries"
           :key="entryIndex"
           class="entry-item"
+          @click="openModal(entry)"
         >
           <!-- 카테고리 이미지 및 이름 표시 -->
           <div class="entry-info">
@@ -271,6 +274,51 @@
             {{ formatAmount(entry.amount) }}
           </div>
 
+          <!-- 모달 창 Template -->
+          <!-- 모달 창 Template -->
+          <div v-if="isModalOpen" class="modal-overlay" @click="closeModal">
+            <div class="modal-content" @click.stop>
+              <div class="modal-header">
+                <h3>세부 내역</h3>
+                <!-- 닫기 버튼에 closeModal 메서드 연결 -->
+                <button class="close-btn" @click="closeModal">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="detail-row">
+                  <span class="label">거래처</span>
+                  <span class="content">
+                    {{ selectedEntry.storeName || "거래처 정보 없음" }}
+                  </span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">금액</span>
+                  <span class="content">
+                    {{ formatAmount(selectedEntry.amount) }}
+                  </span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">메모</span>
+                  <span class="content">
+                    {{ selectedEntry.detail || "메모 없음" }}
+                  </span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">카테고리</span>
+                  <span class="content">
+                    {{ mapEnumToCategory(selectedEntry.category) }}
+                  </span>
+                </div>
+                <div class="detail-row">
+                  <span class="label">결제 수단</span>
+                  <span class="content">
+                    {{ selectedEntry.payMethod || "정보 없음" }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
           <!-- 삭제 버튼 -->
           <button
             v-if="entry"
@@ -354,8 +402,9 @@ export default {
       incomeCategories: ["월급", "이자", "용돈"],
       expenseCategories: ["식비", "쇼핑", "교통", "문화", "통신", "기타"],
       allCategories: Object.values(CategoryMap), // 모든 카테고리 목록에 매핑된 한글 값 사용
-      entries: [],
       entries: [], // API 데이터를 담을 배열
+      selectedEntry: {}, // 모달에 표시할 선택된 항목
+      isModalOpen: false, // 모달 창 열림 여부
       totalExpense: 0,
       totalIncome: 0,
       searchQuery: "",
@@ -585,6 +634,17 @@ export default {
       } catch (error) {
         console.error("거래 내역을 불러오는 중 오류가 발생했습니다:", error);
       }
+    },
+
+    openModal(entry) {
+      this.selectedEntry = entry;
+      this.isModalOpen = true;
+      console.log("Modal opened"); // 확인용 로그
+    },
+    closeModal() {
+      this.isModalOpen = false;
+      this.selectedEntry = {}; // 데이터 초기화
+      console.log("Modal closed"); // 확인용 로그
     },
 
     // 개별 API 호출 메서드들
@@ -832,10 +892,10 @@ div.total-amount {
   width: 100%; /* 항목이 가로로 꽉 차게 설정 */
 }
 
-/* .entry-item:hover {
+.entry-item:hover {
   background-color: #f0f0f0;
   cursor: pointer;
-} */
+}
 
 .entry-info {
   display: flex;
@@ -1134,5 +1194,50 @@ select {
 }
 .category-buttons button:hover {
   background-color: #e0e0e0;
+}
+
+/* 모달창 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #ffffff;
+  width: 80%;
+  max-width: 400px;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.modal-body .detail-row {
+  margin-bottom: 10px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
 }
 </style>
