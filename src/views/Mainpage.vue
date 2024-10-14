@@ -311,6 +311,7 @@ export default {
   height: 100vh;
   overflow-y: auto;
   padding-bottom: 20px;
+  overflow-x: hidden; /* 좌우 스크롤을 제거 */
 }
 
 .container {
@@ -319,6 +320,7 @@ export default {
   padding-bottom: 80px;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  overflow-x: hidden; /* 좌우 스크롤을 제거 */
 }
 
 .container::-webkit-scrollbar {
