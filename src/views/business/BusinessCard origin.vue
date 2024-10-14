@@ -42,8 +42,9 @@
             </div>
           </div>
         </div>
-
-        <div v-else class="preview-box">
+   
+<!-- 삭제하기! 존재하지 않을 시, “내 명함을 등록해주세요.” + 등록 버튼 -->
+     <div v-else class="preview-box">
           <h3>{{ formData.company || '회사 정보 없음' }}</h3>
           <p>{{ formData.address || '주소 없음' }}</p>
           <p>{{ formData.name || '이름 없음' }}</p>
@@ -52,10 +53,21 @@
           <p>{{ formData.phone || '전화번호 없음' }}</p>
           <p>{{ formData.phoneLandline || '유선전화 없음' }}</p>
           <p>{{ formData.email || '이메일 없음' }}</p>
+        </div>
 
-          <hr>
-              <!-- QR 코드 이미지를 주소 아래에 표시 -->
-         <div
+        <div v-if="!isCardListVisible" class="card-details-container">
+          <class class="card-details">
+            <p><strong>이름:</strong> {{ formData.name }}</p>
+            <p><strong>회사:</strong> {{ formData.company }}</p>
+            <p><strong>부서:</strong> {{ formData.department }}</p>
+            <p><strong>직책:</strong> {{ formData.position }}</p>
+            <p><strong>연락처:</strong> {{ formData.phone }}</p>
+            <p><strong>유선전화:</strong> {{ formData.phoneLandline }}</p>
+            <p><strong>이메일:</strong> {{ formData.email }}</p>
+            <p><strong>주소:</strong> {{ formData.address }}</p>
+<!-- 필요 -->
+            <!-- QR 코드 이미지를 주소 아래에 표시 -->
+            <div
               v-if="qrCodeData"
               class="qr-code-container"
               @click="showModal = true"
@@ -67,25 +79,10 @@
                 style="width: 140px; height: 140px"
               />
             </div>
+          </class>
         </div>
-     
       </div>
-
-        <!-- QR 코드 모달 -->
-  <div v-if="showModal" class="modal" @click="closeModal">
-    <div class="modal-content qr-modal" @click.stop>
-      <div class="qr-code-container">
-        <img
-          :src="qrCodeData"
-          alt="QR 코드"
-          class="qr-code-image"
-          style="width: 200px; height: 200px"
-        />
-      </div>
-    </div>
-    <p class="additional-text">QR 코드를 <br>스캔하세요</p>
-  </div>
-
+      
       <div
         class="button-container"
         v-if="!isCardListVisible && !isCardDetailModalVisible"
@@ -98,6 +95,25 @@
 
   <FooterNav :buttonType="'plus'" :buttonAction="goToaddBusinessCard" />
 
+  <div
+    v-if="isCardDetailModalVisible"
+    class="modal"
+    @click="closeCardDetailModal"
+  >
+    <div class="modal-content card-detail-container" @click.stop>
+      <button class="close-btn" @click="closeCardDetailModal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="form-row">
+        <label class="form-label">이름:</label>
+        <input v-model="editSelectedCard.name" type="text" class="input" />
+      </div>
+      <div class="modal-buttons">
+        <button @click="saveCardDetails">저장</button>
+        <button @click="deleteCardDetails">삭제</button>
+      </div>
+    </div>
+  </div>
   <!-- 수정 bottom-sheet -->
   <bottom-sheet id="editBottomSheet" title="명함 수정">
     <main>
@@ -133,6 +149,72 @@
       </div>
     </main>
   </bottom-sheet>
+
+<!-- 필요 -->
+  <!-- QR 코드 모달 -->
+  <div v-if="showModal" class="modal" @click="closeModal">
+    <div class="modal-content qr-modal" @click.stop>
+      <div class="qr-code-container">
+        <img
+          :src="qrCodeData"
+          alt="QR 코드"
+          class="qr-code-image"
+          style="width: 200px; height: 200px"
+        />
+      </div>
+    </div>
+    <p class="additional-text">QR코드를 스캔하세요</p>
+  </div>
+<!-- 필요 -->
+  <!-- 수정 (Bottom Sheet) 모달 -->
+  <div
+    v-if="isBottomSheetVisible"
+    class="modal bottom-sheet"
+    @click="closeBottomSheet"
+  >
+    <div class="modal-content bottom-sheet-content" @click.stop>
+      <button class="close-btn" @click="closeBottomSheet">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <h2>명함 수정</h2>
+      <div class="form-row">
+        <label class="form-label">이름:</label>
+        <input v-model="editData.name" type="text" class="input" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">회사:</label>
+        <input v-model="editData.company" type="text" class="input" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">부서:</label>
+        <input v-model="editData.department" type="text" class="input" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">직책:</label>
+        <input v-model="editData.position" type="text" class="input" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">연락처:</label>
+        <input v-model="editData.phone" type="text" class="input" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">유선전화:</label>
+        <input v-model="editData.phoneLandline" type="text" class="input" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">이메일:</label>
+        <input v-model="editData.email" type="email" class="input" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">주소:</label>
+        <input v-model="editData.address" type="text" class="input" />
+      </div>
+      <div class="modal-buttons">
+        <button @click="saveFormData">저장</button>
+        <button @click="closeBottomSheet">취소</button>
+      </div>
+    </div>
+  </div>
 </template>
 
 
@@ -170,8 +252,6 @@ export default {
       qrCodeData: '', // QR 코드 데이터를 저장할 변수
       isBottomSheetVisible: false,
       editData: {},
-      isBottomSheetVisible: false,
-      editData: {},
     };
   },
   computed: {
@@ -187,13 +267,10 @@ export default {
       try {
         const response = await apiClient.get('/businessCard/myBusinessCard');
         console.log('서버 응답 데이터:', response.data);
-
         if (response.data.isSuccess) {
           console.log('명함 데이터:', response.data.result);
-
           const cardData = response.data.result.businessCardList[0]; // 첫 번째 카드 데이터
           console.log('비즈니스 카드 데이터:', cardData);
-
           this.formData = {
             idx: cardData.idx,
             name: cardData.name,
@@ -205,7 +282,6 @@ export default {
             address: cardData.address,
             phoneLandline: cardData.tel_num,
           };
-
           // QR 코드 이미지 URL이 있으면 qrCodeData에 할당
           if (cardData.imgurl) {
             // 서버에서 받은 데이터의 imgurl
@@ -229,7 +305,6 @@ export default {
         }
       }
     },
-
     toggleCardList() {
       this.isCardListVisible = !this.isCardListVisible;
     },
@@ -239,10 +314,41 @@ export default {
     goToCardList() {
       this.$router.push('/businesscardlist'); // 페이지 이동
     },
-   goToCardList() {
-      this.$router.push('/businesscardlist'); // 페이지 이동
-    },
-   goToaddBusinessCard() {
+    // openCardDetailModal(card) {
+    //   this.selectedCard = card;
+    //   this.editSelectedCard = { ...card };
+    //   this.isCardDetailModalVisible = true;
+    // },
+    // closeCardDetailModal() {
+    //   this.isCardDetailModalVisible = false;
+    //   this.editSelectedCard = {};
+    // },
+    // saveCardDetails() {
+    //   Object.assign(this.selectedCard, this.editSelectedCard);
+    //   const index = this.cardList.findIndex(
+    //     (card) => card.id === this.selectedCard.id
+    //   );
+    //   if (index !== -1) {
+    //     this.cardList.splice(index, 1, { ...this.selectedCard });
+    //   }
+    //   this.isCardDetailModalVisible = false;
+    //   this.editSelectedCard = {};
+    //   alert('명함 정보가 저장되었습니다.');
+    // },
+    // deleteCardDetails() {
+    //   const confirmDelete = confirm('정말로 이 명함을 삭제하시겠습니까?');
+    //   if (confirmDelete) {
+    //     const index = this.cardList.findIndex(
+    //       (card) => card.id === this.selectedCard.id
+    //     );
+    //     if (index !== -1) {
+    //       this.cardList.splice(index, 1);
+    //     }
+    //     this.isCardDetailModalVisible = false;
+    //     this.editSelectedCard = {};
+    //   }
+    // },
+    goToaddBusinessCard() {
       this.$router.push('/addbusinesscard');
     },
     openBottomSheet() {
@@ -266,15 +372,12 @@ export default {
         console.error('formData에서 idx 값이 없습니다:', this.formData);
         return;
       }
-
       console.log('전송할 데이터:', this.editData);
-
       // PATCH 요청으로 서버에 데이터 수정 요청
       apiClient
         .patch(`/businessCard?idx=${this.formData.idx}`, this.editData)
         .then((response) => {
-          console.log('���버 응답:', response.data);
-
+          console.log('서버 응답:', response.data);
           if (response.data.isSuccess) {
             this.formData = { ...this.editData }; // 수정된 데이터로 formData 업데이트
             alert('나의 명함 정보가 저장되었습니다.');
@@ -298,7 +401,6 @@ export default {
           .then((response) => {
             // 서버 응답 확인
             console.log('서버 응답:', response.data);
-
             if (response.data.isSuccess) {
               alert('명함이 삭제되었습니다.');
               // 명함 삭제 후 상태를 업데이트하거나 리스트를 새로고침할 수 있음
@@ -335,6 +437,15 @@ export default {
 </script>
 
 <style scoped>
+/* 필요한 스타일 추가 */
+/* .qr-code-container {
+  text-align: center;
+  margin-top: 20px;
+}
+.qr-code-image {
+  width: 150px;
+  height: 150px;
+} */
 .input {
   width: 200px;
 }
@@ -377,15 +488,19 @@ export default {
 
 /* 내 명함 */
 .preview-box {
-  margin : 10px 0 20px 10px;
+  margin-top: 5px;
   text-align: center;
-  padding: 10px 20px;
-  height: 375px;
+  padding: 8px 20px;
+  height: 150px;
   width: 300px;
-  }
+  background-color: white;
+  border: 2px solid #b3b3b3; /* 조금 더 진한 테두리 색상 */
+  border-radius: 5px; /* 더 둥글게 */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05); /* 그림자 강화 */
+}
 
 .preview-box h3 {
-  font-size: 23px; /* 회사명 폰트 크기 */
+  font-size: 18px; /* 회사명 폰트 크기 */
   font-weight: bold; /* 굵게 */
   text-align: left;
   margin: 0px;
@@ -399,21 +514,14 @@ export default {
 }
 
 .preview-box p:nth-child(2) {
-  font-size: 14px; /* 주소 폰트 크기 */
+  font-size: 10px; /* 주소 폰트 크기 */
   text-align: left;
-  margin: 3px 0px;
-}
-
-.preview-box p:nth-child(3) {
-  font-size: 22px; /* 이름 폰트 크기 */
-  text-align: right;
   margin: 0px 0px 3px;
-  font-weight: bold; /* 이름 텍스트 굵게 */
-
 }
+
 .preview-box p:nth-child(4),
 .preview-box p:nth-child(5) {
-  font-size: 13px; /* 직책과 부서 폰트 크기 */
+  font-size: 10px; /* 직책과 부서 폰트 크기 */
   font-weight: bold; /* 직책과 부서 텍스트 굵게 */
   text-align: left;
 }
@@ -421,7 +529,7 @@ export default {
 .preview-box p:nth-child(6),
 .preview-box p:nth-child(7),
 .preview-box p:nth-child(8) {
-  font-size: 13px; /*  전화번호, 유선전화번호, 이메일 크기 */
+  font-size: 10px; /*  전화번호, 유선전화번호, 이메일 크기 */
   text-align: right;
 }
 
@@ -434,7 +542,7 @@ export default {
 }
 
 .preview-box p:nth-child(6)::before {
-  content: 'H.P: '; /* 전화번호 앞�� 텍스트 추가 */
+  content: 'H.P: '; /* 전화번호 앞에 텍스트 추가 */
 }
 
 .preview-box p:nth-child(7)::before {
@@ -542,7 +650,6 @@ select {
   word-wrap: break-word; /* 텍스트가 너무 길 경우 줄바꿈 처리 */
 }
 
-/* 사용 유무 확인 필요 */
 .preview-box-small {
   text-align: center; /* 가운데 정렬 */
   padding: 3px 8px; /* 내부 패딩을 줄임 */
@@ -632,7 +739,7 @@ select {
 /* 명함 카드 스타일 */
 .selected-card {
   background-color: #6981d9;
-  padding: 60px 20px 40px 20px;
+  padding: 20px;
   margin-top: 38px;
   margin-bottom: 20px;
   border-radius: 15px;
@@ -708,6 +815,38 @@ select {
   background-color: #6981d9;
 }
 
+/* 명함 내용 스타일 */
+.card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #ffffff;
+  height: 550px;
+  z-index: 2;
+}
+
+.card-details-container {
+  display: flex;
+  align-items: flex-start;
+  max-width: 100%;
+  overflow: hidden;
+  position: relative; /* 상대적 위치 설정 */
+  min-height: 150px; /* 컨테이너의 최소 높이 설정 */
+}
+
+.card-details {
+  flex: 1;
+  margin-top: 10px;
+  margin-left: 20px;
+  font-size: 13px;
+  line-height: 1.2;
+  max-height: 100%;
+  overflow-y: overlay; /* auto에서 overlay로 변경 */
+  /* padding-right: 150px; QR 코드 공간 확보 */
+  width: 300px;
+  height: 390px;
+}
+
 /* QR 코드 스타일 수정 */
 .qr-code {
   position: absolute; /* 절대 위치 설정 */
@@ -715,7 +854,6 @@ select {
   bottom: 70px; /* 아래에서 10px 떨어짐 */
   width: 75px; /* QR 코드의 너비 설정 */
   height: 75px; /* QR 코드의 높이 설정 */
-
 }
 
 /* 스크롤바 스타일 */
@@ -785,7 +923,7 @@ select {
 }
 
 .button-container button {
-  font-size: 13px;
+  font-size: 12px;
   border: 1.5px solid #efeded;
   border-radius: 5px;
   background-color: #6981d9;
@@ -847,8 +985,6 @@ select {
 
 /* QR 코드 모달 스타일 */
 .qr-code-container {
-  cursor: pointer;
-  margin: 20px 0 ;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -929,7 +1065,6 @@ select {
   background-color: rgba(255, 255, 255, 0.9);
   padding: 15px;
   border-radius: 10px;
-  height: 250px;
   width: 250px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
