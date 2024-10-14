@@ -4,32 +4,32 @@
   >
     <h3>추가할 명함을 선택해주세요.</h3>
 
-    <!-- '나의 명함' 버튼, 나의 명함 등록 페이지로 이동 -->
+    <!— '나의 명함' 버튼, 나의 명함 등록 페이지로 이동 —>
     <router-link to="/my-card-registration">
       <button class="button">나의 명함 등록하기</button>
     </router-link>
 
     <div class="divider"></div>
 
-    <!-- '친구 명함' 버튼, 모달을 열어 QR 스캐너를 보여줌 -->
+    <!— '친구 명함' 버튼, 모달을 열어 QR 스캐너를 보여줌 —>
     <button class="button" @click="showModal = true">친구 명함 등록하기</button>
 
-    <!-- 모달 -->
+    <!— 모달 —>
     <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content">
-        <!-- BqrScanner 컴포넌트에서 스캔된 데이터 받기 -->
+        <!— BqrScanner 컴포넌트에서 스캔된 데이터 받기 —>
         <BqrScanner @close="closeModal" @scanned="handleScannedData" />
       </div>
     </div>
 
-    <!-- 모달이 열리지 않았을 때만 FooterNav 표시 -->
+    <!— 모달이 열리지 않았을 때만 FooterNav 표시 —>
     <FooterNav
       v-if="!showModal"
       :buttonType="'plus'"
       :buttonAction="goToAddList"
     />
 
-    <!-- QR 코드 스캔 결과 출력 -->
+    <!— QR 코드 스캔 결과 출력 —>
     <div v-if="scannedData">
       <h4>스캔된 정보:</h4>
       <p>{{ scannedData }}</p>
@@ -40,7 +40,7 @@
 <script>
 import FooterNav from '../../components/FooterNav.vue';
 import BqrScanner from '../../components/BqrScanner.vue'; // BqrScanner로 변경
-import axios from 'axios';
+import apiClient from '../../api/axios'; 
 
 export default {
   name: 'AddBusinessCard',
@@ -51,41 +51,52 @@ export default {
   data() {
     return {
       showModal: false, // 모달 상태 관리
-      scannedData: null, // 스캔된 데이터를 초기화
+      scannedData: null, // 스캔된 QR 코드 데이터
     };
   },
   methods: {
-    closeModal() {
-      this.showModal = false;
-    },
-    handleScannedData(data) {
-      // QR 코드 스캔 결과를 저장
-      this.scannedData = data;
-      // businessCardIdx는 적절한 값으로 설정해야 합니다.
-      const businessCardIdx = this.getBusinessCardIdx(); // 예시로 메서드를 사용
-
-      // API 호출
-      axios
-        .post(
-          `/businessCard/scanFriendQrCode?businessCardIdx=${businessCardIdx}`,
-          data
-        )
-        .then((response) => {
-          console.log('Data successfully sent to the server', response);
-          this.$emit('scanned', response.data); // 서버에서 받은 데이터를 부모 컴포넌트로 전달
-        })
-        .catch((error) => {
-          console.error('Error sending data to the server', error);
-        });
-
-      this.showModal = false; // 스캔 후 모달 닫기
-    },
-    getBusinessCardIdx() {
-      // businessCardIdx 값을 적절히 반환하는 로직을 구현
-      return 1; // 예시로 고정값 사용
-    },
+  closeModal() {
+    this.showModal = false;
   },
+  async handleScannedData(data) {
+    this.scannedData = data;
+
+    // QR 코드 데이터에서 businessCardIdx 추출
+    const businessCardIdx = this.extractBusinessCardIdx(data);
+
+    if (businessCardIdx) {
+      try {
+        // apiClient를 사용해 POST 요청
+        const response = await apiClient.post(`/businessCard/scanFriendQrCode?businessCardIdx=${businessCardIdx}`);
+        console.log('QR 코드 스캔 성공:', response.data);
+
+        // 성공 시 해당 URL로 리다이렉트
+        const redirectUrl = `/friend-card-registration/${businessCardIdx}`; // 리다이렉트할 URL 경로 설정
+        window.location.href = redirectUrl;  // 해당 URL로 이동
+
+      } catch (error) {
+        console.error('QR 코드 스캔 실패:', error.response ? error.response.data : error);
+      }
+    } else {
+      console.error('QR 코드에서 businessCardIdx를 찾을 수 없습니다.');
+    }
+
+    this.showModal = false; // 모달 닫기
+  },
+  // QR 코드 데이터에서 businessCardIdx 추출하는 메서드
+  extractBusinessCardIdx(data) {
+    try {
+      const url = new URL(data.url);
+      const params = new URLSearchParams(url.search);
+      return params.get('idx'); // idx 값을 반환
+    } catch (error) {
+      console.error('QR 코드 데이터에서 URL 파싱 실패:', error);
+      return null;
+    }
+  },
+},
 };
+
 </script>
 
 <style scoped>
