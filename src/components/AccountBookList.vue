@@ -111,7 +111,9 @@
                 <i class="fa-solid fa-xmark"></i>
               </button>
             </div>
+
             <div class="price-section">
+              <!-- 입력 중일 때만 input, 아니면 포맷된 값 보이기 -->
               <input
                 v-if="isEditingPrice"
                 type="text"
@@ -124,7 +126,8 @@
                 <i class="fa-solid fa-pen edit-icon"></i>
               </div>
             </div>
-            <div class="description">인식 금액 {{ formattedFixedPrice }}</div>
+
+            <div class="description">{{ formattedFixedPrice }}</div>
             <!-- 분류 버튼 (수입, 지출 등록) -->
             <div class="category-container">
               <span class="category-label">분류</span>
@@ -190,10 +193,10 @@
               <input type="text" v-model="storeName" class="content" />
             </div>
             <!-- 결제 수단 -->
-            <div class="detail-row">
+            <!-- <div class="detail-row">
               <span class="label">결제 수단</span>
               <input type="text" v-model="paymentMethod" class="content" />
-            </div>
+            </div> -->
             <!-- 날짜 -->
             <div class="detail-row">
               <span class="label">날짜</span>
@@ -385,6 +388,13 @@ export default {
     };
   },
   computed: {
+    // 가격 포맷팅해서 보여주기
+    formattedPrice() {
+      return this.editablePrice
+        ? `${parseInt(this.editablePrice).toLocaleString()} 원`
+        : "가격을 입력하세요";
+    },
+
     // 총 지출 계산
     totalExpense() {
       return (this.filteredEntries || []).reduce((total, entryGroup) => {
@@ -511,10 +521,10 @@ export default {
         if (response.data.isSuccess) {
           const groupedEntries = response.data.result.transactionList.reduce(
             (acc, item) => {
-              const dateKey =
-                `${item.time[0]}` -
-                `${String(item.time[1]).padStart(2, "0")}` -
-                `${String(item.time[2]).padStart(2, "0")}`;
+              const dateKey = `${item.time[0]}-${String(item.time[1]).padStart(
+                2,
+                "0"
+              )}-${String(item.time[2]).padStart(2, "0")}`;
 
               if (!acc[dateKey]) {
                 acc[dateKey] = {
@@ -538,8 +548,10 @@ export default {
                 detail: item.memo,
                 payMethod: item.payMethod,
                 amount: amount,
-                storeName: item.memo,
+                storeName: "", // storeName은 이후에 불러올 예정
                 isExpense: isExpense,
+                creditIdx: item.creditIdx,
+                accountIdx: item.accountIdx,
               });
 
               return acc;
@@ -548,13 +560,61 @@ export default {
           );
 
           this.entries = Object.values(groupedEntries);
-          console.log("Grouped Entries:", this.entries); // 데이터 구조 확인용 로그
+
+          // storeName 업데이트를 위한 비동기 처리
+          await Promise.all(
+            this.entries.flatMap((entryGroup) =>
+              entryGroup.entries.map(async (entry) => {
+                if (entry.creditIdx) {
+                  const creditHistory = await this.fetchCreditHistory(
+                    entry.creditIdx
+                  );
+                  entry.storeName = creditHistory?.name || entry.detail; // creditHistory가 없으면 detail 사용
+                } else if (entry.accountIdx) {
+                  const accountHistory = await this.fetchAccountHistory(
+                    entry.accountIdx
+                  );
+                  entry.storeName = accountHistory?.name || entry.detail; // accountHistory가 없으면 detail 사용
+                }
+              })
+            )
+          );
+
+          console.log("Updated Entries with Store Names:", this.entries); // 데이터 구조 확인용 로그
         }
       } catch (error) {
         console.error("거래 내역을 불러오는 중 오류가 발생했습니다:", error);
       }
     },
 
+    // 개별 API 호출 메서드들
+    async fetchCreditHistory(creditIdx) {
+      try {
+        const response = await apiClient.get(
+          `/credit/history?creditIdx=${creditIdx}`
+        );
+        if (response.data.isSuccess) {
+          return response.data.result.creditHistoryList[0] || null; // 가장 최근의 내역 반환
+        }
+      } catch (error) {
+        console.error("신용 카드 내역 가져오는 중 오류:", error);
+      }
+      return null;
+    },
+
+    async fetchAccountHistory(accountIdx) {
+      try {
+        const response = await apiClient.get(
+          `/account/history?accountIdx=${accountIdx}`
+        );
+        if (response.data.isSuccess) {
+          return response.data.result.accountHistoryList[0] || null; // 가장 최근의 내역 반환
+        }
+      } catch (error) {
+        console.error("계좌 내역 가져오는 중 오류:", error);
+      }
+      return null;
+    },
     // 삭제 api
     // deleteEntry(groupIndex, entryIndex) {
     //   // 선택된 항목을 entries 배열에서 제거
@@ -589,6 +649,8 @@ export default {
     },
     stopEditingPrice() {
       this.isEditingPrice = false;
+      // 입력 종료 후 포맷된 값으로 업데이트
+      this.editablePrice = parseInt(this.editablePrice) || 0;
     },
     closeBottomSheet() {
       document.getElementById("testBottomSheet").closeSheet();
