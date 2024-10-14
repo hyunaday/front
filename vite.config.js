@@ -14,6 +14,9 @@ export default defineConfig({
         enabled: true,
         type: 'module',
       },
+      workbox: {
+        maximumFileSizeToCacheInBytes: 5000000, // 파일 크기 제한을 5MB로 설정 (5000000 bytes = 5MB)
+      },
       manifest: {
         name: '모두의결제',
         short_name: '모두의결제',
@@ -52,7 +55,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://34.64.141.174:8080', // API 서버 주소
+        target: 'https://together-pay.store', // API 서버 주소
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
