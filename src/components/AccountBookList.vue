@@ -933,13 +933,13 @@ div.total-amount {
 .plus-btn {
   background-color: #ffffff;
   border: none;
-  border-radius: 5px;
-  width: 28px;
-  height: 28px;
+  border-radius: 1px;
+  width: 20px;
+  height: 20px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 18px;
+  font-size: 15px;
   cursor: pointer;
 }
 .plus-btn:hover {
@@ -952,6 +952,7 @@ div.total-amount {
   padding: 20px;
 }
 
+/* 검색창 */
 .search-bar {
   margin: 1rem 0;
   text-align: center;
@@ -959,10 +960,9 @@ div.total-amount {
 .search-input-container {
   position: relative;
   display: inline-block;
-  width: 70%;
+  width: 100%;
   max-width: 300px;
 }
-
 .search-input {
   width: 100%;
   padding: 0.5rem;
@@ -972,7 +972,6 @@ div.total-amount {
   height: 35px;
   font-size: 1rem;
 }
-
 .search-icon {
   position: absolute;
   right: 10px;
@@ -982,12 +981,32 @@ div.total-amount {
   font-size: 1rem;
   pointer-events: none; /* 아이콘 클릭 시 input에 영향 없음 */
 }
+/* .filter-container 내의 select 크기 */
+.filter-container select[data-v-70da4295] {
+  word-wrap: normal;
+  background-color: #ffffff;
+  border-radius: 8px;
+  color: #888;
+  padding: 1px 6px;
+  font-size: 12px; /* .filter-container에 적용할 작은 글씨 크기 */
+  height: 20px;
+}
+.filter-container button[data-v-70da4295] {
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #888;
+  font-size: 12px;
+  height: 20px;
+}
+
 /* 필터링 버튼 스타일 */
 .filter-container {
   margin: 1rem 0;
   display: flex;
-  gap: 10px;
-  margin-left: 49px;
+  gap: 5px;
+  margin-left: 140px;
 }
 .filter-container button {
   border: 1px solid #ccc;
