@@ -8,6 +8,13 @@
         <h2 class="title">결제확인</h2>
       </div>
 
+      <transition name="fade">
+        <div v-if="errorMessage" class="error-message">
+          <span>{{ errorMessage }}</span>
+          <button @click="closeError" class="close-error-button">X</button>
+        </div>
+      </transition>
+
       <div class="merchant-info">
         <p class="payment-question">
           결제 할 항목을 <br />
@@ -67,7 +74,6 @@ import { onMounted, ref, watch } from 'vue';
 import hamburgerImage from '../../assets/images/hamburger.png'; // 이미지 샘플
 import { useRouter } from 'vue-router'; // router 사용
 
-
 export default {
   setup() {
     const orderInfoStore = useOrderInfoStore(); // Pinia store 인스턴스
@@ -77,6 +83,7 @@ export default {
     const defaultImage = hamburgerImage; // 기본 이미지 (없을 경우)
     const router = useRouter(); // router 사용 선언
     const isReadySent = ref(false); // 선택 완료 상태를 추적하는 변수
+    const errorMessage = ref(''); // 에러 메시지 상태
 
     const initializeSelectedCount = () => {
       // 메뉴 리스트에 selectedCount와 selectedByUser를 초기화
@@ -94,7 +101,7 @@ export default {
     const toggleSelection = (item) => {
       if (!socketStore.stompClient || !socketStore.stompClient.connected) {
         console.error("STOMP 연결이 되어 있지 않습니다.");
-        alert("소켓 연결 상태를 확인하세요.");
+        setErrorMessage('소켓 연결 상태를 확인하세요.');
         return;
       }
 
@@ -130,10 +137,8 @@ export default {
         );
       } catch (error) {
         console.error('메시지 전송 실패:', error);
-        alert('메시지 전송 중 오류가 발생했습니다.');
+        setErrorMessage('메시지 전송 중 오류가 발생했습니다.');
       }
-
-
     };
 
     const updateSelectedAmount = (amount) => {
@@ -186,8 +191,9 @@ export default {
                 item.selectedByUser = false;
               }
             });
-            alert('더 이상 선택할 수 없는 메뉴입니다')
-
+            if (parsedMessage.code === 'ORDER4014' && parsedMessage.memberIdx === memberStore.idx) {
+              setErrorMessage('더 이상 선택할 수 없는 메뉴입니다');
+            }
           }
 
           // START_PAY 메시지가 도착하면 소켓 연결 해제 및 페이지 이동
@@ -228,11 +234,21 @@ export default {
         console.log(`선택 완료 ${isReadySent.value ? '요청' : '취소'} 전송`);
       } catch (error) {
         console.error('READY 메시지 전송 실패:', error);
-        alert('READY 요청을 전송하는 중 오류가 발생했습니다.');
+        setErrorMessage('READY 요청을 전송하는 중 오류가 발생했습니다.');
       }
-      watch(isReadySent, (newValue) => {
-        console.log('isReadySent 상태 변경:', newValue);
-      });
+    };
+
+    // 에러 메시지 설정 함수
+    const setErrorMessage = (message) => {
+      errorMessage.value = message;
+      setTimeout(() => {
+        errorMessage.value = ''; // 3초 후에 자동으로 에러 메시지 삭제
+      }, 3000);
+    };
+
+    // 에러 메시지 닫기 함수
+    const closeError = () => {
+      errorMessage.value = '';
     };
 
     const goBack = () => {
@@ -257,12 +273,13 @@ export default {
       splitByAmount,
       goBack,
       defaultImage,
+      isReadySent,
+      errorMessage,
+      closeError
     };
   },
 };
 </script>
-
-
 
 <style scoped>
 .main-container {
@@ -298,6 +315,42 @@ export default {
   font-size: 18px;
   margin: 0;
   text-align: center;
+}
+
+.error-message {
+  position: fixed;
+  top: 0;
+  left: 50%; /* 화면 중앙으로 위치 설정 */
+  transform: translateX(-50%); /* 중앙 정렬을 위한 transform 사용 */
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  text-align: center;
+  z-index: 1000;
+  box-sizing: border-box;
+  transition: opacity 0.5s ease-out;
+  width: 90%; /* 전체 컨텐츠와 동일한 크기 */
+  max-width: 300px; /* 최대 너비 설정 */
+}
+
+.close-error-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #721c24;
+  position: absolute;
+  right: 10px; /* 버튼 위치 조정 */
+  top: 10px;
+}
+
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
+
+.fade-enter, .fade-leave-to {
+  opacity: 0;
 }
 
 .merchant-info {

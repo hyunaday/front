@@ -48,23 +48,28 @@
 import { useOrderInfoStore } from "../../stores/orderStore.js"; // orderInfoStore 가져오기
 import { useOrderStore } from "../../stores/orderStore.js"; // orderStore 가져오기
 import { onMounted } from 'vue'; // onMounted 사용
-import { useRouter } from 'vue-router'; // vue-router 사용
+import { useRouter, useRoute } from 'vue-router'; // vue-router 사용
 
 export default {
   setup() {
     const orderInfoStore = useOrderInfoStore(); // Pinia의 orderInfoStore 사용
     const orderStore = useOrderStore(); // Pinia의 orderStore 사용
     const router = useRouter(); // router 사용 선언
+    const route = useRoute();
+    const orderIdx = route.query.orderIdx;
+    const marketIdx = route.query.marketIdx;
+    
 
     // API로부터 주문 정보를 가져오는 함수
     const fetchOrderInfo = async () => {
-      await orderInfoStore.getOrderInfo(1, 1); // orderIdx, marketIdx를 사용하여 API 요청
+      orderInfoStore.getOrderInfo(orderIdx, marketIdx); // orderIdx, marketIdx를 사용하여 API 요청
+      orderStore.setOrderIdx(orderIdx);
     };
 
     // 금액별 또는 메뉴별 나누기 처리
     const goToShareLink = (type) => {
       orderStore.setType(type === "amount" ? "BY_PRICE" : "BY_MENU");
-      router.push("/sharelink");
+      router.push("/headcount");
     };
 
     const goBack = () => {
