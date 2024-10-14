@@ -18,6 +18,13 @@
           <p>{{ friendCardData.tel_num || '유선전화 없음' }}</p>
           <p>{{ friendCardData.email || '이메일 없음' }}</p>
         </div>
+
+        <!-- 메모 스타일 수정 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 입력 필드 추가 -->
+        <div class="memo-container">
+          <strong>메모:</strong>
+          <textarea v-model="formData.memo" placeholder="메모를 입력하세요..." class="memo-textarea"></textarea>
+        </div>
+
         <div class="button-container">
           <button class="button edit-button" @click="editFriendCard">수정하기</button>
           <button class="button delete-button" @click="deleteFriendCard">삭제하기</button>
@@ -65,6 +72,9 @@ export default {
       loading: true,
       error: null,
       showPopup: false, // 팝업 상태 관리
+      formData: {
+        memo: '', // 메모 상태 추가
+      },
     };
   },
   created() {
@@ -78,7 +88,14 @@ export default {
       try {
         const response = await apiClient.get(`/businessCard/friends?businessCardIdx=${businessCardIdx}`);
         console.log('친구 명함 정보 가져오기 성공:', response.data);
+        
         this.friendCardData = response.data.result.businessCardList[0];
+
+        // friendCardData의 메모가 제대로 설정되었는지 확인
+        console.log('friendCardData:', this.friendCardData);
+        
+        // 메모 초기화
+        this.formData.memo = this.friendCardData.memo || ''; // 메모 설정
       } catch (error) {
         this.error = error.response ? error.response.data.message : '오류 발생';
         console.error('친구 명함 정보 가져오기 실패:', this.error);
@@ -86,12 +103,34 @@ export default {
         this.loading = false;
       }
     },
-    editFriendCard() {
-      this.$router.push({
-        name: 'EditFriendCard',
-        params: { businessCardIdx: this.$route.params.businessCardIdx },
-      });
+    async updateFriendCard() {
+      const businessCardIdx = this.$route.params.businessCardIdx; // 수정할 카드의 인덱스
+
+      try {
+        const response = await apiClient.patch(`/businessCard/friends?businessCardIdx=${businessCardIdx}`, {
+          memo: this.formData.memo, // 수정할 메모 내용
+        });
+        
+        if (response.data.isSuccess) {
+          alert('명함이 성공적으로 수정되었습니다.');
+          // 수정된 데이터로 friendCardData 업데이트
+          this.friendCardData.memo = this.formData.memo;
+
+          // 변경된 친구 명함 정보를 다시 불러오기
+          this.fetchFriendCardData(businessCardIdx); 
+        } else {
+          alert(`명함 수정에 실패했습니다: ${response.data.message}`);
+        }
+      } catch (error) {
+        console.error('명함 수정 중 오류 발생:', error);
+        alert('명함 수정 중 오류가 발생했습니다. 다시 시도해 주세요.');
+      }
     },
+
+    editFriendCard() {
+      this.updateFriendCard(); // 수정 메서드 호출
+    },
+
     async deleteFriendCard() {
       try {
         const response = await apiClient.delete(`/businessCard/friends?businessCardIdx=${this.friendCardData.idx}`);
@@ -107,12 +146,15 @@ export default {
         alert('명함 삭제 중 오류가 발생했습니다. 다시 시도해 주세요.');
       }
     },
+
     closePopup() {
       this.$router.push('/businesscardlist');
     }
-  },
+  }
 };
 </script>
+
+
 
 
 <style scoped>
@@ -371,5 +413,37 @@ body {
   cursor: pointer;
   padding: 5px 10px;
 }
+
+.memo-container {
+  display: flex;
+  align-items: center; /* 텍스트와 텍스트 영역이 같은 높이에 위치하도록 설정 */
+  margin-top: 10px;
+}
+
+.memo-container strong {
+  margin-right: 10px; /* "메모:"와 textarea 사이 간격 설정 */
+}
+
+.memo-textarea {
+  padding: 9px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%; /* 원하는 너비로 설정 가능, 필요에 따라 조절 */
+  height: 40px; /* 원하는 높이로 설정 가능 */
+  resize: none; /* 크기 조정 비활성화 */
+}
+
+.memo-container strong {
+  font-weight: bold; /* 글꼴 두께 조절 */
+  font-size: 10px; /* 글꼴 크기 조절 */
+  color: #333; /* 텍스트 색상 조정 */
+  margin-right: 10px; /* 텍스트와 textarea 사이의 간격 */
+  display: flex; /* 수평 정렬을 위한 설정 */
+  align-items: center; /* 수직 중앙 정렬 */
+}
+
+
+
 
 </style>

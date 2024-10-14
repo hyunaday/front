@@ -24,7 +24,7 @@
       <div class="card">
         <!-- 명함 목록 표시: isCardListVisible가 true일 때 -->
         <div class="card-list" v-if="isCardListVisible">
-          <div v-for="card in businessCardList" :key="card.idx" class="card-item" @click="openCardDetailModal(card)">
+          <div v-for="card in businessCardList" :key="card.idx" class="card-item" @click="goToBusinessCardDetail(card.idx)">
             <div class="card-content">
               <div class="card-text">
                 <p><strong>{{ card.name || '이름 없음' }}</strong></p>
@@ -161,7 +161,6 @@
   </div>
 </template>
 
-
 <script>
 import FooterNav from '../../components/FooterNav.vue';
 import Header from '../../components/Header.vue';
@@ -276,26 +275,11 @@ export default {
 }
 ,
 
-    openCardDetailModal(card) {
-      this.selectedCard = card; // 선택된 카드 설정
-      this.editSelectedCard = { ...card }; // 카드 데이터 복사
-      this.isCardDetailModalVisible = true; // 모달 표시
-    },
-    closeCardDetailModal() {
-      this.isCardDetailModalVisible = false; // 모달 숨김
-      this.selectedCard = null; // 선택된 카드 초기화
-    },
-    saveCardDetails() {
-      // 선택된 카드 세부 정보 저장 로직 추가
-      console.log('Saving card details:', this.editSelectedCard);
-      this.closeCardDetailModal(); // 모달 닫기
-    },
     goToaddBusinessCard() {
       this.$router.push('/addBusinessCard'); // 추가 명함 페이지로 이동
     },
     goToBusinessCardDetail(businessCardIdx) {
-      const redirectUrl = `/friend-card-registration/${businessCardIdx}`; // 페이지 이동 URL 생성
-      this.$router.push(redirectUrl); // 해당 URL로 이동
+      this.$router.push(`/friend-card-registration/${businessCardIdx}`);
     },
   },
 };
