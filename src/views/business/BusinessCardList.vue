@@ -24,28 +24,20 @@
       <div class="card">
         <!-- 명함 목록 표시: isCardListVisible가 true일 때 -->
         <div class="card-list" v-if="isCardListVisible">
-          <div
-            v-for="card in cardList"
-            :key="card.id"
-            class="card-item"
-            @click="openCardDetailModal(card)"
-          >
+          <div v-for="card in businessCardList" :key="card.idx" class="card-item" @click="openCardDetailModal(card)">
             <div class="card-content">
               <div class="card-text">
-                <p>
-                  <strong>{{ card.name }}</strong>
-                </p>
-                <p>{{ card.position }} / {{ card.part }}</p>
-                <p>{{ card.company }}</p>
+                <p><strong>{{ card.name || '이름 없음' }}</strong></p>
+                <p>{{ card.position || '직책 없음' }} / {{ card.part || '부서 없음' }}</p>
+                <p>{{ card.company || '회사 정보 없음' }}</p>
               </div>
               <div class="preview-box-small">
-                <!-- 카드의 상세 정보 표시 -->
                 <h3>{{ card.company }}</h3>
                 <p>{{ card.address }}</p>
                 <p>{{ card.name }}</p>
                 <p>{{ card.position }}</p>
                 <p>{{ card.part }}</p>
-                <p>{{ card.phone_num }}</p>
+                <p>{{ card.phoneNumber }}</p>
                 <p>{{ card.tel_num }}</p>
                 <p>{{ card.email }}</p>
               </div>
@@ -58,9 +50,9 @@
           <h3>{{ formData.company || '회사 정보 없음' }}</h3>
           <p>이름: {{ formData.name }}</p>
           <p>직책: {{ formData.position }}</p>
-          <p>부서: {{ formData.part }}</p>
-          <p>휴대전화: {{ formData.phone_num }}</p>
-          <p>유선전화: {{ formData.tel_num }}</p>
+          <p>부서: {{ formData.part }}</p>  <!-- '부서'를 'part'로 수정 -->
+          <p>휴대전화: {{ formData.phoneNumber }}</p>  <!-- '휴대전화'를 'phoneNumber'로 수정 -->
+          <p>유선전화: {{ formData.phoneLandline }}</p>
           <p>이메일: {{ formData.email }}</p>
           <p>주소: {{ formData.address }}</p>
           <p>메모: {{ formData.memo || '메모 없음' }}</p>
@@ -73,17 +65,17 @@
 
     <!-- 새로운 명함 상세 모달 -->
     <div
-      v-if="isCardDetailModalVisible"
-      class="modal"
-      @click="closeCardDetailModal"
-    >
-      <div class="modal-content card-detail-container" @click.stop>
-        <div class="modal-header">
-          <button class="close-btn" @click="closeCardDetailModal">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-          <h3>{{ selectedCard.company || '회사 정보 없음' }}</h3>
-        </div>
+    v-if="isCardDetailModalVisible"
+    class="modal"
+    @click="closeCardDetailModal"
+  >
+    <div class="modal-content card-detail-container" @click.stop>
+      <div class="modal-header">
+        <button class="close-btn" @click="closeCardDetailModal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <h3>{{ selectedCard.company || '회사 정보 없음' }}</h3>
+      </div>
 
         <div class="card-detail-form">
           <div class="form-row">
@@ -108,7 +100,7 @@
           </div>
           <div class="form-row">
             <label class="form-label">휴대전화:</label>
-            <input v-model="editSelectedCard.phone_num" type="tel" />
+            <input v-model="editSelectedCard.phoneNumber" type="text" />
           </div>
           <div class="form-row">
             <label class="form-label">유선전화:</label>
@@ -126,11 +118,11 @@
 
         <!-- 저장 및 삭제 버튼 -->
         <div class="modal-buttons">
-          <button @click="saveCardDetails">저장</button>
-          <button @click="deleteCardDetails">삭제</button>
-        </div>
+        <button @click="saveCardDetails">저장</button>
+        <button @click="deleteCardDetails">삭제</button>
       </div>
     </div>
+  </div>
 
     <!-- 수정 bottom-sheet -->
     <bottom-sheet id="editBottomSheet" title="명함 수정">
@@ -152,7 +144,7 @@
           <input v-model="editData.part" type="text" />
 
           <label>휴대전화:</label>
-          <input v-model="editData.phone_num" type="tel" />
+          <input v-model="editData.phoneNumber" type="text" />
 
           <label>유선전화:</label>
           <input v-model="editData.tel_num" type="tel" />
@@ -162,20 +154,19 @@
         </div>
         <div class="modal-buttons">
           <button @click="saveChanges">저장</button>
-          <!-- 변경 사항 저장 버튼 -->
           <button @click="closeBottomSheet">취소</button>
-          <!-- 취소 버튼 -->
         </div>
       </main>
     </bottom-sheet>
   </div>
 </template>
 
+
 <script>
 import FooterNav from '../../components/FooterNav.vue';
 import Header from '../../components/Header.vue';
 import QrcodeVue from 'qrcode.vue'; // QR 코드 라이브러리
-import apiClient from '../../api/axios'; // API 클라이언트 import
+import apiClient from '../../api/axios';
 
 export default {
   name: 'BusinessCard',
@@ -187,6 +178,7 @@ export default {
   data() {
     return {
       isCardListVisible: true,
+      businessCardList: [], // 명함 목록을 저장할 배열
       formData: {
         name: '',
         phone: '',
@@ -199,7 +191,7 @@ export default {
         memo: '',
       }, // 나의 명함 데이터
 
-      cardList: [], // 명함 목록 추가
+      cardList: [], // 명함 목록
       isCardDetailModalVisible: false, // 명함 상세 모달 표시 상태
       selectedCard: null, // 선택된 명함 데이터
       editSelectedCard: {}, // 명함 상세 모달 수정 데이터
@@ -216,7 +208,8 @@ export default {
   created() {
     // 현재 나의 명함 idx를 로드
     this.idx = this.$route.params.idx; // URL 파라미터에서 idx를 가져옵니다.
-    this.fetchBusinessCard(this.idx); // API 호출
+    this.fetchBusinessCardList(); // 명함 목록 API 호출
+    // this.fetchBusinessCard(this.idx); // 필요하다면 추가적으로 호출
   },
   methods: {
     showCardList() {
@@ -225,17 +218,64 @@ export default {
     goBackToMyCard() {
       this.$router.push('/businesscard'); // Vue Router를 사용하여 이동
     },
-    async fetchBusinessCard(idx) {
+
+    async fetchBusinessCardList() {
       try {
-        const response = await apiClient.get(`/businessCard/friends/all`); // API 호출
-        // 응답 결과로 formData 업데이트
-        this.formData = response.data;
-        // 명함 목록을 가져오는 경우 필요시 추가
-        // this.cardList = response.data.cards || []; // 명함 목록이 필요한 경우 추가
+        const response = await apiClient.get('/businessCard/friends/all');
+        console.log('Response:', response.data);
+
+        const { isSuccess, code, result } = response.data;
+
+        if (isSuccess) {
+          if (result && result.businessCardList && result.businessCardList.length > 0) {
+            this.businessCardList = result.businessCardList;
+            console.log('명함 목록:', this.businessCardList);
+          } else {
+            console.log('명함 목록이 비어 있습니다.');
+          }
+        } else {
+          // 특정 오류 코드 처리
+          switch (code) {
+            case 'BUSINESSCARD4004':
+              this.showAddBusinessCardModal();
+              break;
+            default:
+              alert(`오류가 발생했습니다: ${response.data.message}`);
+          }
+        }
       } catch (error) {
-        console.error('Error fetching business card:', error);
+        console.error('Error fetching business card list:', error);
+        if (error.response) {
+          console.error('Response data:', error.response.data);
+          console.error('Response status:', error.response.status);
+          console.error('Response headers:', error.response.headers);
+          alert(`${error.response.data.message}, 친구 명함을 등록해주세요.`);
+          window.location.href = '/addBusinessCard';  // 리다이렉트 (필요한 경우에만 주석 해제)
+        } 
       }
     },
+
+    async deleteCardDetails() {
+  try {
+    // editSelectedCard의 복사본 생성
+    const cardToDelete = { ...this.editSelectedCard };
+
+    const response = await apiClient.delete(`/businessCard/friends?businessCardIdx=${cardToDelete.idx}`);
+    
+    if (response.data.isSuccess) {
+      alert('명함이 성공적으로 삭제되었습니다.');
+      this.closeCardDetailModal(); // 모달 닫기
+      this.fetchBusinessCardList(); // 명함 목록 새로 고침
+    } else {
+      alert(`명함 삭제에 실패했습니다: ${response.data.message}`);
+    }
+  } catch (error) {
+    console.error('명함 삭제 중 오류 발생:', error);
+    alert('명함 삭제 중 오류가 발생했습니다. 다시 시도해 주세요.');
+  }
+}
+,
+
     openCardDetailModal(card) {
       this.selectedCard = card; // 선택된 카드 설정
       this.editSelectedCard = { ...card }; // 카드 데이터 복사
@@ -250,17 +290,17 @@ export default {
       console.log('Saving card details:', this.editSelectedCard);
       this.closeCardDetailModal(); // 모달 닫기
     },
-    deleteCardDetails() {
-      // 선택된 카드 삭제 로직 추가
-      console.log('Deleting card:', this.editSelectedCard);
-      this.closeCardDetailModal(); // 모달 닫기
-    },
     goToaddBusinessCard() {
       this.$router.push('/addBusinessCard'); // 추가 명함 페이지로 이동
+    },
+    goToBusinessCardDetail(businessCardIdx) {
+      const redirectUrl = `/friend-card-registration/${businessCardIdx}`; // 페이지 이동 URL 생성
+      this.$router.push(redirectUrl); // 해당 URL로 이동
     },
   },
 };
 </script>
+
 
 <style scoped>
 .input {
@@ -376,19 +416,26 @@ select {
 .modal-content {
   padding: 10px;
   text-align: center;
-  position: relative; /* 내용이 절대 위치 설정된 요소에 대해 상대적임을 나타냄 */
+  position: relative;
   width: 300px;
   overflow-y: auto;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  display: flex; /* 플렉스 박스 사용 */
-  flex-direction: column; /* 세로 방향 정렬 */
-  align-items: center; /* 아이템을 중앙 정렬 */
-  justify-content: center; /* 아이템을 중앙 정렬 */
-  text-align: center; /* 텍스트 중앙 정렬 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   background-color: rgba(255, 255, 255, 0.9);
+  transform: translateY(-48%); /* 팝업창을 위로 20% 이동 */
 }
 
-/* 추가된 스타일 */
+/* 카드 아이템 스타일 */
+.card-item {
+  border-bottom: 2px solid #ccc;
+  justify-content: space-between;
+}
+
+/* 카드 내용 스타일 */
 .card-content {
   display: flex;
   justify-content: space-between;
@@ -400,6 +447,10 @@ select {
   flex: 1;
   padding-right: 10px; /* 이미지와 텍스트 간격 확보 */
   word-wrap: break-word; /* 텍스트가 너무 길 경우 줄바꿈 처리 */
+}
+
+.card-text p {
+  margin: 3px 0; /* 문단 간격 줄임 */
 }
 
 .preview-box-small {
@@ -418,6 +469,7 @@ select {
   font-weight: bold; /* 굵게 */
   text-align: left;
   margin: 0px;
+  margin-bottom: 2px;
 }
 
 /* 이름 */
@@ -626,16 +678,16 @@ select {
 /* 명함 목록 스타일 */
 .card-list {
   background-color: white;
-  padding: 20px;
+  padding: 12px;
   border-top-right-radius: 0;
   border-bottom-right-radius: 10px;
   border-bottom-left-radius: 10px;
-  /* width: 350px; */
+  width: 90%; /* 너비를 90%로 증가 */
+  max-width: 400px; /* 최대 너비 설정 */
   height: 470px;
-  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
   overflow-y: auto;
-  /* margin-top: 30px; */
   position: relative;
+  margin: 0 auto; /* 중앙 정렬 */
 }
 
 .divider {
