@@ -78,6 +78,7 @@
                 class="qr-code-image"
                 style="width: 140px; height: 140px"
               />
+            </div>
             <div
               v-if="qrCodeData"
               class="qr-code-container"

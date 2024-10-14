@@ -89,6 +89,7 @@ export default {
   font-size: 20px; /* 원하는 크기로 설정 */
   font-weight: bold; /* 선택적으로 굵게 설정할 수 있음 */
   text-align: center; /* 선택적으로 중앙 정렬할 수 있음 */
+  margin-top: 10px;
 }
 
 .header {
@@ -183,7 +184,7 @@ export default {
 .confirm-button {
   margin-top: 20px; /* 버튼과 카드 간 간격 조정 */
   padding: 10px 20px; /* 버튼 내부 여백 */
-  background-color: #4caf50; /* 버튼 색상 */
+  background-color: #6981d9; /* 버튼 색상 */
   color: white; /* 버튼 텍스트 색상 */
   border: none; /* 테두리 제거 */
   border-radius: 5px; /* 둥글게 */
@@ -193,6 +194,27 @@ export default {
 }
 
 .confirm-button:hover {
-  background-color: #45a049; /* 마우스 오버 시 색상 변경 */
+  background-color: #5266b1; /* 마우스 오버 시 색상 변경 */
 }
+.circle-background {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background-color: #6981d9;
+  border: 4px solid #71d785; /* Green border */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: glowing 2s infinite alternate; /* Glowing animation effect */
+}
+
+@keyframes glowing {
+  0% {
+    box-shadow: 0 0 10px #71d785, 0 0 20px #71d785, 0 0 30px #71d785;
+  }
+  100% {
+    box-shadow: 0 0 30px #71d785, 0 0 40px #71d785, 0 0 50px #71d785;
+  }
+}
+
 </style>
