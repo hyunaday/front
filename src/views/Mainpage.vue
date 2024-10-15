@@ -153,8 +153,8 @@
             >
               <div class="card-content">
                 <img :src="image" alt="추천 카드" class="card-image-fixed" />
-                <p class="cardTitle">{{ cardTitle[index] }}</p>
-                <p class="cardDescription">{{ cardDescriptions[index] }}</p>
+                <p class="cardTitle" v-html="cardTitle[index]"></p>
+                <p class="cardDescription" v-html="cardDescriptions[index]"></p>
               </div>
             </swiper-slide>
           </swiper>
@@ -200,19 +200,19 @@ export default {
     return {
       cardDescriptions: [
         "스타벅스 최대 60%할인은 기본교통·택시·통신 등 일상생활 할인!",
-        "통신·교통·외식 등 생활영역10%할인주유 리터당 60원 할인혜택!",
-        "대한항공 1천원당 1마일리지 적립공항 라운지 / 발레파킹 무료 이용",
-        "해외가맹점 최대 3% 포인트리 적립전월 실적없이 국내가맹점 0.3%적립",
-        "스카이패스 1500원당 최대3마일적립전세계 공항라운지 동반1인 무료",
-        "대한항공 및 저가항공사 15만원할인!국내가맹점1%+특별영역5%, 중복할인",
+        "통신·교통·외식 등 생활영역 10%할인 <br> 주유 리터당 60원 할인혜택!",
+        "쇼핑, 편의점 10% 청구할인실적 / 조건없이 <br> 국내가맹점 0.5%할인",
+        "해외가맹점 최대 3% 포인트리 적립전월 <br> 실적없이 국내가맹점 0.3%적립",
+        "스카이패스 1500원당 최대3마일 적립 전세계 <br> 공항라운지 동반1인 무료",
+        "대한항공 및 저가항공사 15만원할인!<br>국내가맹점+특별영역, 중복할인",
       ],
       cardTitle: [
         "카페 최대60%할인, 일상할인까지",
         "생활업종 할인으로 혜택 가득한 하루!",
-        "카드 하나로 누리는 항공 특화 서비스!",
-        "포인트리 적립받고 해외배송료 할인까지",
-        "여행도 프리미엄! 마일리지적립+ 라운지 무료",
-        "국내외 라운지 무료이용과 항공권 15만원 할인!",
+        "데일리 스탬프 모으면 전월실적 <br>채워드림!",
+        "포인트리 적립받고 <br>해외배송료 할인까지",
+        "여행도 프리미엄! <br> 마일리지적립 + 라운지 무료",
+        "라운지 무료이용과 항공권 할인!",
       ],
       showamount: false,
       accounts: [],
@@ -229,12 +229,12 @@ export default {
       },
       copyIcon: copyIcon,
       cardImages: [
-        "../src/assets/images/국민카드1.png",
-        "../src/assets/images/국민카드2.png",
-        "../src/assets/images/국민카드3.png",
-        "../src/assets/images/국민카드4.png",
-        "../src/assets/images/국민카드5.png",
-        "../src/assets/images/국민카드6.png",
+        "../src/assets/images/kbcard3.png",
+        "../src/assets/images/kbcard.png",
+        "../src/assets/images/kbcard2.png",
+        "../src/assets/images/kbcard4.png",
+        "../src/assets/images/kbcard5.png",
+        "../src/assets/images/kbcard6.png",
       ],
     };
   },
@@ -625,4 +625,70 @@ h4 {
 .cardDescription {
   font-size: 12px;
 }
+
+/* General styling adjustments for small devices */
+@media (max-width: 768px) {
+  .together-card {
+    flex-direction: column;
+    align-items: center;
+    height: auto; /* Adjust height */
+    text-align: center;
+    padding: 15px;
+  }
+
+  .together-card .text-content {
+    margin-bottom: 15px; /* Add space between text and button */
+    text-align: center;
+  }
+
+  .together-card .text-content h6 {
+    font-size: 14px; /* Adjust font size */
+    margin: 0;
+  }
+
+  .together-card .text-content p {
+    font-size: 24px; /* Adjust font size */
+    margin: 10px 0;
+  }
+
+  .together-card .btn {
+    width: 100%; /* Full width button */
+    max-width: 200px;
+  }
+
+  .human-image {
+    width: 150px; /* Smaller image */
+    position: static;
+    margin-top: 10px;
+  }
+}
+
+/* Extra small devices (phones) */
+@media (max-width: 576px) {
+  .together-card {
+    max-width: 90%;
+    margin: 0 auto 20px;
+    padding: 15px;
+  }
+
+  .together-card .text-content h6 {
+    font-size: 13px;
+  }
+
+  .together-card .text-content p {
+    font-size: 20px;
+  }
+
+  .together-card .btn {
+    font-size: 13px;
+    height: 40px;
+    max-width: 180px;
+  }
+
+  .human-image {
+    width: 120px;
+    margin-top: 15px;
+  }
+}
+
 </style>
