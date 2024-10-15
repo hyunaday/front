@@ -1,92 +1,68 @@
 <template>
-  <div class="main-container">
-      <div class="center-container">
-          <div class="coin">
-              <span class="coin-text">₩</span>
-          </div>
-          <div class="timer">
-              <span>{{ formattedTime }}</span>
-          </div>
+    <div class="main-container">
+      <div class="loading-container">
+        <div class="loading"></div>
+        <div id="loading-text">loading</div>
       </div>
-  </div>
-</template>
-
-<script>
-export default {
-  name: 'Loading',
-  data() {
-      return {
-          remainingTime: 120, // 초기 남은 시간 설정 (초)
-      };
-  },
-  computed: {
-      formattedTime() {
-          const minutes = Math.floor(this.remainingTime / 60);
-          const seconds = this.remainingTime % 60;
-          return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-      },
-  },
-  mounted() {
-      this.startTimer();
-  },
-  methods: {
-      startTimer() {
-          const interval = setInterval(() => {
-              if (this.remainingTime > 0) {
-                  this.remainingTime--;
-              } else {
-                  clearInterval(interval); // 타이머 종료
-              }
-          }, 1000); // 1초마다 감소
-      },
-  },
-}
-</script>
-
-<style scoped>
-.center-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh; /* 화면 높이 전체 사용 */
-}
-
-.coin {
-  width: 70px; /* 크기 줄임 */
-  height: 90px; /* 두께를 줄임 */
-  background: linear-gradient(145deg, #f9d71c, #d4af37); /* 금색 그라데이션 */
-  border-radius: 50%;
-  box-shadow: 
-      0 10px 30px rgba(0, 0, 0, 0.4), /* 하단 그림자 강화 */
-      0 -5px 20px rgba(255, 255, 255, 0.2);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  animation: spin 1s linear infinite;
-}
-
-.coin-text {
-  font-size: 30px; /* 텍스트 크기 조정 */
-  font-weight: bold;
-  color: white;
-  position: absolute;
-  z-index: 2;
-}
-
-.timer {
-  margin-top: 20px; /* 코인과의 간격 */
-  font-size: 24px; /* 텍스트 크기 조정 */
-  color: #333; /* 텍스트 색상 */
-}
-
-@keyframes spin {
-  from {
-      transform: rotateY(0);
+    </div>
+  </template>
+  
+  <script>
+  export default {
+    name: 'Loading',
+  };
+  </script>
+  
+  <style scoped>
+  /* 로딩 애니메이션 스타일 */
+  @keyframes rotate-loading {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
-  to {
-      transform: rotateY(1turn);
+  
+  @keyframes loading-text-opacity {
+    0%, 20% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
   }
-}
-</style>
+  
+  .loading-container,
+  .loading {
+    height: 100px;
+    position: relative;
+    width: 100px;
+    border-radius: 100%;
+  }
+  
+  .loading-container { 
+    margin: 40px auto; 
+  }
+  
+  .loading {
+    border: 2px solid transparent;
+    border-color: transparent #fff transparent #FFF;
+    animation: rotate-loading 1.5s linear infinite;
+    transform-origin: 50% 50%;
+  }
+  
+  .loading-container:hover .loading {
+    border-color: transparent #E45635 transparent #E45635;
+    transition: all 0.5s ease-in-out;
+  }
+  
+  #loading-text {
+    animation: loading-text-opacity 2s linear infinite;
+    color: #ffffff;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 10px;
+    font-weight: bold;
+    margin-top: 45px;
+    opacity: 0;
+    position: absolute;
+    text-align: center;
+    text-transform: uppercase;
+    top: 0;
+    width: 100px;
+  }
+  </style>
+  
