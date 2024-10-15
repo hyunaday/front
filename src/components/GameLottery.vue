@@ -141,7 +141,7 @@ export default {
 
             if (parsedMessage.type === 'GAME_RESULT') {
               // 서버에서 받은 당첨자 정보
-              showModal = false;
+              this.showModal = false;
               this.winner = parsedMessage.memberName;
               this.targetAngle = parsedMessage.targetAngle;
               this.selectWinner(); // 당첨자를 바탕으로 룰렛을 돌림
