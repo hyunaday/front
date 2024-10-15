@@ -2,7 +2,7 @@
   <div class="main-container">
     <Header />
     <div class="my-assets">
-      <h1><strong>{{ userName }}</strong>님의 총 자산</h1>
+      <h1><strong>{{ accountHolderName }}</strong>님의 총 자산</h1>
 
       <div class="total-assets">
         <span class="amount">{{ formatNumber(transactionAmount) }}원</span>
@@ -149,7 +149,7 @@ export default {
   },
   data() {
     return {
-      userName: '김국민',
+      accountHolderName: '',  // userName을 accountHolderName으로 변경
       accounts: [],
       savingsAccount: {
         balance: 1000000,
@@ -226,7 +226,9 @@ export default {
         const response = await apiClient.get('/account/all');
         
         if (response.data.isSuccess && response.data.result && response.data.result.accountList) {
-          this.accounts = response.data.result.accountList.map(account => ({
+          const accountList = response.data.result.accountList;
+          this.accountHolderName = accountList[0].accountHolderName; // 첫 번째 계좌의 소유자 이름을 가져옴
+          this.accounts = accountList.map(account => ({
             name: account.bankName,
             balance: account.amount,
             idx: account.idx,
