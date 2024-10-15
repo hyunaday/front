@@ -6,10 +6,26 @@
 
 <script lang="ts">
 import { ref, onMounted } from 'vue';
+import { useRegisterSW } from 'virtual:pwa-register/vue'; // PWA 서비스 워커 등록 임포트
+
 export default {
   name: 'App',
   setup() {
     const deferredPrompt = ref<Event | null>(null);
+
+    // PWA 서비스 워커 등록 및 업데이트 관리
+    const { updateServiceWorker } = useRegisterSW({
+      onNeedRefresh() {
+        // 업데이트 필요할 때 호출됨
+        if (confirm('새로운 업데이트가 있습니다. 지금 업데이트하시겠습니까?')) {
+          updateServiceWorker(); // 서비스 워커 업데이트
+        }
+      },
+      onOfflineReady() {
+        console.log('앱이 오프라인에서도 준비되었습니다!');
+      },
+    });
+
     onMounted(() => {
       // beforeinstallprompt 이벤트 리스너 추가
       window.addEventListener('beforeinstallprompt', (event) => {
@@ -19,6 +35,7 @@ export default {
         showInstallPrompt();
       });
     });
+
     const showInstallPrompt = () => {
       if (deferredPrompt.value) {
         deferredPrompt.value.prompt(); // 사용자에게 설치 프롬프트 표시
@@ -32,6 +49,7 @@ export default {
         });
       }
     };
+
     return {
       showInstallPrompt,
     };
@@ -40,5 +58,8 @@ export default {
 </script>
 
 <style>
-/* 글로벌 스타일 추가 가능 */
+#app {
+  background-color: #6981d9; /* 원하는 배경색 */
+  min-height: 100vh; /* 전체 화면에 적용되도록 */
+}
 </style>
