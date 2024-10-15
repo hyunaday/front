@@ -70,7 +70,7 @@
 
 <script>
 // 아래에 있는 내용은 동일하므로 수정할 필요 없음
-import { useOrderInfoStore } from '../../stores/orderStore.js'; // Pinia store 사용
+import { useOrderInfoStore, useOrderStore } from '../../stores/orderStore.js'; // Pinia store 사용
 import { useSocketStore } from '../../stores/socketStore.js'; // Socket store 사용
 import { useMemberStore } from '../../stores/MemberStore.js';
 import { onMounted, ref, watch } from 'vue';
@@ -80,13 +80,16 @@ import { useRouter } from 'vue-router'; // router 사용
 export default {
   setup() {
     const orderInfoStore = useOrderInfoStore(); // Pinia store 인스턴스
+    const orderStore = useOrderStore();
     const socketStore = useSocketStore(); // Socket store 인스턴스
     const memberStore = useMemberStore();
     const selectedPaymentAmount = ref(0);
     const defaultImage = hamburgerImage; // 기본 이미지 (없을 경우)
     const router = useRouter(); // router 사용 선언
+
     const isReadySent = ref(false); // 선택 완료 상태를 추적하는 변수
     const errorMessage = ref(''); // 에러 메시지 상태
+
 
     const initializeSelectedCount = () => {
       // 메뉴 리스트에 selectedCount와 selectedByUser를 초기화
@@ -259,7 +262,7 @@ export default {
 
     onMounted(() => {
       // API 호출로 주문 정보 가져오기
-      orderInfoStore.getOrderInfo(1, 1); // orderIdx, marketIdx는 예시로 넣었으며 실제 값을 사용
+      orderInfoStore.getOrderInfo(orderStore.orderIdx, 1); // orderIdx, marketIdx는 예시로 넣었으며 실제 값을 사용
 
       // selectedCount 및 selectedByUser 필드 초기화
       initializeSelectedCount();
