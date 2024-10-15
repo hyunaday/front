@@ -111,7 +111,10 @@ export default {
       const memberStore = useMemberStore();
       const orderInfoStore = useOrderInfoStore();
 
-      this.isOwner = memberStore.memberId === orderInfoStore.ownerMemberIdx;
+      this.isOwner = memberStore.idx === orderInfoStore.ownerMemberIdx;
+      console.log("memberStore.idx: ", memberStore.idx);
+      console.log("orderInfoStore.ownerMemberIdx: ", orderInfoStore.ownerMemberIdx);
+      console.log("isOwner: ", this.isOwner);
     },
     handleSocketResponse() {
       const socketStore = useSocketStore();

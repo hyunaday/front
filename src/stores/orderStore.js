@@ -84,6 +84,24 @@ export const useOrderInfoStore = defineStore('orderInfo', {
           console.error("Error loading order info:", error);
         });
     },
+    getOwnerInfo(orderIdx) {
+      apiClient.get("/order/room", {
+          params: {
+            orderIdx: orderIdx,
+          },
+        })
+        .then((response) => {
+          if (response.data.isSuccess) {
+            const orderData = response.data.result;
+            console.log("Owner Info:", orderData);
+            // 데이터를 상태에 저장
+            this.ownerMemberIdx = orderData.ownerMemberIdx;
+          } else {
+            console.error("Failed to load order info:", response.data.message);
+          }
+        }
+      );
+    },
   }
 });
 

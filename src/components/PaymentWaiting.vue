@@ -79,6 +79,7 @@ const joinRoom = async () => {
 // 주문 정보 가져오기
 const loadOrderInfo = async () => {
   orderInfoStore.getOrderInfo(orderIdx, marketIdx);
+  orderInfoStore.getOwnerInfo(orderIdx);
   orderStore.setOrderIdx(orderIdx);
 };
 
