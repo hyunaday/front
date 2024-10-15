@@ -43,12 +43,12 @@ export default {
       if (routeName === 'PayInfo') {
         console.log("type = ", useOrderStore.type);
         if (orderStore.type === 'BY_PRICE')  {
-          sendSocket(false);
+          this.sendSocket(false);
           this.$router.push('/requestPay');
         }
       }
       else if (routeName === 'LotteryGame') {
-        sendSocket(true);
+        this.sendSocket(true);
         this.$router.push('/lottery-game'); // 룰렛 돌리기 페이지로 수정
       }
     },

@@ -15,7 +15,7 @@ export const useSocketStore = defineStore('socket', {
     connect() {
       if (this.stompClient) return; // 이미 연결되어 있으면 반환
 
-      this.stompClient = Stomp.client('wss://together-pay.store/ws');
+      this.stompClient = Stomp.client('ws://localhost:8080/ws');
 
       const orderStore = useOrderStore(); // orderStore 인스턴스 가져오기
       const memberStore = useMemberStore();
