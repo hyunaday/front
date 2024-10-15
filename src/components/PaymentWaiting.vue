@@ -145,7 +145,6 @@ const closeCompletionMessage = () => {
 // 컴포넌트가 마운트될 때 소켓 연결 및 방 입장, 주문 정보 로드
 onMounted(async () => {
   await loadOrderInfo();
-  await loadOrderOwnerInfo();
   joinRoom();
   updateParticipantCount();
 });
