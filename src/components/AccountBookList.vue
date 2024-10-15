@@ -27,13 +27,16 @@
     </div>
     <!-- 검색창 추가 -->
     <div class="search-bar">
-      <input
-        type="text"
-        v-model="searchQuery"
-        @keydown.enter="executeSearch"
-        placeholder="검색어를 입력하세요"
-        class="search-input"
-      />
+      <div class="search-input-container">
+        <input
+          type="text"
+          v-model="searchQuery"
+          @keydown.enter="executeSearch"
+          placeholder="검색어를 입력하세요"
+          class="search-input"
+        />
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+      </div>
     </div>
     <!-- 검색 결과가 있는 경우 필터링된 데이터로 표시, 없을 경우 원래 데이터 표시 -->
     <div
@@ -44,7 +47,7 @@
       class="entry-group"
     ></div>
     <!-- 필터링 및 카테고리 선택 버튼을 왼쪽 아래에 고정 -->
-    <div class="filter-container">
+    <div class="filter-container1">
       <!-- 수입/지출 필터링 버튼 -->
       <button
         :class="{ active: selectedFilter === 'income' }"
@@ -320,13 +323,13 @@
             </div>
           </div>
           <!-- 삭제 버튼 -->
-          <button
+          <!-- <button
             v-if="entry"
-            @click="deleteEntry(groupIndex, entryIndex)"
+            @click.stop="deleteEntry(groupIndex, entryIndex)"
             class="delete-btn"
           >
             <i class="fa-regular fa-trash-can"></i>
-          </button>
+          </button> -->
         </div>
       </div>
     </div>
@@ -426,6 +429,8 @@ export default {
         "Nov",
         "Dec",
       ],
+      calendar: [],
+      data: {},
       // 추가 데이터
       storeName: "",
       editablePrice: 0,
@@ -451,7 +456,7 @@ export default {
           total +
           entryGroup.entries
             .filter((entry) => entry.amount < 0)
-            .reduce((sum, entry) => sum + entry.amount, 0)
+            .reduce((sum, entry) => sum + Math.abs(entry.amount), 0) // 절대값으로 변환
         );
       }, 0);
     },
@@ -675,17 +680,55 @@ export default {
       }
       return null;
     },
-    // 삭제 api
+
+    // 삭제
     // deleteEntry(groupIndex, entryIndex) {
-    //   // 선택된 항목을 entries 배열에서 제거
-    //   this.entries[groupIndex].entries.splice(entryIndex, 1);
+    //   if (confirm("정말로 이 거래 내역을 삭제하시겠습니까?")) {
+    //     // 선택된 항목을 entries 배열에서 제거
+    //     this.entries[groupIndex].entries.splice(entryIndex, 1);
 
-    //   // 그룹 내 항목이 없을 경우 그룹 자체도 제거
-    //   if (this.entries[groupIndex].entries.length === 0) {
-    //     this.entries.splice(groupIndex, 1);
+    //     // 그룹 내 항목이 모두 삭제되었을 경우, 해당 그룹도 삭제
+    //     if (this.entries[groupIndex].entries.length === 0) {
+    //       this.entries.splice(groupIndex, 1);
+    //     }
+
+    //     // Vue가 데이터 변경을 감지할 수 있도록 entries 배열을 재할당
+    //     this.entries = [...this.entries];
     //   }
+    // },
 
-    //   console.log("거래 내역이 성공적으로 삭제되었습니다.");
+    // 삭제 api
+    // async deleteEntry(groupIndex, entryIndex) {
+    //   const entry = this.entries[groupIndex].entries[entryIndex];
+    //   const entryId = entry.id; // 삭제할 항목의 ID (API에 맞게 설정)
+
+    //   if (confirm("정말로 이 거래 내역을 삭제하시겠습니까?")) {
+    //     // DELETE 요청으로 서버에 삭제 요청
+    //     apiClient
+    //       .delete(`/transaction?idx={idx}`)
+    //       .then((response) => {
+    //         console.log("서버 응답:", response.data);
+
+    //         if (response.data.isSuccess) {
+    //           alert("거래 내역이 삭제되었습니다.");
+    //           // 삭제 성공 시 화면에서도 삭제 반영
+    //           this.entries[groupIndex].entries.splice(entryIndex, 1);
+
+    //           // 그룹 내 항목이 없을 경우 그룹 전체 삭제
+    //           if (this.entries[groupIndex].entries.length === 0) {
+    //             this.entries.splice(groupIndex, 1);
+    //           }
+
+    //           this.entries = [...this.entries]; // Vue 반응형으로 상태 업데이트
+    //         } else {
+    //           alert("삭제 실패: " + response.data.message);
+    //         }
+    //       })
+    //       .catch((error) => {
+    //         console.error("거래 내역 삭제 중 오류 발생:", error);
+    //         alert("거래 내역 삭제 중 오류가 발생했습니다.");
+    //       });
+    //   }
     // },
 
     executeSearch() {
@@ -770,14 +813,12 @@ export default {
 <style scoped>
 .calendar-container {
   padding: 10px;
-  width: 100%;
-  max-width: 320px;
+  width: 320px;
   overflow-y: auto; /* 세로 스크롤 추가 */
   max-height: 70vh; /* 최대 높이 설정 */
   top: 0; /* 페이지 상단에 고정 */
   margin-top: 10px;
   text-align: center;
-  width: 260px;
   font-family: "Poppins", sans-serif; /* Poppins 폰트 적용 */
 
   /* 스크롤바 숨기기 */
@@ -821,6 +862,7 @@ export default {
 .amount {
   font-size: 1.2rem;
   margin-left: 0.5rem;
+  margin-right: 10px;
 }
 .expense .amount {
   font-size: 1rem;
@@ -830,18 +872,7 @@ export default {
   font-size: 1rem;
   color: #6981d9;
 }
-.search-bar {
-  margin: 1rem 0;
-  text-align: center;
-}
-.search-input {
-  padding: 0.5rem;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  width: 100%;
-  height: 35px;
-  max-width: 300px;
-}
+
 .entry-header {
   display: flex;
   justify-content: space-between;
@@ -930,7 +961,7 @@ div.total-amount {
 .amount {
   flex: 1;
   text-align: right;
-  font-size: 0.8rem;
+  font-size: 1rem;
 }
 /* 버튼 컨테이너 스타일 - 오른쪽 정렬 */
 .button-container {
@@ -941,13 +972,13 @@ div.total-amount {
 .plus-btn {
   background-color: #ffffff;
   border: none;
-  border-radius: 5px;
-  width: 28px;
-  height: 28px;
+  border-radius: 1px;
+  width: 25px;
+  height: 25px;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 18px;
+  font-size: 15px;
   cursor: pointer;
 }
 .plus-btn:hover {
@@ -959,19 +990,84 @@ div.total-amount {
 .editable-sheet {
   padding: 20px;
 }
+
+/* 검색창 */
+.search-bar {
+  margin: 1rem 0;
+  text-align: center;
+}
+.search-input-container {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  max-width: 300px;
+}
+.search-input {
+  width: 100%;
+  padding: 0.5rem;
+  padding-right: 30px; /* 아이콘 위치를 위한 여백 */
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  height: 35px;
+  font-size: 1rem;
+}
+.search-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #888;
+  font-size: 1rem;
+  pointer-events: none; /* 아이콘 클릭 시 input에 영향 없음 */
+}
+/* .filter-container 내의 select 크기 */
+.filter-container select[data-v-70da4295] {
+  word-wrap: normal;
+  background-color: #ffffff;
+  border-radius: 8px;
+  color: #888;
+  padding: 1px 6px;
+  font-size: 12px; /* .filter-container에 적용할 작은 글씨 크기 */
+  height: 20px;
+}
+
+/* filter-container1 스타일 */
+.filter-container1 {
+  display: flex;
+  flex-direction: row; /* 가로 방향으로 정렬 */
+  align-items: center;
+  gap: 5px;
+  margin-left: 120px;
+}
+
+.filter-container1 button {
+  padding: 1px 6px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #ffffff;
+  color: #888;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.filter-container1 button.active {
+  border: 1px solid #6981d9;
+  background-color: #fff;
+  color: #6981d9;
+}
+
+.filter-container1 button:hover {
+  background-color: #e0e0e0;
+}
+
 /* 필터링 버튼 스타일 */
 .filter-container {
   margin: 1rem 0;
   display: flex;
-  gap: 10px;
+  gap: 5px;
+  margin-left: 140px;
 }
-.filter-container button {
-  border: 1px solid #ccc;
-  background-color: #ffffff;
-  border-radius: 5px;
-  cursor: pointer;
-  color: #888;
-}
+
 .filter-container button.active {
   border: 1px solid #6981d9;
   background-color: #fff;
@@ -1020,7 +1116,7 @@ div.total-amount {
 select {
   word-wrap: normal;
   background-color: #ffffff;
-  border-radius: 5px;
+  border-radius: 8px;
   color: #888;
   padding: 1px 6px;
 }
@@ -1146,6 +1242,7 @@ select {
   border: none;
   color: white;
   width: 200px; /* 너비를 더 넓게 설정 */
+  height: 50px;
   padding: 10px 0; /* 패딩을 수직으로만 설정 */
   border-radius: 5px;
   font-size: 18px;

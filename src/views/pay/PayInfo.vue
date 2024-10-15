@@ -26,7 +26,8 @@
         <div v-for="(item, index) in orderInfo.orderMenuList" :key="index" class="payment-item">
           <img :src="item.image" alt="메뉴 이미지" class="item-image" />
           <div class="item-info">
-            <span class="item-name">{{ item.menuName }}</span>
+            <!-- 메뉴 이름과 갯수를 함께 표시 -->
+            <span class="item-name">{{ item.menuName }} (x{{ item.amount }})</span>
             <span class="item-price">{{ (item.price * item.amount).toLocaleString() }}원</span>
           </div>
         </div>
@@ -59,7 +60,6 @@ export default {
     const orderIdx = route.query.orderIdx;
     const marketIdx = route.query.marketIdx;
     
-
     // API로부터 주문 정보를 가져오는 함수
     const fetchOrderInfo = async () => {
       orderInfoStore.getOrderInfo(orderIdx, marketIdx); // orderIdx, marketIdx를 사용하여 API 요청
@@ -89,6 +89,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 .main-container {
