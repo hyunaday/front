@@ -2,11 +2,12 @@
   <div class="main-container">
     <Header />
     <div class="complete-page">
-      <div class="logo">
-        <i class="fa-solid fa-circle-check logo-icon"></i>
+      <div class="Cards-icon">
+        <div class="circle-background">
+          <h1 class="amount">{{ formatNumber(amount) }}원</h1>
+          <h2 class="status">송금 완료</h2>
+        </div>
       </div>
-      <h1 class="amount">{{ formatNumber(amount) }}원</h1>
-      <h2 class="status">송금 완료</h2>
       <div class="details-container">
         <div class="details-label">
           <p><strong>받는 분:</strong></p>
@@ -26,8 +27,8 @@
     <div v-if="showConfirmModal" class="modal-overlay">
       <div class="modal-content">
         <p>계속 송금하시겠습니까?</p>
-        <button @click="confirmTransfer" class="confirm-button">계속 송금하기</button>
-        <button @click="showConfirmModal = false" class="cancel-button">취소</button>
+        <button @click="confirmTransfer" class="confirm-button">추가 송금하기</button>
+        <button @click="goToHomePage" class="cancel-button">홈으로</button>
       </div>
     </div>
 
@@ -36,12 +37,12 @@
 </template>
 
 <script>
-import FooterNav from '../../components/FooterNav.vue';
-import Header from '../../components/Header.vue';
+import FooterNav from "../../components/FooterNav.vue";
+import Header from "../../components/Header.vue";
 import { useTransferStore } from "../../stores/TransferStore.js";
 
 export default {
-  name: 'Transfer3',
+  name: "Transfer3",
   components: {
     FooterNav,
     Header,
@@ -56,12 +57,12 @@ export default {
     },
     recipient() {
       return this.transferStore.recipient;
-    }
+    },
   },
   data() {
     return {
       showConfirmModal: false,
-      date: '',
+      date: "",
     };
   },
   mounted() {
@@ -72,27 +73,34 @@ export default {
       this.$router.push("/grouppay");
     },
     confirmTransfer() {
-      console.log('송금이 완료되었습니다.');
+      console.log("송금이 완료되었습니다.");
       this.showConfirmModal = false;
-      this.$router.push('/transfer');
+      this.$router.push("/transfer");
+    },
+    goToHomePage() {
+      this.showConfirmModal = false;
+      this.$router.push("/");
     },
     getCurrentDate() {
       const now = new Date();
       const options = {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
         hour12: false,
       };
-      return now.toLocaleString('ko-KR', options).replace(',', '').replace(/\//g, '-');
+      return now
+        .toLocaleString("ko-KR", options)
+        .replace(",", "")
+        .replace(/\//g, "-");
     },
     formatNumber(num) {
-      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    }
-  }
-}
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -101,37 +109,58 @@ export default {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%; /* 전체 너비 */
-  max-width: 400px; /* 최대 너비 설정 */
+  width: 100%;
+  max-width: 400px;
   padding: 30px;
   border-radius: 10px;
   text-align: center;
   margin-top: 30px;
 }
 
-.logo-icon {
-  font-size: 60px; /* 아이콘 크기 조정 */
-  color: #6981d9; /* 아이콘 색상 설정 */
-  margin-bottom: 15px; /* 아이콘과 텍스트 사이의 여백 */
+.Cards-icon {
+  margin-bottom: 20px;
+}
+
+.circle-background {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background-color: #6981d9;
+  border: 4px solid #71d785;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  animation: glowing 2s infinite alternate;
+  padding: 20px;
 }
 
 .amount {
-  font-size: 32px;
+  font-size: 24px;
   font-weight: bold;
-  margin: 15px 0;
+  color: white;
+  margin: 5px 0;
 }
 
 .status {
-  font-size: 30px;
-  color: #333;
-  font-weight: bold;
+  font-size: 18px;
+  color: #ffffff;
+}
+
+@keyframes glowing {
+  0% {
+    box-shadow: 0 0 10px #71d785, 0 0 20px #71d785, 0 0 30px #71d785;
+  }
+  100% {
+    box-shadow: 0 0 30px #71d785, 0 0 40px #71d785, 0 0 50px #71d785;
+  }
 }
 
 .details-container {
   display: flex;
   justify-content: space-between; /* 좌우 정렬 */
   width: 100%; /* 전체 너비 사용 */
-  margin-top: 210px; /* 버튼과의 여백 */
+  margin-top: 100px; /* 버튼과의 여백 */
 }
 
 .details-label,
