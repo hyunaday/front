@@ -229,12 +229,12 @@ export default {
       },
       copyIcon: copyIcon,
       cardImages: [
-        "../src/assets/images/kbcard3.png",
-        "../src/assets/images/kbcard.png",
-        "../src/assets/images/kbcard2.png",
-        "../src/assets/images/kbcard4.png",
-        "../src/assets/images/kbcard5.png",
-        "../src/assets/images/kbcard6.png",
+        "https://storage.googleapis.com/team2rum-bucket/1/img/74821ddb-746d-4561-b064-d6b1df35b963kbcard3.png.image/png",
+        "https://storage.googleapis.com/team2rum-bucket/1/img/1e1eed26-9c8f-43fe-962d-2900d90b8304kbcard.png.image/png",
+        "https://storage.googleapis.com/team2rum-bucket/1/img/29de9ec0-2228-45a1-9262-a1f728fab1fakbcard2.png.image/png",
+        "https://storage.googleapis.com/team2rum-bucket/1/img/29c35903-947d-43f4-b540-dac42371c977kbcard4.png.image/png",
+        "https://storage.googleapis.com/team2rum-bucket/1/img/c24bfe3e-df72-4591-abc6-a3fbd6660fcbkbcard5.png.image/png",
+        "https://storage.googleapis.com/team2rum-bucket/1/img/451649d8-0cae-4c8b-b7a4-27f48322a06akbcard6.png.image/png",
       ],
     };
   },
