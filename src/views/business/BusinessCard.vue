@@ -49,7 +49,7 @@
           <p>{{ formData.name || '이름 없음' }}</p>
           <p>{{ formData.position || '직책 없음' }}</p>
           <p>{{ formData.part || '부서 없음' }}</p>
-          <p>{{ formData.phoneNum || '전화번호 없음' }}</p>
+          <p>{{ formData.phoneNumber || '전화번호 없음' }}</p>
           <p>{{ formData.tel_num || '유선전화 없음' }}</p>
           <p>{{ formData.email || '이메일 없음' }}</p>
 
@@ -112,7 +112,7 @@
         <label>부서:</label>
         <input v-model="editData.part" type="text" />
         <label>휴대전화:</label>
-        <input v-model="editData.phoneNum" type="text" />
+        <input v-model="editData.phoneNumber" type="text" />
         <label>유선전화:</label>
         <input v-model="editData.tel_num" type="text" />
         <label>이메일:</label>
@@ -151,7 +151,7 @@ export default {
     return {
       formData: {
         name: '',
-        phoneNum: '',
+        phoneNumber: '',
         email: '',
         position: '',
         part: '',
@@ -196,7 +196,7 @@ export default {
           this.formData = {
             idx: cardData.idx,
             name: cardData.name,
-            phoneNum: cardData.phoneNum,
+            phoneNumber: cardData.phoneNumber,
             email: cardData.email,
             position: cardData.position,
             part: cardData.part,
@@ -316,7 +316,7 @@ saveChanges() {
       this.cardList.push({ ...this.formData });
       this.formData = {
         name: '',
-        phoneNum: '',
+        phoneNumber: '',
         email: '',
         position: '',
         part: '',
