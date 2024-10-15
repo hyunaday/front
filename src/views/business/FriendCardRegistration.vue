@@ -1,7 +1,11 @@
 <template>
   <div class="main-container d-flex flex-column">
     <div class="form-container">
-      <div v-if="loading">로딩 중…</div>
+      <div v-if="loading" class="loading-container">
+  <div class="loading-spinner"></div>
+  <p class="loading-message">로딩 중…</p>
+</div>
+
       <div v-else-if="error">{{ error }}</div>
       <div v-else-if="friendCardData">
         <div class="header">
@@ -14,7 +18,7 @@
           <p>{{ friendCardData.name || '이름 없음' }}</p>
           <p>{{ friendCardData.position || '직책 없음' }}</p>
           <p>{{ friendCardData.part || '부서 없음' }}</p>
-          <p>{{ friendCardData.phone_num || '전화번호 없음' }}</p>
+          <p>{{ friendCardData.phoneNumber || '전화번호 없음' }}</p>
           <p>{{ friendCardData.tel_num || '유선전화 없음' }}</p>
           <p>{{ friendCardData.email || '이메일 없음' }}</p>
         </div>
@@ -39,7 +43,7 @@
         <p>{{ friendCardData.name || '이름 없음' }}</p>
         <p>{{ friendCardData.position || '직책 없음' }}</p>
         <p>{{ friendCardData.part || '부서 없음' }}</p>
-        <p>{{ friendCardData.phone_num || '전화번호 없음' }}</p>
+        <p>{{ friendCardData.phoneNumber || '전화번호 없음' }}</p>
         <p>{{ friendCardData.tel_num || '유선전화 없음' }}</p>
         <p>{{ friendCardData.email || '이메일 없음' }}</p>
       </div>
@@ -78,19 +82,27 @@ export default {
   },
   methods: {
     async fetchFriendCardData(businessCardIdx) {
-      try {
-        const response = await apiClient.get(`/businessCard/friends?businessCardIdx=${businessCardIdx}`);
-        console.log('친구 명함 정보 가져오기 성공:', response.data);
-        
-        this.friendCardData = response.data.result.businessCardList[0];
+    try {
+      const response = await apiClient.get(`/businessCard/friends?businessCardIdx=${businessCardIdx}`);
+      console.log('친구 명함 정보 가져오기 성공:', response.data);
       
-      } catch (error) {
-        this.error = error.response ? error.response.data.message : '오류 발생';
-        console.error('친구 명함 정보 가져오기 실패:', this.error);
-      } finally {
-        this.loading = false;
+      this.friendCardData = response.data.result.businessCardList[0];
+    
+    } catch (error) {
+      this.error = error.response ? error.response.data.message : '오류 발생';
+      console.error('친구 명함 정보 가져오기 실패:', this.error);
+
+      // 서버 오류가 발생하면 confirm 창을 띄웁니다.
+      if (error.response && error.response.status === 500) {
+        const message = '이미 등록된 명함입니다. 관리자에게 문의 바랍니다.';
+        if (confirm(message)) {
+          this.$router.push('/businesscardlist');
+        }
       }
-    },
+    } finally {
+      this.loading = false;
+    }
+  },
     async updateFriendCard() {
       const businessCardIdx = this.$route.params.businessCardIdx; // 수정할 카드의 인덱스
 
@@ -150,6 +162,52 @@ export default {
   margin-left: 19px;
   margin-top: 50px;
 }
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* 전체 화면을 차지 */
+  background-color: rgba(255, 255, 255, 0.9); /* 반투명 흰색 배경 */
+  position: relative;
+}
+
+.loading-message {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333; /* 어두운 텍스트 */
+  margin-top: 20px;
+  text-align: center;
+  animation: fadeIn 1s ease-in-out; /* 페이드 인 애니메이션 */
+}
+
+.loading-spinner {
+  border: 8px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #007bff; /* 파란색 */
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  animation: spin 1s linear infinite; /* 회전 애니메이션 */
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 
 .form-container {
   width: 100%; /* 전체 너비 사용 */
