@@ -59,6 +59,7 @@ export default {
 
 <style>
 #app {
+
   background-color: #ffffff; /* 원하는 배경색 */
   min-height: 100vh; /* 전체 화면에 적용되도록 */
 }
