@@ -44,6 +44,7 @@
 <script>
 import { useSocketStore } from '../stores/socketStore.js';
 import { useMemberStore } from '../stores/MemberStore.js';
+import { usePriceStore } from '../stores/orderStore.js';
 import { useOrderStore, useOrderInfoStore } from '../stores/orderStore.js';
 import { onMounted, watch } from 'vue';
 
@@ -110,8 +111,9 @@ export default {
     setOwner() {
       const memberStore = useMemberStore();
       const orderInfoStore = useOrderInfoStore();
+      const priceStore = usePriceStore();
 
-      this.isOwner = memberStore.idx === orderInfoStore.ownerMemberIdx;
+      this.isOwner = memberStore.idx === priceStore.ownerMemberIdx;
       console.log("memberStore.idx: ", memberStore.idx);
       console.log("orderInfoStore.ownerMemberIdx: ", orderInfoStore.ownerMemberIdx);
       console.log("isOwner: ", this.isOwner);
@@ -193,7 +195,8 @@ export default {
       const socketStore = useSocketStore();
       const memberStore = useMemberStore();
       const orderStore = useOrderStore();
-      const orderInfoStore = useOrderInfoStore();
+      const priceStore = usePriceStore();
+
 
       if (!socketStore.stompClient || !socketStore.stompClient.connected) {
         console.error('소켓이 연결되지 않았습니다.');
@@ -204,7 +207,7 @@ export default {
         orderIdx: orderStore.orderIdx,
         memberId: memberStore.memberId,
       };
-      if (orderInfoStore.ownerMemberIdx === memberStore.memberId) {
+      if (priceStore.ownerMemberIdx === memberStore.idx) {
           try {
           socketStore.stompClient.send(
             '/pub/order/room/game/start',

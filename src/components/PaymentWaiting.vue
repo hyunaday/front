@@ -79,7 +79,6 @@ const joinRoom = async () => {
 // 주문 정보 가져오기
 const loadOrderInfo = async () => {
   orderInfoStore.getOrderInfo(orderIdx, marketIdx);
-  orderInfoStore.getOwnerInfo(orderIdx);
   orderStore.setOrderIdx(orderIdx);
 };
 
@@ -146,6 +145,7 @@ const closeCompletionMessage = () => {
 // 컴포넌트가 마운트될 때 소켓 연결 및 방 입장, 주문 정보 로드
 onMounted(async () => {
   await loadOrderInfo();
+  await loadOrderOwnerInfo();
   joinRoom();
   updateParticipantCount();
 });
