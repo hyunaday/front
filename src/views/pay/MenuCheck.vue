@@ -40,9 +40,10 @@
           <div class="item-content">
             <img :src="item.image || defaultImage" alt="아이템 이미지" class="item-image" />
             <div class="item-info">
-              <!-- 메뉴 이름과 메뉴 갯수를 함께 표시 -->
+              <!-- 메뉴 이름과 메뉴 갯수 및 선택된 사람 수를 함께 표시 -->
               <span class="item-name">
-                {{ item.menuName }} (x{{ item.amount }}) <!-- 메뉴 갯수 표시 -->
+                {{ item.menuName }} (x{{ item.amount }}) 
+                <span v-if="item.selectedCount > 0">- {{ item.selectedCount }}명 선택</span> <!-- 선택된 사람 수 표시 -->
               </span>
               <span class="item-price">{{ (item.price * item.amount).toLocaleString() }} 원</span>
             </div>
@@ -166,14 +167,10 @@ export default {
           if (parsedMessage.type === 'MENU_SELECT' || parsedMessage.type === 'MENU_CANCEL') {
             const menu = orderInfoStore.orderMenuList.find(item => item.menuIdx === parsedMessage.menuIdx);
             if (menu) {
+              const selectedMenus = parsedMessage.selectedMenuList || [];
+              const nowMenu = selectedMenus.find(item => item.menuIdx === menu.menuIdx);
               // 선택 인원 수 업데이트
-              if (parsedMessage.type === 'MENU_SELECT') {
-                menu.selectedCount = (menu.selectedCount || 0) + 1;
-              } else if (parsedMessage.type === 'MENU_CANCEL') {
-                if (menu.selectedCount > 0) {
-                  menu.selectedCount -= 1;
-                }
-              }
+              menu.selectedCount = (nowMenu.currentAmount || 0);
 
               // 자신의 선택 상태 업데이트
               if (parsedMessage.memberIdx === memberStore.idx) {
