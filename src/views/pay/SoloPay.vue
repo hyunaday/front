@@ -103,28 +103,28 @@ export default {
             let imageUrl;
             switch (card.creditName) {
               case "KB 국민카드":
-                imageUrl = "../src/assets/images/국민카드1.png";
+                imageUrl = "https://storage.googleapis.com/team2rum-bucket/1/img/74821ddb-746d-4561-b064-d6b1df35b963kbcard3.png.image/png";
                 break;
               case "카카오뱅크 카드":
-                imageUrl = "../src/assets/images/kakaocard2.png";
+                imageUrl = "https://storage.googleapis.com/team2rum-bucket/1/img/271af26a-19a4-4270-b744-157dead55577kakaocard2.png.image/png";
                 break;
               case "신한카드":
-                imageUrl = "../src/assets/images/shinhancard.png";
+                imageUrl = "https://storage.googleapis.com/team2rum-bucket/2/img/a0c89106-606d-4e77-9cd3-206e2b327a21shinhancard.png.image/png";
                 break;
               case "우리카드":
-                imageUrl = "../src/assets/images/wooricard.png";
+                imageUrl = "https://storage.googleapis.com/team2rum-bucket/2/img/b1cc95b3-eced-42db-a95e-e9cfc3ec3ad6wooricard.png.image/png";
                 break;
               case "삼성카드":
-                imageUrl = "../src/assets/images/samsungcard2.png";
+                imageUrl = "https://storage.googleapis.com/team2rum-bucket/2/img/58a53ef0-c16a-4a41-95b7-0b6bae0630cesamsungcard2.png.image/png";
                 break;
               case "롯데카드":
-                imageUrl = "../src/assets/images/lottecard.png";
+                imageUrl = "https://storage.googleapis.com/team2rum-bucket/2/img/3fbab7b9-c4b2-406a-bc5b-ecf682633897lottecard.png.image/png";
                 break;
               case "현대카드":
-                imageUrl = "../src/assets/images/hyundaicard.png";
+                imageUrl = "https://storage.googleapis.com/team2rum-bucket/2/img/65b2df15-796a-4617-8054-6cf85970bc38hyundaicard.png.image/png";
                 break;
               case "하나카드":
-                imageUrl = "../src/assets/images/hanacard.png";
+                imageUrl = "https://storage.googleapis.com/team2rum-bucket/2/img/c6664267-d6fb-41d9-bfbb-580da8ab2066hanacard.png.image/png";
                 break;
               default:
                 imageUrl = "../src/assets/images/default_card.png";
