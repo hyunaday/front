@@ -229,7 +229,7 @@ export default {
       },
       copyIcon: copyIcon,
       cardImages: [
-        "https://storage.googleapis.com/team2rum-bucket/1/img/c9207b53-0005-46ed-b946-2df978f2f52c%E1%84%80%E1%85%AE%E1%86%A8%E1%84%86%E1%85%B5%E1%86%AB%E1%84%8F%E1%85%A1%E1%84%83%E1%85%B31.png.image/png",
+        "../src/assets/images/국민카드1.png",
         "../src/assets/images/국민카드2.png",
         "../src/assets/images/국민카드3.png",
         "../src/assets/images/국민카드4.png",
