@@ -2,26 +2,8 @@
   <div class="main-container">
     <Header />
     <div class="container mt-3">
-      <!-- 내 자산 연결 버튼 섹션 -->
-      <div
-        v-if="!isConnected"
-        class="connect-card-container d-flex flex-column align-items-center justify-content-center"
-      >
-        <img
-          src="../assets/images/connect_logo_rm.png"
-          alt="Connect Logo"
-          class="connect-logo"
-        />
-        <p class="connect-message">
-          편리한 전자 지갑 기능을 사용하려면<br />자산을 연결해주세요!
-        </p>
-        <button @click="goToAgreementPage" class="btn connect-button">
-          내 자산 연결
-        </button>
-      </div>
-
-      <!-- 내 계좌 텍스트 및 잔액 조회 스위치 -->
-      <div v-if="isConnected" class="row align-items-center">
+      <!-- 내 계좌 섹션 -->
+      <div class="row align-items-center">
         <div class="col-6 ps-4">
           <h4 class="mb-0">내 계좌</h4>
         </div>
@@ -42,21 +24,21 @@
         </div>
       </div>
 
-      <!-- 내 계좌 섹션 -->
+      <!-- 계좌 정보 섹션 (Swiper 적용) -->
       <div
-        v-if="isConnected"
+        v-if="accounts.length > 0"
         class="account-section d-flex justify-content-center"
       >
         <swiper
           :slides-per-view="1.2"
           :centered-slides="true"
-          :loop="true"
           :space-between="10"
           :pagination="{ clickable: true }"
+          :initial-slide="1"
           @swiper="onSwiper"
           @slideChange="onSlideChange"
         >
-          <!-- 계좌 카드 슬라이드 -->
+          <!-- 계좌 카드 -->
           <swiper-slide v-for="account in accounts" :key="account.idx">
             <div class="account-card">
               <label>입출금통장</label>
@@ -80,12 +62,14 @@
               </div>
               <div class="account-button">
                 <div class="d-flex justify-content-between gap-4">
+                  <!-- 각 계좌의 idx를 동적으로 전달 (2024.10.10 추가)-->
                   <router-link :to="`/transactionhistory${account.idx}`">
                     <button class="btn btn-light check" type="button">
                       조회
                     </button>
                   </router-link>
-                  <router-link :to="`/transfer`">
+                  <router-link :to="`/transfer${account.idx}`">
+                    <!-- <router-link :to="`/transfer`"> -->
                     <button class="btn btn-light transfer" type="button">
                       이체
                     </button>
@@ -95,6 +79,9 @@
             </div>
           </swiper-slide>
         </swiper>
+      </div>
+      <div v-else>
+        <p>계좌 정보가 없습니다.</p>
       </div>
 
       <!-- 함께 결제 섹션 -->
@@ -110,9 +97,7 @@
           <div class="text-content">
             <h6>결제 할때, 한번에 다같이</h6>
             <p>함께 결제</p>
-            <router-link :to="`/usage`">
-              <button class="btn btn-light">사용방법 보러가기</button>
-            </router-link>
+            <button class="btn btn-light">사용방법 보러가기</button>
           </div>
           <div
             class="image-content d-flex justify-content-center align-items-center"
@@ -125,46 +110,15 @@
           </div>
         </div>
       </div>
-
-      <!-- 카드 추천 섹션 -->
-      <div class="recommend_card">
-        <label class="recommend_title">
-          <h6>내 소비 습관에 맞는 카드 추천</h6>
-        </label>
-        <div class="card-slider">
-          <swiper
-            :space-between="20"
-            :slides-per-view="1.2"
-            :centered-slides="true"
-            :loop="true"
-            :autoplay="{ delay: 2000 }"
-            :pagination="{ clickable: true, type: 'progressbar' }"
-            :navigation="true"
-          >
-            <!-- 카드 추천 슬라이드 -->
-            <swiper-slide
-              v-for="(image, index) in cardImages"
-              :key="index"
-              class="slide-card"
-            >
-              <div class="card-content">
-                <img :src="image" alt="추천 카드" class="card-image-fixed" />
-                <p class="cardTitle">{{ cardTitle[index] }}</p>
-                <p class="cardDescription">{{ cardDescriptions[index] }}</p>
-              </div>
-            </swiper-slide>
-          </swiper>
-        </div>
-      </div>
     </div>
+
     <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
   </div>
 </template>
 
 <script>
-import { ref } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
-import { Autoplay, Pagination, Navigation } from "swiper/modules";
+import { Pagination } from "swiper/modules";
 import FooterNav from "../components/FooterNav.vue";
 import Header from "../components/Header.vue";
 import apiClient from "../api/axios";
@@ -177,7 +131,6 @@ import wooriLogo from "../assets/images/wooribank.png";
 import tossLogo from "../assets/images/toss.png";
 import nhLogo from "../assets/images/NHbank.png";
 import copyIcon from "../assets/images/copy.png";
-import { useMemberStore } from "../stores/MemberStore.js";
 
 export default {
   name: "MainPage",
@@ -188,30 +141,22 @@ export default {
     Header,
   },
   setup() {
+    const onSwiper = (swiper) => {
+      console.log(swiper);
+    };
+    const onSlideChange = () => {
+      console.log("slide change");
+    };
     return {
+      onSwiper,
+      onSlideChange,
+      modules: [Pagination],
     };
   },
   data() {
     return {
-      cardDescriptions: [
-        "스타벅스 최대 60%할인은 기본교통·택시·통신 등 일상생활 할인!",
-        "통신·교통·외식 등 생활영역10%할인주유 리터당 60원 할인혜택!",
-        "대한항공 1천원당 1마일리지 적립공항 라운지 / 발레파킹 무료 이용",
-        "해외가맹점 최대 3% 포인트리 적립전월 실적없이 국내가맹점 0.3%적립",
-        "스카이패스 1500원당 최대3마일적립전세계 공항라운지 동반1인 무료",
-        "대한항공 및 저가항공사 15만원할인!국내가맹점1%+특별영역5%, 중복할인",
-      ],
-      cardTitle: [
-        "카페 최대60%할인, 일상할인까지",
-        "생활업종 할인으로 혜택 가득한 하루!",
-        "카드 하나로 누리는 항공 특화 서비스!",
-        "포인트리 적립받고 해외배송료 할인까지",
-        "여행도 프리미엄! 마일리지적립+전세계라운지 무료",
-        "국내외 라운지 무료이용과 항공권 15만원 할인!",
-      ],
       showamount: false,
       accounts: [],
-      isConnected: false,
       bankLogos: {
         국민은행: kbbankLogo,
         신한은행: shinhanLogo,
@@ -223,35 +168,12 @@ export default {
         농협은행: nhLogo,
       },
       copyIcon: copyIcon,
-      cardImages: [
-        "../src/assets/images/국민카드1.png",
-        "../src/assets/images/국민카드2.png",
-        "../src/assets/images/국민카드3.png",
-        "../src/assets/images/국민카드4.png",
-        "../src/assets/images/국민카드5.png",
-        "../src/assets/images/국민카드6.png",
-      ],
     };
   },
   created() {
-    this.checkConnectionStatus();
+    this.fetchAccounts();
   },
   methods: {
-    checkConnectionStatus() {
-      apiClient
-        .get("/member/connect/check")
-        .then((response) => {
-          if (response.data.isSuccess) {
-            this.isConnected = response.data.result.isConnected;
-            if (this.isConnected) {
-              this.fetchAccounts();
-            }
-          }
-        })
-        .catch((error) => {
-          console.error("연동 상태를 확인하는 중 오류 발생:", error);
-        });
-    },
     fetchAccounts() {
       apiClient
         .get("/account/all")
@@ -281,9 +203,6 @@ export default {
     goToGroupPayPage() {
       this.$router.push("/grouppay");
     },
-    goToAgreementPage() {
-      this.$router.push("/agree1");
-    },
   },
 };
 </script>
@@ -291,24 +210,6 @@ export default {
 <style scoped>
 .main-container {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100vh;
-  overflow-y: auto;
-  padding-bottom: 20px;
-}
-
-.container {
-  max-width: 100%;
-  overflow-y: auto;
-  padding-bottom: 80px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.container::-webkit-scrollbar {
-  display: none;
 }
 
 .form-check-input {
@@ -370,7 +271,7 @@ h4 {
   color: #ffffff;
   display: inline-block;
   max-width: 100%;
-  /* text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   margin-left: -30px;
 }
 
@@ -510,103 +411,5 @@ h4 {
   width: 100%;
   max-width: 250px;
   margin: 0 auto;
-}
-
-.connect-slide {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-}
-
-.connect-card-container {
-  background-color: #6981d6;
-  color: white;
-  border-radius: 15px;
-  padding: 20px;
-  text-align: center;
-  width: 300px;
-  height: 200px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  margin: 30px auto;
-  margin-bottom: 5px;
-  margin-top: 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.connect-logo {
-  width: 160px;
-  height: auto;
-}
-
-.connect-message {
-  font-size: 15px;
-  font-weight: bold;
-  margin-bottom: 0px;
-}
-
-.connect-button {
-  background-color: white;
-  color: #333;
-  font-weight: bold;
-  border-radius: 8px;
-  padding: 10px 25px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-  border: none;
-  transition: background-color 0.3s ease;
-  margin-bottom: 12px;
-  width: 230px;
-}
-
-.recommend_card {
-  margin-top: 20px;
-  padding-bottom: 20px;
-}
-
-.recommend_title {
-  margin-left: 10px;
-  margin-top: 60px;
-  font-size: 11px;
-}
-
-.recommend_title h6 {
-  margin-bottom: 30px;
-}
-
-.card-slider {
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.slide-card .card-content {
-  background: #fff;
-  border-radius: 15px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  padding: 20px;
-  padding-bottom: 10px;
-  text-align: center;
-}
-
-.card-image-fixed {
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  border-radius: 10px;
-  margin-bottom: 10px;
-}
-
-.cardTitle {
-  color: #6981d6;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.cardDescription {
-  font-size: 12px;
 }
 </style>

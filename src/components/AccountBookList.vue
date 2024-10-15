@@ -47,7 +47,7 @@
       class="entry-group"
     ></div>
     <!-- 필터링 및 카테고리 선택 버튼을 왼쪽 아래에 고정 -->
-    <div class="filter-container">
+    <div class="filter-container1">
       <!-- 수입/지출 필터링 버튼 -->
       <button
         :class="{ active: selectedFilter === 'income' }"
@@ -325,7 +325,7 @@
           <!-- 삭제 버튼 -->
           <button
             v-if="entry"
-            @click="deleteEntry(groupIndex, entryIndex)"
+            @click.stop="deleteEntry(groupIndex, entryIndex)"
             class="delete-btn"
           >
             <i class="fa-regular fa-trash-can"></i>
@@ -680,17 +680,54 @@ export default {
       }
       return null;
     },
+
+    // 삭제
+    deleteEntry(groupIndex, entryIndex) {
+      if (confirm("정말로 이 거래 내역을 삭제하시겠습니까?")) {
+        // 선택된 항목을 entries 배열에서 제거
+        this.entries[groupIndex].entries.splice(entryIndex, 1);
+
+        // 그룹 내 항목이 모두 삭제되었을 경우, 해당 그룹도 삭제
+        if (this.entries[groupIndex].entries.length === 0) {
+          this.entries.splice(groupIndex, 1);
+        }
+
+        // Vue가 데이터 변경을 감지할 수 있도록 entries 배열을 재할당
+        this.entries = [...this.entries];
+      }
+    },
     // 삭제 api
-    // deleteEntry(groupIndex, entryIndex) {
-    //   // 선택된 항목을 entries 배열에서 제거
-    //   this.entries[groupIndex].entries.splice(entryIndex, 1);
+    // async deleteEntry(groupIndex, entryIndex) {
+    //   const entry = this.entries[groupIndex].entries[entryIndex];
+    //   const entryId = entry.id; // 삭제할 항목의 ID (API에 맞게 설정)
 
-    //   // 그룹 내 항목이 없을 경우 그룹 자체도 제거
-    //   if (this.entries[groupIndex].entries.length === 0) {
-    //     this.entries.splice(groupIndex, 1);
+    //   if (confirm("정말로 이 거래 내역을 삭제하시겠습니까?")) {
+    //     // DELETE 요청으로 서버에 삭제 요청
+    //     apiClient
+    //       .delete(`/transaction?idx={idx}`)
+    //       .then((response) => {
+    //         console.log("서버 응답:", response.data);
+
+    //         if (response.data.isSuccess) {
+    //           alert("거래 내역이 삭제되었습니다.");
+    //           // 삭제 성공 시 화면에서도 삭제 반영
+    //           this.entries[groupIndex].entries.splice(entryIndex, 1);
+
+    //           // 그룹 내 항목이 없을 경우 그룹 전체 삭제
+    //           if (this.entries[groupIndex].entries.length === 0) {
+    //             this.entries.splice(groupIndex, 1);
+    //           }
+
+    //           this.entries = [...this.entries]; // Vue 반응형으로 상태 업데이트
+    //         } else {
+    //           alert("삭제 실패: " + response.data.message);
+    //         }
+    //       })
+    //       .catch((error) => {
+    //         console.error("거래 내역 삭제 중 오류 발생:", error);
+    //         alert("거래 내역 삭제 중 오류가 발생했습니다.");
+    //       });
     //   }
-
-    //   console.log("거래 내역이 성공적으로 삭제되었습니다.");
     // },
 
     executeSearch() {
@@ -934,8 +971,8 @@ div.total-amount {
   background-color: #ffffff;
   border: none;
   border-radius: 1px;
-  width: 20px;
-  height: 20px;
+  width: 25px;
+  height: 25px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -991,14 +1028,34 @@ div.total-amount {
   font-size: 12px; /* .filter-container에 적용할 작은 글씨 크기 */
   height: 20px;
 }
-.filter-container button[data-v-70da4295] {
+
+/* filter-container1 스타일 */
+.filter-container1 {
+  display: flex;
+  flex-direction: row; /* 가로 방향으로 정렬 */
+  align-items: center;
+  gap: 5px;
+  margin-left: 120px;
+}
+
+.filter-container1 button {
+  padding: 1px 6px;
+  border-radius: 8px;
   border: 1px solid #ccc;
   background-color: #ffffff;
-  border-radius: 8px;
-  cursor: pointer;
   color: #888;
-  font-size: 12px;
-  height: 20px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.filter-container1 button.active {
+  border: 1px solid #6981d9;
+  background-color: #fff;
+  color: #6981d9;
+}
+
+.filter-container1 button:hover {
+  background-color: #e0e0e0;
 }
 
 /* 필터링 버튼 스타일 */
@@ -1008,13 +1065,7 @@ div.total-amount {
   gap: 5px;
   margin-left: 140px;
 }
-.filter-container button {
-  border: 1px solid #ccc;
-  background-color: #ffffff;
-  border-radius: 8px;
-  cursor: pointer;
-  color: #888;
-}
+
 .filter-container button.active {
   border: 1px solid #6981d9;
   background-color: #fff;
@@ -1189,6 +1240,7 @@ select {
   border: none;
   color: white;
   width: 200px; /* 너비를 더 넓게 설정 */
+  height: 50px;
   padding: 10px 0; /* 패딩을 수직으로만 설정 */
   border-radius: 5px;
   font-size: 18px;
