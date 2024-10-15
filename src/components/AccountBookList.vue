@@ -323,13 +323,13 @@
             </div>
           </div>
           <!-- 삭제 버튼 -->
-          <button
+          <!-- <button
             v-if="entry"
             @click.stop="deleteEntry(groupIndex, entryIndex)"
             class="delete-btn"
           >
             <i class="fa-regular fa-trash-can"></i>
-          </button>
+          </button> -->
         </div>
       </div>
     </div>
@@ -682,20 +682,21 @@ export default {
     },
 
     // 삭제
-    deleteEntry(groupIndex, entryIndex) {
-      if (confirm("정말로 이 거래 내역을 삭제하시겠습니까?")) {
-        // 선택된 항목을 entries 배열에서 제거
-        this.entries[groupIndex].entries.splice(entryIndex, 1);
+    // deleteEntry(groupIndex, entryIndex) {
+    //   if (confirm("정말로 이 거래 내역을 삭제하시겠습니까?")) {
+    //     // 선택된 항목을 entries 배열에서 제거
+    //     this.entries[groupIndex].entries.splice(entryIndex, 1);
 
-        // 그룹 내 항목이 모두 삭제되었을 경우, 해당 그룹도 삭제
-        if (this.entries[groupIndex].entries.length === 0) {
-          this.entries.splice(groupIndex, 1);
-        }
+    //     // 그룹 내 항목이 모두 삭제되었을 경우, 해당 그룹도 삭제
+    //     if (this.entries[groupIndex].entries.length === 0) {
+    //       this.entries.splice(groupIndex, 1);
+    //     }
 
-        // Vue가 데이터 변경을 감지할 수 있도록 entries 배열을 재할당
-        this.entries = [...this.entries];
-      }
-    },
+    //     // Vue가 데이터 변경을 감지할 수 있도록 entries 배열을 재할당
+    //     this.entries = [...this.entries];
+    //   }
+    // },
+
     // 삭제 api
     // async deleteEntry(groupIndex, entryIndex) {
     //   const entry = this.entries[groupIndex].entries[entryIndex];
@@ -861,6 +862,7 @@ export default {
 .amount {
   font-size: 1.2rem;
   margin-left: 0.5rem;
+  margin-right: 10px;
 }
 .expense .amount {
   font-size: 1rem;
