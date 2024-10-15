@@ -42,21 +42,21 @@
         </div>
       </div>
 
-      <!-- 내 계좌 섹션 -->
+      <!-- 계좌 정보 섹션 (Swiper 적용) -->
       <div
-        v-if="isConnected"
+        v-if="accounts.length > 0"
         class="account-section d-flex justify-content-center"
       >
         <swiper
           :slides-per-view="1.2"
           :centered-slides="true"
-          :loop="true"
           :space-between="10"
           :pagination="{ clickable: true }"
+          :initial-slide="1"
           @swiper="onSwiper"
           @slideChange="onSlideChange"
         >
-          <!-- 계좌 카드 슬라이드 -->
+          <!-- 계좌 카드 -->
           <swiper-slide v-for="account in accounts" :key="account.idx">
             <div class="account-card">
               <label>입출금통장</label>
@@ -80,6 +80,7 @@
               </div>
               <div class="account-button">
                 <div class="d-flex justify-content-between gap-4">
+                  <!-- 각 계좌의 idx를 동적으로 전달 (2024.10.10 추가)-->
                   <router-link :to="`/transactionhistory${account.idx}`">
                     <button class="btn btn-light check" type="button">
                       조회
@@ -100,6 +101,9 @@
           </swiper-slide>
         </swiper>
       </div>
+      <div v-else>
+        <p>계좌 정보가 없습니다.</p>
+      </div>
 
       <!-- 함께 결제 섹션 -->
       <div class="together-pay">
@@ -114,9 +118,7 @@
           <div class="text-content">
             <h6>결제 할때, 한번에 다같이</h6>
             <p>함께 결제</p>
-            <router-link :to="`/usage`">
-              <button class="btn btn-light">사용방법 보러가기</button>
-            </router-link>
+            <button class="btn btn-light">사용방법 보러가기</button>
           </div>
           <div
             class="image-content d-flex justify-content-center align-items-center"
@@ -129,7 +131,6 @@
           </div>
         </div>
       </div>
-
       <!-- 카드 추천 섹션 -->
       <div class="recommend_card">
         <label class="recommend_title">
@@ -153,22 +154,22 @@
             >
               <div class="card-content">
                 <img :src="image" alt="추천 카드" class="card-image-fixed" />
-                <p class="cardTitle">{{ cardTitle[index] }}</p>
-                <p class="cardDescription">{{ cardDescriptions[index] }}</p>
+                <p class="cardTitle" v-html="cardTitle[index]"></p>
+                <p class="cardDescription" v-html="cardDescriptions[index]"></p>
               </div>
             </swiper-slide>
           </swiper>
         </div>
       </div>
     </div>
+
     <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
   </div>
 </template>
 
 <script>
-import { ref } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
-import { Autoplay, Pagination, Navigation } from "swiper/modules";
+import { Pagination } from "swiper/modules";
 import FooterNav from "../components/FooterNav.vue";
 import Header from "../components/Header.vue";
 import apiClient from "../api/axios";
@@ -183,6 +184,7 @@ import nhLogo from "../assets/images/NHbank.png";
 import copyIcon from "../assets/images/copy.png";
 import { useMemberStore } from "../stores/MemberStore.js";
 import { useTransferStore } from "../stores/TransferStore.js";
+
 
 export default {
   name: "MainPage",
@@ -200,23 +202,22 @@ export default {
     return {
       cardDescriptions: [
         "스타벅스 최대 60%할인은 기본교통·택시·통신 등 일상생활 할인!",
-        "통신·교통·외식 등 생활영역10%할인주유 리터당 60원 할인혜택!",
-        "대한항공 1천원당 1마일리지 적립공항 라운지 / 발레파킹 무료 이용",
-        "해외가맹점 최대 3% 포인트리 적립전월 실적없이 국내가맹점 0.3%적립",
-        "스카이패스 1500원당 최대3마일적립전세계 공항라운지 동반1인 무료",
-        "대한항공 및 저가항공사 15만원할인!국내가맹점1%+특별영역5%, 중복할인",
+        "통신·교통·외식 등 생활영역 10%할인 <br> 주유 리터당 60원 할인혜택!",
+        "쇼핑, 편의점 10% 청구할인실적 / 조건없이 <br> 국내가맹점 0.5%할인",
+        "해외가맹점 최대 3% 포인트리 적립전월 <br> 실적없이 국내가맹점 0.3%적립",
+        "스카이패스 1500원당 최대3마일 적립 전세계 <br> 공항라운지 동반1인 무료",
+        "대한항공 및 저가항공사 15만원할인!<br>국내가맹점+특별영역, 중복할인",
       ],
       cardTitle: [
         "카페 최대60%할인, 일상할인까지",
         "생활업종 할인으로 혜택 가득한 하루!",
-        "카드 하나로 누리는 항공 특화 서비스!",
-        "포인트리 적립받고 해외배송료 할인까지",
-        "여행도 프리미엄! 마일리지적립+ 라운지 무료",
-        "국내외 라운지 무료이용과 항공권 15만원 할인!",
+        "데일리 스탬프 모으면 전월실적 <br>채워드림!",
+        "포인트리 적립받고 <br>해외배송료 할인까지",
+        "여행도 프리미엄! <br> 마일리지적립 + 라운지 무료",
+        "라운지 무료이용과 항공권 할인!",
       ],
       showamount: false,
       accounts: [],
-      isConnected: false,
       bankLogos: {
         국민은행: kbbankLogo,
         신한은행: shinhanLogo,
@@ -229,34 +230,19 @@ export default {
       },
       copyIcon: copyIcon,
       cardImages: [
-        "../src/assets/images/국민카드1.png",
-        "../src/assets/images/국민카드2.png",
-        "../src/assets/images/국민카드3.png",
-        "../src/assets/images/국민카드4.png",
-        "../src/assets/images/국민카드5.png",
-        "../src/assets/images/국민카드6.png",
+        "../src/assets/images/kbcard3.png",
+        "../src/assets/images/kbcard.png",
+        "../src/assets/images/kbcard2.png",
+        "../src/assets/images/kbcard4.png",
+        "../src/assets/images/kbcard5.png",
+        "../src/assets/images/kbcard6.png",
       ],
     };
   },
   created() {
-    this.checkConnectionStatus();
+    this.fetchAccounts();
   },
   methods: {
-    checkConnectionStatus() {
-      apiClient
-        .get("/member/connect/check")
-        .then((response) => {
-          if (response.data.isSuccess) {
-            this.isConnected = response.data.result.isConnected;
-            if (this.isConnected) {
-              this.fetchAccounts();
-            }
-          }
-        })
-        .catch((error) => {
-          console.error("연동 상태를 확인하는 중 오류 발생:", error);
-        });
-    },
     fetchAccounts() {
       apiClient
         .get("/account/all")
@@ -624,5 +610,70 @@ h4 {
 
 .cardDescription {
   font-size: 12px;
+}
+
+/* General styling adjustments for small devices */
+@media (max-width: 768px) {
+  .together-card {
+    flex-direction: column;
+    align-items: center;
+    height: auto; /* Adjust height */
+    text-align: center;
+    padding: 15px;
+  }
+
+  .together-card .text-content {
+    margin-bottom: 15px; /* Add space between text and button */
+    text-align: center;
+  }
+
+  .together-card .text-content h6 {
+    font-size: 14px; /* Adjust font size */
+    margin: 0;
+  }
+
+  .together-card .text-content p {
+    font-size: 24px; /* Adjust font size */
+    margin: 10px 0;
+  }
+
+  .together-card .btn {
+    width: 100%; /* Full width button */
+    max-width: 200px;
+  }
+
+  .human-image {
+    width: 150px; /* Smaller image */
+    position: static;
+    margin-top: 10px;
+  }
+}
+
+/* Extra small devices (phones) */
+@media (max-width: 576px) {
+  .together-card {
+    max-width: 90%;
+    margin: 0 auto 20px;
+    padding: 15px;
+  }
+
+  .together-card .text-content h6 {
+    font-size: 13px;
+  }
+
+  .together-card .text-content p {
+    font-size: 20px;
+  }
+
+  .together-card .btn {
+    font-size: 13px;
+    height: 40px;
+    max-width: 180px;
+  }
+
+  .human-image {
+    width: 120px;
+    margin-top: 15px;
+  }
 }
 </style>

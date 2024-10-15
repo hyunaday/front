@@ -37,7 +37,7 @@
                 <p>{{ card.name }}</p>
                 <p>{{ card.position }}</p>
                 <p>{{ card.part }}</p>
-                <p>{{ card.phoneNumber }}</p>
+                <p>{{ card.phoneNum }}</p>
                 <p>{{ card.tel_num }}</p>
                 <p>{{ card.email }}</p>
               </div>
@@ -51,8 +51,8 @@
           <p>이름: {{ formData.name }}</p>
           <p>직책: {{ formData.position }}</p>
           <p>부서: {{ formData.part }}</p>  <!-- '부서'를 'part'로 수정 -->
-          <p>휴대전화: {{ formData.phoneNumber }}</p>  <!-- '휴대전화'를 'phoneNumber'로 수정 -->
-          <p>유선전화: {{ formData.phoneLandline }}</p>
+          <p>휴대전화: {{ formData.phoneNum }}</p>  <!-- '휴대전화'를 'phoneNum'로 수정 -->
+          <p>유선전화: {{ formData.tel_num }}</p>
           <p>이메일: {{ formData.email }}</p>
           <p>주소: {{ formData.address }}</p>
           <p>메모: {{ formData.memo || '메모 없음' }}</p>
@@ -100,7 +100,7 @@
           </div>
           <div class="form-row">
             <label class="form-label">휴대전화:</label>
-            <input v-model="editSelectedCard.phoneNumber" type="text" />
+            <input v-model="editSelectedCard.phoneNum" type="text" />
           </div>
           <div class="form-row">
             <label class="form-label">유선전화:</label>
@@ -144,7 +144,7 @@
           <input v-model="editData.part" type="text" />
 
           <label>휴대전화:</label>
-          <input v-model="editData.phoneNumber" type="text" />
+          <input v-model="editData.phoneNum" type="text" />
 
           <label>유선전화:</label>
           <input v-model="editData.tel_num" type="tel" />
@@ -180,13 +180,13 @@ export default {
       businessCardList: [], // 명함 목록을 저장할 배열
       formData: {
         name: '',
-        phone: '',
+        phoneNum: '',
         email: '',
         position: '',
         part: '',
         company: '',
         address: '',
-        phone_num: '',
+        phoneNum: '',
         memo: '',
       }, // 나의 명함 데이터
 

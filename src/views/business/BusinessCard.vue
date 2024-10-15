@@ -49,7 +49,7 @@
           <p>{{ formData.name || '이름 없음' }}</p>
           <p>{{ formData.position || '직책 없음' }}</p>
           <p>{{ formData.part || '부서 없음' }}</p>
-          <p>{{ formData.phone_num || '전화번호 없음' }}</p>
+          <p>{{ formData.phoneNum || '전화번호 없음' }}</p>
           <p>{{ formData.tel_num || '유선전화 없음' }}</p>
           <p>{{ formData.email || '이메일 없음' }}</p>
 
@@ -110,11 +110,11 @@
         <label>직책:</label>
         <input v-model="editData.position" type="text" />
         <label>부서:</label>
-        <input v-model="editData.department" type="text" />
+        <input v-model="editData.part" type="text" />
         <label>휴대전화:</label>
-        <input v-model="editData.phone" type="text" />
+        <input v-model="editData.phoneNum" type="text" />
         <label>유선전화:</label>
-        <input v-model="editData.phoneLandline" type="text" />
+        <input v-model="editData.tel_num" type="text" />
         <label>이메일:</label>
         <input v-model="editData.email" type="text" />
         <div v-if="isFriendCard">
@@ -151,7 +151,7 @@ export default {
     return {
       formData: {
         name: '',
-        phone_num: '',
+        phoneNum: '',
         email: '',
         position: '',
         part: '',
@@ -196,7 +196,7 @@ export default {
           this.formData = {
             idx: cardData.idx,
             name: cardData.name,
-            phone_num: cardData.phone_num,
+            phoneNum: cardData.phoneNum,
             email: cardData.email,
             position: cardData.position,
             part: cardData.part,
@@ -316,7 +316,7 @@ saveChanges() {
       this.cardList.push({ ...this.formData });
       this.formData = {
         name: '',
-        phone_num: '',
+        phoneNum: '',
         email: '',
         position: '',
         part: '',
@@ -373,9 +373,9 @@ saveChanges() {
 
 /* 내 명함 */
 .preview-box {
-  margin : 10px 0 20px 10px;
+  margin : 10px 0 28px 10px;
   text-align: center;
-  padding: 10px 20px;
+  padding: 10px 25px 20px 15px;
   height: 375px;
   width: 300px;
   }
@@ -844,7 +844,7 @@ select {
 /* QR 코드 모달 스타일 */
 .qr-code-container {
   cursor: pointer;
-  margin: 20px 0 ;
+  margin: 0 13px 0 0 ;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -852,7 +852,7 @@ select {
 
 .modal-content.qr-modal {
   background-color: rgba(255, 255, 255, 0.9);
-  padding: 15px;
+  padding: 15px 15px 15px 25px;
   border-radius: 10px;
   width: 250px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
