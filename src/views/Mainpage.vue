@@ -42,21 +42,21 @@
         </div>
       </div>
 
-      <!-- 내 계좌 섹션 -->
+      <!-- 계좌 정보 섹션 (Swiper 적용) -->
       <div
-        v-if="isConnected"
+        v-if="accounts.length > 0"
         class="account-section d-flex justify-content-center"
       >
         <swiper
           :slides-per-view="1.2"
           :centered-slides="true"
-          :loop="true"
           :space-between="10"
           :pagination="{ clickable: true }"
+          :initial-slide="1"
           @swiper="onSwiper"
           @slideChange="onSlideChange"
         >
-          <!-- 계좌 카드 슬라이드 -->
+          <!-- 계좌 카드 -->
           <swiper-slide v-for="account in accounts" :key="account.idx">
             <div class="account-card">
               <label>입출금통장</label>
@@ -80,6 +80,7 @@
               </div>
               <div class="account-button">
                 <div class="d-flex justify-content-between gap-4">
+                  <!-- 각 계좌의 idx를 동적으로 전달 (2024.10.10 추가)-->
                   <router-link :to="`/transactionhistory${account.idx}`">
                     <button class="btn btn-light check" type="button">
                       조회
@@ -100,6 +101,9 @@
           </swiper-slide>
         </swiper>
       </div>
+      <div v-else>
+        <p>계좌 정보가 없습니다.</p>
+      </div>
 
       <!-- 함께 결제 섹션 -->
       <div class="together-pay">
@@ -114,9 +118,7 @@
           <div class="text-content">
             <h6>결제 할때, 한번에 다같이</h6>
             <p>함께 결제</p>
-            <router-link :to="`/usage`">
-              <button class="btn btn-light">사용방법 보러가기</button>
-            </router-link>
+            <button class="btn btn-light">사용방법 보러가기</button>
           </div>
           <div
             class="image-content d-flex justify-content-center align-items-center"
@@ -129,7 +131,6 @@
           </div>
         </div>
       </div>
-
       <!-- 카드 추천 섹션 -->
       <div class="recommend_card">
         <label class="recommend_title">
@@ -161,14 +162,14 @@
         </div>
       </div>
     </div>
+
     <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
   </div>
 </template>
 
 <script>
-import { ref } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
-import { Autoplay, Pagination, Navigation } from "swiper/modules";
+import { Pagination } from "swiper/modules";
 import FooterNav from "../components/FooterNav.vue";
 import Header from "../components/Header.vue";
 import apiClient from "../api/axios";
@@ -183,6 +184,7 @@ import nhLogo from "../assets/images/NHbank.png";
 import copyIcon from "../assets/images/copy.png";
 import { useMemberStore } from "../stores/MemberStore.js";
 import { useTransferStore } from "../stores/TransferStore.js";
+
 
 export default {
   name: "MainPage",
@@ -216,7 +218,6 @@ export default {
       ],
       showamount: false,
       accounts: [],
-      isConnected: false,
       bankLogos: {
         국민은행: kbbankLogo,
         신한은행: shinhanLogo,
@@ -228,35 +229,12 @@ export default {
         농협은행: nhLogo,
       },
       copyIcon: copyIcon,
-      cardImages: [
-        "../src/assets/images/국민카드1.png",
-        "../src/assets/images/국민카드2.png",
-        "../src/assets/images/국민카드3.png",
-        "../src/assets/images/국민카드4.png",
-        "../src/assets/images/국민카드5.png",
-        "../src/assets/images/국민카드6.png",
-      ],
     };
   },
   created() {
-    this.checkConnectionStatus();
+    this.fetchAccounts();
   },
   methods: {
-    checkConnectionStatus() {
-      apiClient
-        .get("/member/connect/check")
-        .then((response) => {
-          if (response.data.isSuccess) {
-            this.isConnected = response.data.result.isConnected;
-            if (this.isConnected) {
-              this.fetchAccounts();
-            }
-          }
-        })
-        .catch((error) => {
-          console.error("연동 상태를 확인하는 중 오류 발생:", error);
-        });
-    },
     fetchAccounts() {
       apiClient
         .get("/account/all")
@@ -526,103 +504,5 @@ h4 {
   width: 100%;
   max-width: 250px;
   margin: 0 auto;
-}
-
-.connect-slide {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-}
-
-.connect-card-container {
-  background-color: #6981d6;
-  color: white;
-  border-radius: 15px;
-  padding: 20px;
-  text-align: center;
-  width: 300px;
-  height: 200px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  margin: 30px auto;
-  margin-bottom: 5px;
-  margin-top: 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.connect-logo {
-  width: 160px;
-  height: auto;
-}
-
-.connect-message {
-  font-size: 15px;
-  font-weight: bold;
-  margin-bottom: 0px;
-}
-
-.connect-button {
-  background-color: white;
-  color: #333;
-  font-weight: bold;
-  border-radius: 8px;
-  padding: 10px 25px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-  border: none;
-  transition: background-color 0.3s ease;
-  margin-bottom: 12px;
-  width: 230px;
-}
-
-.recommend_card {
-  margin-top: 20px;
-  padding-bottom: 20px;
-}
-
-.recommend_title {
-  margin-left: 10px;
-  margin-top: 60px;
-  font-size: 11px;
-}
-
-.recommend_title h6 {
-  margin-bottom: 30px;
-}
-
-.card-slider {
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.slide-card .card-content {
-  background: #fff;
-  border-radius: 15px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  padding: 20px;
-  padding-bottom: 10px;
-  text-align: center;
-}
-
-.card-image-fixed {
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  border-radius: 10px;
-  margin-bottom: 10px;
-}
-
-.cardTitle {
-  color: #6981d6;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.cardDescription {
-  font-size: 12px;
 }
 </style>
