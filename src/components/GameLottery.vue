@@ -16,7 +16,7 @@
       <img src="../assets/images/arrow.png" alt="화살표" class="arrow-image" />
     </div>
 
-    <button
+    <button v-if="isOwner"
       @click="startLottery"
       :disabled="participants.length === 0 || spinning"
       class="start-lottery-button"
@@ -33,8 +33,8 @@
           <span class="winner-text">{{ winner }}</span>님이 당첨 되었습니다!!
         </p>
         <div class="button-group">
-          <button @click="restartLottery">다시 뽑기</button>
-          <button @click="confirm">확인</button>
+          <button v-if="isOwner" @click="restartLottery">다시 뽑기</button>
+          <button v-if="isOwner" @click="confirm">확인</button>
         </div>
       </div>
     </div>
@@ -44,7 +44,7 @@
 <script>
 import { useSocketStore } from '../stores/socketStore.js';
 import { useMemberStore } from '../stores/MemberStore.js';
-import { useOrderStore } from '../stores/orderStore.js';
+import { useOrderStore, useOrderInfoStore } from '../stores/orderStore.js';
 import { onMounted, watch } from 'vue';
 
 export default {
@@ -56,9 +56,11 @@ export default {
       targetAngle: 0,
       spinning: false,
       showModal: false,
+      isOwner: false,
     };
   },
   mounted() {
+    this.setOwner(); // 방장 여부 확인
     this.handleSocketResponse(); // 소켓 응답 감시
     this.sendSocketRequest(); // 참가자 목록 요청
   },
@@ -88,20 +90,28 @@ export default {
         orderIdx: orderStore.orderIdx,
         memberId: memberStore.memberId,
       };
-
-      try {
+      if (this.isOwner) {
+        try {
         socketStore.stompClient.send(
-          '/pub/order/room/list',
-          {
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-            'content-type': 'application/json',
-            'MemberId': memberStore.memberId,
-          },
-          JSON.stringify(message)
-        );
-      } catch (error) {
-        console.error('소켓 요청 실패:', error);
+            '/pub/order/room/list',
+            {
+              Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+              'content-type': 'application/json',
+              'MemberId': memberStore.memberId,
+            },
+            JSON.stringify(message)
+          );
+        } catch (error) {
+          console.error('소켓 요청 실패:', error);
+        }
       }
+      
+    },
+    setOwner() {
+      const memberStore = useMemberStore();
+      const orderInfoStore = useOrderInfoStore();
+
+      this.isOwner = memberStore.memberId === orderInfoStore.ownerMemberIdx;
     },
     handleSocketResponse() {
       const socketStore = useSocketStore();
@@ -180,6 +190,7 @@ export default {
       const socketStore = useSocketStore();
       const memberStore = useMemberStore();
       const orderStore = useOrderStore();
+      const orderInfoStore = useOrderInfoStore();
 
       if (!socketStore.stompClient || !socketStore.stompClient.connected) {
         console.error('소켓이 연결되지 않았습니다.');
@@ -190,20 +201,23 @@ export default {
         orderIdx: orderStore.orderIdx,
         memberId: memberStore.memberId,
       };
-
-      try {
-        socketStore.stompClient.send(
-          '/pub/order/room/game/start',
-          {
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-            'content-type': 'application/json',
-            'MemberId': memberStore.memberId,
-          },
-          JSON.stringify(message)
-        );
-      } catch (error) {
-        console.error('게임 시작 소켓 요청 실패:', error);
+      if (orderInfoStore.ownerMemberIdx === memberStore.memberId) {
+          try {
+          socketStore.stompClient.send(
+            '/pub/order/room/game/start',
+            {
+              Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+              'content-type': 'application/json',
+              'MemberId': memberStore.memberId,
+            },
+            JSON.stringify(message)
+          );
+        } catch (error) {
+          console.error('게임 시작 소켓 요청 실패:', error);
+        }
       }
+
+      
     },
     selectWinner() {
       const winnerIndex = this.participants.findIndex(
