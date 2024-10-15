@@ -53,6 +53,7 @@ export default {
     return {
       participants: [], // 소켓 응답으로 받은 참가자 정보를 담습니다.
       winner: null,
+      winnerIdx: null,
       rotationAngle: 0,
       targetAngle: 0,
       spinning: false,
@@ -144,8 +145,9 @@ export default {
               if (!this.isOwner) {
                 this.showModal = false;
               }
-              this.winner = parsedMessage.memberName;
+              this.winnerIdx = parsedMessage.winnerIdx;
               this.targetAngle = parsedMessage.targetAngle;
+              this.winner = this.participants[this.winnerIdx];
               this.selectWinner(); // 당첨자를 바탕으로 룰렛을 돌림
             }
           } catch (error) {
