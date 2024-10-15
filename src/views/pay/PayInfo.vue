@@ -23,8 +23,14 @@
       <hr class="divider" />
 
       <div class="payment-details">
-        <div v-for="(item, index) in orderInfo.orderMenuList" :key="index" class="payment-item">
-          <img :src="item.image" alt="메뉴 이미지" class="item-image" />
+        <div 
+        v-for="(item, index) in orderInfo.orderMenuList" 
+        :key="index" 
+        class="payment-item"
+        >
+          <!-- <img :src="item.image" alt="메뉴 이미지" class="item-image" /> -->
+          <img :src="menu[item.name]" alt="메뉴" class="item-image"/>          
+
           <div class="item-info">
             <!-- 메뉴 이름과 갯수를 함께 표시 -->
             <span class="item-name">{{ item.menuName }} (x{{ item.amount }})</span>
@@ -51,7 +57,28 @@ import { useOrderStore } from "../../stores/orderStore.js"; // orderStore 가져
 import { onMounted } from 'vue'; // onMounted 사용
 import { useRouter, useRoute } from 'vue-router'; // vue-router 사용
 
+// 이미지 경로 수정
+import blacknoodle from "../../assets/images/blacknoodle.png";
+import dumpling from "../../assets/images/dumpling.png";
+import friedrice from "../../assets/images/friedrice.png";
+import noodle from "../../assets/images/noodle.png";
+import pork from "../../assets/images/pork.png";
+
+
 export default {
+
+  data() {
+    return {
+      orderInfo: [],
+        menu: {
+              짜장면: blacknoodle,
+              짬뽕: noodle,
+              탕수육: pork,
+              만두: dumpling,
+              볶음밥: friedrice
+            },
+          }
+        },
   setup() {
     const orderInfoStore = useOrderInfoStore(); // Pinia의 orderInfoStore 사용
     const orderStore = useOrderStore(); // Pinia의 orderStore 사용
