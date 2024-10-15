@@ -3,9 +3,9 @@
   "background_color": "#ffffff",
   "display": "standalone",
   "scope": "/",
-  "start_url": "/",
-  "name": "모결",
-  "short_name": "모결",
+  "start_url": "/login",
+  "name": "모두의결제",
+  "short_name": "모두의결제",
   "icons": [
     {
       "src": "icons/modu-192x192.png",
