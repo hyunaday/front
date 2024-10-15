@@ -20,7 +20,7 @@ export default defineConfig({
       manifest: {
         name: '모두의결제',
         short_name: '모두의결제',
-        theme_color: '#6981d9',
+        theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',
         icons: [
