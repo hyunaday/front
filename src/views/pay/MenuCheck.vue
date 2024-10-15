@@ -206,6 +206,15 @@ export default {
                 item.selectedByUser = false;
               }
             });
+            const selectedMenus = parsedMessage.selectedMenuList || [];
+            selectedMenus.forEach(item => {
+                const menu = orderInfoStore.orderMenuList.find(menu => menu.menuIdx === item.menuIdx);
+                if (menu) {
+                  if (item.memberIdxList.includes(memberStore.idx)) {
+                    menu.selectedByUser = true;
+                  }
+                }
+              });
             if (parsedMessage.code === 'ORDER4014' && parsedMessage.memberIdx === memberStore.idx) {
               setErrorMessage('더 이상 선택할 수 없는 메뉴입니다');
             }
