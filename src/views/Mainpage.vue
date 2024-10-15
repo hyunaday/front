@@ -42,21 +42,21 @@
         </div>
       </div>
 
-      <!-- 내 계좌 섹션 -->
+      <!-- 계좌 정보 섹션 (Swiper 적용) -->
       <div
-        v-if="isConnected"
+        v-if="accounts.length > 0"
         class="account-section d-flex justify-content-center"
       >
         <swiper
           :slides-per-view="1.2"
           :centered-slides="true"
-          :loop="true"
           :space-between="10"
           :pagination="{ clickable: true }"
+          :initial-slide="1"
           @swiper="onSwiper"
           @slideChange="onSlideChange"
         >
-          <!-- 계좌 카드 슬라이드 -->
+          <!-- 계좌 카드 -->
           <swiper-slide v-for="account in accounts" :key="account.idx">
             <div class="account-card">
               <label>입출금통장</label>
@@ -80,6 +80,7 @@
               </div>
               <div class="account-button">
                 <div class="d-flex justify-content-between gap-4">
+                  <!-- 각 계좌의 idx를 동적으로 전달 (2024.10.10 추가)-->
                   <router-link :to="`/transactionhistory${account.idx}`">
                     <button class="btn btn-light check" type="button">
                       조회
@@ -100,6 +101,9 @@
           </swiper-slide>
         </swiper>
       </div>
+      <div v-else>
+        <p>계좌 정보가 없습니다.</p>
+      </div>
 
       <!-- 함께 결제 섹션 -->
       <div class="together-pay">
@@ -114,9 +118,7 @@
           <div class="text-content">
             <h6>결제 할때, 한번에 다같이</h6>
             <p>함께 결제</p>
-            <router-link :to="`/usage`">
-              <button class="btn btn-light">사용방법 보러가기</button>
-            </router-link>
+            <button class="btn btn-light">사용방법 보러가기</button>
           </div>
           <div
             class="image-content d-flex justify-content-center align-items-center"
@@ -129,7 +131,6 @@
           </div>
         </div>
       </div>
-
       <!-- 카드 추천 섹션 -->
       <div class="recommend_card">
         <label class="recommend_title">
@@ -161,14 +162,14 @@
         </div>
       </div>
     </div>
+
     <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
   </div>
 </template>
 
 <script>
-import { ref } from "vue";
 import { Swiper, SwiperSlide } from "swiper/vue";
-import { Autoplay, Pagination, Navigation } from "swiper/modules";
+import { Pagination } from "swiper/modules";
 import FooterNav from "../components/FooterNav.vue";
 import Header from "../components/Header.vue";
 import apiClient from "../api/axios";
@@ -183,6 +184,7 @@ import nhLogo from "../assets/images/NHbank.png";
 import copyIcon from "../assets/images/copy.png";
 import { useMemberStore } from "../stores/MemberStore.js";
 import { useTransferStore } from "../stores/TransferStore.js";
+
 
 export default {
   name: "MainPage",
@@ -216,7 +218,6 @@ export default {
       ],
       showamount: false,
       accounts: [],
-      isConnected: false,
       bankLogos: {
         국민은행: kbbankLogo,
         신한은행: shinhanLogo,
@@ -239,24 +240,9 @@ export default {
     };
   },
   created() {
-    this.checkConnectionStatus();
+    this.fetchAccounts();
   },
   methods: {
-    checkConnectionStatus() {
-      apiClient
-        .get("/member/connect/check")
-        .then((response) => {
-          if (response.data.isSuccess) {
-            this.isConnected = response.data.result.isConnected;
-            if (this.isConnected) {
-              this.fetchAccounts();
-            }
-          }
-        })
-        .catch((error) => {
-          console.error("연동 상태를 확인하는 중 오류 발생:", error);
-        });
-    },
     fetchAccounts() {
       apiClient
         .get("/account/all")
