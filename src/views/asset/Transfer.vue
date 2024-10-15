@@ -1,14 +1,15 @@
 <template>
   <div class="main-container">
     <Header />
-    
+
     <div class="transfer-page">
       <!-- <button @click="goBack" class="back-button">
           <i class="fas fa-chevron-left"></i>
         </button> -->
       <div class="transfer-form">
-        <label for="recipient"> 
-          <span class="point">누구</span>에게<br /> 보내겠습니까?
+        <label for="recipient">
+          <span class="point">누구</span>에게<br />
+          보내겠습니까?
         </label>
         <input
           type="text"
@@ -17,7 +18,7 @@
           placeholder="계좌번호 입력"
           @input="validateInput"
           @keyup.enter="sendMoney"
-          maxlength="13"
+          maxlength="20"
         />
 
         <div v-if="recipient.length >= 11">
@@ -27,10 +28,10 @@
             v-model="message"
             placeholder="받는 분에게 표시될 내용"
           />
-          <button 
-            type="button" 
-            class="stroke-button" 
-            @click="sendMoney" 
+          <button
+            type="button"
+            class="stroke-button"
+            @click="sendMoney"
             v-if="recipient.length >= 11"
           >
             송금하기
@@ -41,16 +42,20 @@
       <div class="recent-transactions">
         <h3 class="recent-title">최근 거래</h3>
         <div v-if="recentTransactions.length > 0">
-          <div 
-            v-for="transaction in recentTransactions" 
-            :key="transaction.idx" 
+          <div
+            v-for="transaction in recentTransactions"
+            :key="transaction.idx"
             class="transaction-item"
           >
-            <img class="transaction-image" src="../../assets/images/kbbank.png" alt="KB Bank" />
+            <img
+              class="transaction-image"
+              src="../../assets/images/kbbank.png"
+              alt="KB Bank"
+            />
             <div class="transaction-details">
               <p class="transaction-name">{{ transaction.name }}</p>
-              <p 
-                class="transaction-account" 
+              <p
+                class="transaction-account"
                 @click="copyAccountNumber(transaction.accountNumber)"
               >
                 {{ transaction.accountNumber }}
@@ -69,76 +74,75 @@
 </template>
 
 <script>
-import FooterNav from '../../components/FooterNav.vue';
-import Header from '../../components/Header.vue';
+import FooterNav from "../../components/FooterNav.vue";
+import Header from "../../components/Header.vue";
+import { useTransferStore } from "../../stores/TransferStore.js";
 
 export default {
-  name: 'Transfer',
+  name: "Transfer",
   components: {
     FooterNav,
     Header,
   },
+  setup() {
+    const transferStore = useTransferStore();
+    return { transferStore };
+  },
   data() {
     return {
-      recipient: '',
-      message: '',
+      recipient: "",
+      message: "",
       recentTransactions: [],
     };
   },
   methods: {
-    goBack() {
-      this.$router.go(-1);
-    },
     validateInput() {
-      this.recipient = this.recipient.replace(/[^0-9]/g, '').slice(0, 13);
+      // 숫자와 "-" 기호만 입력하도록 제한
+      this.recipient = this.recipient.replace(/[^0-9-]/g, "").slice(0, 20);
     },
-    goToGroupPayPage() {
-      this.$router.push("/grouppay");
+    sendMoney() {
+      // 수신 계좌 번호를 Pinia 스토어에 저장
+      this.transferStore.setRecipient(this.recipient);
+      // 다음 단계로 이동
+      this.$router.push("/transfer2");
     },
-
-    // 더미 거래 내역을 fetch하는 메서드
     fetchTransactions() {
-      // 더미 거래 내역
+      // 예시로 더미 데이터를 설정
       const dummyTransactions = [
         {
           idx: 1,
-          name: '홍길동',
-          accountNumber: '123-456-789012',
+          name: "홍길동",
+          accountNumber: "123-456-789012",
           createdAt: new Date().toLocaleString(),
         },
         {
           idx: 2,
-          name: '김철수',
-          accountNumber: '234-567-890123',
+          name: "김철수",
+          accountNumber: "234-567-890123",
           createdAt: new Date().toLocaleString(),
         },
         {
           idx: 3,
-          name: '이영희',
-          accountNumber: '345-678-901234',
+          name: "이영희",
+          accountNumber: "345-678-901234",
           createdAt: new Date().toLocaleString(),
         },
       ];
-
-      // 더미 데이터 설정
       this.recentTransactions = dummyTransactions;
     },
-    
     copyAccountNumber(accountNumber) {
       this.recipient = accountNumber;
-      navigator.clipboard.writeText(accountNumber)
+      navigator.clipboard
+        .writeText(accountNumber)
         .then(() => {
-          // 계좌번호 복사 성공 시 알림 추가
           console.log("계좌번호가 복사되었습니다.");
         })
-        .catch(err => {
-          console.error('복사 실패:', err);
+        .catch((err) => {
+          console.error("복사 실패:", err);
         });
     },
-    
-    sendMoney() {
-      // 송금 로직 (여기에 필요한 송금 로직을 추가하세요)
-      this.$router.push('/transfer2'); // /transfer2로 이동
+    goToGroupPayPage() {
+      this.$router.push("/grouppay");
     },
   },
   mounted() {
@@ -227,15 +231,15 @@ input[type="text"]::placeholder {
 }
 
 .transaction-name {
-  font-size: 12px; 
+  font-size: 12px;
   font-weight: bold;
   margin-bottom: 0;
   margin-top: 6px;
 }
 
 .transaction-account {
-  font-size: 12px; 
-  color: #6981d9; 
+  font-size: 12px;
+  color: #6981d9;
   margin-bottom: 6px;
   cursor: pointer;
 }
@@ -253,8 +257,8 @@ input[type="text"]::placeholder {
 
 .transaction-divider {
   border: none;
-  border-top: 1px solid #ccc; 
-  margin: 5px 0; 
+  border-top: 1px solid #ccc;
+  margin: 5px 0;
 }
 
 .stroke-button {

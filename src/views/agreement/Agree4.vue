@@ -41,10 +41,88 @@
               class="card-logo"
             />
             <div class="card-details">
-              <span class="card-name">신한은행</span>
+              <span class="card-name">신한카드</span>
               <p class="card-info">보유하고 계신 카드 정보를 가져옵니다.</p>
             </div>
             <input type="checkbox" class="custom-checkbox" v-model="selectedCards" value="shinhan" />
+          </div>
+
+          <div class="card-item">
+            <img
+              src="../../assets/images/kbbank.png"
+              alt="우리카드"
+              class="card-logo"
+            />
+            <div class="card-details">
+              <span class="card-name">국민카드</span>
+              <p class="card-info">보유하고 계신 카드 정보를 가져옵니다.</p>
+            </div>
+            <input type="checkbox" class="custom-checkbox" v-model="selectedCards" value="kb" />
+          </div>
+
+          <div class="card-item">
+            <img
+              src="../../assets/images/hanabank.png"
+              alt="우리카드"
+              class="card-logo"
+            />
+            <div class="card-details">
+              <span class="card-name">하나카드</span>
+              <p class="card-info">보유하고 계신 카드 정보를 가져옵니다.</p>
+            </div>
+            <input type="checkbox" class="custom-checkbox" v-model="selectedCards" value="hana" />
+          </div>
+
+          <div class="card-item">
+            <img
+              src="../../assets/images/IBKbank.png"
+              alt="우리카드"
+              class="card-logo"
+            />
+            <div class="card-details">
+              <span class="card-name">IBK기업카드</span>
+              <p class="card-info">보유하고 계신 카드 정보를 가져옵니다.</p>
+            </div>
+            <input type="checkbox" class="custom-checkbox" v-model="selectedCards" value="ibk" />
+          </div>
+
+          <div class="card-item">
+            <img
+              src="../../assets/images/kakaobank.png"
+              alt="우리카드"
+              class="card-logo"
+            />
+            <div class="card-details">
+              <span class="card-name">카카오뱅크</span>
+              <p class="card-info">보유하고 계신 카드 정보를 가져옵니다.</p>
+            </div>
+            <input type="checkbox" class="custom-checkbox" v-model="selectedCards" value="kakao" />
+          </div>
+
+          <div class="card-item">
+            <img
+              src="../../assets/images/toss.png"
+              alt="우리카드"
+              class="card-logo"
+            />
+            <div class="card-details">
+              <span class="card-name">토스</span>
+              <p class="card-info">보유하고 계신 카드 정보를 가져옵니다.</p>
+            </div>
+            <input type="checkbox" class="custom-checkbox" v-model="selectedCards" value="toss" />
+          </div>
+
+          <div class="card-item">
+            <img
+              src="../../assets/images/kbank.png"
+              alt="우리카드"
+              class="card-logo"
+            />
+            <div class="card-details">
+              <span class="card-name">케이뱅크</span>
+              <p class="card-info">보유하고 계신 카드 정보를 가져옵니다.</p>
+            </div>
+            <input type="checkbox" class="custom-checkbox" v-model="selectedCards" value="k" />
           </div>
         </div>
       </div>
@@ -68,7 +146,7 @@
     data() {
       return {
         selectedCards: [],
-        allCards: ['woori', 'shinhan']
+        allCards: ['woori', 'shinhan', 'hana', 'k', 'toss', 'kakao', 'ibk', 'kb']
       };
     },
     computed: {

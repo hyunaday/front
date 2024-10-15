@@ -15,7 +15,7 @@ export const useSocketStore = defineStore('socket', {
     connect() {
       if (this.stompClient) return; // 이미 연결되어 있으면 반환
 
-      this.stompClient = Stomp.client('ws://34.64.141.174:8080/ws');
+      this.stompClient = Stomp.client('wss://together-pay.store/ws');
 
       const orderStore = useOrderStore(); // orderStore 인스턴스 가져오기
       const memberStore = useMemberStore();
@@ -118,8 +118,6 @@ export const useSocketStore = defineStore('socket', {
       // MENU_INFO 데이터를 저장하는 메서드
       this.menuInfo = menuInfo;
     }
-  },
-  persist: {
-    storage: localStorage, // localStorage에 저장
-  },
+  }
+
 });

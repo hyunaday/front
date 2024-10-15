@@ -2,8 +2,26 @@
   <div class="main-container">
     <Header />
     <div class="container mt-3">
-      <!-- 내 계좌 섹션 -->
-      <div class="row align-items-center">
+      <!-- 내 자산 연결 버튼 섹션 -->
+      <div
+        v-if="!isConnected"
+        class="connect-card-container d-flex flex-column align-items-center justify-content-center"
+      >
+        <img
+          src="../assets/images/connect_logo_rm.png"
+          alt="Connect Logo"
+          class="connect-logo"
+        />
+        <p class="connect-message">
+          편리한 전자 지갑 기능을 사용하려면<br />자산을 연결해주세요!
+        </p>
+        <button @click="goToAgreementPage" class="btn connect-button">
+          내 자산 연결
+        </button>
+      </div>
+
+      <!-- 내 계좌 텍스트 및 잔액 조회 스위치 -->
+      <div v-if="isConnected" class="row align-items-center" id="main-title">
         <div class="col-6 ps-4">
           <h4 class="mb-0">내 계좌</h4>
         </div>
@@ -68,9 +86,12 @@
                       조회
                     </button>
                   </router-link>
-                  <router-link :to="`/transfer${account.idx}`">
-                    <!-- <router-link :to="`/transfer`"> -->
-                    <button class="btn btn-light transfer" type="button">
+                  <router-link :to="`/transfer`">
+                    <button
+                      class="btn btn-light transfer"
+                      type="button"
+                      @click="selectAccount(account)"
+                    >
                       이체
                     </button>
                   </router-link>
@@ -110,6 +131,36 @@
           </div>
         </div>
       </div>
+      <!-- 카드 추천 섹션 -->
+      <div class="recommend_card">
+        <label class="recommend_title">
+          <h6>내 소비 습관에 맞는 카드 추천</h6>
+        </label>
+        <div class="card-slider">
+          <swiper
+            :space-between="20"
+            :slides-per-view="1.2"
+            :centered-slides="true"
+            :loop="true"
+            :pagination="{ clickable: true, type: 'progressbar' }"
+            :navigation="true"
+            :autoplay="{ delay: 3000 }"
+          >
+            <!-- 카드 추천 슬라이드 -->
+            <swiper-slide
+              v-for="(image, index) in cardImages"
+              :key="index"
+              class="slide-card"
+            >
+              <div class="card-content">
+                <img :src="image" alt="추천 카드" class="card-image-fixed" />
+                <p class="cardTitle">{{ cardTitle[index] }}</p>
+                <p class="cardDescription">{{ cardDescriptions[index] }}</p>
+              </div>
+            </swiper-slide>
+          </swiper>
+        </div>
+      </div>
     </div>
 
     <FooterNav :buttonType="'pay'" :buttonAction="goToGroupPayPage" />
@@ -131,6 +182,9 @@ import wooriLogo from "../assets/images/wooribank.png";
 import tossLogo from "../assets/images/toss.png";
 import nhLogo from "../assets/images/NHbank.png";
 import copyIcon from "../assets/images/copy.png";
+import { useMemberStore } from "../stores/MemberStore.js";
+import { useTransferStore } from "../stores/TransferStore.js";
+
 
 export default {
   name: "MainPage",
@@ -141,20 +195,27 @@ export default {
     Header,
   },
   setup() {
-    const onSwiper = (swiper) => {
-      console.log(swiper);
-    };
-    const onSlideChange = () => {
-      console.log("slide change");
-    };
-    return {
-      onSwiper,
-      onSlideChange,
-      modules: [Pagination],
-    };
+    const transferStore = useTransferStore();
+    return { transferStore };
   },
   data() {
     return {
+      cardDescriptions: [
+        "스타벅스 최대 60%할인은 기본교통·택시·통신 등 일상생활 할인!",
+        "통신·교통·외식 등 생활영역10%할인주유 리터당 60원 할인혜택!",
+        "대한항공 1천원당 1마일리지 적립공항 라운지 / 발레파킹 무료 이용",
+        "해외가맹점 최대 3% 포인트리 적립전월 실적없이 국내가맹점 0.3%적립",
+        "스카이패스 1500원당 최대3마일적립전세계 공항라운지 동반1인 무료",
+        "대한항공 및 저가항공사 15만원할인!국내가맹점1%+특별영역5%, 중복할인",
+      ],
+      cardTitle: [
+        "카페 최대60%할인, 일상할인까지",
+        "생활업종 할인으로 혜택 가득한 하루!",
+        "카드 하나로 누리는 항공 특화 서비스!",
+        "포인트리 적립받고 해외배송료 할인까지",
+        "여행도 프리미엄! 마일리지적립+ 라운지 무료",
+        "국내외 라운지 무료이용과 항공권 15만원 할인!",
+      ],
       showamount: false,
       accounts: [],
       bankLogos: {
@@ -203,13 +264,45 @@ export default {
     goToGroupPayPage() {
       this.$router.push("/grouppay");
     },
+    goToAgreementPage() {
+      this.$router.push("/agree1");
+    },
+    selectAccount(account) {
+      this.transferStore.selectedAccount = account;
+      this.transferStore.availableAmount = account.amount;
+      this.$router.push("/transfer");
+    },
   },
 };
 </script>
 
 <style scoped>
+#main-title {
+  margin-top: 30px;
+}
+
 .main-container {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  overflow-y: auto;
+  padding-bottom: 20px;
+  overflow-x: hidden; /* 좌우 스크롤을 제거 */
+}
+
+.container {
+  max-width: 100%;
+  overflow-y: auto;
+  padding-bottom: 80px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overflow-x: hidden; /* 좌우 스크롤을 제거 */
+}
+
+.container::-webkit-scrollbar {
+  display: none;
 }
 
 .form-check-input {

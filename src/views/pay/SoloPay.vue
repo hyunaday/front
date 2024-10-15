@@ -42,7 +42,7 @@
       <p v-if="paymentResult">{{ paymentResult }}</p>
     </div>
 
-    <!-- 모달 -->
+    <!-- Modal -->
     <div v-if="isModalOpen" class="modal-overlay">
       <div class="modal-content">
         <h3 class="modal-title">결제 비밀번호를 입력해주세요</h3>
@@ -73,13 +73,14 @@
 </template>
 
 <script>
-import apiClient from "../../api/axios"; // Import your axios instance
+import apiClient from "../../api/axios.js";
+import { useOrderStore } from "../../stores/orderStore.js";
 
 export default {
   data() {
     return {
       paymentResult: "",
-      cards: [], // Empty array to store cards fetched from API
+      cards: [], // Array to store cards fetched from API
       currentCardIndex: 0,
       isModalOpen: false,
       paymentPassword: "",
@@ -89,6 +90,9 @@ export default {
     currentCard() {
       return this.cards[this.currentCardIndex];
     },
+    orderStore() {
+      return useOrderStore();
+    }
   },
   methods: {
     async fetchCards() {
@@ -157,14 +161,26 @@ export default {
     updateCircles() {
       // Placeholder for circle update logic, if needed
     },
-    confirmPayment() {
+    async confirmPayment() {
       if (this.paymentPassword.length === 6) {
-        if (this.paymentPassword === "123456") {
-          // Placeholder password check
-          this.$router.push("/success");
-        } else {
-          this.$router.push("/failure");
+        const requestData = {
+          orderIdx: this.orderStore.orderIdx, // Get orderIdx from orderStore
+          creditIdx: 1, // Fixed creditIdx
+          payMethod: "CREDIT" // Fixed payMethod
+        };
+        
+        try {
+          const response = await apiClient.post(`/pay?payType=ALONE`, requestData);
+          if (response.data.isSuccess) {
+            this.$router.push("/success");  // Navigate to success page
+          } else {
+            this.$router.push("/failure");  // Navigate to failure page
+          }
+        } catch (error) {
+          console.error("Payment error:", error);
+          alert("결제에 실패했습니다. 다시 시도해주세요.");
         }
+
         this.closeModal();
       } else {
         alert("비밀번호는 6자리여야 합니다.");
@@ -172,17 +188,13 @@ export default {
     },
     goBack() {
       this.$router.go(-1);
-    },
+    }
   },
   created() {
-    this.fetchCards(); // Fetch cards when the component is created
+    this.fetchCards(); // Fetch cards on component creation
   },
 };
 </script>
-
-<style scoped>
-/* 기존 스타일 그대로 유지 */
-</style>
 
 <style scoped>
 .main-container {

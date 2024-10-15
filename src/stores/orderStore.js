@@ -9,6 +9,8 @@ export const useOrderStore = defineStore('order', {
     maxMemberCnt: 0,
     type: null,
     imgUrl: null,
+    memberIdxList: [],
+    memberNameList: [], // 멤버 이름을 저장할 리스트
   }),
   actions: {
     setOrderIdx(orderIdx) {
@@ -23,10 +25,10 @@ export const useOrderStore = defineStore('order', {
     setImgUrl(imgUrl) {
       this.imgUrl = imgUrl;
     },
-  },
-  persist: {
-    storage: localStorage, // localStorage에 저장
-  },
+    setMemberNameList(memberNameList) {
+      this.memberNameList = memberNameList;
+    },
+  }
 });
 
 export const useOrderInfoStore = defineStore('orderInfo', {
@@ -82,10 +84,7 @@ export const useOrderInfoStore = defineStore('orderInfo', {
           console.error("Error loading order info:", error);
         });
     },
-  },
-  persist: {
-    storage: localStorage, // localStorage에 저장
-  },
+  }
 });
 
 
@@ -138,11 +137,7 @@ export const usePriceStore = defineStore('price', {
       this.memberList = [];
       console.log('Price store data reset');
     }
-  },
-  persist: {
-    enabled: true, // persist 기능 활성화
-    storage: localStorage, // localStorage에 저장
-  },
+  }
 });
 
 
@@ -183,8 +178,5 @@ export const usePayPriceInfoStore = defineStore('payPriceInfo', {
         price: this.price,
       };
     },
-  },
-  persist: {
-    storage: localStorage, // localStorage에 저장
-  },
+  }
 });

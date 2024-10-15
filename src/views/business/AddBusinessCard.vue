@@ -28,12 +28,7 @@
       :buttonType="'plus'"
       :buttonAction="goToAddList"
     />
-
-    <!— QR 코드 스캔 결과 출력 —>
-    <div v-if="scannedData">
-      <h4>스캔된 정보:</h4>
-      <p>{{ scannedData }}</p>
-    </div>
+  
   </div>
 </template>
 

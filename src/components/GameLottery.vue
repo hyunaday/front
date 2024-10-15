@@ -6,13 +6,6 @@
       </button>
       <h2 class="title">룰렛 돌리기</h2>
     </div>
-    <img src="../assets/images/logo.png" alt="로고" class="logo-image" />
-    <div class="input-group">
-      <label for="participants"></label>
-      <input v-model="participantInput" placeholder="참여자를 추가해주세요" />
-      <button @click="addParticipant" class="add-participant-button">+</button>
-    </div>
-
     <div class="roulette-container">
       <canvas
         ref="canvas"
@@ -25,7 +18,7 @@
 
     <button
       @click="startLottery"
-      :disabled="participants.length === 0"
+      :disabled="participants.length === 0 || spinning"
       class="start-lottery-button"
     >
       당첨자 추첨하기
@@ -37,8 +30,7 @@
         <h3>행운의 주인공</h3>
         <p>
           축하합니다~!
-          <span class="winner-text">{{ winner }}</span
-          >님이 당첨 되었습니다!!
+          <span class="winner-text">{{ winner }}</span>님이 당첨 되었습니다!!
         </p>
         <div class="button-group">
           <button @click="restartLottery">다시 뽑기</button>
@@ -50,24 +42,29 @@
 </template>
 
 <script>
-import { useNavigationStore } from '../../src/stores/navigation.js'; // Pinia Store import
+import { useSocketStore } from '../stores/socketStore.js';
+import { useMemberStore } from '../stores/MemberStore.js';
+import { useOrderStore } from '../stores/orderStore.js';
+import { onMounted, watch } from 'vue';
 
 export default {
   data() {
     return {
-      participants: [],
-      participantInput: '',
+      participants: [], // 소켓 응답으로 받은 참가자 정보를 담습니다.
       winner: null,
       rotationAngle: 0,
       spinning: false,
       showModal: false,
-      selectedMethod: null, // 선택된 방법
     };
+  },
+  mounted() {
+    this.handleSocketResponse(); // 소켓 응답 감시
+    this.sendSocketRequest(); // 참가자 목록 요청
   },
   watch: {
     participants: {
       handler() {
-        this.drawRoulette();
+        this.drawRoulette(); // 참가자 정보가 업데이트되면 룰렛을 그림
       },
       deep: true,
     },
@@ -76,76 +73,145 @@ export default {
     goBack() {
       this.$router.go(-1);
     },
-    addParticipant() {
-      const trimmedInput = this.participantInput.trim();
-      if (trimmedInput && !this.participants.includes(trimmedInput)) {
-        if (this.participants.length < 10) {
-          this.participants.push(trimmedInput);
-          this.participantInput = '';
-          this.drawRoulette();
-        } else {
-          alert('참여자는 최대 10명까지만 추가할 수 있습니다.');
-        }
-      } else {
-        if (!trimmedInput) {
-          alert('참여자 이름을 입력해주세요.');
-        } else {
-          alert('이미 추가된 참여자입니다.');
-        }
-      }
-    },
-    drawRoulette() {
-      const canvas = this.$refs.canvas;
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      const totalSegments = this.participants.length;
+    sendSocketRequest() {
+      const socketStore = useSocketStore();
+      const memberStore = useMemberStore();
+      const orderStore = useOrderStore();
 
-      if (totalSegments === 0) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!socketStore.stompClient || !socketStore.stompClient.connected) {
+        console.error('소켓이 연결되지 않았습니다.');
         return;
       }
 
+      const message = {
+        orderIdx: orderStore.orderIdx,
+        memberId: memberStore.memberId,
+      };
+
+      try {
+        socketStore.stompClient.send(
+          '/pub/order/room/list',
+          {
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+            'content-type': 'application/json',
+            'MemberId': memberStore.memberId,
+          },
+          JSON.stringify(message)
+        );
+      } catch (error) {
+        console.error('소켓 요청 실패:', error);
+      }
+    },
+    handleSocketResponse() {
+      const socketStore = useSocketStore();
+
+      watch(
+        () => socketStore.messages,
+        (newMessages) => {
+          const lastMessage = newMessages[newMessages.length - 1];
+          if (!lastMessage) return;
+
+          try {
+            const parsedMessage = JSON.parse(lastMessage);
+
+            if (parsedMessage.type === 'MEMBER_LIST_INFO') {
+              // 참가자 목록을 업데이트
+              this.participants = parsedMessage.memberInfoList.map(
+                (member) => member.memberName
+              );
+              this.drawRoulette();
+            }
+
+            if (parsedMessage.type === 'GAME_RESULT') {
+              // 서버에서 받은 당첨자 정보
+              this.winner = parsedMessage.memberName;
+              this.selectWinner(); // 당첨자를 바탕으로 룰렛을 돌림
+            }
+          } catch (error) {
+            console.error('메시지 파싱 실패:', error);
+          }
+        },
+        { deep: true }
+      );
+    },
+    drawRoulette() {
+      const canvas = this.$refs.canvas;
+      if (!canvas || this.participants.length === 0) return;
+
+      const ctx = canvas.getContext('2d');
+      const totalSegments = this.participants.length;
       const arc = (2 * Math.PI) / totalSegments;
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height); // 캔버스를 초기화
 
       for (let i = 0; i < totalSegments; i++) {
         const angleStart = i * arc + this.rotationAngle;
         const angleEnd = (i + 1) * arc + this.rotationAngle;
 
         ctx.beginPath();
-        ctx.moveTo(150, 150);
-        ctx.arc(150, 150, 150, angleStart, angleEnd);
+        ctx.moveTo(150, 150); // 중심으로 이동
+        ctx.arc(150, 150, 150, angleStart, angleEnd); // 원 그리기
         ctx.fillStyle = this.getColor(i);
         ctx.fill();
         ctx.closePath();
 
+        // 참가자 이름 표시
         ctx.save();
         ctx.translate(150, 150);
         ctx.rotate(angleStart + arc / 2);
         ctx.textAlign = 'right';
         ctx.font = '20px Pretendard';
         ctx.fillStyle = '#000';
-        ctx.fillText(this.participants[i], 130, 10); // 12시 방향에 텍스트를 그립니다
+        ctx.fillText(this.participants[i], 130, 10);
         ctx.restore();
       }
-
-      ctx.beginPath();
-      ctx.arc(150, 150, 10, 0, 2 * Math.PI);
-      ctx.fillStyle = '#ffffff';
-      ctx.fill();
-      ctx.closePath();
     },
     startLottery() {
       if (this.spinning || this.participants.length === 0) return;
       this.spinning = true;
 
+      // 서버에 게임 시작 요청 전송
+      this.sendGameRequest();
+    },
+    sendGameRequest() {
+      const socketStore = useSocketStore();
+      const memberStore = useMemberStore();
+      const orderStore = useOrderStore();
+
+      if (!socketStore.stompClient || !socketStore.stompClient.connected) {
+        console.error('소켓이 연결되지 않았습니다.');
+        return;
+      }
+
+      const message = {
+        orderIdx: orderStore.orderIdx,
+        memberId: memberStore.memberId,
+      };
+
+      try {
+        socketStore.stompClient.send(
+          '/pub/order/room/game/start',
+          {
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+            'content-type': 'application/json',
+            'MemberId': memberStore.memberId,
+          },
+          JSON.stringify(message)
+        );
+      } catch (error) {
+        console.error('게임 시작 소켓 요청 실패:', error);
+      }
+    },
+    selectWinner() {
+      const winnerIndex = this.participants.findIndex(
+        (participant) => participant === this.winner
+      );
       const totalSegments = this.participants.length;
       const arc = (2 * Math.PI) / totalSegments;
 
-      const randomSegment = Math.floor(Math.random() * totalSegments);
-
-      const targetAngle = 5 * 2 * Math.PI + randomSegment * arc + Math.PI / 2;
+      // 해당 참가자의 범위 내에서 랜덤한 각도를 생성
+      const randomWithinSegment = Math.random() * arc;
+      const targetAngle = 5 * 2 * Math.PI + winnerIndex * arc + randomWithinSegment + Math.PI / 2;
 
       const startTime = performance.now();
       const duration = 5000;
@@ -153,21 +219,15 @@ export default {
       const animate = (currentTime) => {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
-
         const easeOutProgress = 1 - Math.pow(1 - progress, 3);
 
         this.rotationAngle = easeOutProgress * targetAngle;
 
-        this.drawRoulette();
+        this.drawRoulette(); // 각도에 따라 룰렛을 다시 그리기
 
         if (progress < 1) {
           requestAnimationFrame(animate);
         } else {
-          const normalizedAngle = this.rotationAngle % (2 * Math.PI);
-          const winnerIndex =
-            Math.floor((normalizedAngle + Math.PI / 2) / arc) % totalSegments;
-
-          this.winner = this.participants[winnerIndex];
           this.spinning = false;
           this.showModal = true;
         }
@@ -176,16 +236,9 @@ export default {
       requestAnimationFrame(animate);
     },
     getColor(index) {
-      const colors = [
-        '#d0cdc9',
-        '#918981',
-        '#9fa4a3',
-        '#717b7f',
-        '#667579',
-        '#4c5b6c',
-        '#698476',
-        '#667579',
-      ];
+      const colors = ['#f14545', '#54e4fa', '#ca66f2', '#80ff80', '#9FC5E8', '#F6B26B'];
+
+
       return colors[index % colors.length];
     },
     closeModal() {
@@ -193,37 +246,17 @@ export default {
     },
     restartLottery() {
       this.showModal = false;
-      this.participants = [];
-      this.winner = null;
       this.rotationAngle = 0;
       this.spinning = false;
-      this.participantInput = '';
       this.drawRoulette();
     },
-    // goToSelectedPage() {
-    //   // 선택된 방법에 따라 이동할 페이지 결정
-    //   const targetPage =
-    //     this.selectedMethod === 'split' ? '/paysplit' : '/paymenu';
-    //   this.$router.push(targetPage);
-    // },
     confirm() {
-      const navigationStore = useNavigationStore();
-
-      // 경로가 정의되어 있는지 확인
-      if (
-        !navigationStore.navigationPath ||
-        navigationStore.navigationPath.length === 0
-      ) {
-        console.error('navigationPath가 정의되지 않았거나 비어 있습니다.');
-        return; // 경로가 없으면 동작하지 않음
-      }
-
-      const targetPage =
-        navigationStore.navigationPath[
-          navigationStore.navigationPath.length - 1
-        ];
-      this.$router.push(targetPage); // 저장된 최종 목적지로 이동
-      navigationStore.clearNavigationPath(); // 경로 초기화
+      this.$router.push({
+      path: '/requestPay',
+      query: {
+        winner: this.winner,
+      },
+    });
     },
   },
 };
@@ -237,7 +270,7 @@ export default {
   justify-content: flex-start;
   align-items: center;
   padding: 20px;
-  overflow: hidden; /* 전체 스크롤 숨김 */
+  overflow: hidden;
 }
 
 .back-button {
@@ -256,48 +289,29 @@ export default {
   margin: 0;
   text-align: center;
 }
-.input-group {
-  margin-top: 30px;
-  margin-left: 20px;
-  margin-bottom: 20px;
-}
-input {
-  padding: 12px; /* 내부 여백 */
-  border: 1px solid #ccc; /* 테두리 색상 */
-  border-radius: 25%; /* 모서리 둥글게 */
-  width: 250px; /* 너비 조정 */
-  font-size: 16px; /* 글자 크기 */
-  text-align: center;
-  margin-right: 10px;
-  color: #333; /* 글자 색상 */
-  background-color: #f9f9f9; /* 배경색 */
-  transition: border-color 0.3s, box-shadow 0.3s; /* 호버 시 테두리 색상 전환 효과 */
-}
-
-/* 포커스 상태 스타일 */
-input:focus {
-  border-color: #007bff; /* 포커스 시 테두리 색상 */
-  outline: none; /* 기본 아웃라인 제거 */
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* 포커스 시 그림자 효과 */
-}
 .roulette-container {
   position: relative;
   width: 300px;
   height: 300px;
-  margin-top: 20px;
+  margin-top: 50%;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* 그림자 효과 추가 */
+  border-radius: 50%; /* 둥근 테두리 */
 }
+
 .roulette-canvas {
   width: 100%;
   height: 100%;
+  border-radius: 50%; /* 원 모양 */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* 그림자 효과 추가 */
 }
 .arrow-image {
   position: absolute;
-  top: -20px; /* 캔버스 위에 위치하도록 조정 */
+  top: -20px;
   left: 50%;
   transform: translateX(-50%);
-  width: 40px; /* 화살표 크기 조정 */
+  width: 40px;
   height: auto;
-  pointer-events: none; /* 화살표 클릭 방지 */
+  pointer-events: none;
 }
 .modal-overlay {
   position: fixed;
@@ -312,95 +326,60 @@ input:focus {
   z-index: 1000;
 }
 .modal-content {
-  background: #ffffff; /* 배경색 */
-  padding: 20px; /* 내부 여백 */
-  border-radius: 10px; /* 모서리 둥글게 */
-  text-align: center; /* 텍스트 중앙 정렬 */
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); /* 그림자 효과 */
-  max-width: 400px; /* 최대 너비 */
-  width: 90%; /* 반응형 너비 */
-  position: relative; /* 포지셔닝 */
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
+  width: 90%;
+  position: relative;
 }
 .modal-content h3 {
-  font-size: 24px; /* 제목 크기 */
-  margin-bottom: 15px; /* 아래 여백 */
-  color: #333; /* 제목 색상 */
+  font-size: 24px;
+  margin-bottom: 15px;
 }
-.modal-content button {
-  background-color: #6981d9; /* 버튼 배경색 */
-  color: white; /* 버튼 글자색 */
-  padding: 10px 20px; /* 버튼 내부 여백 */
-  border: none; /* 기본 테두리 제거 */
-  border-radius: 5px; /* 버튼 모서리 둥글게 */
-  cursor: pointer; /* 커서 변경 */
-  transition: background-color 0.3s; /* 배경색 전환 효과 */
+.modal-content .winner-text {
+  font-size: 24px;
+  font-weight: bold;
+  color: #6981d9;
 }
 .button-group {
-  display: flex; /* 수평 배치 */
-  justify-content: space-between; /* 버튼 간 간격 조정 */
-  margin-top: 20px; /* 버튼 그룹과 다른 요소 간의 여백 */
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
 }
-
 .button-group button {
-  width: 48%; /* 버튼 너비 조정 */
+  width: 48%;
+  background-color: #6981d9;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
-
-.modal-content button:hover {
-  background-color: #4a5c9c; /* 호버 시 색상 변경 */
+.button-group button:hover {
+  background-color: #4a5c9c;
 }
 .start-lottery-button {
-  background-color: #6981d9; /* 버튼 배경색 (녹색) */
-  color: white; /* 글자색 */
-  padding: 12px 24px; /* 버튼 내부 여백 */
-  border: none; /* 기본 테두리 제거 */
-  border-radius: 5px; /* 모서리 둥글게 */
-  font-size: 18px; /* 글자 크기 */
-  cursor: pointer; /* 커서 변경 */
-  transition: background-color 0.3s, transform 0.2s; /* 전환 효과 */
-  margin-top: 90px; /* 위쪽 여백 */
+  background-color: #6981d9;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 5px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  margin-top: 90px;
   width: 300px;
 }
-
 .start-lottery-button:hover {
-  background-color: #4a5c9c; /* 호버 시 색상 변경 */
-  transform: scale(1.05); /* 호버 시 살짝 커지기 */
+  background-color: #4a5c9c;
+  transform: scale(1.05);
 }
-
 .start-lottery-button:disabled {
-  background-color: #6c757d; /* 비활성화된 버튼 색상 */
-  cursor: not-allowed; /* 비활성화된 버튼 커서 */
-}
-.logo-image {
-  width: 300px;
-  height: auto;
-  margin-top: auto;
-}
-.winner-text {
-  font-size: 24px; /* 글씨 크기 조정 */
-  font-weight: bold;
-  color: #6981d9; /* 글자 색상 (원하는 색상으로 변경 가능) */
-}
-.add-participant-button {
-  background-color: #6981d9; /* 배경색 (녹색) */
-  color: white; /* 글자색 */
-  font-size: 24px; /* 글자 크기 */
-  border: none; /* 기본 테두리 제거 */
-  border-radius: 50%; /* 둥근 버튼 */
-  width: 50px; /* 너비 */
-  height: 50px; /* 높이 */
-  cursor: pointer; /* 커서 변경 */
-  display: flex; /* 수평 중앙 정렬 */
-  justify-content: center; /* 수평 중앙 정렬 */
-  align-items: center; /* 수직 중앙 정렬 */
-  transition: background-color 0.3s, transform 0.2s; /* 전환 효과 */
-}
-
-.add-participant-button:hover {
-  background-color: #4a5c9c; /* 호버 시 색상 변경 */
-  transform: scale(1.1); /* 호버 시 살짝 커지기 */
-}
-
-.add-participant-button:focus {
-  outline: none; /* 포커스 시 아웃라인 제거 */
+  background-color: #6c757d;
+  cursor: not-allowed;
 }
 </style>
