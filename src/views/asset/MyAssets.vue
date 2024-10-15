@@ -9,6 +9,7 @@
         <button class="analyze-button">분석</button>
       </div>
 
+      <!-- 광고 배너 -->
       <div class="advertisement-banner">
         <div class="banner-content">
           <img :src="currentBanner.image" alt="광고 배너" class="banner-image" />
@@ -19,17 +20,23 @@
         </div>
       </div>
 
+      
+      <!-- 계좌 -->
       <div class="account">
         <span class="account-title">계좌</span>
         <span class="account-amount">{{ formatNumber(totalAccountBalance) }}원</span>
       </div>
 
+
+      <!-- 입출금 -->
       <div class="withdraw-deposit-section">
         <div class="transactions">
           <span class="transactions-title">입출금</span>
           <span class="transactions-amount">{{ formatNumber(totalWithdrawDeposit) }}원</span>
         </div>
 
+
+        <!-- 계좌 조회 -->
         <div class="account-list">
           <div
             v-for="(account, index) in accounts"

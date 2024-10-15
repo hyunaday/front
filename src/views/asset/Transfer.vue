@@ -111,20 +111,20 @@ export default {
       const dummyTransactions = [
         {
           idx: 1,
-          name: "홍길동",
-          accountNumber: "123-456-789012",
+          name: "백도현",
+          accountNumber: "321-654321-12345",
           createdAt: new Date().toLocaleString(),
         },
         {
           idx: 2,
-          name: "김철수",
-          accountNumber: "234-567-890123",
+          name: "서석현",
+          accountNumber: "3660-913473-457",
           createdAt: new Date().toLocaleString(),
         },
         {
           idx: 3,
-          name: "이영희",
-          accountNumber: "345-678-901234",
+          name: "공희진",
+          accountNumber: "1865-294941-460",
           createdAt: new Date().toLocaleString(),
         },
       ];
