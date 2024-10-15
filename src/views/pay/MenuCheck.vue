@@ -166,6 +166,7 @@ export default {
           // 메뉴 선택 처리
           if (parsedMessage.type === 'MENU_SELECT' || parsedMessage.type === 'MENU_CANCEL') {
             const menu = orderInfoStore.orderMenuList.find(item => item.menuIdx === parsedMessage.menuIdx);
+            let totalPriceTmp = 0;
             if (menu) {
               const selectedMenus = parsedMessage.selectedMenuList || [];
               const nowMenu = selectedMenus.find(item => item.menuIdx === menu.menuIdx);
@@ -173,14 +174,26 @@ export default {
               menu.selectedCount = (nowMenu.currentAmount || 0);
 
               // 자신의 선택 상태 업데이트
-              if (parsedMessage.memberIdx === memberStore.idx) {
-                menu.selectedByUser = (parsedMessage.type === 'MENU_SELECT');
-                if (parsedMessage.type === 'MENU_SELECT') {
-                  updateSelectedAmount(menu.price);
-                } else {
-                  updateSelectedAmount(menu.price * -1);
+              // if (parsedMessage.memberIdx === memberStore.idx) {
+              //   menu.selectedByUser = (parsedMessage.type === 'MENU_SELECT');
+              //   if (parsedMessage.type === 'MENU_SELECT') {
+              //     updateSelectedAmount(menu.price);
+              //   } else {
+              //     updateSelectedAmount(menu.price * -1);
+              //   }
+              // }
+              // 자신이 선택한거로 금액 업데이트 및 선택 처리
+              
+              selectedMenus.forEach(item => {
+                const menu = orderInfoStore.orderMenuList.find(menu => menu.menuIdx === item.menuIdx);
+                if (menu) {
+                  if (item.memberIdxList.includes(memberStore.idx)) {
+                    menu.selectedByUser = true;
+                    totalPriceTmp += menu.price; // 선택된 메뉴의 금액을 더함
+                  }
                 }
-              }
+              });
+              selectedPaymentAmount.value = totalPriceTmp;
             }
           }
 
@@ -207,6 +220,7 @@ export default {
         } catch (error) {
           console.error('메시지 파싱 실패:', error);
         }
+
       },
       { deep: true }
     );
