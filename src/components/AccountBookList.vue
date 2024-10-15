@@ -961,7 +961,7 @@ div.total-amount {
 .amount {
   flex: 1;
   text-align: right;
-  font-size: 0.8rem;
+  font-size: 1rem;
 }
 /* 버튼 컨테이너 스타일 - 오른쪽 정렬 */
 .button-container {
