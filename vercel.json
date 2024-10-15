@@ -1,0 +1,15 @@
+{
+    "rewrites": [
+      { "source": "/sw.js", "destination": "/public/sw.js" },
+      { "source": "/manifest.json", "destination": "/public/manifest.json" }
+    ],
+    "headers": [
+      {
+        "source": "/(.*)",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+        ]
+      }
+    ]
+  }
+  
