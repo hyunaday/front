@@ -29,7 +29,7 @@
         class="payment-item"
         >
           <!-- <img :src="item.image" alt="메뉴 이미지" class="item-image" /> -->
-          <img :src="menuIcon[item.menuName]" alt="메롱뉴" class="item-image"/>          
+          <img :src="menuIcon[item.menuName]" alt="메M뉴" class="item-image"/>          
 
           <div class="item-info">
             <!-- 메뉴 이름과 갯수를 함께 표시 -->
