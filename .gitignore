@@ -30,6 +30,7 @@ coverage
 *.tsbuildinfo
 
 
-package-lock.json
+
 _metadata.json.json
+
 
