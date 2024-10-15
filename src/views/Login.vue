@@ -112,7 +112,7 @@ export default {
 
     // 카카오 로그인 리다이렉트
     kakaoLogin() {
-      const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=305950b46b9c5e693c2be97edfa59770&redirect_uri=http://localhost:5173/login&response_type=code`;
+      const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?client_id=305950b46b9c5e693c2be97edfa59770&redirect_uri=https://together-pay-app.vercel.app/login&response_type=code`;
       window.location.href = kakaoAuthUrl;
     },
 
