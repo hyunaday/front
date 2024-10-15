@@ -16,7 +16,7 @@
           원
         </h4>
         <p class="payment-question">
-          <span style="color: #6981d9">어떻게</span> 결제할까요?
+          <span v-if="isTogether" style="color: #6981d9">어떻게</span> 결제할까요?
         </p>
       </div>
 
@@ -39,11 +39,11 @@
         </div>
       </div>
 
-      <button @click="goToShareLink('amount')" class="split-button">
+      <button v-if="isTogether" @click="goToShareLink('amount')" class="split-button">
         금액으로 나누기
       </button>
       <button @click="goToShareLink('menu')" class="split-button">
-        메뉴별로 나누기
+        {{ ment }}
       </button>
 
       <div class="spacer"></div>
@@ -56,6 +56,7 @@ import { useOrderInfoStore } from "../../stores/orderStore.js"; // orderInfoStor
 import { useOrderStore } from "../../stores/orderStore.js"; // orderStore 가져오기
 import { onMounted } from 'vue'; // onMounted 사용
 import { useRouter, useRoute } from 'vue-router'; // vue-router 사용
+import { ref } from 'vue'; // ref 사용
 
 // 이미지 경로 수정
 import blacknoodle from "../../assets/images/blacknoodle.png";
@@ -85,17 +86,30 @@ export default {
     
     const orderIdx = route.query.orderIdx;
     const marketIdx = route.query.marketIdx;
-    
+
+    const isTogether = ref(true); // 금액별 또는 메뉴별 나누기 선택
+    const ment = ref("메뉴별로 나누기");
     // API로부터 주문 정보를 가져오는 함수
     const fetchOrderInfo = async () => {
       orderInfoStore.getOrderInfo(orderIdx, marketIdx); // orderIdx, marketIdx를 사용하여 API 요청
+      console.log(orderStore.type);
       orderStore.setOrderIdx(orderIdx);
+      console.log(orderStore.type);
+      if (orderStore.type === "ALONE") {
+        isTogether.value = false;
+        ment.value = "결제";
+        console.log("isTogether.value", isTogether.value);
+      }
     };
 
     // 금액별 또는 메뉴별 나누기 처리
     const goToShareLink = (type) => {
-      orderStore.setType(type === "amount" ? "BY_PRICE" : "BY_MENU");
-      router.push("/headcount");
+      if (orderStore.type === "ALONE") {
+        router.push("/solopay");
+      } else {
+        orderStore.setType(type === "amount" ? "BY_PRICE" : "BY_MENU");
+        router.push("/headcount");
+      }
     };
 
     const goBack = () => {
@@ -110,7 +124,9 @@ export default {
     return {
       orderInfo: orderInfoStore, // orderInfoStore의 상태를 템플릿에서 사용 가능하도록 설정
       goToShareLink,
-      goBack
+      goBack,
+      isTogether,
+      ment,
     };
   },
 };

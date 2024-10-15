@@ -9,10 +9,10 @@
       선택해주세요
     </h3>
 
-    <button class="custom-button" @click="showScanner('SoloPay')">
+    <button class="custom-button" @click="showScanner('ALONE')">
       개인 결제
     </button>
-    <button class="custom-button" @click="showScanner('MainPay')">
+    <button class="custom-button" @click="showScanner('TOGETHER')">
       함께 결제
     </button>
 
@@ -51,6 +51,9 @@ export default {
       this.$router.go(-1);
     },
     showScanner(paymentType) {
+      const orderStore = useOrderStore();
+      orderStore.setType(paymentType);
+      console.log("type = ", orderStore.type);
       this.$router.push({ query: { paymentType } });
       this.showScannerModal = true;
     },
@@ -61,6 +64,7 @@ export default {
 
       const orderStore = useOrderStore();
       orderStore.setOrderIdx(decodedString); // orderIdx를 Pinia에 저장
+      console.log("decoding", decodedString);
     },
     closeScanner() {
       this.showScannerModal = false;

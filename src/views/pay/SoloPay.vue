@@ -170,7 +170,7 @@ export default {
         };
         
         try {
-          const response = await apiClient.post(`/pay?payType=ALONE`, requestData);
+          const response = await apiClient.post(`/pay?payType=` + (this.orderStore.type === "ALONE" ? "ALONE" : "TOGETHER"), requestData);
           if (response.data.isSuccess) {
             this.$router.push("/success");  // Navigate to success page
           } else {
