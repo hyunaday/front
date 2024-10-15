@@ -53,6 +53,7 @@ export default {
       participants: [], // 소켓 응답으로 받은 참가자 정보를 담습니다.
       winner: null,
       rotationAngle: 0,
+      targetAngle: 0,
       spinning: false,
       showModal: false,
     };
@@ -119,12 +120,14 @@ export default {
               this.participants = parsedMessage.memberInfoList.map(
                 (member) => member.memberName
               );
+              this.targetAngle = parsedMessage.targetAngle;
               this.drawRoulette();
             }
 
             if (parsedMessage.type === 'GAME_RESULT') {
               // 서버에서 받은 당첨자 정보
               this.winner = parsedMessage.memberName;
+              this.targetAngle = parsedMessage.targetAngle;
               this.selectWinner(); // 당첨자를 바탕으로 룰렛을 돌림
             }
           } catch (error) {
@@ -211,7 +214,7 @@ export default {
 
       // 해당 참가자의 범위 내에서 랜덤한 각도를 생성
       const randomWithinSegment = Math.random() * arc;
-      const targetAngle = 5 * 2 * Math.PI + winnerIndex * arc + randomWithinSegment + Math.PI / 2;
+      const targetAngletmp = 5 * 2 * Math.PI + winnerIndex * arc + randomWithinSegment + Math.PI / 2;
 
       const startTime = performance.now();
       const duration = 5000;
@@ -221,7 +224,8 @@ export default {
         const progress = Math.min(elapsed / duration, 1);
         const easeOutProgress = 1 - Math.pow(1 - progress, 3);
 
-        this.rotationAngle = easeOutProgress * targetAngle;
+        this.rotationAngle = easeOutProgress * this.targetAngle;
+        console.log("targetAngletmp: ", this.rotationAngle);
 
         this.drawRoulette(); // 각도에 따라 룰렛을 다시 그리기
 

@@ -66,6 +66,7 @@ const updateParticipantCount = () => {
 
 // 뒤로 가기 버튼
 const goBack = () => {
+  socketStore.disconnect();
   router.go(-1);
 };
 
@@ -107,7 +108,11 @@ watch(
         orderStore.setType("BY_PRICE");
         console.log('PARTICIPANT_INFO 메시지 도착:', parsedMessage);
         priceStore.setPriceData(parsedMessage);
-        router.push('/requestPay');
+        showCompletionMessage.value = true;
+        setTimeout(() => {
+          showCompletionMessage.value = false;
+          router.push('/requestPay'); // 페이지 이동 (소켓 연결 유지)
+        }, 3000);
       } else if (parsedMessage.type === 'ENTER') {
         completedParticipants.value = parsedMessage.memberCnt;
         totalParticipants.value = parsedMessage.maxMemberCnt;
