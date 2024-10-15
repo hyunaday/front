@@ -165,14 +165,14 @@ export default {
   text-align: center;
   padding: 10px 0;
   position: relative;
-  margin-top: 60px;
+  margin-top: 30px;
   margin-bottom: 150px;
 }
 .header-logo {
   width: 300px;
   height: auto;
   position: absolute;
-  top: 5px;
+  top: 0px;
   left: 30px;
 }
 
@@ -183,6 +183,7 @@ export default {
   justify-content: center;
   align-items: center;
   padding: 20px;
+  margin-top: -30px;
 }
 form {
   width: 300px;
@@ -257,6 +258,7 @@ form {
 /* 간편 로그인 섹션 */
 .social-login {
   text-align: center;
+  margin-bottom: 20px;
 }
 
 .social-login p {

@@ -37,7 +37,7 @@
                 <p>{{ card.name }}</p>
                 <p>{{ card.position }}</p>
                 <p>{{ card.part }}</p>
-                <p>{{ card.phoneNum }}</p>
+                <p>{{ card.phoneNumber }}</p>
                 <p>{{ card.tel_num }}</p>
                 <p>{{ card.email }}</p>
               </div>
@@ -51,7 +51,7 @@
           <p>이름: {{ formData.name }}</p>
           <p>직책: {{ formData.position }}</p>
           <p>부서: {{ formData.part }}</p>  <!-- '부서'를 'part'로 수정 -->
-          <p>휴대전화: {{ formData.phoneNum }}</p>  <!-- '휴대전화'를 'phoneNum'로 수정 -->
+          <p>휴대전화: {{ formData.phoneNumber }}</p>  <!-- '휴대전화'를 'phoneNum'로 수정 -->
           <p>유선전화: {{ formData.tel_num }}</p>
           <p>이메일: {{ formData.email }}</p>
           <p>주소: {{ formData.address }}</p>
@@ -100,7 +100,7 @@
           </div>
           <div class="form-row">
             <label class="form-label">휴대전화:</label>
-            <input v-model="editSelectedCard.phoneNum" type="text" />
+            <input v-model="editSelectedCard.phoneNumber" type="text" />
           </div>
           <div class="form-row">
             <label class="form-label">유선전화:</label>
@@ -144,7 +144,7 @@
           <input v-model="editData.part" type="text" />
 
           <label>휴대전화:</label>
-          <input v-model="editData.phoneNum" type="text" />
+          <input v-model="editData.phoneNumber" type="text" />
 
           <label>유선전화:</label>
           <input v-model="editData.tel_num" type="tel" />
@@ -180,7 +180,7 @@ export default {
       businessCardList: [], // 명함 목록을 저장할 배열
       formData: {
         name: '',
-        phoneNum: '',
+        phoneNumber: '',
         email: '',
         position: '',
         part: '',
@@ -481,7 +481,10 @@ select {
 .preview-box-small p:nth-child(8) {
   font-size: 2px; /* 전화번호, 유선전화번호, 이메일 크기 축소 */
   text-align: right;
+  bottom: 20px; /* 또는 bottom: 30px;와 margin-top을 조정 */
+  margin-bottom: -5px; /* 필요에 따라 값 조정 */
 }
+
 
 .preview-box-small p:nth-child(4)::before {
   content: 'Position: '; /* 직책 앞에 텍스트 추가 */
