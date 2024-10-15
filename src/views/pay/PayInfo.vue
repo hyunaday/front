@@ -16,15 +16,21 @@
           원
         </h4>
         <p class="payment-question">
-          <span style="color: #6981d9">어떻게</span> 결제할까요?
+          <span v-if="isTogether" style="color: #6981d9">어떻게</span> 결제할까요?
         </p>
       </div>
 
       <hr class="divider" />
 
       <div class="payment-details">
-        <div v-for="(item, index) in orderInfo.orderMenuList" :key="index" class="payment-item">
-          <img :src="item.image" alt="메뉴 이미지" class="item-image" />
+        <div 
+        v-for="(item, index) in orderInfo.orderMenuList" 
+        :key="index" 
+        class="payment-item"
+        >
+          <!-- <img :src="item.image" alt="메뉴 이미지" class="item-image" /> -->
+          <img :src="menuIcon[item.menuName]" alt="메뉴" class="item-image"/>          
+
           <div class="item-info">
             <!-- 메뉴 이름과 갯수를 함께 표시 -->
             <span class="item-name">{{ item.menuName }} (x{{ item.amount }})</span>
@@ -33,11 +39,11 @@
         </div>
       </div>
 
-      <button @click="goToShareLink('amount')" class="split-button">
+      <button v-if="isTogether" @click="goToShareLink('amount')" class="split-button">
         금액으로 나누기
       </button>
       <button @click="goToShareLink('menu')" class="split-button">
-        메뉴별로 나누기
+        {{ ment }}
       </button>
 
       <div class="spacer"></div>
@@ -50,26 +56,60 @@ import { useOrderInfoStore } from "../../stores/orderStore.js"; // orderInfoStor
 import { useOrderStore } from "../../stores/orderStore.js"; // orderStore 가져오기
 import { onMounted } from 'vue'; // onMounted 사용
 import { useRouter, useRoute } from 'vue-router'; // vue-router 사용
+import { ref } from 'vue'; // ref 사용
+
+// 이미지 경로 수정
+import blacknoodle from "../../assets/images/blacknoodle.png";
+import dumpling from "../../assets/images/dumpling.png";
+import friedrice from "../../assets/images/friedrice.png";
+import noodle from "../../assets/images/noodle.png";
+import pork from "../../assets/images/pork.png";
 
 export default {
+  data() {
+    return {
+      orderInfo: [],
+      menuIcon: {
+        짜장면: blacknoodle,
+        짬뽕: noodle,
+        탕수육: pork,
+        만두: dumpling,
+        볶음밥: friedrice,
+      },
+          }
+        },
   setup() {
     const orderInfoStore = useOrderInfoStore(); // Pinia의 orderInfoStore 사용
     const orderStore = useOrderStore(); // Pinia의 orderStore 사용
     const router = useRouter(); // router 사용 선언
     const route = useRoute();
+    
     const orderIdx = route.query.orderIdx;
     const marketIdx = route.query.marketIdx;
-    
+
+    const isTogether = ref(true); // 금액별 또는 메뉴별 나누기 선택
+    const ment = ref("메뉴별로 나누기");
     // API로부터 주문 정보를 가져오는 함수
     const fetchOrderInfo = async () => {
       orderInfoStore.getOrderInfo(orderIdx, marketIdx); // orderIdx, marketIdx를 사용하여 API 요청
+      console.log(orderStore.type);
       orderStore.setOrderIdx(orderIdx);
+      console.log(orderStore.type);
+      if (orderStore.type === "ALONE") {
+        isTogether.value = false;
+        ment.value = "결제";
+        console.log("isTogether.value", isTogether.value);
+      }
     };
 
     // 금액별 또는 메뉴별 나누기 처리
     const goToShareLink = (type) => {
-      orderStore.setType(type === "amount" ? "BY_PRICE" : "BY_MENU");
-      router.push("/headcount");
+      if (orderStore.type === "ALONE") {
+        router.push("/solopay");
+      } else {
+        orderStore.setType(type === "amount" ? "BY_PRICE" : "BY_MENU");
+        router.push("/headcount");
+      }
     };
 
     const goBack = () => {
@@ -84,7 +124,9 @@ export default {
     return {
       orderInfo: orderInfoStore, // orderInfoStore의 상태를 템플릿에서 사용 가능하도록 설정
       goToShareLink,
-      goBack
+      goBack,
+      isTogether,
+      ment,
     };
   },
 };

@@ -27,7 +27,6 @@ export default {
         }
 
         if (this.isValidUrl(url)) {
-          console.log('링크로 이동:', url);
           const parsedUrl = new URL(url);
           const path = parsedUrl.pathname;
           const query = Object.fromEntries(parsedUrl.searchParams.entries());

@@ -27,7 +27,7 @@
       </div>
 
       <h2 class="waiting-message blink">잠시만 기다려주세요</h2>
-      <p class="waiting-description">다른 팀원들이 결제를 준비하고 있어요!</p>
+      <p class="waiting-description">{{ watingMessage }}</p>
 
       <!-- 참여 완료 메시지 (알림창처럼 상단에 고정) -->
       <transition name="fade">
@@ -56,6 +56,7 @@ const completedParticipants = ref(0);
 const totalParticipants = ref(0); // 전체 참여자 수
 const route = useRoute();
 const showCompletionMessage = ref(false); // 완료 메시지 표시 여부
+const watingMessage = ref("다른 팀원들이 결제를 준비하고 있어요!"); // 에러 메시지 표시 여부
 
 const orderIdx = route.query.orderIdx;
 const marketIdx = route.query.marketIdx;
@@ -66,6 +67,7 @@ const updateParticipantCount = () => {
 
 // 뒤로 가기 버튼
 const goBack = () => {
+  socketStore.disconnect();
   router.go(-1);
 };
 
@@ -107,8 +109,22 @@ watch(
         orderStore.setType("BY_PRICE");
         console.log('PARTICIPANT_INFO 메시지 도착:', parsedMessage);
         priceStore.setPriceData(parsedMessage);
-        router.push('/requestPay');
-      } else if (parsedMessage.type === 'ENTER') {
+        showCompletionMessage.value = true;
+        setTimeout(() => {
+          showCompletionMessage.value = false;
+          // router.push('/requestPay'); // 페이지 이동 (소켓 연결 유지)
+        }, 3000);
+        watingMessage.value = "팀장이 게임 여부를 선택하고 있어요!";
+      } else if (parsedMessage.type === 'IS_GAME') {
+        console.log('IS_GAME 메시지 도착:', parsedMessage);
+        if (parsedMessage.isGame) {
+          router.push('/lottery-game');
+        } else {
+          router.push('/requestPay');
+        }
+      }
+      
+      else if (parsedMessage.type === 'ENTER') {
         completedParticipants.value = parsedMessage.memberCnt;
         totalParticipants.value = parsedMessage.maxMemberCnt;
         orderStore.setMaxMemberCnt(parsedMessage.maxMemberCnt);

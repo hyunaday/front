@@ -22,6 +22,8 @@
 <script>
 import { useNavigationStore } from '../../stores/navigation.js';
 import { useOrderStore } from '../../stores/orderStore.js';
+import { useMemberStore } from '../../stores/MemberStore.js';
+import { useSocketStore } from '../../stores/socketStore.js';
 
 export default {
   name: 'GameList',
@@ -32,22 +34,53 @@ export default {
     navigateTo(routeName) {
       const navigationStore = useNavigationStore();
       const orderStore = useOrderStore();
+
       navigationStore.setSelectedPage(routeName, this.$router); // 선택한 페이지를 저장합니다.
 
       // 페이지에 따라 이동
+
       
       if (routeName === 'PayInfo') {
         console.log("type = ", useOrderStore.type);
-        if (orderStore.type === 'BY_MENU') {
-          this.$router.push('/menucheck');
-        } else if (orderStore.type === 'BY_PRICE')  {
-          this.$router.push('/payinfo');
+        if (orderStore.type === 'BY_PRICE')  {
+          this.sendSocket(false);
+          this.$router.push('/requestPay');
         }
       }
       else if (routeName === 'LotteryGame') {
+        this.sendSocket(true);
         this.$router.push('/lottery-game'); // 룰렛 돌리기 페이지로 수정
       }
     },
+    sendSocket(type) {
+      const socketStore = useSocketStore();
+      const memberStore = useMemberStore();
+      const orderStore = useOrderStore();
+      if (!socketStore.stompClient || !socketStore.stompClient.connected) {
+        console.error('소켓이 연결되지 않았습니다.');
+        return;
+      }
+
+      const message = {
+        orderIdx: orderStore.orderIdx,
+        memberId: memberStore.memberId,
+        isGame: type,
+      };
+
+      try {
+        socketStore.stompClient.send(
+          '/pub/order/room/isGame',
+          {
+            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+            'content-type': 'application/json',
+            'MemberId': memberStore.memberId,
+          },
+          JSON.stringify(message)
+        );
+      } catch (e) {
+        console.error('소켓 전송 중 오류가 발생했습니다.', e);
+      }
+    }
   },
 };
 </script>

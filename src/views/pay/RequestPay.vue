@@ -154,7 +154,8 @@ export default {
     };
 
     const goBack = () => {
-      this.$router.go(-1);
+      socketStore.disconnect();
+      router.go(-1);
     };
 
     // 소켓 메시지 감시

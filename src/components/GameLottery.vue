@@ -16,7 +16,7 @@
       <img src="../assets/images/arrow.png" alt="화살표" class="arrow-image" />
     </div>
 
-    <button
+    <button v-if="isOwner"
       @click="startLottery"
       :disabled="participants.length === 0 || spinning"
       class="start-lottery-button"
@@ -33,8 +33,8 @@
           <span class="winner-text">{{ winner }}</span>님이 당첨 되었습니다!!
         </p>
         <div class="button-group">
-          <button @click="restartLottery">다시 뽑기</button>
-          <button @click="confirm">확인</button>
+          <button v-if="isOwner" @click="restartLottery">다시 뽑기</button>
+          <button v-if="isOwner" @click="confirm">확인</button>
         </div>
       </div>
     </div>
@@ -44,7 +44,8 @@
 <script>
 import { useSocketStore } from '../stores/socketStore.js';
 import { useMemberStore } from '../stores/MemberStore.js';
-import { useOrderStore } from '../stores/orderStore.js';
+import { usePriceStore } from '../stores/orderStore.js';
+import { useOrderStore, useOrderInfoStore } from '../stores/orderStore.js';
 import { onMounted, watch } from 'vue';
 
 export default {
@@ -52,12 +53,16 @@ export default {
     return {
       participants: [], // 소켓 응답으로 받은 참가자 정보를 담습니다.
       winner: null,
+      winnerIdx: null,
       rotationAngle: 0,
+      targetAngle: 0,
       spinning: false,
       showModal: false,
+      isOwner: false,
     };
   },
   mounted() {
+    this.setOwner(); // 방장 여부 확인
     this.handleSocketResponse(); // 소켓 응답 감시
     this.sendSocketRequest(); // 참가자 목록 요청
   },
@@ -87,20 +92,32 @@ export default {
         orderIdx: orderStore.orderIdx,
         memberId: memberStore.memberId,
       };
-
-      try {
+      if (this.isOwner) {
+        try {
         socketStore.stompClient.send(
-          '/pub/order/room/list',
-          {
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-            'content-type': 'application/json',
-            'MemberId': memberStore.memberId,
-          },
-          JSON.stringify(message)
-        );
-      } catch (error) {
-        console.error('소켓 요청 실패:', error);
+            '/pub/order/room/list',
+            {
+              Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+              'content-type': 'application/json',
+              'MemberId': memberStore.memberId,
+            },
+            JSON.stringify(message)
+          );
+        } catch (error) {
+          console.error('소켓 요청 실패:', error);
+        }
       }
+      
+    },
+    setOwner() {
+      const memberStore = useMemberStore();
+      const orderInfoStore = useOrderInfoStore();
+      const priceStore = usePriceStore();
+
+      this.isOwner = memberStore.idx === priceStore.ownerMemberIdx;
+      console.log("memberStore.idx: ", memberStore.idx);
+      console.log("orderInfoStore.ownerMemberIdx: ", orderInfoStore.ownerMemberIdx);
+      console.log("isOwner: ", this.isOwner);
     },
     handleSocketResponse() {
       const socketStore = useSocketStore();
@@ -119,12 +136,18 @@ export default {
               this.participants = parsedMessage.memberInfoList.map(
                 (member) => member.memberName
               );
+              this.targetAngle = parsedMessage.targetAngle;
               this.drawRoulette();
             }
 
             if (parsedMessage.type === 'GAME_RESULT') {
               // 서버에서 받은 당첨자 정보
-              this.winner = parsedMessage.memberName;
+              if (!this.isOwner) {
+                this.showModal = false;
+              }
+              this.winnerIdx = parsedMessage.winnerIdx;
+              this.targetAngle = parsedMessage.targetAngle;
+              this.winner = this.participants[this.winnerIdx];
               this.selectWinner(); // 당첨자를 바탕으로 룰렛을 돌림
             }
           } catch (error) {
@@ -177,6 +200,8 @@ export default {
       const socketStore = useSocketStore();
       const memberStore = useMemberStore();
       const orderStore = useOrderStore();
+      const priceStore = usePriceStore();
+
 
       if (!socketStore.stompClient || !socketStore.stompClient.connected) {
         console.error('소켓이 연결되지 않았습니다.');
@@ -187,20 +212,23 @@ export default {
         orderIdx: orderStore.orderIdx,
         memberId: memberStore.memberId,
       };
-
-      try {
-        socketStore.stompClient.send(
-          '/pub/order/room/game/start',
-          {
-            Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-            'content-type': 'application/json',
-            'MemberId': memberStore.memberId,
-          },
-          JSON.stringify(message)
-        );
-      } catch (error) {
-        console.error('게임 시작 소켓 요청 실패:', error);
+      if (priceStore.ownerMemberIdx === memberStore.idx) {
+          try {
+          socketStore.stompClient.send(
+            '/pub/order/room/game/start',
+            {
+              Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+              'content-type': 'application/json',
+              'MemberId': memberStore.memberId,
+            },
+            JSON.stringify(message)
+          );
+        } catch (error) {
+          console.error('게임 시작 소켓 요청 실패:', error);
+        }
       }
+
+      
     },
     selectWinner() {
       const winnerIndex = this.participants.findIndex(
@@ -211,7 +239,7 @@ export default {
 
       // 해당 참가자의 범위 내에서 랜덤한 각도를 생성
       const randomWithinSegment = Math.random() * arc;
-      const targetAngle = 5 * 2 * Math.PI + winnerIndex * arc + randomWithinSegment + Math.PI / 2;
+      const targetAngletmp = 5 * 2 * Math.PI + winnerIndex * arc + randomWithinSegment + Math.PI / 2;
 
       const startTime = performance.now();
       const duration = 5000;
@@ -221,7 +249,8 @@ export default {
         const progress = Math.min(elapsed / duration, 1);
         const easeOutProgress = 1 - Math.pow(1 - progress, 3);
 
-        this.rotationAngle = easeOutProgress * targetAngle;
+        this.rotationAngle = easeOutProgress * this.targetAngle;
+        console.log("targetAngletmp: ", this.rotationAngle);
 
         this.drawRoulette(); // 각도에 따라 룰렛을 다시 그리기
 
