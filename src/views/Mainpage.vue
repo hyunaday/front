@@ -626,44 +626,42 @@ h4 {
   font-size: 12px;
 }
 
-/* General styling adjustments for small devices */
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .together-card {
     flex-direction: column;
     align-items: center;
-    height: auto; /* Adjust height */
+    height: auto; 
     text-align: center;
     padding: 15px;
   }
 
   .together-card .text-content {
-    margin-bottom: 15px; /* Add space between text and button */
+    margin-bottom: 15px;
     text-align: center;
   }
 
   .together-card .text-content h6 {
-    font-size: 14px; /* Adjust font size */
+    font-size: 14px; 
     margin: 0;
   }
 
   .together-card .text-content p {
-    font-size: 24px; /* Adjust font size */
+    font-size: 24px; 
     margin: 10px 0;
   }
 
   .together-card .btn {
-    width: 100%; /* Full width button */
+    width: 100%; 
     max-width: 200px;
   }
 
   .human-image {
-    width: 150px; /* Smaller image */
+    width: 150px; 
     position: static;
     margin-top: 10px;
   }
 }
 
-/* Extra small devices (phones) */
 @media (max-width: 576px) {
   .together-card {
     max-width: 90%;
@@ -688,7 +686,7 @@ h4 {
   .human-image {
     width: 120px;
     margin-top: 15px;
-  }
-}
+  } 
+} */
 
 </style>
