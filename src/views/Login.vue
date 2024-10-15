@@ -165,7 +165,7 @@ export default {
   text-align: center;
   padding: 10px 0;
   position: relative;
-  margin-top: 60px;
+  margin-top: 30px;
   margin-bottom: 150px;
 }
 .header-logo {

@@ -160,6 +160,7 @@ export default {
   flex-direction: column;
   align-items: center; /* 수평 정렬 */
   margin-left: 19px;
+  margin-top: 50px;
 }
 .loading-container {
   display: flex;
