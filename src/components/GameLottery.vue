@@ -44,9 +44,10 @@
 <script>
 import { useSocketStore } from '../stores/socketStore.js';
 import { useMemberStore } from '../stores/MemberStore.js';
-import { usePriceStore } from '../stores/orderStore.js';
+import { usePriceStore, usePayPriceInfoStore } from '../stores/orderStore.js';
 import { useOrderStore, useOrderInfoStore } from '../stores/orderStore.js';
-import { onMounted, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router'; // vue-router 사용
 
 export default {
   data() {
@@ -122,6 +123,8 @@ export default {
     handleSocketResponse() {
       const socketStore = useSocketStore();
       const memberStore = useMemberStore();
+      const payPriceInfoStore = usePayPriceInfoStore();
+      const router = useRouter();
 
       watch(
         () => socketStore.messages,
@@ -153,14 +156,16 @@ export default {
               this.selectWinner(); // 당첨자를 바탕으로 룰렛을 돌림
             }
             if (parsedMessage.type === 'PRICE_SELECT') {
-            console.log('PRICE_SELECT 메시지 도착:', parsedMessage);
+              console.log('PRICE_SELECT 메시지 도착:', parsedMessage);
+              if (!this.isOwner) {
+                this.showModal = false;
+              }
+              // 필요한 데이터 priceStore에 업데이트
+              payPriceInfoStore.setPayPriceInfo(parsedMessage, memberStore.idx);
 
-            // 필요한 데이터 priceStore에 업데이트
-            payPriceInfoStore.setPayPriceInfo(parsedMessage, memberStore.idx);
-
-            // 페이지 이동
-            router.push('/solopay');
-          }
+              // 페이지 이동
+              router.push('/solopay');
+            }
           } catch (error) {
             console.error('메시지 파싱 실패:', error);
           }
