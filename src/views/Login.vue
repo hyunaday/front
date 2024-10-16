@@ -98,14 +98,11 @@ export default {
           // 메인 페이지로 이동
           this.$router.push("/");
         } else {
-          alert(`${response.data.message || "알 수 없는 오류"}`);
         }
       } catch (error) {
         console.error("로그인 오류:", error);
         if (error.response) {
-          alert(`${error.response.data.message || "알 수 없는 오류"}`);
         } else {
-          alert("서버에 연결할 수 없습니다. 네트워크를 확인해주세요.");
         }
       }
     },
@@ -127,11 +124,9 @@ export default {
 
           this.$router.push("/phone");
         } else {
-          alert(`카카오 로그인 실패: ${response.data.message || "알 수 없는 오류"}`);
         }
       } catch (error) {
         console.error("카카오 로그인 오류:", error);
-        alert("카카오 로그인 중 오류가 발생했습니다.");
       }
     },
   },
