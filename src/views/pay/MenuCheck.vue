@@ -61,7 +61,7 @@
       <button 
         @click="splitByAmount" 
         :class="['split-button', { 'ready': isReadySent, 'not-ready': !isReadySent }]">
-        {{ isReadySent ? '선택 완료 취소' : '선택 완료' }}
+        {{ readyMent }}
       </button>
 
       <div class="spacer"></div>
@@ -87,6 +87,7 @@ export default {
     const selectedPaymentAmount = ref(0);
     const defaultImage = hamburgerImage; // 기본 이미지 (없을 경우)
     const router = useRouter(); // router 사용 선언
+    const readyMent = ref('선택완료');
 
     const isReadySent = ref(false); // 선택 완료 상태를 추적하는 변수
     const errorMessage = ref(''); // 에러 메시지 상태
@@ -218,6 +219,13 @@ export default {
             if (parsedMessage.code === 'ORDER4014' && parsedMessage.memberIdx === memberStore.idx) {
               setErrorMessage('더 이상 선택할 수 없는 메뉴입니다');
             }
+            if (parsedMessage.code === 'ORDER4017' && parsedMessage.memberIdx === memberStore.idx) {
+              setErrorMessage('금액이 일치하지 않습니다.');
+              if (isReadySent.value) {
+                isReadySent.value = false;
+                readyMent.value = '선택완료';
+              }
+            }
           }
 
           // START_PAY 메시지가 도착하면 소켓 연결 해제 및 페이지 이동
@@ -255,6 +263,7 @@ export default {
           JSON.stringify(message)
         );
         isReadySent.value = !isReadySent.value; // 상태 토글
+        readyMent.value = isReadySent.value ? '선택취소' : '선택완료';
         console.log(`isReadySent 상태:`, isReadySent.value); // 상태 확인
         console.log(`선택 완료 ${isReadySent.value ? '요청' : '취소'} 전송`);
       } catch (error) {
@@ -300,7 +309,8 @@ export default {
       defaultImage,
       isReadySent,
       errorMessage,
-      closeError
+      closeError,
+      readyMent,
     };
   },
 };
