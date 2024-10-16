@@ -121,6 +121,7 @@ export default {
     },
     handleSocketResponse() {
       const socketStore = useSocketStore();
+      const memberStore = useMemberStore();
 
       watch(
         () => socketStore.messages,
@@ -146,10 +147,20 @@ export default {
                 this.showModal = false;
               }
               this.winnerIdx = parsedMessage.winnerIdx;
+              console.log("최초 당점자 인덱스: ", this.winnerIdx);
               this.targetAngle = parsedMessage.targetAngle;
               this.winner = this.participants[this.winnerIdx];
               this.selectWinner(); // 당첨자를 바탕으로 룰렛을 돌림
             }
+            if (parsedMessage.type === 'PRICE_SELECT') {
+            console.log('PRICE_SELECT 메시지 도착:', parsedMessage);
+
+            // 필요한 데이터 priceStore에 업데이트
+            payPriceInfoStore.setPayPriceInfo(parsedMessage, memberStore.idx);
+
+            // 페이지 이동
+            router.push('/solopay');
+          }
           } catch (error) {
             console.error('메시지 파싱 실패:', error);
           }
@@ -165,30 +176,35 @@ export default {
       const totalSegments = this.participants.length;
       const arc = (2 * Math.PI) / totalSegments;
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height); // 캔버스를 초기화
+      // 룰렛 초기화
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       for (let i = 0; i < totalSegments; i++) {
-        const angleStart = i * arc + this.rotationAngle;
-        const angleEnd = (i + 1) * arc + this.rotationAngle;
+        // 각도 설정, 12시 방향에서 시작하도록 - Math.PI / 2 추가
+        const angleStart = i * arc - this.rotationAngle;
+        const angleEnd = (i + 1) * arc - this.rotationAngle;
 
+        // 룰렛 구역 그리기
         ctx.beginPath();
         ctx.moveTo(150, 150); // 중심으로 이동
-        ctx.arc(150, 150, 150, angleStart, angleEnd); // 원 그리기
-        ctx.fillStyle = this.getColor(i);
+        ctx.arc(150, 150, 150, angleStart, angleEnd); // 각도에 맞춰 원 그리기
+        ctx.fillStyle = this.getColor(i); // 각 구역의 색상
         ctx.fill();
         ctx.closePath();
 
-        // 참가자 이름 표시
+        // 이름 배치 - 각 구역의 중앙에 이름 표시
         ctx.save();
         ctx.translate(150, 150);
-        ctx.rotate(angleStart + arc / 2);
+        const textAngle = angleStart + arc / 2; // 구역 중앙을 기준으로 텍스트 회전
+        ctx.rotate(textAngle); // 텍스트를 구역의 중심으로 회전시킴
         ctx.textAlign = 'right';
         ctx.font = '20px Pretendard';
         ctx.fillStyle = '#000';
-        ctx.fillText(this.participants[i], 130, 10);
+        ctx.fillText(this.participants[i], 130, 10); // 이름을 적당한 위치에 표시
         ctx.restore();
       }
     },
+
     startLottery() {
       if (this.spinning || this.participants.length === 0) return;
       this.spinning = true;
@@ -234,6 +250,8 @@ export default {
       const winnerIndex = this.participants.findIndex(
         (participant) => participant === this.winner
       );
+      console.log('당첨자 인덱스:', winnerIndex);
+      console.log('당첨자:', this.winner);
       const totalSegments = this.participants.length;
       const arc = (2 * Math.PI) / totalSegments;
 
@@ -250,7 +268,6 @@ export default {
         const easeOutProgress = 1 - Math.pow(1 - progress, 3);
 
         this.rotationAngle = easeOutProgress * this.targetAngle;
-        console.log("targetAngletmp: ", this.rotationAngle);
 
         this.drawRoulette(); // 각도에 따라 룰렛을 다시 그리기
 
