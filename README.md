@@ -136,8 +136,8 @@
 
 | [백도현<br>(BE Leader&FE)](https://github.com/dh1010a) | [공희진](https://github.com/) | [이학민<br>(Team Leader)](https://github.com/HakminLee) | [서석현](https://github.com/) | [조현아](https://github.com/) | [이동훈](https://github.com/) |
 | :---: | :---: | :---: | :---: | :---: | :---: |
-| <img src="https://github.com/user-attachments/assets/fe5cdfa3-8556-42c5-a851-a4e830c13137" width="140px" alt="백도현"/> | <img src="" width="120px" alt="공희진"/> | <img src="" width="120px" alt="이학민"/> | <img src="" width="120px" alt="서석현"/> | <img src="" width="120px" alt="조현아"/> | <img src="" width="120px" alt="이동훈"/> |
-|- WebSocket&STOMP을 이용한<br>실시간 메뉴 선택 및 룰렛게임 구현<br>- Pinia를 이용한 상태관리<br>- 메인페이지 및 함께결제 디자인 | | | | |
+| <img src="https://github.com/user-attachments/assets/fe5cdfa3-8556-42c5-a851-a4e830c13137" width="140px" alt="백도현"/> | <img src="" width="120px" alt="공희진"/> | <img src="https://github.com/user-attachments/assets/a5894369-cbb0-4ad1-a060-db8a7f04275b" width="120px" alt="이학민"/> | <img src="" width="120px" alt="서석현"/> | <img src="" width="120px" alt="조현아"/> | <img src="" width="120px" alt="이동훈"/> |
+|- WebSocket&STOMP을 이용한<br>실시간 메뉴 선택 및 룰렛게임 구현<br>- Pinia를 이용한 상태관리<br>- 메인페이지 및 함께결제 디자인 | |- QR코드 생성/스캔 기능 구현<br>- 앱 로고 디자인<br>- 함께결제 및 전자명함 디자인 | | |
 
 
 ### 📓 Document
