@@ -134,10 +134,10 @@
 
 ## 🧑‍💻 Contributor
 
-| [백도현<br>(BE Leader&FE)](https://github.com/dh1010a) | [공희진](https://github.com/) | [이학민](https://github.com/) | [서석현](https://github.com/) | [조현아](https://github.com/) | [이동훈](https://github.com/) |
+| [백도현<br>(BE Leader&FE)](https://github.com/dh1010a) | [공희진](https://github.com/) | [이학민](https://github.com/) | [서석현](https://github.com/) | [조현아](https://github.com/hyunaday) | [이동훈](https://github.com/) |
 | :---: | :---: | :---: | :---: | :---: | :---: |
-| <img src="https://github.com/user-attachments/assets/fe5cdfa3-8556-42c5-a851-a4e830c13137" width="140px" alt="백도현"/> | <img src="" width="120px" alt="공희진"/> | <img src="" width="120px" alt="이학민"/> | <img src="" width="120px" alt="서석현"/> | <img src="" width="120px" alt="조현아"/> | <img src="" width="120px" alt="이동훈"/> |
-|- WebSocket&STOMP을 이용한<br>실시간 메뉴 선택 및 룰렛게임 구현<br>- Pinia를 이용한 상태관리<br>- 메인페이지 및 함께결제 디자인 | | | | |
+| <img src="https://github.com/user-attachments/assets/fe5cdfa3-8556-42c5-a851-a4e830c13137" width="140px" alt="백도현"/> | <img src="" width="120px" alt="공희진"/> | <img src="" width="120px" alt="이학민"/> | <img src="" width="120px" alt="서석현"/> | <img src="https://github.com/user-attachments/assets/2729dd08-a441-48ad-9124-4acca4a12746" width="100px" alt="조현아"/> | <img src="" width="120px" alt="이동훈"/> |
+|- WebSocket&STOMP을 이용한<br>실시간 메뉴 선택 및 룰렛게임 구현<br>- Pinia를 이용한 상태관리<br>- 메인페이지 및 함께결제 디자인 | | | | - 카드 및 계좌 api 연동<br>- 자산관리페이지 및 설정페이지 기능 구현<br>- 나의 명함 페이지 디자인<br> |
 
 
 ### 📓 Document
