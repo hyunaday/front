@@ -137,7 +137,8 @@
 | [백도현<br>(BE Leader&FE)](https://github.com/dh1010a) | [공희진](https://github.com/) | [이학민<br>(Team Leader)](https://github.com/HakminLee) | [서석현](https://github.com/) | [조현아](https://github.com/hyunaday) | [이동훈](https://github.com/LDHOONHOON) |
 | :---: | :---: | :---: | :---: | :---: | :---: |
 | <img src="https://github.com/user-attachments/assets/fe5cdfa3-8556-42c5-a851-a4e830c13137" width="110px" alt="백도현"/> | <img src="https://github.com/user-attachments/assets/c1571074-5029-40bd-b619-36e0ea3e935d" width="140px" alt="공희진"/> | <img src="https://github.com/user-attachments/assets/a5894369-cbb0-4ad1-a060-db8a7f04275b" width="110px" alt="이학민"/> | <img src="" width="110px" alt="서석현"/> |  <img src="https://github.com/user-attachments/assets/2729dd08-a441-48ad-9124-4acca4a12746" width="100px" alt="조현아"/> | <img src="https://github.com/user-attachments/assets/73363ddc-c881-41a6-91a5-1ce163666a53" width="110px" alt="이동훈"/> |
-|- WebSocket&STOMP을<br>이용한 실시간 메뉴 선택 및<br> 룰렛게임 구현<br>- Pinia를 이용한 상태관리<br>- 메인페이지 및 함께결제 디자인 | |- 명함<br>기능<br>구현<br>및<br>디자인<br>- 명함 API 연동 | |- QR코드 생성/스캔 기능 구현<br>- 앱 로고 디자인<br>- 함께결제 및 전자명함 디자인 | | | | - 카드 및 계좌 api 연동<br>- 자산관리페이지 및 설정페이지 기능 구현<br>- 나의 명함 페이지 디자인<br> | - 가계부페이지 기능 구현 및 디자인<br>- 가계부 api 연동<br>- 가계부페이지 CRUD 구현 |
+| - WebSocket&STOMP을<br>이용한 실시간 메뉴 선택 및<br> 룰렛게임 구현<br>- Pinia를 이용한 상태관리<br>- 메인페이지 및 함께결제 디자인 | - 명함<br>기능<br>구현<br>및<br>디자인<br>- 명함 API 연동 | - QR코드 생성/스캔 기능 구현<br>- 앱 로고 디자인<br>- 함께결제 및 전자명함 디자인 | | - 카드 및 계좌 api 연동<br>- 자산관리페이지 및 설정페이지 기능 구현<br>- 나의 명함 페이지 디자인<br> | - 가계부페이지 기능 구현 및 디자인<br>- 가계부 api 연동<br>- 가계부페이지 CRUD 구현 |
+
 
 
 
